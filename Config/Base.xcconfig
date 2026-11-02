@@ -1,0 +1,4 @@
+// Signing team stays local: put DEVELOPMENT_TEAM = <TEAM_ID> into Config/Local.xcconfig
+#include? "Local.xcconfig"
+// Written by the scheme's build pre-action: LOCSIM_COMMIT = <7-char hash>[-dirty]
+#include? "Commit.xcconfig"

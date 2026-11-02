@@ -1,0 +1,46 @@
+# Xcode
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+DerivedData/
+build/
+*.ipa
+*.xcarchive
+ExportOptions.plist
+
+# Build inputs fetched or generated locally
+Frameworks/
+Config/Local.xcconfig
+Config/Commit.xcconfig
+
+# Secrets: pairing files, signing material, API keys
+*.p8
+*.p12
+*.mobileprovision
+*.log
+*.plist
+!LocSim/Info.plist
+*.mobiledevicepairing
+*.mobiledevicepair
+
+# Tools
+tools/bin/
+
+# Local mirror of third-party downloads (tools/fetch-vendor.sh)
+vendor/
+
+.DS_Store
+
+# Website
+site/.wrangler/
+site/node_modules/
+
+# Rendered mockups (App Store sizes)
+design/mockups/out/
+
+# Simulator screenshots are large and only an input for the renderer
+design/screenshots/*
+!design/screenshots/.gitkeep
+
+# Python
+__pycache__/
