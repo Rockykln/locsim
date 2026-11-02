@@ -1,0 +1,20 @@
+[
+  {
+    "id": "1-map",
+    "screenshot": "1-map.png",
+    "en": { "title": "Set any location.\nRight on the device.", "subtitle": "Simulate GPS to test location-based apps." },
+    "de": { "title": "Jeden Standort setzen.\nDirekt auf dem Gerät.", "subtitle": "GPS simulieren, um standortbasierte Apps zu testen." }
+  },
+  {
+    "id": "2-search",
+    "screenshot": "2-search.png",
+    "en": { "title": "Search places or\npaste coordinates.", "subtitle": "Decimal or degrees, minutes, seconds." },
+    "de": { "title": "Orte suchen oder\nKoordinaten einfügen.", "subtitle": "Dezimal oder Grad, Minuten, Sekunden." }
+  },
+  {
+    "id": "3-favorites",
+    "screenshot": "3-favorites.png",
+    "en": { "title": "Your test locations,\none tap away.", "subtitle": "Save, rename and reorder favorites." },
+    "de": { "title": "Deine Testorte,\nnur einen Tipp entfernt.", "subtitle": "Favoriten sichern, umbenennen und sortieren." }
+  }
+]
