@@ -1,0 +1,14 @@
+Erste Beta von LocSim.
+
+Bitte testen:
+- Einrichtung: Pairing-Datei importieren, LocalDevVPN verbinden, im WLAN einen
+  ersten Standort setzen.
+- Standort setzen: lang auf die Karte drücken, einen Ort suchen, Koordinaten
+  eingeben (dezimal oder Grad/Minuten/Sekunden), Favoriten nutzen.
+- Halten: App verlassen, Gerät sperren, ins Mobilfunknetz wechseln. Der Standort
+  soll simuliert bleiben, bis du auf „Zurücksetzen“ tippst.
+- „Zurücksetzen“ und „App beenden“: Der echte Standort muss zurückkommen.
+- Nach einem Neustart des Geräts: Standort setzen muss wieder funktionieren.
+
+Wenn etwas nicht klappt, tippe auf die Statuszeile, wähle „Details kopieren“ und
+schick den Text mit deinem Feedback.

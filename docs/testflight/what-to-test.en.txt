@@ -1,0 +1,13 @@
+First beta of LocSim.
+
+Please test:
+- Setup: import the pairing file, connect LocalDevVPN, set a first location on Wi-Fi.
+- Setting locations: long-press the map, search for a place, enter coordinates
+  (decimal or degrees/minutes/seconds), use favorites.
+- Keeping it: leave the app, lock the device, switch to cellular. The location
+  should stay simulated until you tap Clear.
+- Clear and Stop and Quit: the real location must come back.
+- After a device restart: setting a location must work again.
+
+If something fails, tap the status line, choose Copy Details and send it with
+your feedback.

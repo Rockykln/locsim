@@ -1,0 +1,57 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  IDEVICE_VERSION: v0.1.68
+  IDEVICE_SHA256: c9eccdd1942de756d746a2569d93302774ab0eff1cff314ec8118f768b3d8dc7
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.3.app
+
+      - name: Fetch IDevice.xcframework
+        run: |
+          curl -fsSL -o idevice.zip \
+            "https://github.com/jkcoxson/idevice/releases/download/$IDEVICE_VERSION/idevice-xcframework-$IDEVICE_VERSION.zip"
+          echo "$IDEVICE_SHA256  idevice.zip" | shasum -a 256 -c -
+          unzip -q idevice.zip -d idevice
+          mkdir -p Frameworks
+          mv idevice/swift/IDevice.xcframework Frameworks/
+
+      - name: Generate project
+        env:
+          XCODEGEN_VERSION: "2.46.0"
+          XCODEGEN_SHA256: 4d9e34b62172d645eed6457cac13fc222569974098ef4ee9c3368bedf0196806
+        run: |
+          curl -fsSL -o xcodegen.zip \
+            "https://github.com/yonaskolb/XcodeGen/releases/download/$XCODEGEN_VERSION/xcodegen.zip"
+          echo "$XCODEGEN_SHA256  xcodegen.zip" | shasum -a 256 -c -
+          unzip -q xcodegen.zip -d "$RUNNER_TEMP"
+          "$RUNNER_TEMP/xcodegen/bin/xcodegen" generate
+
+      - name: Build
+        run: |
+          xcodebuild -project LocSim.xcodeproj -scheme LocSim -configuration Release \
+            -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            build | tee build.log | grep -E "error:|warning: .*LocSim|BUILD" || true
+          test -d build/Build/Products/Release-iphoneos/LocSim.app
+
+      - name: Build log
+        if: failure()
+        run: |
+          grep -E "error:|ld: |Undefined symbols" -A3 build.log | head -100 || true
