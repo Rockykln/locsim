@@ -33,6 +33,7 @@ vendor/
 
 # Website
 site/.wrangler/
+site/app-link/.wrangler/
 site/node_modules/
 
 # Rendered mockups (App Store sizes)

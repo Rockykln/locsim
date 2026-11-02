@@ -66,10 +66,11 @@ README). Inviting people outside the team requires external testing:
 
 - Do not also upload from Xcode: build numbers must be unique, and the workflow
   counts on its own.
-- `ITSAppUsesNonExemptEncryption` is `true`: the idevice library ships its own standard
-  encryption (rustls with aws-lc) in addition to the operating system's. Answer App Store
-  Connect's questions accordingly. Apple asks for documents only for distribution in France,
-  so France is excluded from availability until a French declaration is filed.
+- `ITSAppUsesNonExemptEncryption` is not set: with `true`, uploads fail without a compliance
+  code (ITMS-90592), and `false` would be wrong because the idevice library ships its own
+  standard encryption (rustls with aws-lc). Answer the encryption questions in App Store
+  Connect for each build. Apple asks for documents only for distribution in France, so France
+  is excluded from availability until a French declaration is filed.
 - If the Developer Disk Image is missing, the app downloads it from a public GitHub
   repository and verifies it by SHA-256. Mention this in the review notes.
 - Testers need the same prerequisites as for a source build: Developer Mode,
