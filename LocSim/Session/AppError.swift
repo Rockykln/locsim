@@ -8,6 +8,11 @@ struct AppError: Error, Equatable {
     let message: String
     let detail: String
 
+    static let clearFailedCode = "LS-402"
+
+    /// The device or the file itself refuses the pairing, as opposed to not being reachable.
+    var rejectsPairing: Bool { ["LS-100", "LS-101", "LS-102", "LS-203"].contains(code) }
+
     init(_ error: Error) {
         let detail = error.localizedDescription
         let kind: DeviceError.Kind = (error as? DeviceError)?.kind ?? (error is URLError ? .ddiDownload : .other)
@@ -51,7 +56,7 @@ struct AppError: Error, Equatable {
             return tunnelEntry(detail)
         case .notConnected:
             return ("LS-204", String(localized: "Connection lost"),
-                    String(localized: "The connection to the device closed. Tap Set Location to reconnect."))
+                    String(localized: "The connection to the device closed. Check LocalDevVPN and Wi-Fi. LocSim reconnects on its own while a location is active."))
         case .ddiQuery:
             return ("LS-300", String(localized: "Developer Disk Image not available"),
                     String(localized: "The disk image state could not be read. Check that Developer Mode is on."))
@@ -68,7 +73,7 @@ struct AppError: Error, Equatable {
             return ("LS-401", String(localized: "Location not set"),
                     String(localized: "Sending the location failed. Tap Set Location to try again."))
         case .clearLocation:
-            return ("LS-402", String(localized: "Location not cleared"),
+            return (clearFailedCode, String(localized: "Location not cleared"),
                     String(localized: "Close LocSim to restore the real location."))
         case .other:
             return ("LS-900", String(localized: "Unexpected error"),
@@ -84,7 +89,7 @@ struct AppError: Error, Equatable {
         }
         if text.contains("socket io") || text.contains("refused") || text.contains("unreachable") {
             return ("LS-202", String(localized: "Pairing service unavailable"),
-                    String(localized: "Check that LocalDevVPN is connected and join a Wi-Fi network. If it keeps failing, enable Show this iPhone when on Wi-Fi in Finder."))
+                    String(localized: "Check that LocalDevVPN is connected and join a Wi-Fi network. If it keeps failing, enable Show this iPhone when on Wi-Fi in Finder. Also allow Local Network for LocSim under Settings > Privacy & Security > Local Network."))
         }
         return ("LS-203", String(localized: "Pairing rejected"),
                 String(localized: "The device did not accept the pairing file. Create a new one, for example after an iOS update."))

@@ -37,6 +37,14 @@ final class SpoofSession: ObservableObject {
         }
     }
 
+    enum PairingCheck: Equatable {
+        case notChecked
+        case checking
+        case valid
+        case rejected(AppError)
+        case unreachable(AppError)
+    }
+
     @Published var target: CLLocationCoordinate2D = LastCoordinate.load()
     @Published var targetName: String?
     @Published private(set) var active: CLLocationCoordinate2D?
@@ -44,6 +52,9 @@ final class SpoofSession: ObservableObject {
     @Published private(set) var port: UInt16?
     @Published private(set) var lastSent: Date?
     @Published private(set) var log: [String] = []
+    /// The location is active, but without location access iOS suspends the app in the background.
+    @Published private(set) var backgroundDenied = false
+    @Published private(set) var pairingCheck = PairingCheck.notChecked
 
     private let link = DeviceLink()
     private let keepAlive = KeepAlive()
@@ -55,6 +66,7 @@ final class SpoofSession: ObservableObject {
     var hasBeenActive = false
     private var lastPort: UInt16?
     private var failedResends = 0
+    private var backgroundFailures = 0
     private static let backgroundRetries = 3
 
     private static let timeFormat: DateFormatter = {
@@ -66,6 +78,9 @@ final class SpoofSession: ObservableObject {
     init() {
         keepAlive.onStatus = { [weak self] message in
             Task { @MainActor in self?.write(message) }
+        }
+        keepAlive.onDeniedChange = { [weak self] denied in
+            Task { @MainActor in self?.backgroundDenied = denied }
         }
         if Demo.isOn {
             target = Demo.place.coordinate
@@ -112,12 +127,15 @@ final class SpoofSession: ObservableObject {
         target = coordinate
         LastCoordinate.save(coordinate)
         let started = generation
+        // When-In-Use updates only start from the foreground, and the user may leave right after tapping.
+        if UserDefaults.standard.bool(forKey: SettingsKey.keepAlive) { keepAlive.start() }
         do {
             try await send(coordinate, reconnect: true, started: started)
             guard started == generation else { return await discard() }
             active = coordinate
             state = .active
             failedResends = 0
+            backgroundFailures = 0
             write("set \(CoordinateParser.format(coordinate))")
             if UserDefaults.standard.bool(forKey: SettingsKey.keepAlive) { keepAlive.start() }
             startResend()
@@ -136,17 +154,46 @@ final class SpoofSession: ObservableObject {
         generation += 1
         pending = nil
         failedResends = 0
+        backgroundFailures = 0
         resendTask?.cancel()
         resendTask = nil
         keepAlive.stop()
-        do {
-            try await link.clear()
-            write("cleared")
-        } catch {
-            write(error.localizedDescription)
-            await link.close()
-        }
+        let finished = await clearLink()
         active = nil
+        if finished {
+            state = .idle
+            releaseIfIdleInBackground()
+        } else {
+            fail(DeviceError(.clearLocation, "Clearing the location did not finish"))
+        }
+    }
+
+    // Releasing the connection can block inside idevice, so Clear must not wait for it forever.
+    private func clearLink() async -> Bool {
+        let started = generation
+        return await withCheckedContinuation { continuation in
+            let once = ResumeOnce(continuation)
+            Task { @MainActor in
+                do {
+                    try await self.link.clear()
+                    self.write("cleared")
+                } catch {
+                    self.write(error.localizedDescription)
+                    await self.link.close()
+                }
+                once.finish(true)
+                self.recoverFromLateClear(started)
+            }
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 3_000_000_000)
+                once.finish(false)
+            }
+        }
+    }
+
+    // The clear only came through after the timeout, so its error no longer applies.
+    private func recoverFromLateClear(_ started: Int) {
+        guard started == generation, state.error?.code == AppError.clearFailedCode else { return }
         state = .idle
         releaseIfIdleInBackground()
     }
@@ -155,29 +202,17 @@ final class SpoofSession: ObservableObject {
         generation += 1
         pending = nil
         failedResends = 0
+        backgroundFailures = 0
         resendTask?.cancel()
         resendTask = nil
         keepAlive.stop()
-        await link.close()
         active = nil
         state = .idle
         write("disconnected")
+        await link.close()
     }
 
     func clearLog() { log.removeAll() }
-
-    /// Restores the real location, releases everything and terminates the process.
-    func quit() async {
-        // Exit even if releasing the connection hangs; iOS drops the simulated
-        // location once the process is gone.
-        Task.detached {
-            try? await Task.sleep(nanoseconds: 2_000_000_000)
-            exit(0)
-        }
-        await clear()
-        try? await Task.sleep(nanoseconds: 300_000_000)
-        exit(0)
-    }
 
     /// Applies the Keep Alive setting to a running session.
     func keepAliveChanged(_ on: Bool) {
@@ -375,6 +410,7 @@ final class SpoofSession: ObservableObject {
             guard started == generation else { return await discard() }
             if failedResends > 0 { write("reconnected") }
             failedResends = 0
+            backgroundFailures = 0
             if state != .active { state = .active }
         } catch {
             guard started == generation else { return await discard() }
@@ -382,7 +418,9 @@ final class SpoofSession: ObservableObject {
             let appError = AppError(error)
             write("\(appError.code) \(appError.detail), retry \(failedResends)")
             // In the background, give up after a few attempts instead of retrying for hours.
-            if UIApplication.shared.applicationState == .background, failedResends >= Self.backgroundRetries {
+            let inBackground = UIApplication.shared.applicationState == .background
+            backgroundFailures = inBackground ? backgroundFailures + 1 : 0
+            if backgroundFailures >= Self.backgroundRetries {
                 await giveUp(error)
             } else {
                 state = .reconnecting(appError)
@@ -396,6 +434,7 @@ final class SpoofSession: ObservableObject {
         keepAlive.stop()
         active = nil
         failedResends = 0
+        backgroundFailures = 0
         await link.close()
         fail(error)
         write("stopped reconnecting")
@@ -419,6 +458,40 @@ final class SpoofSession: ObservableObject {
         write("discarded work started before clear")
     }
 
+    /// Tries the pairing file against the device, unless a connection is in use.
+    func checkPairing() async {
+        guard !Demo.isOn else { return }
+        // A running simulation already proves that the device accepts the file.
+        if active != nil, state == .active {
+            pairingCheck = .valid
+            return
+        }
+        guard !busy, active == nil else { return }
+        busy = true
+        defer {
+            busy = false
+            runPending()
+        }
+        pairingCheck = .checking
+        do {
+            let port = UInt16(Self.setting(SettingsKey.port, default: "")).flatMap { $0 > 0 ? $0 : nil }
+            try await link.openTunnel(LinkConfig(
+                host: Self.setting(SettingsKey.host, default: Defaults.host),
+                port: port ?? lastPort ?? PortResolver.fallbackPort,
+                hostname: Self.setting(SettingsKey.hostname, default: Defaults.hostname),
+                pairing: PairingStore.load()))
+            await link.close()
+            pairingCheck = .valid
+            write("pairing file valid")
+        } catch {
+            let appError = AppError(error)
+            pairingCheck = appError.rejectsPairing ? .rejected(appError) : .unreachable(appError)
+            write("pairing check: \(appError.code) \(appError.detail)")
+        }
+    }
+
+    func resetPairingCheck() { pairingCheck = .notChecked }
+
     private func simulate(_ coordinate: CLLocationCoordinate2D) {
         active = coordinate
         state = .active
@@ -436,5 +509,19 @@ final class SpoofSession: ObservableObject {
     private func write(_ line: String) {
         log.append("\(Self.timeFormat.string(from: Date())) \(line)")
         if log.count > 300 { log.removeFirst(log.count - 300) }
+    }
+}
+
+@MainActor
+private final class ResumeOnce {
+    private var continuation: CheckedContinuation<Bool, Never>?
+
+    init(_ continuation: CheckedContinuation<Bool, Never>) {
+        self.continuation = continuation
+    }
+
+    func finish(_ result: Bool) {
+        continuation?.resume(returning: result)
+        continuation = nil
     }
 }

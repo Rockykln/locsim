@@ -3,12 +3,14 @@ import Foundation
 
 /// Runs coarse location updates so iOS keeps the app (and the DVT channel) alive
 /// in the background. The fixes themselves are ignored.
+/// No CLBackgroundActivitySession: its system assertion can outlive the process, which
+/// leaves the blue indicator on screen until the device restarts.
 final class KeepAlive: NSObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
-    private var session: CLBackgroundActivitySession?
     private(set) var isRunning = false
 
     var onStatus: ((String) -> Void)?
+    var onDeniedChange: ((Bool) -> Void)?
 
     override init() {
         super.init()
@@ -30,6 +32,7 @@ final class KeepAlive: NSObject, CLLocationManagerDelegate {
             manager.requestWhenInUseAuthorization()
         case .denied, .restricted:
             onStatus?("Location permission denied, background keep-alive off")
+            onDeniedChange?(true)
         default:
             begin()
         }
@@ -44,16 +47,15 @@ final class KeepAlive: NSObject, CLLocationManagerDelegate {
     func stop() {
         guard isRunning else { return }
         isRunning = false
+        onDeniedChange?(false)
         manager.stopUpdatingLocation()
         manager.allowsBackgroundLocationUpdates = false
-        session?.invalidate()
-        session = nil
         onStatus?("keep-alive off")
     }
 
     private func begin() {
+        onDeniedChange?(false)
         manager.allowsBackgroundLocationUpdates = true
-        session = session ?? CLBackgroundActivitySession()
         manager.startUpdatingLocation()
         onStatus?("keep-alive on")
     }
@@ -65,6 +67,7 @@ final class KeepAlive: NSObject, CLLocationManagerDelegate {
             begin()
         case .denied, .restricted:
             onStatus?("Location permission denied, background keep-alive off")
+            onDeniedChange?(true)
         default:
             break
         }
