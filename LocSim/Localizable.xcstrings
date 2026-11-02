@@ -1,0 +1,1202 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%@\n\nError %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@\n\nFehler %@"
+          }
+        }
+      }
+    },
+    "Acknowledgements" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open-Source-Lizenzen"
+          }
+        }
+      }
+    },
+    "Active" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktiv"
+          }
+        }
+      }
+    },
+    "Auto" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatisch"
+          }
+        }
+      }
+    },
+    "Block" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Häuserblock"
+          }
+        }
+      }
+    },
+    "Cancel" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abbrechen"
+          }
+        }
+      }
+    },
+    "Check that LocalDevVPN is connected and join a Wi-Fi network. If it keeps failing, enable Show this iPhone when on Wi-Fi in Finder." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prüfe, ob LocalDevVPN verbunden ist, und verbinde dich mit einem WLAN. Falls es weiter fehlschlägt, aktiviere im Finder unter „Allgemein“ die Option „Bei verfügbarem WLAN dieses iPhone anzeigen“."
+          }
+        }
+      }
+    },
+    "Check the target IP under Settings > Connection. The default is 10.7.0.1." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prüfe die Ziel-IP unter Einstellungen > Verbindung. Standard ist 10.7.0.1."
+          }
+        }
+      }
+    },
+    "City" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stadt"
+          }
+        }
+      }
+    },
+    "Clear" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zurücksetzen"
+          }
+        }
+      }
+    },
+    "Clear Log" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protokoll löschen"
+          }
+        }
+      }
+    },
+    "Clear search" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suche löschen"
+          }
+        }
+      }
+    },
+    "Close LocSim to restore the real location." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schließe LocSim, um den echten Standort wiederherzustellen."
+          }
+        }
+      }
+    },
+    "Commit" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Commit"
+          }
+        }
+      }
+    },
+    "Connect LocalDevVPN and try again." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbinde LocalDevVPN und versuche es erneut."
+          }
+        }
+      }
+    },
+    "Connecting" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbinden …"
+          }
+        }
+      }
+    },
+    "Connection" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbindung"
+          }
+        }
+      }
+    },
+    "Connection lost" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbindung unterbrochen"
+          }
+        }
+      }
+    },
+    "Coordinate Format" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Koordinatenformat"
+          }
+        }
+      }
+    },
+    "Coordinates" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Koordinaten"
+          }
+        }
+      }
+    },
+    "Copy Coordinates" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Koordinaten kopieren"
+          }
+        }
+      }
+    },
+    "Copy Details" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Details kopieren"
+          }
+        }
+      }
+    },
+    "Copy Log" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protokoll kopieren"
+          }
+        }
+      }
+    },
+    "Copy the details and include them in a support request." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kopiere die Details und füge sie einer Support-Anfrage bei."
+          }
+        }
+      }
+    },
+    "Create the RPPairing file with tools/make-pairing.sh." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erstelle die RPPairing-Datei mit tools/make-pairing.sh."
+          }
+        }
+      }
+    },
+    "Decimal" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dezimal"
+          }
+        }
+      }
+    },
+    "Decimal Places" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nachkommastellen"
+          }
+        }
+      }
+    },
+    "Degrees, Minutes, Seconds" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grad, Minuten, Sekunden"
+          }
+        }
+      }
+    },
+    "Delete" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Löschen"
+          }
+        }
+      }
+    },
+    "Delete DDI Files" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DDI-Dateien löschen"
+          }
+        }
+      }
+    },
+    "Developer Disk Image" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image"
+          }
+        }
+      }
+    },
+    "Developer Disk Image not available" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image nicht verfügbar"
+          }
+        }
+      }
+    },
+    "Developer Disk Image not installed" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image nicht installiert"
+          }
+        }
+      }
+    },
+    "Device not reachable" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gerät nicht erreichbar"
+          }
+        }
+      }
+    },
+    "Disconnect" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trennen"
+          }
+        }
+      }
+    },
+    "District" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stadtteil"
+          }
+        }
+      }
+    },
+    "Done" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fertig"
+          }
+        }
+      }
+    },
+    "Download failed" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download fehlgeschlagen"
+          }
+        }
+      }
+    },
+    "Downloaded" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Heruntergeladen"
+          }
+        }
+      }
+    },
+    "Dropped pin" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Markierter Ort"
+          }
+        }
+      }
+    },
+    "Favorites" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoriten"
+          }
+        }
+      }
+    },
+    "Files" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dateien"
+          }
+        }
+      }
+    },
+    "github.com/jkcoxson/idevice" : {
+      "shouldTranslate" : false
+    },
+    "Haptic Feedback" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haptisches Feedback"
+          }
+        }
+      }
+    },
+    "Hostname" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hostname"
+          }
+        }
+      }
+    },
+    "Hybrid" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hybrid"
+          }
+        }
+      }
+    },
+    "idevice" : {
+      "shouldTranslate" : false
+    },
+    "Idle" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bereit"
+          }
+        }
+      }
+    },
+    "Import a pairing file under Settings > Pairing." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importiere eine Pairing-Datei unter Einstellungen > Pairing."
+          }
+        }
+      }
+    },
+    "Import Pairing File" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pairing-Datei importieren"
+          }
+        }
+      }
+    },
+    "Imported" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importiert"
+          }
+        }
+      }
+    },
+    "Installing the disk image failed. It needs an internet connection; try again." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Installation des Disk-Images ist fehlgeschlagen. Dafür ist eine Internetverbindung nötig. Versuche es erneut."
+          }
+        }
+      }
+    },
+    "Invalid target address" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ungültige Zieladresse"
+          }
+        }
+      }
+    },
+    "Keep Alive in Background" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Im Hintergrund aktiv halten"
+          }
+        }
+      }
+    },
+    "Language" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sprache"
+          }
+        }
+      }
+    },
+    "LocalDevVPN must be on. Wi-Fi is only needed to connect, no internet required. While connected, locations can be changed on cellular." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocalDevVPN muss aktiv sein. WLAN ist nur zum Verbinden nötig, Internet nicht. Solange die Verbindung besteht, lässt sich der Standort auch im Mobilfunknetz ändern."
+          }
+        }
+      }
+    },
+    "Location not cleared" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort nicht zurückgesetzt"
+          }
+        }
+      }
+    },
+    "Location not set" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort nicht gesetzt"
+          }
+        }
+      }
+    },
+    "Location service unavailable" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standortdienst nicht verfügbar"
+          }
+        }
+      }
+    },
+    "Log" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protokoll"
+          }
+        }
+      }
+    },
+    "Map" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Karte"
+          }
+        }
+      }
+    },
+    "Map Style" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kartenstil"
+          }
+        }
+      }
+    },
+    "Missing" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehlt"
+          }
+        }
+      }
+    },
+    "Mount Automatically" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatisch einbinden"
+          }
+        }
+      }
+    },
+    "Name" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
+          }
+        }
+      }
+    },
+    "No Entries" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Einträge"
+          }
+        }
+      }
+    },
+    "No Favorites" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Favoriten"
+          }
+        }
+      }
+    },
+    "No pairing file" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Pairing-Datei"
+          }
+        }
+      }
+    },
+    "No results for \"%@\"" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Ergebnisse für „%@“"
+          }
+        }
+      }
+    },
+    "Not active" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht aktiv"
+          }
+        }
+      }
+    },
+    "Not connected" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht verbunden"
+          }
+        }
+      }
+    },
+    "Not downloaded" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht heruntergeladen"
+          }
+        }
+      }
+    },
+    "OK" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
+    "Only downloaded if the device does not provide it. About 16 MB." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wird nur heruntergeladen, wenn das Gerät es nicht selbst bereitstellt. Etwa 16 MB."
+          }
+        }
+      }
+    },
+    "Pairing" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pairing"
+          }
+        }
+      }
+    },
+    "Pairing File" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pairing-Datei"
+          }
+        }
+      }
+    },
+    "Pairing file not valid" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pairing-Datei ungültig"
+          }
+        }
+      }
+    },
+    "Pairing rejected" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pairing abgelehnt"
+          }
+        }
+      }
+    },
+    "Pairing service unavailable" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pairing-Dienst nicht verfügbar"
+          }
+        }
+      }
+    },
+    "Place or coordinates" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ort oder Koordinaten"
+          }
+        }
+      }
+    },
+    "port" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Port"
+          }
+        }
+      }
+    },
+    "Port" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Port"
+          }
+        }
+      }
+    },
+    "Reconnecting" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbindet neu"
+          }
+        }
+      }
+    },
+    "Remove Pairing File" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pairing-Datei entfernen"
+          }
+        }
+      }
+    },
+    "Rename" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Umbenennen"
+          }
+        }
+      }
+    },
+    "Replace Pairing File" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pairing-Datei ersetzen"
+          }
+        }
+      }
+    },
+    "Repository" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repository"
+          }
+        }
+      }
+    },
+    "Resend Interval" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sendeintervall"
+          }
+        }
+      }
+    },
+    "Restores the real location, closes the connection and ends the app." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stellt den echten Standort wieder her, trennt die Verbindung und beendet die App."
+          }
+        }
+      }
+    },
+    "Satellite" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Satellit"
+          }
+        }
+      }
+    },
+    "Save" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sichern"
+          }
+        }
+      }
+    },
+    "Save a place with the star next to its coordinates." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sichere einen Ort mit dem Stern neben den Koordinaten."
+          }
+        }
+      }
+    },
+    "Save favorite" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorit sichern"
+          }
+        }
+      }
+    },
+    "Search place or coordinates" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ort oder Koordinaten suchen"
+          }
+        }
+      }
+    },
+    "Sending the location failed. Tap Set Location to try again." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Standort konnte nicht gesendet werden. Tippe auf „Standort setzen“, um es erneut zu versuchen."
+          }
+        }
+      }
+    },
+    "Set Location" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort setzen"
+          }
+        }
+      }
+    },
+    "Set on Selection" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bei Auswahl setzen"
+          }
+        }
+      }
+    },
+    "Set on Selection sends a search result or favorite immediately." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "„Bei Auswahl setzen“ sendet ein Suchergebnis oder einen Favoriten sofort."
+          }
+        }
+      }
+    },
+    "Settings" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen"
+          }
+        }
+      }
+    },
+    "Show active location" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktiven Standort anzeigen"
+          }
+        }
+      }
+    },
+    "Show my location" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meinen Standort anzeigen"
+          }
+        }
+      }
+    },
+    "Show pin" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Markierten Ort anzeigen"
+          }
+        }
+      }
+    },
+    "Shows error details" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeigt Details zum Fehler"
+          }
+        }
+      }
+    },
+    "Standard" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard"
+          }
+        }
+      }
+    },
+    "Stop and Quit" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App beenden"
+          }
+        }
+      }
+    },
+    "Street" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Straße"
+          }
+        }
+      }
+    },
+    "Target IP" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ziel-IP"
+          }
+        }
+      }
+    },
+    "The connection to the device closed. Tap Set Location to reconnect." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Verbindung zum Gerät wurde getrennt. Tippe auf „Standort setzen“, um neu zu verbinden."
+          }
+        }
+      }
+    },
+    "The Developer Disk Image could not be downloaded. Check the internet connection." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Developer Disk Image konnte nicht heruntergeladen werden. Prüfe die Internetverbindung."
+          }
+        }
+      }
+    },
+    "The device did not accept the pairing file. Create a new one, for example after an iOS update." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Gerät hat die Pairing-Datei nicht akzeptiert. Erstelle eine neue, zum Beispiel nach einem iOS-Update."
+          }
+        }
+      }
+    },
+    "The device did not provide location simulation. Turn on Mount Automatically under Settings, or restart the device." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Gerät stellt keine Standortsimulation bereit. Aktiviere „Automatisch einbinden“ in den Einstellungen oder starte das Gerät neu."
+          }
+        }
+      }
+    },
+    "The disk image state could not be read. Check that Developer Mode is on." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Zustand des Disk-Images konnte nicht gelesen werden. Prüfe, ob der Entwicklermodus aktiv ist."
+          }
+        }
+      }
+    },
+    "The file could not be read. Create a new one with tools/make-pairing.sh." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Datei konnte nicht gelesen werden. Erstelle eine neue mit tools/make-pairing.sh."
+          }
+        }
+      }
+    },
+    "The pairing file in Files was not valid and has been removed. Create a new one with tools/make-pairing.sh." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Pairing-Datei aus der Dateien-App war ungültig und wurde entfernt. Erstelle mit tools/make-pairing.sh eine neue."
+          }
+        }
+      }
+    },
+    "This is a lockdown pairing file. LocSim needs an RPPairing file from tools/make-pairing.sh." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dies ist eine Lockdown-Pairing-Datei. LocSim benötigt eine RPPairing-Datei aus tools/make-pairing.sh."
+          }
+        }
+      }
+    },
+    "Unexpected error" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unerwarteter Fehler"
+          }
+        }
+      }
+    },
+    "unknown" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "unbekannt"
+          }
+        }
+      }
+    },
+    "Version" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version"
+          }
+        }
+      }
+    },
+    "Website" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Website"
+          }
+        }
+      }
+    },
+    "Wrong pairing file" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falsche Pairing-Datei"
+          }
+        }
+      }
+    },
+    "Zoom on Select" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoom bei Auswahl"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
