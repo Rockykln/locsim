@@ -1,0 +1,18 @@
+{
+  "name": "locsim-site",
+  "compatibility_date": "2026-10-01",
+  // Static site only: no Worker script, headers in public/_headers.
+  "assets": {
+    "directory": "./public",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    { "pattern": "locsim.rockykln.com", "custom_domain": true }
+  ],
+  "observability": {
+    "enabled": false
+  }
+}
