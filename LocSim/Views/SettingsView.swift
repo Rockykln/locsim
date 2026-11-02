@@ -23,6 +23,7 @@ struct SettingsView: View {
     @State private var hasPairing = PairingStore.exists
     @State private var ddiDownloaded = DDIStore.isDownloaded(DDIMethod.current)
     @State private var pairingMessage: String?
+    @State private var showWelcome = false
 
     var body: some View {
         NavigationStack {
@@ -40,19 +41,16 @@ struct SettingsView: View {
                     }
                 }
                 aboutSection
-                Section {
-                    Button(role: .destructive) {
-                        Task { await session.quit() }
-                    } label: {
-                        Label("Stop and Quit", systemImage: "power")
-                    }
-                } footer: {
-                    Text("Restores the real location, closes the connection and ends the app.")
-                }
             }
             .onChange(of: session.state) { _, _ in
                 hasPairing = PairingStore.exists
                 ddiDownloaded = DDIStore.isDownloaded(DDIMethod.current)
+            }
+            .sheet(isPresented: $showWelcome, onDismiss: {
+                hasPairing = PairingStore.exists
+                pairingMessage = nil
+            }) {
+                WelcomeView().environmentObject(session)
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
@@ -66,6 +64,7 @@ struct SettingsView: View {
                 do {
                     try PairingStore.importFile(at: result.get())
                     pairingMessage = nil
+                    Task { await session.checkPairing() }
                 } catch {
                     let deviceError = error as? DeviceError ?? DeviceError(.pairingInvalid, error.localizedDescription)
                     let appError = AppError(deviceError)
@@ -93,7 +92,7 @@ struct SettingsView: View {
                     }
                 }
                 Spacer(minLength: 0)
-                if session.state == .active || session.state == .connecting {
+                if session.active != nil || session.state == .connecting {
                     Button("Disconnect") { Task { await session.disconnect() } }
                         .buttonStyle(.bordered)
                         .controlSize(.small)
@@ -110,18 +109,29 @@ struct SettingsView: View {
             Button {
                 importing = true
             } label: {
-                Label(
-                    hasPairing ? String(localized: "Replace Pairing File") : String(localized: "Import Pairing File"),
-                    systemImage: "square.and.arrow.down")
+                item(hasPairing ? "Replace Pairing File" : "Import Pairing File", "square.and.arrow.down.fill", .blue)
             }
+            .foregroundStyle(.primary)
             if hasPairing {
+                PairingCheckRow {
+                    item("Check Pairing File", "checkmark.shield.fill", .green)
+                }
+                .foregroundStyle(.primary)
                 Button(role: .destructive) {
                     PairingStore.remove()
                     hasPairing = false
+                    session.resetPairingCheck()
                 } label: {
-                    Label("Remove Pairing File", systemImage: "trash")
+                    item("Remove Pairing File", "trash.fill", .red)
                 }
+                .foregroundStyle(.red)
             }
+            Button {
+                showWelcome = true
+            } label: {
+                item("Setup Steps", "list.number", .gray)
+            }
+            .foregroundStyle(.primary)
         } header: {
             Text("Pairing")
         } footer: {

@@ -7,6 +7,7 @@ struct MapScreen: View {
     @StateObject private var search = PlaceSearch()
     @State private var camera: MapCameraPosition = .automatic
     @State private var showSettings = false
+    @State private var showWelcome = false
     @State private var showFavorites = false
     @State private var naming = false
     @State private var favoriteName = ""
@@ -19,11 +20,13 @@ struct MapScreen: View {
     @State private var mapBottom: CGFloat = 0
     @State private var panelTop: CGFloat = .infinity
     @State private var locateTask: Task<Void, Never>?
+    // Annotations added before the map has settled stay invisible until the next redraw.
+    @State private var mapReady = false
     // Cancelled by any newer choice, so a late result cannot move the pin back.
     @State private var searchTask: Task<Void, Never>?
     @Environment(\.openURL) private var openURL
     @Environment(\.scenePhase) private var scenePhase
-    // The real position is only tracked after the locate button was tapped.
+    // Shown while nothing is simulated, once location access is allowed.
     @State private var showsUserLocation = false
     @AppStorage(SettingsKey.mapStyle) private var mapStyle = MapStyleOption.standard.rawValue
     @AppStorage(SettingsKey.zoom) private var zoom = ZoomOption.block.rawValue
@@ -73,9 +76,19 @@ struct MapScreen: View {
         }
         .onChange(of: scenePhase) { _, phase in
             if phase == .background { showsUserLocation = false }
+            if phase == .active { showRealPositionIfAllowed() }
         }
+        .onChange(of: session.state) { _, _ in showRealPositionIfAllowed() }
         .onChange(of: session.active == nil) { _, idle in
-            if !idle { showsUserLocation = false }
+            if idle {
+                showRealPositionIfAllowed()
+            } else {
+                showsUserLocation = false
+                locateTask?.cancel()
+            }
+        }
+        .sheet(isPresented: $showWelcome) {
+            WelcomeView().environmentObject(session)
         }
         .sheet(isPresented: $showSettings) {
             SettingsView().environmentObject(session)
@@ -85,6 +98,7 @@ struct MapScreen: View {
                 select(favorite.coordinate, name: favorite.name, apply: autoApply)
                 showFavorites = false
             }
+            .equatable()
             .environmentObject(favorites)
         }
         .alert(
@@ -104,7 +118,8 @@ struct MapScreen: View {
         }
         .onAppear {
             camera = Demo.camera ?? region(session.target)
-            if !session.hasPairing { showSettings = true }
+            showRealPositionIfAllowed()
+            if !session.hasPairing { showWelcome = true }
             showDemo()
         }
     }
@@ -117,20 +132,19 @@ struct MapScreen: View {
                 if showsUserLocation, session.active == nil, scenePhase == .active {
                     UserAnnotation()
                 }
-                Annotation(
-                    session.targetName ?? String(localized: "Dropped pin"),
-                    coordinate: session.target, anchor: MapPin.anchor
-                ) {
-                    MapPin()
+                if mapReady {
+                    Annotation(
+                        session.targetName ?? String(localized: "Dropped pin"),
+                        coordinate: session.target, anchor: MapPin.anchor
+                    ) {
+                        MapPin(showsActiveDot: activeIsAtPin)
+                    }
+                    // The panel already shows the name.
+                    .annotationTitles(.hidden)
                 }
-                // The panel already shows the name.
-                .annotationTitles(.hidden)
-                if let active = session.active {
+                if mapReady, let active = session.active, !activeIsAtPin {
                     Annotation(String(localized: "Active"), coordinate: active) {
-                        Circle()
-                            .fill(.blue)
-                            .frame(width: 14, height: 14)
-                            .overlay(Circle().stroke(.white, lineWidth: 3))
+                        ActiveDot()
                     }
                     // The panel already shows the state.
                     .annotationTitles(.hidden)
@@ -145,19 +159,25 @@ struct MapScreen: View {
             .safeAreaPadding(.horizontal, 16)
             .onMapCameraChange(frequency: .onEnd) { context in
                 search.bias(to: context.region)
+                mapReady = true
+            }
+            // In case the camera reports no change after the first layout.
+            .task {
+                try? await Task.sleep(nanoseconds: 500_000_000)
+                mapReady = true
             }
             // Simultaneous, so MapKit's double tap to zoom still works.
             .simultaneousGesture(TapGesture().onEnded { searchFocused = false })
-            .simultaneousGesture(
-                LongPressGesture(minimumDuration: 0.4)
-                    .sequenced(before: DragGesture(minimumDistance: 0, coordinateSpace: .global))
-                    .onEnded { value in
-                        guard case .second(true, let drag?) = value,
-                              hypot(drag.translation.width, drag.translation.height) < 10 else { return }
-                        dropPin(at: drag.startLocation, proxy: proxy)
-                    })
+            .onLongPress { dropPin(at: $0, proxy: proxy) }
             .sensoryFeedback(trigger: droppedPins) { _, _ in haptics ? .impact : nil }
         }
+    }
+
+    // MapKit picks the order of separate annotations, so at the same spot they are drawn as one.
+    private var activeIsAtPin: Bool {
+        guard let active = session.active else { return false }
+        return abs(active.latitude - session.target.latitude) < 1e-7
+            && abs(active.longitude - session.target.longitude) < 1e-7
     }
 
     private func dropPin(at point: CGPoint, proxy: MapProxy) {
@@ -168,6 +188,7 @@ struct MapScreen: View {
               hypot(back.x - point.x, back.y - point.y) < 24 else { return }
         searchFocused = false
         searchTask?.cancel()
+        locateTask?.cancel()
         session.target = coordinate
         session.targetName = nil
         droppedPins += 1
@@ -364,6 +385,7 @@ struct MapScreen: View {
 
     private var pinButton: some View {
         Button {
+            locateTask?.cancel()
             fly(to: session.target)
         } label: {
             PinGlyph(height: 22)
@@ -377,10 +399,10 @@ struct MapScreen: View {
 
     private var locateButton: some View {
         Button {
+            locateTask?.cancel()
             if let active = session.active {
                 fly(to: active)
             } else {
-                locateTask?.cancel()
                 showsUserLocation = true
                 locateTask = Task { await flyToRealLocation() }
             }
@@ -403,18 +425,44 @@ struct MapScreen: View {
         }
     }
 
+    // Never asks for permission; that happens when the user taps the locate button.
+    private func showRealPositionIfAllowed() {
+        // After a failed Clear the simulation may still be in force.
+        guard !Demo.isOn, session.active == nil, session.state.error?.code != AppError.clearFailedCode else {
+            return
+        }
+        switch CLLocationManager().authorizationStatus {
+        case .authorizedAlways, .authorizedWhenInUse: showsUserLocation = true
+        default: break
+        }
+    }
+
     private func flyToRealLocation() async {
         session.requestLocationPermission()
+        // The wait for a fix below should not run while the permission prompt is open.
+        let manager = CLLocationManager()
+        let wasAsked = manager.authorizationStatus == .notDetermined
+        while manager.authorizationStatus == .notDetermined {
+            try? await Task.sleep(nanoseconds: 200_000_000)
+            if Task.isCancelled { return }
+        }
+        guard manager.authorizationStatus != .denied, manager.authorizationStatus != .restricted else {
+            // Only an earlier denial sends the user to Settings, not the answer just given.
+            if !wasAsked, let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
+            return
+        }
+        let requested = Date().addingTimeInterval(-1)
         let fix = Task { () -> CLLocationCoordinate2D? in
             do {
                 for try await update in CLLocationUpdate.liveUpdates() {
-                    if let location = update.location { return location.coordinate }
+                    // The first update can be the last known fix, which may still be the simulated one.
+                    if let location = update.location, location.timestamp >= requested { return location.coordinate }
                 }
             } catch {}
             return nil
         }
         let timeout = Task {
-            try? await Task.sleep(nanoseconds: 5_000_000_000)
+            try? await Task.sleep(nanoseconds: 8_000_000_000)
             fix.cancel()
         }
         let coordinate = await fix.value
@@ -475,6 +523,19 @@ struct MapScreen: View {
             .buttonStyle(.plain)
             .accessibilityHint(session.state.isFailure ? Text("Shows error details") : Text(verbatim: ""))
 
+            if session.backgroundDenied {
+                Button {
+                    if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
+                } label: {
+                    Label("Without location access, the location stops in the background. Tap to allow.",
+                          systemImage: "exclamationmark.triangle.fill")
+                        .font(.caption)
+                        .foregroundStyle(.orange)
+                        .multilineTextAlignment(.leading)
+                }
+                .buttonStyle(.plain)
+            }
+
             HStack(spacing: 10) {
                 Button {
                     searchFocused = false
@@ -503,13 +564,6 @@ struct MapScreen: View {
                 }
                 .secondaryButton()
                 .disabled(!session.canClear)
-                .contextMenu {
-                    Button(role: .destructive) {
-                        Task { await session.quit() }
-                    } label: {
-                        Label("Stop and Quit", systemImage: "power")
-                    }
-                }
             }
         }
         .padding(18)
@@ -582,6 +636,7 @@ struct MapScreen: View {
 
     private func select(_ coordinate: CLLocationCoordinate2D, name: String?, apply: Bool = false) {
         searchTask?.cancel()
+        locateTask?.cancel()
         session.target = coordinate
         session.targetName = name
         searchFocused = false
@@ -629,4 +684,52 @@ private enum Metrics {
     static let dropdownMaxHeight: CGFloat = 320
     static let panelRadius: CGFloat = 30
     static let legalZone = CGSize(width: 170, height: 44)
+}
+
+private let longPressDuration = 0.3
+
+private extension View {
+    /// Reports where the finger is as soon as the press is long enough, while it is still down.
+    @ViewBuilder
+    func onLongPress(_ action: @escaping (CGPoint) -> Void) -> some View {
+        if #available(iOS 18, *) {
+            gesture(LongPressRecognizer(action: action))
+        } else {
+            // SwiftUI only reports the position again once the finger moves or lifts.
+            simultaneousGesture(
+                LongPressGesture(minimumDuration: longPressDuration)
+                    .sequenced(before: DragGesture(minimumDistance: 0, coordinateSpace: .global))
+                    .onEnded { value in
+                        guard case .second(true, let drag?) = value,
+                              hypot(drag.translation.width, drag.translation.height) < 10 else { return }
+                        action(drag.startLocation)
+                    })
+        }
+    }
+}
+
+@available(iOS 18, *)
+private struct LongPressRecognizer: UIGestureRecognizerRepresentable {
+    let action: (CGPoint) -> Void
+
+    func makeCoordinator(converter: CoordinateSpaceConverter) -> Coordinator { Coordinator() }
+
+    func makeUIGestureRecognizer(context: Context) -> UILongPressGestureRecognizer {
+        let recognizer = UILongPressGestureRecognizer()
+        recognizer.minimumPressDuration = longPressDuration
+        recognizer.delegate = context.coordinator
+        return recognizer
+    }
+
+    func handleUIGestureRecognizerAction(_ recognizer: UILongPressGestureRecognizer, context: Context) {
+        if recognizer.state == .began { action(context.converter.location(in: .global)) }
+    }
+
+    /// Keeps panning and zooming the map working next to the long press.
+    final class Coordinator: NSObject, UIGestureRecognizerDelegate {
+        func gestureRecognizer(
+            _ gestureRecognizer: UIGestureRecognizer,
+            shouldRecognizeSimultaneouslyWith other: UIGestureRecognizer
+        ) -> Bool { true }
+    }
 }

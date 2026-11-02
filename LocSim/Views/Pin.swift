@@ -22,6 +22,8 @@ struct PinShape: Shape {
 /// Map pin with a white outline and a soft drop shadow.
 struct MapPin: View {
     var width: CGFloat = 34
+    /// Draws the active location under the tip, so the pin always stays on top of it.
+    var showsActiveDot = false
 
     var body: some View {
         let s = width / 34
@@ -37,10 +39,27 @@ struct MapPin: View {
                 .offset(y: 11.5 * s)
         }
         .frame(width: 34 * s, height: 46 * s, alignment: .top)
+        .background(alignment: .top) {
+            if showsActiveDot {
+                ActiveDot().offset(y: 44 * s - ActiveDot.size / 2)
+            }
+        }
     }
 
     /// Where the tip sits, for `Annotation(anchor:)`.
     static let anchor = UnitPoint(x: 0.5, y: 44.0 / 46.0)
+}
+
+/// Marks the location that is currently simulated.
+struct ActiveDot: View {
+    static let size: CGFloat = 14
+
+    var body: some View {
+        Circle()
+            .fill(.blue)
+            .frame(width: Self.size, height: Self.size)
+            .overlay(Circle().stroke(.white, lineWidth: 3))
+    }
 }
 
 /// Small pin without outline or shadow, for buttons and lists.

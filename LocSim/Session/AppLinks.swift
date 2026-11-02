@@ -9,6 +9,13 @@ enum AppLinks {
         return URL(string: "https://locsim-app.rockykln.com/" + (german ? "de/" : ""))!
     }
 
+    static let localDevVPN = URL(string: "https://apps.apple.com/app/localdevvpn/id6755608044")!
+
+    static var setupGuide: URL {
+        let german = Bundle.main.preferredLocalizations.first == "de"
+        return URL(string: "https://locsim.rockykln.com/" + (german ? "de/setup/" : "setup/"))!
+    }
+
     static var version: String {
         let info = Bundle.main.infoDictionary
         let short = info?["CFBundleShortVersionString"] as? String ?? "?"

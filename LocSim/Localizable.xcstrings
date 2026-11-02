@@ -11,6 +11,26 @@
         }
       }
     },
+    "A free app from the App Store. Connect it before you set a location." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eine kostenlose App aus dem App Store. Verbinde sie, bevor du einen Standort setzt."
+          }
+        }
+      }
+    },
+    "A one-time setup with a computer and a USB cable. After that, LocSim works without a computer." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eine einmalige Einrichtung mit einem Computer und USB-Kabel. Danach funktioniert LocSim ohne Computer."
+          }
+        }
+      }
+    },
     "Acknowledgements" : {
       "localizations" : {
         "de" : {
@@ -61,12 +81,22 @@
         }
       }
     },
-    "Check that LocalDevVPN is connected and join a Wi-Fi network. If it keeps failing, enable Show this iPhone when on Wi-Fi in Finder." : {
+    "Check Pairing File" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Prüfe, ob LocalDevVPN verbunden ist, und verbinde dich mit einem WLAN. Falls es weiter fehlschlägt, aktiviere im Finder unter „Allgemein“ die Option „Bei verfügbarem WLAN dieses iPhone anzeigen“."
+            "value" : "Pairing-Datei prüfen"
+          }
+        }
+      }
+    },
+    "Check that LocalDevVPN is connected and join a Wi-Fi network. If it keeps failing, enable Show this iPhone when on Wi-Fi in Finder. Also allow Local Network for LocSim under Settings > Privacy & Security > Local Network." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prüfe, ob LocalDevVPN verbunden ist, und verbinde dich mit einem WLAN. Falls es weiter fehlschlägt, aktiviere im Finder unter „Allgemein“ die Option „Bei verfügbarem WLAN dieses iPhone anzeigen“. Erlaube LocSim außerdem das lokale Netzwerk unter Einstellungen > Datenschutz & Sicherheit > Lokales Netzwerk."
           }
         }
       }
@@ -221,6 +251,16 @@
         }
       }
     },
+    "Copy it to this device with AirDrop or Finder, then import it here." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kopiere sie per AirDrop oder Finder auf dieses Gerät und importiere sie hier."
+          }
+        }
+      }
+    },
     "Copy Log" : {
       "localizations" : {
         "de" : {
@@ -237,6 +277,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kopiere die Details und füge sie einer Support-Anfrage bei."
+          }
+        }
+      }
+    },
+    "Could not check. Connect LocalDevVPN, join a Wi-Fi network and try again. (%@)" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prüfung nicht möglich. Verbinde LocalDevVPN und ein WLAN und versuche es erneut. (%@)"
+          }
+        }
+      }
+    },
+    "Create a pairing file" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pairing-Datei erstellen"
           }
         }
       }
@@ -401,6 +461,16 @@
         }
       }
     },
+    "Enable Developer Mode" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entwicklermodus einschalten"
+          }
+        }
+      }
+    },
     "Favorites" : {
       "localizations" : {
         "de" : {
@@ -417,6 +487,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dateien"
+          }
+        }
+      }
+    },
+    "Get LocalDevVPN" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocalDevVPN laden"
+          }
+        }
+      }
+    },
+    "Get Started" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los geht’s"
           }
         }
       }
@@ -487,12 +577,32 @@
         }
       }
     },
+    "Import the pairing file" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pairing-Datei importieren"
+          }
+        }
+      }
+    },
     "Imported" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Importiert"
+          }
+        }
+      }
+    },
+    "Install LocalDevVPN" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocalDevVPN installieren"
           }
         }
       }
@@ -533,6 +643,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sprache"
+          }
+        }
+      }
+    },
+    "Later" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Später"
           }
         }
       }
@@ -727,6 +847,16 @@
         }
       }
     },
+    "Open Setup Guide" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einrichtungsanleitung öffnen"
+          }
+        }
+      }
+    },
     "Pairing" : {
       "localizations" : {
         "de" : {
@@ -867,12 +997,12 @@
         }
       }
     },
-    "Restores the real location, closes the connection and ends the app." : {
+    "Run the script from the setup guide on a Mac, Windows or Linux computer." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stellt den echten Standort wieder her, trennt die Verbindung und beendet die App."
+            "value" : "Führe das Skript aus der Einrichtungsanleitung auf einem Mac, Windows- oder Linux-Computer aus."
           }
         }
       }
@@ -977,6 +1107,26 @@
         }
       }
     },
+    "Settings > Privacy & Security > Developer Mode. If the switch is missing, the setup guide shows how to make it appear." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen > Datenschutz & Sicherheit > Entwicklermodus. Fehlt der Schalter, zeigt die Einrichtungsanleitung, wie er erscheint."
+          }
+        }
+      }
+    },
+    "Setup Steps" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einrichtungsschritte"
+          }
+        }
+      }
+    },
     "Show active location" : {
       "localizations" : {
         "de" : {
@@ -1027,16 +1177,6 @@
         }
       }
     },
-    "Stop and Quit" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "App beenden"
-          }
-        }
-      }
-    },
     "Street" : {
       "localizations" : {
         "de" : {
@@ -1057,12 +1197,12 @@
         }
       }
     },
-    "The connection to the device closed. Tap Set Location to reconnect." : {
+    "The connection to the device closed. Check LocalDevVPN and Wi-Fi. LocSim reconnects on its own while a location is active." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die Verbindung zum Gerät wurde getrennt. Tippe auf „Standort setzen“, um neu zu verbinden."
+            "value" : "Die Verbindung zum Gerät wurde getrennt. Prüfe LocalDevVPN und WLAN. Solange ein Standort aktiv ist, verbindet sich LocSim von selbst neu."
           }
         }
       }
@@ -1127,6 +1267,16 @@
         }
       }
     },
+    "The pairing file works with this device." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Pairing-Datei funktioniert mit diesem Gerät."
+          }
+        }
+      }
+    },
     "This is a lockdown pairing file. LocSim needs an RPPairing file from tools/make-pairing.sh." : {
       "localizations" : {
         "de" : {
@@ -1173,6 +1323,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Website"
+          }
+        }
+      }
+    },
+    "Welcome to LocSim" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Willkommen bei LocSim"
+          }
+        }
+      }
+    },
+    "Without location access, the location stops in the background. Tap to allow." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ohne Standortzugriff stoppt der Standort im Hintergrund. Tippe, um ihn zu erlauben."
           }
         }
       }

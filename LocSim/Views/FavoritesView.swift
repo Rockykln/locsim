@@ -1,11 +1,14 @@
 import SwiftUI
 
-struct FavoritesView: View {
+// Equatable: the map screen redraws on every resend and would otherwise rebuild this list with it.
+struct FavoritesView: View, Equatable {
     @EnvironmentObject private var favorites: FavoriteList
     @Environment(\.dismiss) private var dismiss
     @State private var renaming: Favorite?
     @State private var newName = ""
     let onSelect: (Favorite) -> Void
+
+    nonisolated static func == (lhs: FavoritesView, rhs: FavoritesView) -> Bool { true }
 
     var body: some View {
         NavigationStack {
@@ -20,6 +23,7 @@ struct FavoritesView: View {
                 }
             }
             .navigationTitle("Favorites")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 if !favorites.items.isEmpty {
                     ToolbarItem(placement: .topBarLeading) { EditButton() }
@@ -35,6 +39,8 @@ struct FavoritesView: View {
                 Button("Cancel", role: .cancel) { renaming = nil }
             }
         }
+        // Scene changes report keyboard frames without a keyboard, which would shift the rows.
+        .ignoresSafeArea(.keyboard)
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
     }
@@ -101,6 +107,7 @@ struct FavoritesView: View {
                 .foregroundStyle(.tertiary)
                 .accessibilityHidden(true)
         }
+        .frame(minHeight: 44)
         .padding(.vertical, 2)
         .contentShape(Rectangle())
     }
