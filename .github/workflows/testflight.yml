@@ -21,7 +21,7 @@ jobs:
     # Secrets live in this environment; it requires approval and only allows v* tags.
     environment: testflight
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode_26.3.app
@@ -86,7 +86,7 @@ jobs:
             <key>teamID</key><string>$TEAM_ID</string>
             <key>signingStyle</key><string>automatic</string>
             <key>manageAppVersionAndBuildNumber</key><false/>
-            <key>testFlightInternalTestingOnly</key><true/>
+            <key>testFlightInternalTestingOnly</key><false/>
           </dict>
           </plist>
           PLIST

@@ -26,7 +26,7 @@ and drives the same DVT location simulation service that Xcode uses.
 - Keeps the simulated location while the app is in the background
 - Reuses an existing tunnel after switching from Wi-Fi to cellular
 - Installs the Developer Disk Image on demand when it is not mounted
-- Restores the real location on Clear, Stop and Quit or when the app is closed
+- Restores the real location on Clear or when the app is closed
 - English and German; the language follows *Settings > Apps > LocSim > Language*
 
 ## How it works
@@ -84,8 +84,7 @@ clone of this repository, create the file with `tools/make-pairing.sh` or, on Wi
    keep-alive and for showing your real position.
 3. Long-press the map, search for a place or enter coordinates, then
    *Set Location*.
-4. *Clear* restores the real location. Long-press *Clear* or use *Settings >
-   Stop and Quit* to end the app completely.
+4. *Clear* restores the real location and closes the connection.
 
 Wi-Fi is only needed for step 3 the first time, when the connection is built.
 While it stays open, new locations can be set without Wi-Fi. After *Clear* or
@@ -140,9 +139,9 @@ support request. The technical log is under *Settings > Log*.
 | LS-102 | Lockdown pairing file | LocSim needs an RPPairing file from `tools/make-pairing.sh` |
 | LS-200 | Invalid target address | Reset the target IP to `10.7.0.1` |
 | LS-201 | Device not reachable | Connect LocalDevVPN |
-| LS-202 | Pairing service unavailable | Check LocalDevVPN, join Wi-Fi, enable *Show this iPhone when on Wi-Fi* |
+| LS-202 | Pairing service unavailable | Check LocalDevVPN, join Wi-Fi, enable *Show this iPhone when on Wi-Fi*, allow Local Network for LocSim |
 | LS-203 | Pairing rejected | Create a new pairing file, e.g. after an iOS update |
-| LS-204 | Connection lost | Tap *Set Location* to reconnect |
+| LS-204 | Connection lost | Check LocalDevVPN and Wi-Fi; LocSim reconnects on its own while a location is active |
 | LS-300 | Developer Disk Image not available | Check that Developer Mode is on |
 | LS-301 | Download failed | Check the internet connection |
 | LS-302 | Developer Disk Image not installed | Retry with an internet connection |

@@ -1,10 +1,18 @@
 # Releasing to TestFlight
 
-Builds are uploaded by the `testflight` workflow. It archives with automatic,
-cloud-managed signing through the App Store Connect API, so no certificates or
-provisioning profiles are stored in the repository or in secrets.
+Builds are uploaded either from Xcode on the Mac or by the `testflight` workflow. The
+workflow archives with automatic, cloud-managed signing through the App Store Connect
+API, so no certificates or provisioning profiles are stored in the repository or in
+secrets.
 
-Uploads are marked for internal testing only until external testing is set up.
+## Build numbers
+
+Each upload of a version needs a higher build number than the last one.
+
+- **Xcode:** raise `CURRENT_PROJECT_VERSION` in `project.yml`, run `xcodegen generate`,
+  then *Product > Archive* and *Distribute App > App Store Connect*.
+- **Workflow:** uses its run number, which starts at 1 and may be lower than a number
+  already used from Xcode. Raise `MARKETING_VERSION` first if it is.
 
 ## One-time setup
 
@@ -57,15 +65,12 @@ Build > Test Details* after processing.
 Access requests arrive at locsim@rockykln.com (see the TestFlight section of the
 README). Inviting people outside the team requires external testing:
 
-1. Set `testFlightInternalTestingOnly` to `false` in `.github/workflows/testflight.yml`.
-2. In App Store Connect, create an external group and fill in the beta app
+1. In App Store Connect, create an external group and fill in the beta app
    information (description, feedback email, privacy policy URL).
-3. Submit the build for Beta App Review. Once approved, add testers by email.
+2. Submit the build for Beta App Review. Once approved, add testers by email.
 
 ## Notes
 
-- Do not also upload from Xcode: build numbers must be unique, and the workflow
-  counts on its own.
 - `ITSAppUsesNonExemptEncryption` is not set: with `true`, uploads fail without a compliance
   code (ITMS-90592), and `false` would be wrong because the idevice library ships its own
   standard encryption (rustls with aws-lc). Answer the encryption questions in App Store

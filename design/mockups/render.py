@@ -2,11 +2,11 @@
 """Renders App Store and website mockups from design/screenshots with headless Firefox.
 
 App Store images get one generated sky panorama across all slides, so they join up in
-the store. Website images have no background: each slide is rendered on black and on
-white and the transparency is taken from the difference, which keeps soft shadows.
+the store. The README image and the website phones have no background: they are rendered
+on black and on white and the transparency is taken from the difference.
 Everything is drawn here; no stock photos or device artwork.
 
-Usage: design/mockups/render.py [--site-only|--web-assets]   (needs firefox, ImageMagick and optipng)
+Usage: design/mockups/render.py [--readme-only|--web-assets]   (needs firefox, ImageMagick and optipng)
 """
 import html
 import json
@@ -23,6 +23,7 @@ SHOTS = os.path.join(REPO, "design", "screenshots")
 FONTS = os.path.join(HERE, "fonts")
 OUT = os.path.join(HERE, "out")
 SITE = os.path.join(REPO, "site", "public", "img")
+TITLED = os.path.join(OUT, "titled")
 DOCS = os.path.join(REPO, "docs", "images")
 
 WIDTH, HEIGHT = 1320, 2868          # App Store, 6.9" iPhone
@@ -228,7 +229,7 @@ def readme(slides):
         for i, slide in enumerate(slides):
             if i:
                 parts += ["-size", "60x1", "xc:none"]
-            parts.append(os.path.join(SITE, f"{slide['id']}-en-{theme}.webp"))
+            parts.append(os.path.join(TITLED, f"{slide['id']}-en-{theme}.webp"))
         subprocess.run(["magick", "-background", "none", *parts, "-gravity", "center", "+append",
                         "-bordercolor", "none", "-border", "40", "-resize", "1600x", "-quality", "85", "-define", "webp:method=6",
                         "-define", "webp:alpha-quality=90", os.path.join(DOCS, f"screenshots-{theme}.webp")],
@@ -276,10 +277,11 @@ def web_assets(slides, work):
 
 
 def main():
-    site_only = "--site-only" in sys.argv[1:]
+    readme_only = "--readme-only" in sys.argv[1:]
     slides = json.load(open(os.path.join(HERE, "slides.json")))
     os.makedirs(OUT, exist_ok=True)
     os.makedirs(SITE, exist_ok=True)
+    os.makedirs(TITLED, exist_ok=True)
     with tempfile.TemporaryDirectory() as work:
         if "--web-assets" in sys.argv[1:]:
             return web_assets(slides, work)
@@ -289,7 +291,7 @@ def main():
             for index, slide in enumerate(slides):
                 for lang in ("en", "de"):
                     name = f"{slide['id']}-{lang}-{theme}"
-                    if not site_only:
+                    if not readme_only:
                         target = os.path.join(OUT, f"{name}.png")
                         firefox(slide_page(index, slide, lang, theme, sizes[lang], sky, work),
                                 target, (WIDTH, HEIGHT), work)
@@ -303,10 +305,10 @@ def main():
                         firefox(slide_page(index, slide, lang, theme, sizes[lang], "", work, bg),
                                 shot, (WIDTH, HEIGHT), work)
                         shots.append(shot)
-                    transparent(*shots, os.path.join(SITE, f"{name}.webp"))
+                    transparent(*shots, os.path.join(TITLED, f"{name}.webp"))
                     print(name)
     readme(slides)
-    if not site_only:
+    if not readme_only:
         preview(slides)
 
 

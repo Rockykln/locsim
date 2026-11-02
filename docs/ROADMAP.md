@@ -15,12 +15,13 @@ Effort: S = up to a day, M = a few days, L = a week or more.
 | 7 | Recent locations | S | Proposed |
 | 8 | Long press to drop a pin | S | Done |
 | 9 | Degrees, minutes, seconds | S | Done |
-| 10 | Pairing file check | S | Approved |
+| 10 | Pairing file check | S | Done |
 | 11 | Unit tests in CI | M | Proposed |
 | 12 | Accessibility pass | M | Approved |
 | 13 | iPad layout | M | Approved |
 | 14 | Privacy policy page | S | Approved, before release |
 | 15 | More languages | S each | Approved |
+| 16 | Welcome screen with setup steps | S | Done |
 
 ## Features
 
