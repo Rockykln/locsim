@@ -6,7 +6,7 @@ the store. Website images have no background: each slide is rendered on black an
 white and the transparency is taken from the difference, which keeps soft shadows.
 Everything is drawn here; no stock photos or device artwork.
 
-Usage: design/mockups/render.py [--site-only]   (needs firefox, ImageMagick and optipng)
+Usage: design/mockups/render.py [--site-only|--web-assets]   (needs firefox, ImageMagick and optipng)
 """
 import html
 import json
@@ -157,14 +157,14 @@ def firefox(page_html, target, size, work):
     shutil.rmtree(profile, ignore_errors=True)
 
 
-def transparent(on_black, on_white, target):
+def transparent(on_black, on_white, target, width=660):
     """Recovers color and alpha from renders on black and on white."""
     alpha = target + ".alpha.png"
     subprocess.run(["magick", on_black, on_white, "-alpha", "off", "-compose", "difference", "-composite",
                     "-colorspace", "gray", "-negate", alpha], check=True)
     subprocess.run(["magick", on_black, "(", alpha, "-colorspace", "sRGB", "-type", "TrueColor", ")",
                     "-alpha", "off", "-compose", "DivideSrc", "-composite", alpha, "-alpha", "off",
-                    "-compose", "CopyOpacity", "-composite", "-trim", "+repage", "-resize", "660x",
+                    "-compose", "CopyOpacity", "-composite", "-trim", "+repage", "-resize", f"{width}x",
                     "-quality", "85", "-define", "webp:method=6", "-define", "webp:alpha-quality=90",
                     target], check=True)
     os.remove(alpha)
@@ -200,16 +200,16 @@ def screen_html(file, lang, theme, work):
     return '<div class="placeholder">Screenshot</div>'
 
 
-def slide_page(index, slide, lang, theme, size, sky, work, page_bg="#000"):
+def slide_page(index, slide, lang, theme, size, sky, work, page_bg="#000", bare=False):
     c = THEMES[theme]
-    text = slide[lang]
+    text = dict(title="", subtitle="") if bare else slide[lang]
     lines = text["title"].count("\n") + 1
     r_screen = round(SCREEN_W * 0.137)
     s = SCREEN_W / 402
     return PAGE.format(
         fonts=FONT_CSS, page_bg=page_bg, w=WIDTH, h=HEIGHT, sky_left=-index * WIDTH, sky=sky, size=size,
         sub_top=round(170 + size * 1.02 * lines + 44),
-        title=c["title"], subtitle=c["subtitle"], metal=c["metal"], shadow=c["shadow"],
+        title=c["title"], subtitle=c["subtitle"], metal=c["metal"], shadow="none" if bare else c["shadow"],
         title_text=html.escape(text["title"]), subtitle_text=html.escape(text["subtitle"]),
         pl=PHONE_LEFT, pt=PHONE_TOP, pw=PHONE_W, ph=PHONE_H, edge=EDGE, bezel=BEZEL,
         r_screen=r_screen, r_bezel=r_screen + BEZEL, r_edge=r_screen + BEZEL + EDGE,
@@ -254,12 +254,35 @@ def medium_display(path):
     subprocess.run(["optipng", "-quiet", "-o2", target], check=True)
 
 
+def web_assets(slides, work):
+    """Website hero and feature images: the sky alone and each phone without text."""
+    for theme in THEMES:
+        sky = os.path.join(work, "sky.png")
+        firefox(f"<!doctype html><html><body style='margin:0'>{sky_svg(theme, WIDTH * 3)}</body></html>",
+                sky, (WIDTH * 3, HEIGHT), work)
+        subprocess.run(["magick", sky, "-crop", f"{WIDTH * 3}x{HEIGHT}+0+0", "+repage", "-alpha", "off", "-resize",
+                        "2400x", "-strip", "-quality", "78", "-define", "webp:method=6",
+                        os.path.join(SITE, f"sky-{theme}.webp")], check=True)
+        for slide in slides:
+            for lang in ("en", "de"):
+                shots = []
+                for bg in ("#000", "#fff"):
+                    shot = os.path.join(work, f"phone-{bg[1:]}.png")
+                    firefox(slide_page(0, slide, lang, theme, 100, "", work, bg, bare=True), shot, (WIDTH, HEIGHT), work)
+                    shots.append(shot)
+                name = f"phone-{slide['id']}-{lang}-{theme}"
+                transparent(*shots, os.path.join(SITE, f"{name}.webp"), width=900)
+                print(name)
+
+
 def main():
     site_only = "--site-only" in sys.argv[1:]
     slides = json.load(open(os.path.join(HERE, "slides.json")))
     os.makedirs(OUT, exist_ok=True)
     os.makedirs(SITE, exist_ok=True)
     with tempfile.TemporaryDirectory() as work:
+        if "--web-assets" in sys.argv[1:]:
+            return web_assets(slides, work)
         sizes = title_sizes(slides, work)
         for theme in THEMES:
             sky = sky_svg(theme, WIDTH * len(slides))

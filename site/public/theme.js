@@ -3,7 +3,7 @@
   var root = document.documentElement;
   var key = "locsim-theme";
   var order = ["auto", "light", "dark"];
-  var colors = { light: "#f6effb", dark: "#16132e" };
+  var colors = { light: "#fbfafd", dark: "#0e0d17" };
 
   function read() {
     var value;
