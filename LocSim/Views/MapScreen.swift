@@ -523,6 +523,20 @@ struct MapScreen: View {
             .buttonStyle(.plain)
             .accessibilityHint(session.state.isFailure ? Text("Shows error details") : Text(verbatim: ""))
 
+            if session.isPreview {
+                HStack(spacing: 8) {
+                    Label("Preview: the location of this iPhone does not change.", systemImage: "eye")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Spacer(minLength: 0)
+                    Button("End Preview") {
+                        session.endPreview()
+                        if !session.hasPairing { showWelcome = true }
+                    }
+                    .font(.caption.weight(.semibold))
+                }
+            }
+
             if session.backgroundDenied {
                 Button {
                     if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }

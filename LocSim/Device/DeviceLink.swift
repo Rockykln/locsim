@@ -93,7 +93,7 @@ final class DeviceLink: @unchecked Sendable {
         addr.sin_family = sa_family_t(AF_INET)
         addr.sin_port = config.port.bigEndian
         guard inet_pton(AF_INET, config.host, &addr.sin_addr) == 1 else {
-            throw DeviceError(.invalidHost, "Invalid target IP \(config.host)")
+            throw DeviceError(.other, "Invalid address \(config.host)")
         }
 
         var pairing: OpaquePointer?

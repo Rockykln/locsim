@@ -6,7 +6,6 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
 
-    @AppStorage(SettingsKey.host) private var host = Defaults.host
     @AppStorage(SettingsKey.hostname) private var hostname = Defaults.hostname
     @AppStorage(SettingsKey.port) private var port = ""
     @AppStorage(SettingsKey.resend) private var resend = Defaults.resend
@@ -183,7 +182,6 @@ struct SettingsView: View {
 
     private var connectionSection: some View {
         Section {
-            field("Target IP", "network", .blue, text: $host, placeholder: Defaults.host)
             field("Port", "number", .blue, text: $port, placeholder: String(localized: "Auto"))
             field("Hostname", "desktopcomputer", .blue, text: $hostname,
                   placeholder: Defaults.hostname, keyboard: .asciiCapable)
@@ -197,7 +195,7 @@ struct SettingsView: View {
         } header: {
             Text("Connection")
         } footer: {
-            Text("LocalDevVPN must be on. Wi-Fi is only needed to connect, no internet required. While connected, locations can be changed on cellular.")
+            Text("Wi-Fi is only needed to connect, no internet required. While connected, locations can be changed on cellular. The local connection only reaches this iPhone and carries no other traffic.")
         }
     }
 

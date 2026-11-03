@@ -50,6 +50,7 @@ jobs:
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
             build | tee build.log | grep -E "error:|warning: .*LocSim|BUILD" || true
           test -d build/Build/Products/Release-iphoneos/LocSim.app
+          test -d build/Build/Products/Release-iphoneos/LocSim.app/PlugIns/LocSimTunnel.appex
 
       - name: Build log
         if: failure()

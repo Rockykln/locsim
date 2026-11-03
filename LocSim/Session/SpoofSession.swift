@@ -55,8 +55,11 @@ final class SpoofSession: ObservableObject {
     /// The location is active, but without location access iOS suspends the app in the background.
     @Published private(set) var backgroundDenied = false
     @Published private(set) var pairingCheck = PairingCheck.notChecked
+    /// Shows the app without a device connection; the location of the device does not change.
+    @Published private(set) var isPreview = false
 
     private let link = DeviceLink()
+    private let tunnel = LoopbackTunnel()
     private let keepAlive = KeepAlive()
     private var resendTask: Task<Void, Never>?
     private var busy = false
@@ -88,6 +91,8 @@ final class SpoofSession: ObservableObject {
             simulate(target)
             return
         }
+        // iOS can keep the tunnel running after the app was closed.
+        Task { [weak self] in await self?.tunnel.stop() }
         // Quit launches the user never opened, e.g. a location resume after reboot.
         Task { [weak self] in
             try? await Task.sleep(nanoseconds: 5_000_000_000)
@@ -97,7 +102,8 @@ final class SpoofSession: ObservableObject {
         }
     }
 
-    var hasPairing: Bool { Demo.isOn || PairingStore.exists }
+    private var isSimulated: Bool { Demo.isOn || isPreview }
+    var hasPairing: Bool { isSimulated || PairingStore.exists }
     func requestLocationPermission() { keepAlive.requestPermission() }
     var canClear: Bool { active != nil || state == .connecting || link.hasTunnel }
 
@@ -106,7 +112,7 @@ final class SpoofSession: ObservableObject {
     }
 
     func apply(_ coordinate: CLLocationCoordinate2D) async {
-        if Demo.isOn {
+        if isSimulated {
             target = coordinate
             return simulate(coordinate)
         }
@@ -119,8 +125,7 @@ final class SpoofSession: ObservableObject {
         // A direct Set replaces anything still queued.
         pending = nil
         defer {
-            busy = false
-            runPending()
+            finishWork()
             releaseIfIdleInBackground()
         }
 
@@ -151,6 +156,10 @@ final class SpoofSession: ObservableObject {
     }
 
     func clear() async {
+        if isPreview {
+            endSimulation()
+            return
+        }
         generation += 1
         pending = nil
         failedResends = 0
@@ -160,6 +169,7 @@ final class SpoofSession: ObservableObject {
         keepAlive.stop()
         let finished = await clearLink()
         active = nil
+        await releaseTunnelIfIdle()
         if finished {
             state = .idle
             releaseIfIdleInBackground()
@@ -210,13 +220,14 @@ final class SpoofSession: ObservableObject {
         state = .idle
         write("disconnected")
         await link.close()
+        await releaseTunnelIfIdle()
     }
 
     func clearLog() { log.removeAll() }
 
     /// Applies the Keep Alive setting to a running session.
     func keepAliveChanged(_ on: Bool) {
-        guard active != nil, !Demo.isOn else { return }
+        guard active != nil, !isSimulated else { return }
         if on { keepAlive.start() } else { keepAlive.stop() }
     }
 
@@ -234,6 +245,18 @@ final class SpoofSession: ObservableObject {
             await link.close()
             write("idle in background, connection closed")
         }
+        await releaseTunnelIfIdle()
+    }
+
+    private func finishWork() {
+        busy = false
+        runPending()
+        Task { await releaseTunnelIfIdle() }
+    }
+
+    private func releaseTunnelIfIdle() async {
+        guard active == nil, !busy, pending == nil else { return }
+        await tunnel.stop()
     }
 
     private func send(_ c: CLLocationCoordinate2D, reconnect: Bool, started: Int) async throws {
@@ -279,7 +302,9 @@ final class SpoofSession: ObservableObject {
         if !state.isReconnecting { state = .connecting }
         let defaults = UserDefaults.standard
         let pairing = try PairingStore.load()
-        let host = Self.setting(SettingsKey.host, default: Defaults.host)
+        let host = TunnelAddress.peer
+        try await tunnel.start()
+        try ensureCurrent(started)
         let hostname = Self.setting(SettingsKey.hostname, default: Defaults.hostname)
         let portText = Self.setting(SettingsKey.port, default: "")
         let manual = UInt16(portText).flatMap { $0 > 0 ? $0 : nil }
@@ -400,10 +425,7 @@ final class SpoofSession: ObservableObject {
     private func resend() async {
         guard let active, !busy else { return }
         busy = true
-        defer {
-            busy = false
-            runPending()
-        }
+        defer { finishWork() }
         let started = generation
         do {
             try await send(active, reconnect: true, started: started)
@@ -460,7 +482,7 @@ final class SpoofSession: ObservableObject {
 
     /// Tries the pairing file against the device, unless a connection is in use.
     func checkPairing() async {
-        guard !Demo.isOn else { return }
+        guard !isSimulated else { return }
         // A running simulation already proves that the device accepts the file.
         if active != nil, state == .active {
             pairingCheck = .valid
@@ -468,18 +490,17 @@ final class SpoofSession: ObservableObject {
         }
         guard !busy, active == nil else { return }
         busy = true
-        defer {
-            busy = false
-            runPending()
-        }
+        defer { finishWork() }
         pairingCheck = .checking
         do {
+            let pairing = try PairingStore.load()
+            try await tunnel.start()
             let port = UInt16(Self.setting(SettingsKey.port, default: "")).flatMap { $0 > 0 ? $0 : nil }
             try await link.openTunnel(LinkConfig(
-                host: Self.setting(SettingsKey.host, default: Defaults.host),
+                host: TunnelAddress.peer,
                 port: port ?? lastPort ?? PortResolver.fallbackPort,
                 hostname: Self.setting(SettingsKey.hostname, default: Defaults.hostname),
-                pairing: PairingStore.load()))
+                pairing: pairing))
             await link.close()
             pairingCheck = .valid
             write("pairing file valid")
@@ -492,11 +513,30 @@ final class SpoofSession: ObservableObject {
 
     func resetPairingCheck() { pairingCheck = .notChecked }
 
+    func startPreview() {
+        guard active == nil else { return }
+        isPreview = true
+        write("preview started")
+    }
+
+    func endPreview() {
+        endSimulation()
+        isPreview = false
+    }
+
+    private func endSimulation() {
+        active = nil
+        state = .idle
+        lastSent = nil
+        port = nil
+        write("preview cleared")
+    }
+
     private func simulate(_ coordinate: CLLocationCoordinate2D) {
         active = coordinate
         state = .active
-        port = PortResolver.fallbackPort
-        lastSent = Demo.sentTime
+        port = Demo.isOn ? PortResolver.fallbackPort : nil
+        lastSent = Demo.isOn ? Demo.sentTime : Date()
         write("set \(CoordinateParser.format(coordinate)) (demo)")
     }
 

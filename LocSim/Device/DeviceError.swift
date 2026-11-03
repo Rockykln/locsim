@@ -7,7 +7,7 @@ struct DeviceError: LocalizedError {
         case pairingMissing
         case pairingInvalid
         case pairingLockdown
-        case invalidHost
+        case localTunnel
         case tunnel
         case notConnected
         case ddiQuery

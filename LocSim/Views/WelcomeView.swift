@@ -20,16 +20,13 @@ struct WelcomeView: View {
                 Section {
                     step(1, "Enable Developer Mode",
                          "Settings > Privacy & Security > Developer Mode. If the switch is missing, the setup guide shows how to make it appear.")
-                    step(2, "Install LocalDevVPN", "A free app from the App Store. Connect it before you set a location.") {
-                        Link(destination: AppLinks.localDevVPN) {
-                            Label("Get LocalDevVPN", systemImage: "arrow.up.right")
-                        }
-                    }
-                    step(3, "Create a pairing file", "Run the script from the setup guide on a Mac, Windows or Linux computer.") {
+                    step(2, "Create a pairing file", "Run the script from the setup guide on a Mac, Windows or Linux computer.") {
                         Link(destination: AppLinks.setupGuide) {
                             Label("Open Setup Guide", systemImage: "arrow.up.right")
                         }
                     }
+                    step(3, "Allow the local connection",
+                         "After the import, iOS asks once to add a VPN configuration. LocSim only uses it to reach this iPhone's own developer services while a location is active. It carries no other traffic, nothing leaves the device through it and no data is collected.")
                     step(4, "Import the pairing file", "Copy it to this device with AirDrop or Finder, then import it here.", done: hasPairing) {
                         Button {
                             importing = true
@@ -50,6 +47,18 @@ struct WelcomeView: View {
                     } else if !hasPairing, PairingStore.rejectedDrop {
                         Text("The pairing file in Files was not valid and has been removed. Create a new one with tools/make-pairing.sh.")
                             .foregroundStyle(.red)
+                    }
+                }
+                if !hasPairing {
+                    Section {
+                        Button {
+                            session.startPreview()
+                            dismiss()
+                        } label: {
+                            Label("Try Without a Device", systemImage: "eye")
+                        }
+                    } footer: {
+                        Text("Explore the map, search and favorites without any setup. The location of this iPhone does not change.")
                     }
                 }
             }
@@ -154,7 +163,7 @@ struct PairingCheckRow<Title: View>: View {
             Label(String("\(error.message) (\(error.code))"), systemImage: "xmark.circle.fill")
                 .foregroundStyle(.red)
         case .unreachable(let error):
-            Label("Could not check. Connect LocalDevVPN, join a Wi-Fi network and try again. (\(error.code))",
+            Label("Could not check. Allow the local connection, join a Wi-Fi network and try again. (\(error.code))",
                   systemImage: "exclamationmark.triangle.fill")
                 .foregroundStyle(.orange)
         }

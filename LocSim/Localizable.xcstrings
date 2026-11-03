@@ -11,16 +11,6 @@
         }
       }
     },
-    "A free app from the App Store. Connect it before you set a location." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eine kostenlose App aus dem App Store. Verbinde sie, bevor du einen Standort setzt."
-          }
-        }
-      }
-    },
     "A one-time setup with a computer and a USB cable. After that, LocSim works without a computer." : {
       "localizations" : {
         "de" : {
@@ -47,6 +37,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aktiv"
+          }
+        }
+      }
+    },
+    "After the import, iOS asks once to add a VPN configuration. LocSim only uses it to reach this iPhone's own developer services while a location is active. It carries no other traffic, nothing leaves the device through it and no data is collected." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nach dem Import fragt iOS einmal, ob eine VPN-Konfiguration hinzugefügt werden darf. LocSim nutzt sie nur, um die Entwicklerdienste dieses iPhones zu erreichen, solange ein Standort aktiv ist. Sie überträgt keinen anderen Datenverkehr, nichts verlässt darüber das Gerät, und es werden keine Daten erhoben."
+          }
+        }
+      }
+    },
+    "Allow the local connection" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lokale Verbindung erlauben"
           }
         }
       }
@@ -87,26 +97,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pairing-Datei prüfen"
-          }
-        }
-      }
-    },
-    "Check that LocalDevVPN is connected and join a Wi-Fi network. If it keeps failing, enable Show this iPhone when on Wi-Fi in Finder. Also allow Local Network for LocSim under Settings > Privacy & Security > Local Network." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Prüfe, ob LocalDevVPN verbunden ist, und verbinde dich mit einem WLAN. Falls es weiter fehlschlägt, aktiviere im Finder unter „Allgemein“ die Option „Bei verfügbarem WLAN dieses iPhone anzeigen“. Erlaube LocSim außerdem das lokale Netzwerk unter Einstellungen > Datenschutz & Sicherheit > Lokales Netzwerk."
-          }
-        }
-      }
-    },
-    "Check the target IP under Settings > Connection. The default is 10.7.0.1." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Prüfe die Ziel-IP unter Einstellungen > Verbindung. Standard ist 10.7.0.1."
           }
         }
       }
@@ -167,16 +157,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Commit"
-          }
-        }
-      }
-    },
-    "Connect LocalDevVPN and try again." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verbinde LocalDevVPN und versuche es erneut."
           }
         }
       }
@@ -281,12 +261,12 @@
         }
       }
     },
-    "Could not check. Connect LocalDevVPN, join a Wi-Fi network and try again. (%@)" : {
+    "Could not check. Allow the local connection, join a Wi-Fi network and try again. (%@)" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Prüfung nicht möglich. Verbinde LocalDevVPN und ein WLAN und versuche es erneut. (%@)"
+            "value" : "Prüfung nicht möglich. Erlaube die lokale Verbindung, verbinde dich mit einem WLAN und versuche es erneut. (%@)"
           }
         }
       }
@@ -471,6 +451,26 @@
         }
       }
     },
+    "End Preview" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorschau beenden"
+          }
+        }
+      }
+    },
+    "Explore the map, search and favorites without any setup. The location of this iPhone does not change." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entdecke Karte, Suche und Favoriten ohne Einrichtung. Der Standort dieses iPhones ändert sich nicht."
+          }
+        }
+      }
+    },
     "Favorites" : {
       "localizations" : {
         "de" : {
@@ -487,16 +487,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dateien"
-          }
-        }
-      }
-    },
-    "Get LocalDevVPN" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LocalDevVPN laden"
           }
         }
       }
@@ -597,16 +587,6 @@
         }
       }
     },
-    "Install LocalDevVPN" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LocalDevVPN installieren"
-          }
-        }
-      }
-    },
     "Installing the disk image failed. It needs an internet connection; try again." : {
       "localizations" : {
         "de" : {
@@ -617,12 +597,22 @@
         }
       }
     },
-    "Invalid target address" : {
+    "Join a Wi-Fi network and try again." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ungültige Zieladresse"
+            "value" : "Verbinde dich mit einem WLAN und versuche es erneut."
+          }
+        }
+      }
+    },
+    "Join a Wi-Fi network. If it keeps failing, enable Show this iPhone when on Wi-Fi in Finder. Also allow Local Network for LocSim under Settings > Privacy & Security > Local Network." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbinde dich mit einem WLAN. Falls es weiter fehlschlägt, aktiviere im Finder unter „Allgemein“ die Option „Bei verfügbarem WLAN dieses iPhone anzeigen“. Erlaube LocSim außerdem das lokale Netzwerk unter Einstellungen > Datenschutz & Sicherheit > Lokales Netzwerk."
           }
         }
       }
@@ -657,12 +647,12 @@
         }
       }
     },
-    "LocalDevVPN must be on. Wi-Fi is only needed to connect, no internet required. While connected, locations can be changed on cellular." : {
+    "Local connection not started" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "LocalDevVPN muss aktiv sein. WLAN ist nur zum Verbinden nötig, Internet nicht. Solange die Verbindung besteht, lässt sich der Standort auch im Mobilfunknetz ändern."
+            "value" : "Lokale Verbindung nicht gestartet"
           }
         }
       }
@@ -693,6 +683,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Standortdienst nicht verfügbar"
+          }
+        }
+      }
+    },
+    "LocSim could not start its connection to this iPhone. Allow the VPN configuration when iOS asks and try again." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim konnte die Verbindung zu diesem iPhone nicht starten. Erlaube die VPN-Konfiguration, wenn iOS danach fragt, und versuche es erneut."
+          }
+        }
+      }
+    },
+    "LocSim's local connection is based on StosVPN." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die lokale Verbindung von LocSim basiert auf StosVPN."
           }
         }
       }
@@ -933,6 +943,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Port"
+          }
+        }
+      }
+    },
+    "Preview: the location of this iPhone does not change." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorschau: Der Standort dieses iPhones ändert sich nicht."
           }
         }
       }
@@ -1187,22 +1207,12 @@
         }
       }
     },
-    "Target IP" : {
+    "The connection to the device closed. Check Wi-Fi. LocSim reconnects on its own while a location is active." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ziel-IP"
-          }
-        }
-      }
-    },
-    "The connection to the device closed. Check LocalDevVPN and Wi-Fi. LocSim reconnects on its own while a location is active." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Die Verbindung zum Gerät wurde getrennt. Prüfe LocalDevVPN und WLAN. Solange ein Standort aktiv ist, verbindet sich LocSim von selbst neu."
+            "value" : "Die Verbindung zum Gerät wurde getrennt. Prüfe das WLAN. Solange ein Standort aktiv ist, verbindet sich LocSim von selbst neu."
           }
         }
       }
@@ -1287,6 +1297,16 @@
         }
       }
     },
+    "Try Without a Device" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ohne Gerät ausprobieren"
+          }
+        }
+      }
+    },
     "Unexpected error" : {
       "localizations" : {
         "de" : {
@@ -1333,6 +1353,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Willkommen bei LocSim"
+          }
+        }
+      }
+    },
+    "Wi-Fi is only needed to connect, no internet required. While connected, locations can be changed on cellular. The local connection only reaches this iPhone and carries no other traffic." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WLAN ist nur zum Verbinden nötig, Internet nicht. Solange die Verbindung besteht, lässt sich der Standort auch im Mobilfunknetz ändern. Die lokale Verbindung erreicht nur dieses iPhone und überträgt keinen anderen Datenverkehr."
           }
         }
       }

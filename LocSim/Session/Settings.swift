@@ -2,7 +2,6 @@ import CoreLocation
 import Foundation
 
 enum SettingsKey {
-    static let host = "targetHost"
     static let hostname = "pairingHostname"
     static let port = "portOverride"
     static let resend = "resendSeconds"
@@ -19,14 +18,12 @@ enum SettingsKey {
 }
 
 enum Defaults {
-    static let host = "10.7.0.1"
     static let hostname = "locsim"
     static let resend = 10
     static let coordinate = CLLocationCoordinate2D(latitude: 48.85660, longitude: 2.35220)
 
     static func register() {
         UserDefaults.standard.register(defaults: [
-            SettingsKey.host: host,
             SettingsKey.hostname: hostname,
             SettingsKey.port: "",
             SettingsKey.resend: resend,
