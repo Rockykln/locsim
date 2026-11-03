@@ -17,8 +17,12 @@
   --glass: rgba(255, 255, 255, 0.55);
   --glass-line: rgba(29, 16, 48, 0.14);
   --gutter: clamp(1.25rem, 5vw, 5rem);
-  color-scheme: light;
+  /* Declares the built-in dark mode, so Safari's Adaptive Dark Mode leaves the page alone. */
+  color-scheme: light dark;
 }
+
+/* Chosen with the theme button: the browser must not repaint it. */
+:root[data-theme="light"] { color-scheme: light only; }
 
 :root[data-theme="dark"] {
   --bg: #0e0d17;
@@ -56,7 +60,7 @@
     --on-sky-muted: #d9d2ee;
     --glass: rgba(255, 255, 255, 0.1);
     --glass-line: rgba(255, 255, 255, 0.2);
-    color-scheme: dark;
+    color-scheme: light dark;
   }
 }
 
@@ -64,6 +68,12 @@
 
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-padding-top: 1.5rem; }
+@media (prefers-reduced-motion: no-preference) {
+  html:focus-within:has(.doc) { scroll-behavior: smooth; }
+  /* The target heading lights up briefly, so the jump is easy to follow. */
+  .doc h2:target { animation: target-in 1.2s ease-out; }
+}
+@keyframes target-in { from { color: var(--accent); } }
 body {
   margin: 0;
   background: var(--bg);
@@ -71,7 +81,9 @@ body {
   font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
-a { color: var(--accent); }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 2px; }
+main :is(p, li, td, address, dd) a { font-weight: 600; }
 .wrap { padding-left: max(var(--gutter), calc((100% - 1240px) / 2)); padding-right: max(var(--gutter), calc((100% - 1240px) / 2)); }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
 
@@ -96,15 +108,23 @@ pre code { padding: 0; background: none; white-space: pre-wrap; overflow-wrap: a
 
 .site-header { display: flex; align-items: center; gap: 0.75rem 1.5rem; padding-top: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--line); }
 .brand { display: flex; align-items: center; gap: 0.6rem; margin-right: auto; color: var(--text); font-weight: 650; text-decoration: none; }
-.brand img { width: 32px; height: 32px; border-radius: 22.37%; box-shadow: 0 0 0 1px var(--line); }
+.brand img { width: 41px; height: 32px; }
 .site-nav { display: flex; align-items: center; gap: 0.25rem 1.25rem; font-size: 0.95rem; white-space: nowrap; }
 .site-nav a { padding: 0.55rem 0.1rem; color: var(--muted); text-decoration: none; }
 .site-nav a:hover { color: var(--text); }
 .site-nav a[aria-current="page"] { color: var(--text); font-weight: 600; }
-.site-nav .lang { display: inline-flex; padding: 0.6rem 0.2rem; line-height: 0; }
-.site-nav .lang img { width: 24px; height: 16px; border-radius: 3px; box-shadow: 0 0 0 1px var(--flag-ring); }
+.site-nav .lang-menu { position: relative; padding: 0; border: 0; }
+.site-nav .lang-menu summary { display: flex; padding: 0.6rem 0.2rem; line-height: 0; list-style: none; }
+.site-nav .lang-menu summary::-webkit-details-marker { display: none; }
+.site-nav .lang-menu img { flex: none; width: 24px; height: 16px; border-radius: 3px; box-shadow: 0 0 0 1px var(--flag-ring); }
+.site-nav .lang-menu ul { position: absolute; top: 100%; right: -0.5rem; z-index: 10; min-width: 10.5rem; margin: 0; padding: 0.35rem; list-style: none; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); }
+.site-nav .lang-menu li + li { margin-top: 0; }
+.site-nav .lang-menu li a { display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0.6rem; border-radius: 8px; color: var(--text); opacity: 1; line-height: 1.3; }
+.site-nav .lang-menu li a:hover { color: var(--text); background: var(--bg-alt); }
+.site-nav .lang-menu li a[aria-current="true"] { font-weight: 600; }
 .theme-toggle { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 0; color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 50%; cursor: pointer; }
-.theme-toggle::after { content: ""; position: absolute; inset: -8px; }
+.theme-toggle::after { content: ""; position: absolute; inset: -8px -6px -8px -8px; }
+.site-header { overflow-x: clip; }
 .theme-toggle:hover { color: var(--text); }
 .theme-toggle[hidden] { display: none; }
 .theme-toggle svg { display: none; width: 16px; height: 16px; }
@@ -129,8 +149,7 @@ pre code { padding: 0; background: none; white-space: pre-wrap; overflow-wrap: a
 .home .site-header { position: absolute; top: 0; left: 0; right: 0; z-index: 2; border-bottom: 0; }
 .home .brand, .home .site-nav a, .home .site-nav a:hover { color: var(--on-sky); }
 .home .site-nav a { opacity: 0.8; }
-.home .site-nav a:hover, .home .site-nav a[aria-current="page"], .home .site-nav .lang { opacity: 1; }
-.home .brand img { box-shadow: 0 0 0 1px var(--glass-line); }
+.home .site-nav a:hover, .home .site-nav a[aria-current="page"] { opacity: 1; }
 .home .theme-toggle { color: var(--on-sky); border-color: var(--glass-line); }
 .home .theme-toggle:hover { color: var(--on-sky); }
 
@@ -202,6 +221,27 @@ details p { margin: 0.5rem 0 0.25rem; color: var(--muted); }
 .doc h1 { font-size: clamp(2.2rem, 4vw, 3.2rem); }
 .doc h2 { margin-top: 2.75rem; font-size: 1.4rem; letter-spacing: -0.015em; }
 .doc h3 { margin-top: 1.5rem; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 0.9rem; margin: 2rem 0 0.5rem; }
+.fact { padding: 1.15rem 1.25rem 1.2rem; background: var(--bg-alt); border: 1px solid var(--line); border-radius: 16px; }
+.fact .fact-icon { display: block; width: 22px; height: 22px; margin-bottom: 0.7rem; color: var(--accent); }
+.doc .fact h2 { margin: 0 0 0.4rem; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.fact address, .fact p { margin: 0; font-style: normal; line-height: 1.55; }
+.fact a { font-weight: 600; text-decoration: none; overflow-wrap: anywhere; }
+.fact a:hover { text-decoration: underline; text-underline-offset: 2px; }
+.faq-all { margin: 1rem 0 0; }
+.faq-all a { font-weight: 600; }
+.doc .faq { margin-top: 0.5rem; }
+.faq-more { margin-top: 3rem; padding: 1.4rem 1.5rem; background: var(--bg-alt); border: 1px solid var(--line); border-radius: 16px; }
+.doc .faq-more h2 { margin: 0 0 0.35rem; font-size: 1.2rem; }
+.faq-more p { margin: 0; color: var(--muted); }
+.faq-more .actions { margin-top: 1.1rem; }
+.toc { margin: 2rem 0 0.5rem; padding: 1rem 1.25rem; background: var(--bg-alt); border: 1px solid var(--line); border-radius: 16px; }
+.toc p { margin: 0 0 0.4rem; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.toc ol { margin: 0; padding-left: 1.3rem; columns: 2 14rem; column-gap: 2rem; }
+.toc li { break-inside: avoid; margin: 0; padding: 0.15rem 0; }
+.toc a { color: var(--text); text-decoration: none; }
+.toc a:hover { color: var(--accent); }
+
 
 /* Support */
 
@@ -267,6 +307,18 @@ details p { margin: 0.5rem 0 0.25rem; color: var(--muted); }
 .help-options svg { width: 22px; height: 22px; color: var(--text); margin-bottom: 0.35rem; }
 .still-stuck { margin-top: 1.25rem; font-weight: 600; }
 .code-group td { overflow-wrap: anywhere; hyphens: auto; }
+.code-group td a { hyphens: manual; }
+
+/* Phones: code and meaning on one line, what to do below across the full width. */
+@media (max-width: 560px) {
+  .code-group table, .code-group tbody, .code-group tr { display: block; width: 100%; }
+  .code-group thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .code-group tr { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 0.75rem; padding: 0.8rem 0; border-bottom: 1px solid var(--line); }
+  .code-group tr[hidden] { display: none; }
+  .code-group td { padding: 0; border: 0; }
+  .code-group td:nth-child(2) { font-weight: 600; }
+  .code-group td:nth-child(3) { grid-column: 1 / -1; margin-top: 0.3rem; color: var(--muted); hyphens: manual; }
+}
 .code-filter { border-color: var(--muted); }
 
 /* Images per theme */
@@ -318,23 +370,126 @@ details p { margin: 0.5rem 0 0.25rem; color: var(--muted); }
   .actions .button { flex: 1 1 100%; justify-content: center; }
 }
 
-@media (max-width: 420px) {
+/* Breakpoints follow the longest navigation (German): "Start", then the name next to the
+   logo give way before the links run into the edge. The logo already leads home. */
+@media (max-width: 600px) {
+  .site-nav > a:first-child { display: none; }
+}
+
+@media (max-width: 540px) {
   .brand span { display: none; }
-  .site-nav { gap: 0.7rem; }
+  .site-nav { gap: 0.55rem; }
 }
 
 @media (max-width: 350px) {
   :root { --gutter: 0.75rem; }
-  .brand img { width: 26px; height: 26px; }
+  .brand img { width: 34px; height: 26px; }
   .site-nav { gap: 0.45rem; font-size: 0.82rem; }
 }
+
+/* Beta dialog */
+
+html.dialog-open, html.dialog-open body { overflow: hidden; overscroll-behavior: none; }
+button.button { font: inherit; font-size: 0.98rem; font-weight: 600; cursor: pointer; }
+.beta-dialog { width: min(34rem, calc(100% - 2rem)); max-height: calc(100dvh - 2rem); padding: 0; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28); overscroll-behavior: contain; }
+.beta-dialog::backdrop { background: rgba(14, 13, 23, 0.5); }
+.beta-dialog section { padding: 1.4rem 1.5rem 1.5rem; }
+.beta-dialog section[hidden] { display: none; }
+.beta-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.beta-head h2 { margin: 0; font-size: 1.35rem; letter-spacing: -0.015em; outline: none; }
+.beta-close { display: grid; flex: none; place-items: center; width: 36px; height: 36px; padding: 0; color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 50%; cursor: pointer; }
+.beta-close:hover { color: var(--text); }
+.beta-close svg { width: 16px; height: 16px; }
+.beta-options { display: grid; gap: 0.75rem; }
+.beta-option { padding: 1rem 1.1rem 1.1rem; background: var(--bg-alt); border: 1px solid var(--line); border-radius: 14px; }
+.beta-option h3 { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.5rem; }
+.badge { padding: 0.1rem 0.5rem; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.02em; color: var(--accent); border: 1px solid currentColor; border-radius: 999px; }
+.beta-option p { margin: 0 0 0.9rem; color: var(--muted); font-size: 0.95rem; line-height: 1.5; }
+.beta-option .button { min-height: 42px; }
+.beta-dialog .beta-more { margin: 1.35rem 0.25rem 0; font-size: 0.9rem; line-height: 1.5; color: var(--muted); }
+.beta-link { padding: 0; font: inherit; font-weight: 600; color: var(--accent); background: none; border: 0; cursor: pointer; }
+.beta-link:hover { text-decoration: underline; text-underline-offset: 2px; }
+.beta-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.6rem; }
+.beta-back svg { width: 15px; height: 15px; }
+.beta-back { display: inline-flex; align-items: center; gap: 0.2rem; margin: 0 0 0 -0.2rem; padding: 0; font: inherit; font-size: 0.95rem; color: var(--accent); background: none; border: 0; cursor: pointer; }
+.field { display: grid; align-content: start; gap: 0.3rem; margin-bottom: 0.9rem; }
+.field label { font-size: 0.95rem; font-weight: 600; }
+.field label span { font-weight: 400; color: var(--muted); }
+.field input, .field textarea, .field select { width: 100%; padding: 0.6rem 0.8rem; font: inherit; font-size: 1rem; line-height: 1.35; color: var(--text); background: var(--bg); border: 1px solid var(--muted); border-radius: 10px; }
+.field input, .field select { min-height: 2.9rem; }
+.field textarea { min-height: 5.5rem; line-height: 1.5; resize: vertical; }
+.select { position: relative; display: block; }
+.field select { padding-right: 2.2rem; -webkit-appearance: none; appearance: none; cursor: pointer; }
+.field select:invalid { color: var(--muted); }
+.field select option, .field select optgroup { color: var(--text); background: var(--bg); }
+.select::after { content: ""; position: absolute; top: 50%; right: 0.8rem; width: 14px; height: 14px; margin-top: -7px; background: var(--muted); -webkit-mask: url("/img/chevron-down.svg") center / contain no-repeat; mask: url("/img/chevron-down.svg") center / contain no-repeat; pointer-events: none; }
+.field small { font-size: 0.85rem; color: var(--muted); }
+.field .count { justify-self: end; font-variant-numeric: tabular-nums; }
+.field-foot { display: flex; justify-content: space-between; gap: 1rem; }
+.field-foot .count { margin-left: auto; flex: none; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 0.75rem; }
+.checks { margin: 0.25rem 0 0; padding: 0; border: 0; }
+.checks legend { margin-bottom: 0.4rem; padding: 0; font-size: 0.95rem; font-weight: 600; }
+.checks label { display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.45rem; font-size: 0.95rem; line-height: 1.45; }
+.checks input { flex: none; width: 18px; height: 18px; margin: 0.15rem 0 0; accent-color: var(--button); }
+.beta-dialog .actions { margin-top: 1.25rem; }
+.beta-dialog .actions + p { margin: 1rem 0 0; font-size: 0.92rem; }
+.beta-dialog .long-note { padding: 0.7rem 0.85rem; color: var(--text); background: var(--bg-alt); border: 1px solid var(--line); border-radius: 10px; }
+.beta-dialog .long-note[hidden] { display: none; }
+.beta-dialog .actions + p a { font-weight: 600; text-decoration: none; }
+.beta-dialog .actions + p a:hover { text-decoration: underline; text-underline-offset: 2px; }
+.beta-dialog section > p { margin: 0 0 0.75rem; color: var(--muted); }
+.beta-dialog section > p strong { color: var(--text); font-weight: 600; overflow-wrap: anywhere; }
+
+@media (max-width: 560px) {
+  .beta-dialog { width: 100%; max-width: 100%; max-height: 92dvh; margin: auto 0 0; border-width: 1px 0 0; border-radius: 18px 18px 0 0; }
+  /* Forms take the whole screen: when the keyboard opens, iOS moves the visible area,
+     and a shorter sheet would show the page behind it. */
+  .beta-dialog:has([data-step="form"]:not([hidden])) { top: var(--vv-top, 0); bottom: auto; height: var(--vv-height, 100%); max-height: none; margin: 0; border-width: 0; border-radius: 0; }
+  .beta-dialog:has([data-step="form"]:not([hidden])) section { padding-top: calc(1rem + env(safe-area-inset-top)); padding-bottom: calc(1.25rem + env(safe-area-inset-bottom) + var(--vv-keyboard, 0px)); }
+  .beta-dialog:has(:is(input, textarea, select):focus)::backdrop { background: var(--bg); }
+  /* The keyboard is translucent and iOS moves the visible area: with a form open, the page
+     behind is hidden, so only the background color can show through. Layout stays as it is. */
+  html.dialog-open:has(dialog[open] [data-step="form"]:not([hidden])) :is(.site-header, .site-footer, main > :not(dialog)) { visibility: hidden; }
+  .beta-dialog section { padding: 1.2rem 1rem calc(1.25rem + env(safe-area-inset-bottom)); }
+  .field-row { grid-template-columns: minmax(0, 1fr); }
+  .beta-dialog .actions .button { flex: 1 1 100%; justify-content: center; }
+}
+
+.skip { position: absolute; top: 0.5rem; left: 0.5rem; z-index: 100; padding: 0.5rem 0.9rem; color: var(--button-text); background: var(--button); border-radius: 999px; font-weight: 600; text-decoration: none; transform: translateY(-200%); }
+.skip:focus { transform: none; }
+
+pre.has-copy { position: relative; padding-right: 3.25rem; }
+.copy-code { position: absolute; top: 0.45rem; right: 0.45rem; display: grid; place-items: center; width: 32px; height: 32px; padding: 0; color: var(--muted); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
+.copy-code svg { width: 16px; height: 16px; }
+.copy-code.done { color: #1f9d55; }
+.copy-code:hover { color: var(--text); border-color: var(--muted); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .beta-dialog[open] { animation: beta-in 0.22s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  .beta-dialog[open]::backdrop { animation: beta-fade 0.22s ease-out; }
+  @media (max-width: 560px) { .beta-dialog[open] { animation-name: beta-up; } }
+}
+@keyframes beta-in { from { opacity: 0; transform: translateY(8px) scale(0.98); } }
+@keyframes beta-up { from { transform: translateY(100%); } }
+@keyframes beta-fade { from { opacity: 0; } }
 
 /* Print */
 
 @media print {
-  :root, :root[data-theme="dark"] { --bg: #ffffff; --bg-alt: #ffffff; --text: #000000; --muted: #333333; --line: #cccccc; --accent: #000000; color-scheme: light; }
-  .site-nav, .actions, .code-filter, .help-options, .hint, .still-stuck { display: none !important; }
-  details > * { display: block; }
-  .sky { background: none; }
+  /* Light colors in every theme, so nothing prints dark on dark. */
+  :root, :root[data-theme="dark"], :root:not([data-theme="light"]) {
+    --bg: #ffffff; --bg-alt: #ffffff; --text: #000000; --muted: #333333; --line: #cccccc; --accent: #000000;
+    --button: #000000; --button-text: #ffffff; --code: #f2f2f2; --on-sky: #000000; --on-sky-muted: #333333;
+    --glass: transparent; --glass-line: #cccccc; color-scheme: light;
+  }
+  body { background: #ffffff; color: #000000; }
+  .site-nav, .actions, .code-filter, .help-options, .hint, .still-stuck, .copy-code, .skip, .beta-dialog, .toc, .faq-more { display: none !important; }
+  .sky, .sky.hero, .sky.cta { background: none; color: var(--text); }
+  .sky p, .sky .lead { color: var(--muted); }
+  /* A grid container splits badly across pages. */
+  .doc { display: block; }
+  details { break-inside: avoid; }
+  pre { white-space: pre-wrap; break-inside: avoid; }
   a { color: inherit; }
 }

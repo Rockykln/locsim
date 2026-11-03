@@ -26,6 +26,33 @@
 
   apply(current);
 
+  // Language menu: close on outside click or Escape.
+  document.addEventListener("click", function (event) {
+    var menu = document.querySelector(".lang-menu[open]");
+    if (menu && !menu.contains(event.target)) menu.removeAttribute("open");
+  });
+  document.addEventListener("keydown", function (event) {
+    if (event.key !== "Escape") return;
+    var menu = document.querySelector(".lang-menu[open]");
+    if (!menu) return;
+    menu.removeAttribute("open");
+    menu.querySelector("summary").focus();
+  });
+
+  // Closed questions would print without their answers.
+  window.addEventListener("beforeprint", function () {
+    document.querySelectorAll("details:not([open])").forEach(function (item) {
+      item.setAttribute("data-print-open", "");
+      item.open = true;
+    });
+  });
+  window.addEventListener("afterprint", function () {
+    document.querySelectorAll("details[data-print-open]").forEach(function (item) {
+      item.removeAttribute("data-print-open");
+      item.open = false;
+    });
+  });
+
   document.addEventListener("DOMContentLoaded", function () {
     apply(current);
     var button = document.querySelector(".theme-toggle");
