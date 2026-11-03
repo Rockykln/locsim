@@ -10,7 +10,7 @@ for script in tools/make-pairing.sh tools/make-pairing.ps1; do
   git cat-file -e "$commit:$script" || { echo "$script missing in $short" >&2; exit 1; }
 done
 
-for page in site/public/setup/index.html site/public/de/setup/index.html; do
+for page in site/public/setup/index.html site/public/*/setup/index.html; do
   sed -i.bak -E "s#(raw\.githubusercontent\.com/Rockykln/locsim/)[^/]+(/tools/make-pairing\.)#\1$commit\2#g" "$page"
   rm -f "$page.bak"
 done

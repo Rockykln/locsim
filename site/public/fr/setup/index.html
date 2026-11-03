@@ -65,12 +65,12 @@
 <h2>3. Créer le fichier de jumelage</h2>
 <p>Le script télécharge <code>idevice-tools</code>, vérifie sa somme de contrôle et écrit <code>rppairing.plist</code>. Vous pouvez d’abord <a href="https://github.com/Rockykln/locsim/tree/main/tools">lire les scripts</a>.</p>
 <h3>Mac et Linux</h3>
-<pre><code>curl -fLO https://raw.githubusercontent.com/Rockykln/locsim/631cc64bcaff213bf88d9cb4bb175f5692c71262/tools/make-pairing.sh
+<pre><code>curl -fLO https://raw.githubusercontent.com/Rockykln/locsim/1d43bcb78b9992f57e6fec38ca2d48a3e163b3f0/tools/make-pairing.sh
 bash make-pairing.sh</code></pre>
 <p>Sous Linux, <code>usbmuxd</code> et glibc 2.38 ou plus récent sont également nécessaires : Debian 13, Ubuntu 24.04, Fedora 39 ou ultérieur.</p>
 <h3>Windows</h3>
 <p>Nécessite l’app Appareils Apple ou iTunes. Dans PowerShell :</p>
-<pre><code>Invoke-WebRequest -UseBasicParsing -OutFile make-pairing.ps1 https://raw.githubusercontent.com/Rockykln/locsim/631cc64bcaff213bf88d9cb4bb175f5692c71262/tools/make-pairing.ps1
+<pre><code>Invoke-WebRequest -UseBasicParsing -OutFile make-pairing.ps1 https://raw.githubusercontent.com/Rockykln/locsim/1d43bcb78b9992f57e6fec38ca2d48a3e163b3f0/tools/make-pairing.ps1
 powershell -ExecutionPolicy Bypass -File make-pairing.ps1</code></pre>
 <h2>4. Importer le fichier dans LocSim</h2>
 <ol>
