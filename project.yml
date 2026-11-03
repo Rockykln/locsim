@@ -55,6 +55,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.rockykln.locsim.tunnel
         PRODUCT_NAME: LocSimTunnel
+        INFOPLIST_KEY_CFBundleDisplayName: LocSim
         TARGETED_DEVICE_FAMILY: "1"
         SUPPORTS_MACCATALYST: NO
         SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
