@@ -34,5 +34,16 @@ icacls $Out /inheritance:r /grant:r "$($env:USERNAME):(R,W)" | Out-Null
 
 Write-Host ""
 Write-Host "Hostname: $Hostname (must match LocSim > Settings > Hostname)"
-Write-Host "Move $Out to the device, for example with the Apple Devices app (Files tab > LocSim)."
-Write-Host "Avoid cloud storage: the file grants access to the device. Delete it here afterwards."
+
+# LocSim picks the file up from its Documents folder and removes it there.
+# Errors of this step only lead to the manual way, so they must not stop the script.
+$ErrorActionPreference = "Continue"
+& $Bin afc --documents com.rockykln.locsim upload $Out /Documents/rppairing.plist *> $null
+if ($LASTEXITCODE -eq 0) {
+    Remove-Item $Out
+    Write-Host "Copied into LocSim and removed here. Open LocSim to finish."
+} else {
+    Write-Host "Could not copy the file into LocSim. Is it installed on this iPhone?"
+    Write-Host "Move $Out to the device, for example with the Apple Devices app (Files tab > LocSim)."
+    Write-Host "Avoid cloud storage: the file grants access to the device. Delete it here afterwards."
+}

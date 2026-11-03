@@ -38,5 +38,12 @@ echo "iPhone: connected via USB, unlocked, trusted."
 chmod 600 "$OUT"
 echo
 echo "Hostname: $HOSTNAME_ARG (must match LocSim > Settings > Hostname)"
-echo "Move $OUT to the device with AirDrop, or drag it into LocSim in Finder's Files tab."
-echo "Avoid cloud storage: the file grants access to the device. Delete it here afterwards."
+# LocSim picks the file up from its Documents folder and removes it there.
+if "$BIN" afc --documents com.rockykln.locsim upload "$OUT" /Documents/rppairing.plist >/dev/null 2>&1; then
+  rm -f "$OUT"
+  echo "Copied into LocSim and removed here. Open LocSim to finish."
+else
+  echo "Could not copy the file into LocSim. Is it installed on this iPhone?"
+  echo "Move $OUT to the device with AirDrop, or drag it into LocSim in Finder's Files tab."
+  echo "Avoid cloud storage: the file grants access to the device. Delete it here afterwards."
+fi

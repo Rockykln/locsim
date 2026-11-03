@@ -89,9 +89,16 @@ enum PairingStore {
         for name in dropNames {
             let url = docs.appendingPathComponent(name)
             guard FileManager.default.fileExists(atPath: url.path) else { continue }
+            let data = try? read(url)
+            let valid = data.map { (try? validate($0)) != nil } ?? false
+            // The setup script may still be writing it over USB.
+            if !valid, let modified = try? url.resourceValues(forKeys: [.contentModificationDateKey])
+                .contentModificationDate, Date().timeIntervalSince(modified) < 5 {
+                continue
+            }
             // Dropped files are visible in Files and part of backups; never leave one behind.
             defer { try? FileManager.default.removeItem(at: url) }
-            if let data = try? read(url), (try? validate(data)) != nil {
+            if valid, let data {
                 try? save(data)
                 rejectedDrop = false
                 return

@@ -231,16 +231,6 @@
         }
       }
     },
-    "Copy it to this device with AirDrop or Finder, then import it here." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kopiere sie per AirDrop oder Finder auf dieses Gerät und importiere sie hier."
-          }
-        }
-      }
-    },
     "Copy Log" : {
       "localizations" : {
         "de" : {
@@ -497,6 +487,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Los geht’s"
+          }
+        }
+      }
+    },
+    "The setup script copies it into LocSim. Otherwise, copy it with AirDrop or Finder and import it here." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Skript kopiert sie direkt in LocSim. Sonst kopiere sie per AirDrop oder Finder und importiere sie hier."
           }
         }
       }

@@ -27,7 +27,7 @@ struct WelcomeView: View {
                     }
                     step(3, "Allow the local connection",
                          "After the import, iOS asks once to add a VPN configuration. LocSim only uses it to reach this iPhone's own developer services while a location is active. It carries no other traffic, nothing leaves the device through it and no data is collected.")
-                    step(4, "Import the pairing file", "Copy it to this device with AirDrop or Finder, then import it here.", done: hasPairing) {
+                    step(4, "Import the pairing file", "The setup script copies it into LocSim. Otherwise, copy it with AirDrop or Finder and import it here.", done: hasPairing) {
                         Button {
                             importing = true
                         } label: {
@@ -86,6 +86,15 @@ struct WelcomeView: View {
                     message = "\(appError.title): \(appError.message) (\(appError.code))"
                 }
                 hasPairing = PairingStore.exists
+            }
+            // The setup script copies the file in over USB while this screen is open.
+            .task(id: hasPairing) {
+                while !hasPairing, !Task.isCancelled {
+                    try? await Task.sleep(nanoseconds: 2_000_000_000)
+                    guard scenePhase == .active, PairingStore.exists else { continue }
+                    hasPairing = true
+                    await session.checkPairing()
+                }
             }
             // Picks up a file copied through the Files tab while the app was in the background.
             .onChange(of: scenePhase) { _, phase in
