@@ -41,6 +41,24 @@
             "state" : "translated",
             "value" : "Finds the Remote Pairing service of this device."
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Busca el servicio Remote Pairing de este dispositivo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trouve le service Remote Pairing de cet appareil."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trova il servizio Remote Pairing di questo dispositivo."
+          }
         }
       }
     },
@@ -50,13 +68,31 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zeigt deinen echten Standort auf der Karte und hält die Verbindung im Hintergrund offen."
+            "value" : "Zeigt deinen Standort auf der Karte. Während ein Standort simuliert wird, nutzt LocSim die Ortung im Hintergrund, um die Verbindung zu diesem iPhone offen zu halten."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shows your real position on the map and keeps the connection open in the background."
+            "value" : "Shows your position on the map. While a location is simulated, LocSim uses location in the background to keep its connection to this iPhone open."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muestra tu ubicación en el mapa. Mientras se simula una ubicación, LocSim usa la ubicación en segundo plano para mantener abierta su conexión con este iPhone."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Affiche votre position sur la carte. Pendant la simulation d’une position, LocSim utilise la localisation en arrière-plan pour garder ouverte sa connexion à cet iPhone."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra la tua posizione sulla mappa. Mentre simula una posizione, LocSim usa la localizzazione in background per mantenere aperta la connessione a questo iPhone."
           }
         }
       }

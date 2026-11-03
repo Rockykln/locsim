@@ -1,12 +1,208 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@" : {
+      "shouldTranslate" : false
+    },
     "%@\n\nError %@" : {
+      "comment" : "Alert message: error message, then the error code",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@\n\nFehler %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@\n\nError %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@\n\nErreur %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@\n\nErrore %@"
+          }
+        }
+      }
+    },
+    "%@ (%@)" : {
+      "comment" : "Error message followed by its error code",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ (%@)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ (%@)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ (%@)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ (%@)"
+          }
+        }
+      }
+    },
+    "%@ degrees east" : {
+      "comment" : "VoiceOver reading of a longitude",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Grad Ost"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ grados este"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ degrés est"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ gradi est"
+          }
+        }
+      }
+    },
+    "%@ degrees north" : {
+      "comment" : "VoiceOver reading of a latitude",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Grad Nord"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ grados norte"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ degrés nord"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ gradi nord"
+          }
+        }
+      }
+    },
+    "%@ degrees south" : {
+      "comment" : "VoiceOver reading of a latitude",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Grad Süd"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ grados sur"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ degrés sud"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ gradi sud"
+          }
+        }
+      }
+    },
+    "%@ degrees west" : {
+      "comment" : "VoiceOver reading of a longitude",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Grad West"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ grados oeste"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ degrés ouest"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ gradi ovest"
+          }
+        }
+      }
+    },
+    "%@: %@ (%@)" : {
+      "comment" : "Error title, message and error code in one line",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@: %@ (%@)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@: %@ (%@)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ : %@ (%@)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@: %@ (%@)"
           }
         }
       }
@@ -18,6 +214,52 @@
             "state" : "translated",
             "value" : "Eine einmalige Einrichtung mit einem Computer und USB-Kabel. Danach funktioniert LocSim ohne Computer."
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una configuración única con un ordenador y un cable USB. Después, LocSim funciona sin ordenador."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une configuration unique avec un ordinateur et un câble USB. Ensuite, LocSim fonctionne sans ordinateur."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una configurazione da fare una sola volta con un computer e un cavo USB. Dopo, LocSim funziona senza computer."
+          }
+        }
+      }
+    },
+    "A running simulation stops. You need the setup script to create a new one." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eine laufende Simulation wird beendet. Für eine neue Datei brauchst du das Setup-Skript."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se detendrá la simulación en curso. Necesitas el script de configuración para crear uno nuevo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une simulation en cours s’arrête. Le script de configuration est nécessaire pour en créer un nouveau."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una simulazione in corso si interrompe. Per crearne uno nuovo serve lo script di configurazione."
+          }
         }
       }
     },
@@ -28,25 +270,164 @@
             "state" : "translated",
             "value" : "Open-Source-Lizenzen"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Licencias de código abierto"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Licences open source"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Licenze open source"
+          }
         }
       }
     },
     "Active" : {
+      "comment" : "Status: a simulated location is active",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aktiv"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Active"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attiva"
+          }
         }
       }
     },
-    "After the import, iOS asks once to add a VPN configuration. LocSim only uses it to reach this iPhone's own developer services while a location is active. It carries no other traffic, nothing leaves the device through it and no data is collected." : {
+    "Active location" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nach dem Import fragt iOS einmal, ob eine VPN-Konfiguration hinzugefügt werden darf. LocSim nutzt sie nur, um die Entwicklerdienste dieses iPhones zu erreichen, solange ein Standort aktiv ist. Sie überträgt keinen anderen Datenverkehr, nichts verlässt darüber das Gerät, und es werden keine Daten erhoben."
+            "value" : "Aktiver Standort"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ubicación activa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Position active"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posizione attiva"
+          }
+        }
+      }
+    },
+    "Allow connections over Wi-Fi" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbindungen über WLAN erlauben"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permitir conexiones por Wi-Fi"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autoriser les connexions en Wi-Fi"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consenti connessioni tramite Wi-Fi"
+          }
+        }
+      }
+    },
+    "Allow Local Network for LocSim under Settings > Privacy & Security > Local Network, then try again." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erlaube LocSim das lokale Netzwerk unter Einstellungen > Datenschutz & Sicherheit > Lokales Netzwerk und versuche es dann erneut."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permite la red local para LocSim en Ajustes > Privacidad y seguridad > Red local y vuelve a intentarlo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autorisez le réseau local pour LocSim dans Réglages > Confidentialité et sécurité > Réseau local, puis réessayez."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consenti a LocSim l’accesso alla rete locale in Impostazioni > Privacy e sicurezza > Rete locale, poi riprova."
+          }
+        }
+      }
+    },
+    "Allow location access for LocSim in Settings to show your position." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erlaube LocSim den Standortzugriff in den Einstellungen, um deine Position anzuzeigen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permite el acceso a la ubicación para LocSim en Ajustes para mostrar tu posición."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autorisez l’accès à la position pour LocSim dans Réglages afin d’afficher votre position."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consenti a LocSim l’accesso alla posizione in Impostazioni per mostrare dove ti trovi."
           }
         }
       }
@@ -58,25 +439,109 @@
             "state" : "translated",
             "value" : "Lokale Verbindung erlauben"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permitir la conexión local"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autoriser la connexion locale"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consenti la connessione locale"
+          }
+        }
+      }
+    },
+    "Another VPN is selected" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anderes VPN ausgewählt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hay otra VPN seleccionada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un autre VPN est sélectionné"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "È selezionata un’altra VPN"
+          }
         }
       }
     },
     "Auto" : {
+      "comment" : "Port field placeholder: the port is found automatically",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Automatisch"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automático"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatique"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatica"
+          }
         }
       }
     },
     "Block" : {
+      "comment" : "Zoom level",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Häuserblock"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manzana"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pâté de maisons"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Isolato"
           }
         }
       }
@@ -88,6 +553,24 @@
             "state" : "translated",
             "value" : "Abbrechen"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annuler"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annulla"
+          }
         }
       }
     },
@@ -98,25 +581,145 @@
             "state" : "translated",
             "value" : "Pairing-Datei prüfen"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comprobar archivo de emparejamiento"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifier le fichier de jumelage"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verifica file di abbinamento"
+          }
         }
       }
     },
     "City" : {
+      "comment" : "Zoom level",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Stadt"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ciudad"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ville"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Città"
+          }
         }
       }
     },
     "Clear" : {
+      "comment" : "Button: ends the simulated location, or clears the recent locations",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zurücksetzen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restablecer"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réinitialiser"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ripristina"
+          }
+        }
+      }
+    },
+    "Clear List" : {
+      "comment" : "Removes all recent locations",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Löschen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Borrar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Effacer"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancella"
+          }
+        }
+      }
+    },
+    "Clear Location" : {
+      "comment" : "App Intent title and Live Activity button intent",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort zurücksetzen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restablecer ubicación"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réinitialiser la position"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ripristina posizione"
           }
         }
       }
@@ -128,6 +731,52 @@
             "state" : "translated",
             "value" : "Protokoll löschen"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Borrar registro"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Effacer le journal"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancella registro"
+          }
+        }
+      }
+    },
+    "Clear recent locations" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzte Orte löschen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Borrar ubicaciones recientes"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Effacer les lieux récents"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancella posizioni recenti"
+          }
         }
       }
     },
@@ -138,22 +787,78 @@
             "state" : "translated",
             "value" : "Suche löschen"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Borrar búsqueda"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Effacer la recherche"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancella ricerca"
+          }
         }
       }
     },
-    "Close LocSim to restore the real location." : {
+    "Clear the simulated location" : {
+      "comment" : "Shortcuts parameter summary",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Schließe LocSim, um den echten Standort wiederherzustellen."
+            "value" : "Simulierten Standort zurücksetzen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restablecer la ubicación simulada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réinitialiser la position simulée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ripristina la posizione simulata"
           }
         }
       }
     },
     "Commit" : {
+      "comment" : "Git commit of the build",
       "localizations" : {
         "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Commit"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Commit"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Commit"
+          }
+        },
+        "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Commit"
@@ -162,21 +867,58 @@
       }
     },
     "Connecting" : {
+      "comment" : "Status: connecting to the device",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verbinden …"
+            "value" : "Verbindet …"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectando…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connexion…"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connessione…"
           }
         }
       }
     },
-    "Connecting needs Wi-Fi, but no internet. After that, cellular works. Hostname must match the pairing file. Keep Alive uses background location so the simulation continues while LocSim is in the background." : {
+    "Connecting needs Wi-Fi, then cellular works too. Keep Alive keeps the simulation running in the background." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zum Verbinden ist WLAN nötig, Internet nicht. Danach geht auch Mobilfunk. Der Hostname muss zur Pairing-Datei passen. „Im Hintergrund aktiv halten“ nutzt den Standort im Hintergrund, damit die Simulation weiterläuft."
+            "value" : "Zum Verbinden ist WLAN nötig, danach reicht Mobilfunk. „Im Hintergrund aktiv halten“ lässt die Simulation im Hintergrund weiterlaufen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para conectar se necesita Wi-Fi; después bastan los datos móviles. “Mantener activo en segundo plano” mantiene la simulación en segundo plano."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La connexion nécessite le Wi-Fi, ensuite le réseau cellulaire suffit. « Maintenir actif en arrière-plan » garde la simulation active en arrière-plan."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per connettersi serve il Wi-Fi, poi basta la rete cellulare. “Mantieni attivo in background” mantiene attiva la simulazione in background."
           }
         }
       }
@@ -188,6 +930,52 @@
             "state" : "translated",
             "value" : "Verbindung"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conexión"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connexion"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connessione"
+          }
+        }
+      }
+    },
+    "Connection failed" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbindung fehlgeschlagen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error de conexión"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de la connexion"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connessione non riuscita"
+          }
         }
       }
     },
@@ -197,6 +985,53 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Verbindung unterbrochen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conexión perdida"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connexion perdue"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connessione persa"
+          }
+        }
+      }
+    },
+    "Continue" : {
+      "comment" : "Alert button: set the location again despite another VPN",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fortfahren"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuer"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continua"
           }
         }
       }
@@ -208,6 +1043,24 @@
             "state" : "translated",
             "value" : "Koordinatenformat"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Formato de coordenadas"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Format des coordonnées"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Formato coordinate"
+          }
         }
       }
     },
@@ -217,6 +1070,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Koordinaten"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coordenadas"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coordonnées"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coordinate"
+          }
+        }
+      }
+    },
+    "Coordinates or a Maps link" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Koordinaten oder ein Karten-Link"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coordenadas o enlace de Mapas"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coordonnées ou lien Plans"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coordinate o link di Mappe"
           }
         }
       }
@@ -228,6 +1127,24 @@
             "state" : "translated",
             "value" : "Koordinaten kopieren"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar coordenadas"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copier les coordonnées"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copia coordinate"
+          }
         }
       }
     },
@@ -237,6 +1154,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Details kopieren"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar detalles"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copier les détails"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copia dettagli"
           }
         }
       }
@@ -248,6 +1183,24 @@
             "state" : "translated",
             "value" : "Protokoll kopieren"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar registro"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copier le journal"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copia registro"
+          }
         }
       }
     },
@@ -257,6 +1210,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kopiere die Details und füge sie einer Support-Anfrage bei."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copia los detalles e inclúyelos en una solicitud de soporte."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiez les détails et joignez-les à une demande d’assistance."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copia i dettagli e allegali a una richiesta di supporto."
           }
         }
       }
@@ -268,25 +1239,79 @@
             "state" : "translated",
             "value" : "Prüfung nicht möglich. Erlaube die lokale Verbindung, verbinde dich mit einem WLAN und versuche es erneut. (%@)"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido comprobar. Permite la conexión local, conéctate a una red Wi-Fi y vuelve a intentarlo. (%@)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérification impossible. Autorisez la connexion locale, connectez-vous à un réseau Wi-Fi et réessayez. (%@)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossibile verificare. Consenti la connessione locale, connettiti a una rete Wi-Fi e riprova. (%@)"
+          }
         }
       }
     },
-    "Create a pairing file" : {
+    "Create the pairing file" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pairing-Datei erstellen"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crear el archivo de emparejamiento"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer le fichier de jumelage"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crea il file di abbinamento"
+          }
         }
       }
     },
-    "Create it once on a computer with the setup script, which copies it into LocSim over USB." : {
+    "Created once with the setup script on a computer." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Einmal am Computer mit dem Skript aus der Anleitung erstellen. Es kopiert die Datei per USB in LocSim."
+            "value" : "Wird einmal mit dem Setup-Skript am Computer erstellt."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se crea una vez con el script de configuración en un ordenador."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créé une fois avec le script de configuration sur un ordinateur."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si crea una volta con lo script di configurazione su un computer."
           }
         }
       }
@@ -298,6 +1323,24 @@
             "state" : "translated",
             "value" : "Dezimal"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decimal"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Décimal"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decimale"
+          }
         }
       }
     },
@@ -307,6 +1350,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nachkommastellen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decimales"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Décimales"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cifre decimali"
           }
         }
       }
@@ -318,6 +1379,24 @@
             "state" : "translated",
             "value" : "Grad, Minuten, Sekunden"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grados, minutos, segundos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Degrés, minutes, secondes"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gradi, minuti, secondi"
+          }
         }
       }
     },
@@ -327,6 +1406,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Löschen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elimina"
           }
         }
       }
@@ -338,6 +1435,24 @@
             "state" : "translated",
             "value" : "DDI-Dateien löschen"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar archivos DDI"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer les fichiers DDI"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elimina file DDI"
+          }
         }
       }
     },
@@ -347,6 +1462,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Developer Disk Image"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image"
+          }
+        }
+      }
+    },
+    "Developer Disk Image needed" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image benötigt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se necesita el Developer Disk Image"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image requis"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image necessaria"
           }
         }
       }
@@ -358,6 +1519,24 @@
             "state" : "translated",
             "value" : "Developer Disk Image nicht verfügbar"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image no disponible"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image indisponible"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image non disponibile"
+          }
         }
       }
     },
@@ -367,6 +1546,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Developer Disk Image nicht installiert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image no instalado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image non installé"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image non installata"
           }
         }
       }
@@ -378,25 +1575,52 @@
             "state" : "translated",
             "value" : "Gerät nicht erreichbar"
           }
-        }
-      }
-    },
-    "Disconnect" : {
-      "localizations" : {
-        "de" : {
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trennen"
+            "value" : "Dispositivo no accesible"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appareil injoignable"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dispositivo non raggiungibile"
           }
         }
       }
     },
     "District" : {
+      "comment" : "Zoom level",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Stadtteil"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Barrio"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quartier"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quartiere"
           }
         }
       }
@@ -408,6 +1632,81 @@
             "state" : "translated",
             "value" : "Fertig"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fine"
+          }
+        }
+      }
+    },
+    "Download" : {
+      "comment" : "Alert button: download the Developer Disk Image",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herunterladen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descargar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Télécharger"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scarica"
+          }
+        }
+      }
+    },
+    "Download DDI Files" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DDI-Dateien herunterladen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descargar archivos DDI"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Télécharger les fichiers DDI"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scarica file DDI"
+          }
         }
       }
     },
@@ -418,25 +1717,110 @@
             "state" : "translated",
             "value" : "Download fehlgeschlagen"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error de descarga"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec du téléchargement"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download non riuscito"
+          }
         }
       }
     },
     "Downloaded" : {
+      "comment" : "Developer Disk Image files are on this iPhone",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Heruntergeladen"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descargados"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Téléchargés"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scaricati"
+          }
+        }
+      }
+    },
+    "Drop Pin at Map Center" : {
+      "comment" : "VoiceOver action",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ort in der Kartenmitte markieren"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marcar el centro del mapa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marquer le centre de la carte"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inserisci segnaposto al centro della mappa"
+          }
         }
       }
     },
     "Dropped pin" : {
+      "comment" : "Name of a location without a place name",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Markierter Ort"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ubicación marcada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lieu marqué"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Segnaposto"
           }
         }
       }
@@ -448,6 +1832,24 @@
             "state" : "translated",
             "value" : "Entwicklermodus einschalten"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activar el modo de desarrollador"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activer le mode développeur"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attiva Modalità sviluppatore"
+          }
         }
       }
     },
@@ -457,6 +1859,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Vorschau beenden"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salir de la vista previa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitter l’aperçu"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esci dall’anteprima"
+          }
+        }
+      }
+    },
+    "Ends the simulated location and restores the real one." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beendet den simulierten Standort und stellt den echten wieder her."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Termina la ubicación simulada y restablece la real."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Met fin à la position simulée et rétablit la position réelle."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Termina la posizione simulata e ripristina quella reale."
           }
         }
       }
@@ -468,6 +1916,53 @@
             "state" : "translated",
             "value" : "Entdecke Karte, Suche und Favoriten ohne Einrichtung. Der Standort dieses iPhones ändert sich nicht."
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Explora el mapa, la búsqueda y los favoritos sin configurar nada. La ubicación de este iPhone no cambia."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Découvrez la carte, la recherche et les favoris sans configuration. La position de cet iPhone ne change pas."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esplora mappa, ricerca e preferiti senza configurare nulla. La posizione di questo iPhone non cambia."
+          }
+        }
+      }
+    },
+    "Favorite" : {
+      "comment" : "App Intent parameter and entity type",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorit"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorito"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favori"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preferito"
+          }
         }
       }
     },
@@ -478,15 +1973,80 @@
             "state" : "translated",
             "value" : "Favoriten"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoritos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoris"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preferiti"
+          }
         }
       }
     },
     "Files" : {
+      "comment" : "Developer Disk Image files",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dateien"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archivos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fichiers"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File"
+          }
+        }
+      }
+    },
+    "For example 48.8566, 2.3522" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zum Beispiel 48.8566, 2.3522"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por ejemplo 48.8566, 2.3522"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Par exemple 48.8566, 2.3522"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ad esempio 48.8566, 2.3522"
           }
         }
       }
@@ -498,21 +2058,51 @@
             "state" : "translated",
             "value" : "Los geht’s"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Empezar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Commencer"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inizia"
+          }
         }
       }
     },
-    "github.com/jkcoxson/idevice" : {
-      "shouldTranslate" : false
-    },
-    "github.com/SideStore/StosVPN" : {
-      "shouldTranslate" : false
-    },
-    "Haptic Feedback" : {
+    "Haptics" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Haptisches Feedback"
+            "value" : "Haptik"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Respuesta háptica"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retour haptique"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Feedback aptico"
           }
         }
       }
@@ -524,38 +2114,52 @@
             "state" : "translated",
             "value" : "Hostname"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nombre de host"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nom d’hôte"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nome host"
+          }
         }
       }
     },
     "Hybrid" : {
+      "comment" : "Map style",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hybrid"
           }
-        }
-      }
-    },
-    "idevice" : {
-      "shouldTranslate" : false
-    },
-    "Idle" : {
-      "localizations" : {
-        "de" : {
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bereit"
+            "value" : "Híbrido"
           }
-        }
-      }
-    },
-    "Import a pairing file under Settings > Pairing." : {
-      "localizations" : {
-        "de" : {
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Importiere eine Pairing-Datei unter Einstellungen > Pairing."
+            "value" : "Mixte"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ibrida"
           }
         }
       }
@@ -567,6 +2171,24 @@
             "state" : "translated",
             "value" : "Pairing-Datei importieren"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importar archivo de emparejamiento"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importer le fichier de jumelage"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importa file di abbinamento"
+          }
         }
       }
     },
@@ -577,15 +2199,52 @@
             "state" : "translated",
             "value" : "Pairing-Datei importieren"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importar el archivo de emparejamiento"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importer le fichier de jumelage"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importa il file di abbinamento"
+          }
         }
       }
     },
     "Imported" : {
+      "comment" : "Pairing file state",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Importiert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importé"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importato"
           }
         }
       }
@@ -595,7 +2254,53 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die Installation des Disk-Images ist fehlgeschlagen. Dafür ist eine Internetverbindung nötig. Versuche es erneut."
+            "value" : "Die Installation des Developer Disk Image ist fehlgeschlagen. Dafür ist eine Internetverbindung nötig. Versuche es erneut."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido instalar el Developer Disk Image. Se necesita conexión a internet. Vuelve a intentarlo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’installation du Developer Disk Image a échoué. Une connexion à Internet est nécessaire. Réessayez."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Installazione della Developer Disk Image non riuscita. Serve una connessione a internet. Riprova."
+          }
+        }
+      }
+    },
+    "iOS has not provided it. LocSim can download it from GitHub, about 16 MB." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOS hat es nicht bereitgestellt. LocSim kann es von GitHub laden, etwa 16 MB."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOS no lo ha proporcionado. LocSim puede descargarlo de GitHub, unos 16 MB."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOS ne l’a pas fourni. LocSim peut le télécharger depuis GitHub, environ 16 Mo."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOS non l’ha fornita. LocSim può scaricarla da GitHub, circa 16 MB."
           }
         }
       }
@@ -607,6 +2312,24 @@
             "state" : "translated",
             "value" : "Verbinde dich mit einem WLAN und versuche es erneut."
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conéctate a una red Wi-Fi y vuelve a intentarlo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connectez-vous à un réseau Wi-Fi et réessayez."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connettiti a una rete Wi-Fi e riprova."
+          }
         }
       }
     },
@@ -616,6 +2339,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Verbinde dich mit einem WLAN. Falls es weiter fehlschlägt, aktiviere im Finder unter „Allgemein“ die Option „Bei verfügbarem WLAN dieses iPhone anzeigen“. Erlaube LocSim außerdem das lokale Netzwerk unter Einstellungen > Datenschutz & Sicherheit > Lokales Netzwerk."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conéctate a una red Wi-Fi. Si sigue fallando, activa “Mostrar este iPhone cuando esté conectado a una red Wi-Fi” en el Finder. Permite también la red local para LocSim en Ajustes > Privacidad y seguridad > Red local."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connectez-vous à un réseau Wi-Fi. Si l’échec persiste, activez « Afficher cet iPhone en Wi-Fi » dans le Finder. Autorisez aussi le réseau local pour LocSim dans Réglages > Confidentialité et sécurité > Réseau local."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connettiti a una rete Wi-Fi. Se continua a non funzionare, attiva “Mostra questo iPhone quando connesso alla rete Wi-Fi” nel Finder. Consenti anche a LocSim l’accesso alla rete locale in Impostazioni > Privacy e sicurezza > Rete locale."
           }
         }
       }
@@ -627,6 +2368,24 @@
             "state" : "translated",
             "value" : "Im Hintergrund aktiv halten"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantener activo en segundo plano"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maintenir actif en arrière-plan"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantieni attivo in background"
+          }
         }
       }
     },
@@ -636,6 +2395,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sprache"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Idioma"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Langue"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lingua"
           }
         }
       }
@@ -647,6 +2424,53 @@
             "state" : "translated",
             "value" : "Später"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Más tarde"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plus tard"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Più tardi"
+          }
+        }
+      }
+    },
+    "Live Activity" : {
+      "comment" : "Settings toggle",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Live-Aktivität"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actividad en directo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activité en direct"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attività in tempo reale"
+          }
         }
       }
     },
@@ -656,6 +2480,109 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lokale Verbindung nicht gestartet"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conexión local no iniciada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connexion locale non démarrée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connessione locale non avviata"
+          }
+        }
+      }
+    },
+    "Local Network access off" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zugriff auf lokales Netzwerk aus"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acceso a la red local desactivado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accès au réseau local désactivé"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accesso alla rete locale disattivato"
+          }
+        }
+      }
+    },
+    "Location access is off" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standortzugriff ist aus"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El acceso a la ubicación está desactivado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’accès à la position est désactivé"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’accesso alla posizione è disattivato"
+          }
+        }
+      }
+    },
+    "Location cleared" : {
+      "comment" : "VoiceOver announcement: the simulated location ended",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort zurückgesetzt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ubicación restablecida"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Position réinitialisée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posizione ripristinata"
           }
         }
       }
@@ -667,6 +2594,24 @@
             "state" : "translated",
             "value" : "Standort nicht zurückgesetzt"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ubicación no restablecida"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Position non réinitialisée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posizione non ripristinata"
+          }
         }
       }
     },
@@ -676,6 +2621,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Standort nicht gesetzt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ubicación no establecida"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Position non définie"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posizione non impostata"
           }
         }
       }
@@ -687,6 +2650,53 @@
             "state" : "translated",
             "value" : "Standortdienst nicht verfügbar"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servicio de ubicación no disponible"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Service de localisation indisponible"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servizio di localizzazione non disponibile"
+          }
+        }
+      }
+    },
+    "Location set" : {
+      "comment" : "VoiceOver announcement: the simulated location is active",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort gesetzt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ubicación establecida"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Position définie"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posizione impostata"
+          }
         }
       }
     },
@@ -696,6 +2706,81 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "LocSim konnte die Verbindung zu diesem iPhone nicht starten. Erlaube die VPN-Konfiguration, wenn iOS danach fragt, und versuche es erneut."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim no ha podido iniciar su conexión con este iPhone. Permite la configuración VPN cuando iOS lo pida y vuelve a intentarlo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim n’a pas pu démarrer sa connexion à cet iPhone. Autorisez la configuration VPN lorsque iOS le demande, puis réessayez."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim non è riuscito ad avviare la connessione a questo iPhone. Consenti la configurazione VPN quando iOS lo chiede e riprova."
+          }
+        }
+      }
+    },
+    "LocSim is not set up yet. Open LocSim and follow the setup steps." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim ist noch nicht eingerichtet. Öffne LocSim und folge den Einrichtungsschritten."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim aún no está configurado. Abre LocSim y sigue los pasos de configuración."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim n’est pas encore configuré. Ouvrez LocSim et suivez les étapes de configuration."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim non è ancora configurato. Apri LocSim e segui i passaggi di configurazione."
+          }
+        }
+      }
+    },
+    "LocSim simulates %@." : {
+      "comment" : "Siri and Shortcuts dialog after setting a location",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim simuliert %@."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim simula %@."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim simule %@."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim simula %@."
           }
         }
       }
@@ -707,6 +2792,52 @@
             "state" : "translated",
             "value" : "Die lokale Verbindung von LocSim basiert auf StosVPN."
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La conexión local de LocSim se basa en StosVPN."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La connexion locale de LocSim est basée sur StosVPN."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La connessione locale di LocSim si basa su StosVPN."
+          }
+        }
+      }
+    },
+    "LocSim's local connection replaces it while a location is active. Tap Set Location again to continue, and select your VPN again in Settings afterwards." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die lokale Verbindung von LocSim ersetzt es, solange ein Standort aktiv ist. Tippe erneut auf „Standort setzen“, um fortzufahren, und wähle dein VPN danach in den Einstellungen wieder aus."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La conexión local de LocSim la sustituye mientras haya una ubicación activa. Toca de nuevo “Establecer ubicación” para continuar y, después, vuelve a seleccionar tu VPN en Ajustes."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La connexion locale de LocSim le remplace tant qu’une position est active. Touchez de nouveau « Définir la position » pour continuer, puis sélectionnez à nouveau votre VPN dans Réglages."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La connessione locale di LocSim la sostituisce mentre una posizione è attiva. Tocca di nuovo “Imposta posizione” per continuare, poi seleziona di nuovo la tua VPN in Impostazioni."
+          }
         }
       }
     },
@@ -716,6 +2847,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Protokoll"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registro"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Journal"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registro"
           }
         }
       }
@@ -727,6 +2876,24 @@
             "state" : "translated",
             "value" : "Karte"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mapa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carte"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mappa"
+          }
         }
       }
     },
@@ -737,15 +2904,52 @@
             "state" : "translated",
             "value" : "Kartenstil"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estilo de mapa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Style de carte"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stile mappa"
+          }
         }
       }
     },
     "Missing" : {
+      "comment" : "Pairing file state",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fehlt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falta"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manquant"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mancante"
           }
         }
       }
@@ -757,6 +2961,24 @@
             "state" : "translated",
             "value" : "Automatisch einbinden"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Montar automáticamente"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monter automatiquement"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monta automaticamente"
+          }
         }
       }
     },
@@ -767,15 +2989,79 @@
             "state" : "translated",
             "value" : "Name"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nombre"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nom"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nome"
+          }
         }
       }
     },
-    "Needed for location simulation. Only downloaded if iOS does not provide it, about 16 MB." : {
+    "Needed if iOS does not provide it. About 16 MB from GitHub, can be downloaded here in advance." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Für die Standortsimulation nötig. Wird nur geladen, wenn iOS es nicht bereitstellt, etwa 16 MB."
+            "value" : "Nötig, wenn iOS es nicht bereitstellt. Etwa 16 MB von GitHub, lässt sich hier vorab laden."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Necesario si iOS no lo proporciona. Unos 16 MB de GitHub; se puede descargar aquí por adelantado."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nécessaire si iOS ne le fournit pas. Environ 16 Mo depuis GitHub, téléchargeable ici à l’avance."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Necessaria se iOS non la fornisce. Circa 16 MB da GitHub, scaricabile qui in anticipo."
+          }
+        }
+      }
+    },
+    "No coordinates found in “%@”." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Koordinaten in „%@“ gefunden."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se encontraron coordenadas en “%@”."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune coordonnée trouvée dans « %@ »."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nessuna coordinata trovata in “%@”."
           }
         }
       }
@@ -787,6 +3073,24 @@
             "state" : "translated",
             "value" : "Keine Einträge"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay entradas"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune entrée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nessuna voce"
+          }
         }
       }
     },
@@ -796,6 +3100,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Keine Favoriten"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay favoritos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun favori"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nessun preferito"
+          }
+        }
+      }
+    },
+    "No location is simulated." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es wird kein Standort simuliert."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se está simulando ninguna ubicación."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune position n’est simulée."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nessuna posizione simulata."
           }
         }
       }
@@ -807,6 +3157,24 @@
             "state" : "translated",
             "value" : "Keine Pairing-Datei"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay archivo de emparejamiento"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun fichier de jumelage"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nessun file di abbinamento"
+          }
         }
       }
     },
@@ -817,35 +3185,109 @@
             "state" : "translated",
             "value" : "Keine Ergebnisse für „%@“"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay resultados para “%@”"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun résultat pour « %@ »"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nessun risultato per “%@”"
+          }
+        }
+      }
+    },
+    "No suggestions. Tap Search to look it up." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Vorschläge. Tippe auf „Suchen“, um danach zu suchen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay sugerencias. Toca “Buscar” para buscarlo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune suggestion. Touchez « Rechercher » pour lancer la recherche."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nessun suggerimento. Tocca “Cerca” per avviare la ricerca."
+          }
         }
       }
     },
     "Not active" : {
+      "comment" : "Status: no simulated location",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nicht aktiv"
           }
-        }
-      }
-    },
-    "Not connected" : {
-      "localizations" : {
-        "de" : {
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nicht verbunden"
+            "value" : "Inactiva"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inactive"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non attiva"
           }
         }
       }
     },
     "Not downloaded" : {
+      "comment" : "Developer Disk Image files are not on this iPhone",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nicht heruntergeladen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No descargados"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non téléchargés"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non scaricati"
           }
         }
       }
@@ -857,6 +3299,80 @@
             "state" : "translated",
             "value" : "OK"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
+    "On the computer, turn on Show this iPhone when on Wi-Fi in Finder or the Apple Devices app." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktiviere am Computer im Finder oder in der App „Apple-Geräte“ die Option „Bei verfügbarem WLAN dieses iPhone anzeigen“."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En el ordenador, activa “Mostrar este iPhone cuando esté conectado a una red Wi-Fi” en el Finder o en la app Dispositivos Apple."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sur l’ordinateur, activez « Afficher cet iPhone en Wi-Fi » dans le Finder ou l’app Appareils Apple."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sul computer, attiva “Mostra questo iPhone quando connesso alla rete Wi-Fi” nel Finder o nell’app Dispositivi Apple."
+          }
+        }
+      }
+    },
+    "Open Settings" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen öffnen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Ajustes"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir Réglages"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apri Impostazioni"
+          }
         }
       }
     },
@@ -866,6 +3382,80 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Einrichtungsanleitung öffnen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir la guía de configuración"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir le guide de configuration"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apri la guida alla configurazione"
+          }
+        }
+      }
+    },
+    "Opens LocSim and simulates a location from coordinates or a map link that contains them." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffnet LocSim und simuliert einen Standort aus Koordinaten oder einem Karten-Link, der sie enthält."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre LocSim y simula una ubicación a partir de coordenadas o de un enlace de mapa que las contenga."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvre LocSim et simule une position à partir de coordonnées ou d’un lien de carte qui les contient."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apre LocSim e simula una posizione da coordinate o da un link di mappa che le contiene."
+          }
+        }
+      }
+    },
+    "Opens LocSim and simulates the location of a saved favorite." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffnet LocSim und simuliert den Standort eines gespeicherten Favoriten."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre LocSim y simula la ubicación de un favorito guardado."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvre LocSim et simule la position d’un favori enregistré."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apre LocSim e simula la posizione di un preferito salvato."
           }
         }
       }
@@ -877,6 +3467,24 @@
             "state" : "translated",
             "value" : "Pairing"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emparejamiento"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jumelage"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abbinamento"
+          }
         }
       }
     },
@@ -886,6 +3494,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pairing-Datei"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archivo de emparejamiento"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fichier de jumelage"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File di abbinamento"
           }
         }
       }
@@ -897,6 +3523,24 @@
             "state" : "translated",
             "value" : "Pairing-Datei ungültig"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archivo de emparejamiento no válido"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fichier de jumelage non valide"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File di abbinamento non valido"
+          }
         }
       }
     },
@@ -906,6 +3550,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pairing abgelehnt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emparejamiento rechazado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jumelage refusé"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abbinamento rifiutato"
           }
         }
       }
@@ -917,25 +3579,52 @@
             "state" : "translated",
             "value" : "Pairing-Dienst nicht verfügbar"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servicio de emparejamiento no disponible"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Service de jumelage indisponible"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servizio di abbinamento non disponibile"
+          }
         }
       }
     },
     "Place or coordinates" : {
+      "comment" : "Short search placeholder for narrow screens",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ort oder Koordinaten"
           }
-        }
-      }
-    },
-    "port" : {
-      "localizations" : {
-        "de" : {
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Port"
+            "value" : "Lugar o coordenadas"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lieu ou coordonnées"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Luogo o coordinate"
           }
         }
       }
@@ -947,6 +3636,109 @@
             "state" : "translated",
             "value" : "Port"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puerto"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Port"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Porta"
+          }
+        }
+      }
+    },
+    "Port %lld" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Port %lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puerto %lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Port %lld"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Porta %lld"
+          }
+        }
+      }
+    },
+    "Port must be a number from 1 to 65535. Leave it empty to find it automatically." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Port muss eine Zahl von 1 bis 65535 sein. Lass das Feld leer, um ihn automatisch zu finden."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El puerto debe ser un número del 1 al 65535. Déjalo vacío para encontrarlo automáticamente."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le port doit être un nombre entre 1 et 65535. Laissez le champ vide pour le trouver automatiquement."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La porta deve essere un numero da 1 a 65535. Lascia vuoto il campo per trovarla automaticamente."
+          }
+        }
+      }
+    },
+    "Preview" : {
+      "comment" : "Status: trying the app without a device",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorschau"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vista previa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aperçu"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anteprima"
+          }
         }
       }
     },
@@ -957,15 +3749,222 @@
             "state" : "translated",
             "value" : "Vorschau: Der Standort dieses iPhones ändert sich nicht."
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vista previa: la ubicación de este iPhone no cambia."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aperçu : la position de cet iPhone ne change pas."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anteprima: la posizione di questo iPhone non cambia."
+          }
         }
       }
     },
-    "Reconnecting" : {
+    "Privacy Policy" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verbindet neu"
+            "value" : "Datenschutzerklärung"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Política de privacidad"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Politique de confidentialité"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informativa sulla privacy"
+          }
+        }
+      }
+    },
+    "Quit LocSim in the App Switcher to restore the real location." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beende LocSim im App-Umschalter, um den echten Standort wiederherzustellen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cierra LocSim en el selector de apps para restaurar la ubicación real."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quittez LocSim dans le sélecteur d’apps pour rétablir la position réelle."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chiudi LocSim nel selettore app per ripristinare la posizione reale."
+          }
+        }
+      }
+    },
+    "Recent" : {
+      "comment" : "Header above the recent locations",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzte Orte"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recientes"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Récents"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recenti"
+          }
+        }
+      }
+    },
+    "Recent Locations" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzte Orte"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ubicaciones recientes"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lieux récents"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posizioni recenti"
+          }
+        }
+      }
+    },
+    "Reconnecting" : {
+      "comment" : "Status: connection lost, connecting again",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbindet erneut …"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconectando…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconnexion…"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Riconnessione…"
+          }
+        }
+      }
+    },
+    "Remove" : {
+      "comment" : "Removes one recent location",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entfernen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rimuovi"
+          }
+        }
+      }
+    },
+    "Remove favorite" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorit entfernen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar favorito"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer le favori"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rimuovi preferito"
           }
         }
       }
@@ -977,6 +3976,52 @@
             "state" : "translated",
             "value" : "Pairing-Datei entfernen"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar archivo de emparejamiento"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer le fichier de jumelage"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rimuovi file di abbinamento"
+          }
+        }
+      }
+    },
+    "Remove the pairing file?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pairing-Datei entfernen?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Eliminar el archivo de emparejamiento?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer le fichier de jumelage ?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rimuovere il file di abbinamento?"
+          }
         }
       }
     },
@@ -986,6 +4031,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Umbenennen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renombrar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renommer"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rinomina"
           }
         }
       }
@@ -997,12 +4060,48 @@
             "state" : "translated",
             "value" : "Pairing-Datei ersetzen"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sustituir archivo de emparejamiento"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remplacer le fichier de jumelage"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sostituisci file di abbinamento"
+          }
         }
       }
     },
     "Repository" : {
       "localizations" : {
         "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repository"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repositorio"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dépôt"
+          }
+        },
+        "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Repository"
@@ -1017,6 +4116,24 @@
             "state" : "translated",
             "value" : "Sendeintervall"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intervalo de reenvío"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intervalle de renvoi"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intervallo di reinvio"
+          }
         }
       }
     },
@@ -1027,15 +4144,136 @@
             "state" : "translated",
             "value" : "Führe das Skript aus der Einrichtungsanleitung auf einem Mac, Windows- oder Linux-Computer aus."
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ejecuta el script de la guía de configuración en un Mac o en un ordenador Windows o Linux."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exécutez le script du guide de configuration sur un Mac ou un ordinateur Windows ou Linux."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esegui lo script della guida alla configurazione su un Mac o su un computer Windows o Linux."
+          }
+        }
+      }
+    },
+    "Run the setup script, or import a pairing file in LocSim's settings under Pairing." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Führe das Setup-Skript aus oder importiere eine Pairing-Datei in den Einstellungen von LocSim unter „Pairing“."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ejecuta el script de configuración o importa un archivo de emparejamiento en los ajustes de LocSim, en “Emparejamiento”."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exécutez le script de configuration ou importez un fichier de jumelage dans les réglages de LocSim, sous « Jumelage »."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esegui lo script di configurazione o importa un file di abbinamento nelle impostazioni di LocSim, in “Abbinamento”."
+          }
+        }
+      }
+    },
+    "Rust Libraries" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rust-Bibliotheken"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bibliotecas de Rust"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bibliothèques Rust"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Librerie Rust"
+          }
+        }
+      }
+    },
+    "Rust Libraries in idevice" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rust-Bibliotheken in idevice"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bibliotecas de Rust en idevice"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bibliothèques Rust dans idevice"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Librerie Rust in idevice"
+          }
         }
       }
     },
     "Satellite" : {
+      "comment" : "Map style",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Satellit"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Satélite"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Satellite"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Satellite"
           }
         }
       }
@@ -1047,6 +4285,24 @@
             "state" : "translated",
             "value" : "Sichern"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guardar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enregistrer"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salva"
+          }
         }
       }
     },
@@ -1056,6 +4312,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sichere einen Ort mit dem Stern neben den Koordinaten."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guarda un lugar con la estrella junto a sus coordenadas."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enregistrez un lieu avec l’étoile à côté de ses coordonnées."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salva un luogo con la stella accanto alle sue coordinate."
           }
         }
       }
@@ -1067,6 +4341,52 @@
             "state" : "translated",
             "value" : "Favorit sichern"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guardar favorito"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enregistrer le favori"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salva preferito"
+          }
+        }
+      }
+    },
+    "Search is unavailable. Check the internet connection." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Suche ist nicht verfügbar. Prüfe die Internetverbindung."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La búsqueda no está disponible. Comprueba la conexión a internet."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La recherche est indisponible. Vérifiez la connexion à Internet."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La ricerca non è disponibile. Controlla la connessione a internet."
+          }
         }
       }
     },
@@ -1076,6 +4396,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ort oder Koordinaten suchen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar lugar o coordenadas"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rechercher un lieu ou des coordonnées"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerca luogo o coordinate"
           }
         }
       }
@@ -1087,6 +4425,82 @@
             "state" : "translated",
             "value" : "Der Standort konnte nicht gesendet werden. Tippe auf „Standort setzen“, um es erneut zu versuchen."
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido enviar la ubicación. Toca “Establecer ubicación” para volver a intentarlo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’envoi de la position a échoué. Touchez « Définir la position » pour réessayer."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invio della posizione non riuscito. Tocca “Imposta posizione” per riprovare."
+          }
+        }
+      }
+    },
+    "Set Coordinates" : {
+      "comment" : "App Intent title",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Koordinaten setzen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Establecer coordenadas"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définir des coordonnées"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imposta coordinate"
+          }
+        }
+      }
+    },
+    "Set Favorite" : {
+      "comment" : "Short title of the App Shortcut",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorit setzen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Establecer favorito"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définir un favori"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imposta preferito"
+          }
         }
       }
     },
@@ -1096,6 +4510,111 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Standort setzen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Establecer ubicación"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définir la position"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imposta posizione"
+          }
+        }
+      }
+    },
+    "Set location to ${coordinates}" : {
+      "comment" : "Shortcuts parameter summary",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort auf ${coordinates} setzen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Establecer ubicación en ${coordinates}"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définir la position sur ${coordinates}"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imposta posizione su ${coordinates}"
+          }
+        }
+      }
+    },
+    "Set location to ${favorite}" : {
+      "comment" : "Shortcuts parameter summary",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort auf ${favorite} setzen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Establecer ubicación en ${favorite}"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définir la position sur ${favorite}"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imposta posizione su ${favorite}"
+          }
+        }
+      }
+    },
+    "Set Location to Favorite" : {
+      "comment" : "App Intent title",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort auf Favorit setzen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Establecer ubicación en favorito"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définir la position sur un favori"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imposta posizione su preferito"
           }
         }
       }
@@ -1107,15 +4626,51 @@
             "state" : "translated",
             "value" : "Bei Auswahl setzen"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Establecer al seleccionar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définir à la sélection"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imposta alla selezione"
+          }
         }
       }
     },
-    "Set on Selection sends search results, coordinates and favorites right away." : {
+    "Set on Selection sends a choice right away. Recent Locations keeps the last five." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "„Bei Auswahl setzen“ sendet Suchergebnisse, Koordinaten und Favoriten sofort."
+            "value" : "„Bei Auswahl setzen“ sendet eine Auswahl sofort. „Letzte Orte“ merkt sich die letzten fünf."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“Establecer al seleccionar” envía la selección al instante. “Ubicaciones recientes” guarda las cinco últimas."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "« Définir à la sélection » envoie le choix aussitôt. « Lieux récents » garde les cinq derniers."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“Imposta alla selezione” invia subito la scelta. “Posizioni recenti” conserva le ultime cinque."
           }
         }
       }
@@ -1127,6 +4682,24 @@
             "state" : "translated",
             "value" : "Einstellungen"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustes"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réglages"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impostazioni"
+          }
         }
       }
     },
@@ -1136,6 +4709,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Einstellungen > Datenschutz & Sicherheit > Entwicklermodus. Fehlt der Schalter, zeigt die Einrichtungsanleitung, wie er erscheint."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustes > Privacidad y seguridad > Modo de desarrollador. Si no aparece el interruptor, la guía de configuración explica cómo mostrarlo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réglages > Confidentialité et sécurité > Mode développeur. Si l’option n’apparaît pas, le guide de configuration explique comment l’afficher."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impostazioni > Privacy e sicurezza > Modalità sviluppatore. Se l’interruttore non c’è, la guida alla configurazione spiega come farlo comparire."
           }
         }
       }
@@ -1147,6 +4738,52 @@
             "state" : "translated",
             "value" : "Einrichtungsschritte"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pasos de configuración"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Étapes de configuration"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passaggi di configurazione"
+          }
+        }
+      }
+    },
+    "Short Google Maps links are not supported. Open the link and copy the full address from the browser." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kurze Google-Maps-Links werden nicht unterstützt. Öffne den Link und kopiere die vollständige Adresse aus dem Browser."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los enlaces cortos de Google Maps no son compatibles. Abre el enlace y copia la dirección completa del navegador."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les liens courts Google Maps ne sont pas pris en charge. Ouvrez le lien et copiez l’adresse complète depuis le navigateur."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I link brevi di Google Maps non sono supportati. Apri il link e copia l’indirizzo completo dal browser."
+          }
         }
       }
     },
@@ -1156,6 +4793,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aktiven Standort anzeigen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar ubicación activa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher la position active"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra posizione attiva"
           }
         }
       }
@@ -1167,6 +4822,24 @@
             "state" : "translated",
             "value" : "Meinen Standort anzeigen"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar mi ubicación"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher ma position"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra la mia posizione"
+          }
         }
       }
     },
@@ -1176,6 +4849,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Markierten Ort anzeigen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar ubicación marcada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher le lieu marqué"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra segnaposto"
           }
         }
       }
@@ -1187,12 +4878,49 @@
             "state" : "translated",
             "value" : "Zeigt Details zum Fehler"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muestra los detalles del error"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Affiche les détails de l’erreur"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra i dettagli dell’errore"
+          }
         }
       }
     },
     "Standard" : {
+      "comment" : "Map style",
       "localizations" : {
         "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estándar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard"
+          }
+        },
+        "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Standard"
@@ -1200,12 +4928,143 @@
         }
       }
     },
+    "Step %lld" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schritt %lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paso %lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Étape %lld"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passaggio %lld"
+          }
+        }
+      }
+    },
+    "Step %lld, done" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schritt %lld, erledigt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paso %lld, completado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Étape %lld, terminée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passaggio %lld, completato"
+          }
+        }
+      }
+    },
     "Street" : {
+      "comment" : "Zoom level",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Straße"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calle"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rue"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Via"
+          }
+        }
+      }
+    },
+    "Support" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Support"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soporte"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Assistance"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supporto"
+          }
+        }
+      }
+    },
+    "The connection to the device broke off. Check Wi-Fi and try again." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Verbindung zum Gerät ist abgebrochen. Prüfe das WLAN und versuche es erneut."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se ha interrumpido la conexión con el dispositivo. Comprueba la conexión Wi-Fi y vuelve a intentarlo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La connexion à l’appareil a été interrompue. Vérifiez le Wi-Fi et réessayez."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La connessione al dispositivo si è interrotta. Controlla il Wi-Fi e riprova."
           }
         }
       }
@@ -1217,6 +5076,24 @@
             "state" : "translated",
             "value" : "Die Verbindung zum Gerät wurde getrennt. Prüfe das WLAN. Solange ein Standort aktiv ist, verbindet sich LocSim von selbst neu."
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se ha cerrado la conexión con el dispositivo. Comprueba la conexión Wi-Fi. LocSim se vuelve a conectar automáticamente mientras haya una ubicación activa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La connexion à l’appareil a été fermée. Vérifiez le Wi-Fi. LocSim se reconnecte automatiquement tant qu’une position est active."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La connessione al dispositivo è stata chiusa. Controlla il Wi-Fi. Mentre una posizione è attiva, LocSim si riconnette da solo."
+          }
         }
       }
     },
@@ -1227,15 +5104,51 @@
             "state" : "translated",
             "value" : "Das Developer Disk Image konnte nicht heruntergeladen werden. Prüfe die Internetverbindung."
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido descargar el Developer Disk Image. Comprueba la conexión a internet."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de télécharger le Developer Disk Image. Vérifiez la connexion à Internet."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossibile scaricare la Developer Disk Image. Controlla la connessione a internet."
+          }
         }
       }
     },
-    "The device did not accept the pairing file. Create a new one, for example after an iOS update." : {
+    "The device did not accept the pairing file. Check that the hostname in LocSim's settings matches the one used by the setup script, or create a new file, for example after an iOS update." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Das Gerät hat die Pairing-Datei nicht akzeptiert. Erstelle eine neue, zum Beispiel nach einem iOS-Update."
+            "value" : "Das Gerät hat die Pairing-Datei nicht akzeptiert. Prüfe, ob der Hostname in den Einstellungen von LocSim mit dem im Setup-Skript übereinstimmt, oder erstelle eine neue Datei, zum Beispiel nach einem iOS-Update."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El dispositivo no ha aceptado el archivo de emparejamiento. Comprueba que el nombre de host de los ajustes de LocSim coincide con el del script de configuración o crea un archivo nuevo, por ejemplo, tras una actualización de iOS."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’appareil n’a pas accepté le fichier de jumelage. Vérifiez que le nom d’hôte dans les réglages de LocSim correspond à celui du script de configuration, ou créez un nouveau fichier, par exemple après une mise à jour d’iOS."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il dispositivo non ha accettato il file di abbinamento. Verifica che il nome host nelle impostazioni di LocSim corrisponda a quello usato dallo script di configurazione, oppure crea un nuovo file, ad esempio dopo un aggiornamento di iOS."
           }
         }
       }
@@ -1247,6 +5160,24 @@
             "state" : "translated",
             "value" : "Das Gerät stellt keine Standortsimulation bereit. Aktiviere „Automatisch einbinden“ in den Einstellungen oder starte das Gerät neu."
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El dispositivo no ha proporcionado la simulación de ubicación. Activa “Montar automáticamente” en Ajustes o reinicia el dispositivo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’appareil n’a pas fourni la simulation de position. Activez « Monter automatiquement » dans Réglages ou redémarrez l’appareil."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il dispositivo non ha reso disponibile la simulazione della posizione. Attiva “Monta automaticamente” in Impostazioni o riavvia il dispositivo."
+          }
         }
       }
     },
@@ -1255,17 +5186,81 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Der Zustand des Disk-Images konnte nicht gelesen werden. Prüfe, ob der Entwicklermodus aktiv ist."
+            "value" : "Der Zustand des Developer Disk Image konnte nicht gelesen werden. Prüfe, ob der Entwicklermodus aktiv ist."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido leer el estado del Developer Disk Image. Comprueba que el modo de desarrollador está activado."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de lire l’état du Developer Disk Image. Vérifiez que le mode développeur est activé."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossibile leggere lo stato della Developer Disk Image. Verifica che Modalità sviluppatore sia attiva."
           }
         }
       }
     },
-    "The file could not be read. Create a new one with tools/make-pairing.sh." : {
+    "The file could not be read. Create a new one with the setup script." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die Datei konnte nicht gelesen werden. Erstelle eine neue mit tools/make-pairing.sh."
+            "value" : "Die Datei konnte nicht gelesen werden. Erstelle eine neue mit dem Setup-Skript."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido leer el archivo. Crea uno nuevo con el script de configuración."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de lire le fichier. Créez-en un nouveau avec le script de configuration."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossibile leggere il file. Creane uno nuovo con lo script di configurazione."
+          }
+        }
+      }
+    },
+    "The location of this iPhone does not change." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Standort dieses iPhones ändert sich nicht."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La ubicación de este iPhone no cambia."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La position de cet iPhone ne change pas."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La posizione di questo iPhone non cambia."
           }
         }
       }
@@ -1275,7 +5270,25 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die Pairing-Datei war ungültig und wurde entfernt. Führe das Skript erneut aus."
+            "value" : "Die Pairing-Datei war ungültig und wurde entfernt. Führe das Setup-Skript erneut aus."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El archivo de emparejamiento no era válido y se ha eliminado. Vuelve a ejecutar el script de configuración."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le fichier de jumelage n’était pas valide et a été supprimé. Exécutez de nouveau le script de configuration."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il file di abbinamento non era valido ed è stato rimosso. Esegui di nuovo lo script di configurazione."
           }
         }
       }
@@ -1287,6 +5300,52 @@
             "state" : "translated",
             "value" : "Die Pairing-Datei funktioniert mit diesem Gerät."
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El archivo de emparejamiento funciona con este dispositivo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le fichier de jumelage fonctionne avec cet appareil."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il file di abbinamento funziona con questo dispositivo."
+          }
+        }
+      }
+    },
+    "The real location is back." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der echte Standort ist zurück."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La ubicación real ha vuelto."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La position réelle est rétablie."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La posizione reale è stata ripristinata."
+          }
         }
       }
     },
@@ -1295,17 +5354,53 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Das Skript kopiert sie direkt in LocSim. Sonst kopiere sie per AirDrop oder Finder und importiere sie hier."
+            "value" : "Das Setup-Skript kopiert sie direkt in LocSim. Sonst kopiere sie per AirDrop oder Finder und importiere sie hier."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El script de configuración lo copia en LocSim. Si no, cópialo con AirDrop o el Finder e impórtalo aquí."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le script de configuration le copie dans LocSim. Sinon, copiez-le avec AirDrop ou le Finder et importez-le ici."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo script di configurazione lo copia in LocSim. Altrimenti copialo con AirDrop o il Finder e importalo qui."
           }
         }
       }
     },
-    "This is a lockdown pairing file. LocSim needs an RPPairing file from tools/make-pairing.sh." : {
+    "This is a lockdown pairing file. LocSim needs the RPPairing file from the setup script." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dies ist eine Lockdown-Pairing-Datei. LocSim benötigt eine RPPairing-Datei aus tools/make-pairing.sh."
+            "value" : "Dies ist eine Lockdown-Pairing-Datei. LocSim benötigt die RPPairing-Datei aus dem Setup-Skript."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es un archivo de emparejamiento lockdown. LocSim necesita el archivo RPPairing del script de configuración."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il s’agit d’un fichier de jumelage lockdown. LocSim a besoin du fichier RPPairing créé par le script de configuration."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questo è un file di abbinamento lockdown. LocSim ha bisogno del file RPPairing dello script di configurazione."
           }
         }
       }
@@ -1317,6 +5412,24 @@
             "state" : "translated",
             "value" : "Ohne Gerät ausprobieren"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Probar sin dispositivo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Essayer sans appareil"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prova senza dispositivo"
+          }
         }
       }
     },
@@ -1327,15 +5440,52 @@
             "state" : "translated",
             "value" : "Unerwarteter Fehler"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error inesperado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur inattendue"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Errore imprevisto"
+          }
         }
       }
     },
     "unknown" : {
+      "comment" : "Shown when the build has no commit",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "unbekannt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "desconocido"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "inconnu"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sconosciuto"
           }
         }
       }
@@ -1347,6 +5497,24 @@
             "state" : "translated",
             "value" : "Version"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versión"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versione"
+          }
         }
       }
     },
@@ -1356,6 +5524,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Website"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sitio web"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Site web"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sito web"
           }
         }
       }
@@ -1367,15 +5553,79 @@
             "state" : "translated",
             "value" : "Willkommen bei LocSim"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Te damos la bienvenida a LocSim"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bienvenue dans LocSim"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ti diamo il benvenuto in LocSim"
+          }
         }
       }
     },
-    "Without location access, the location stops in the background. Tap to allow." : {
+    "When you first set a location, iOS asks to add a VPN configuration. LocSim only uses it to reach this iPhone; no traffic leaves the device through it." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ohne Standortzugriff stoppt der Standort im Hintergrund. Tippe, um ihn zu erlauben."
+            "value" : "Beim ersten Setzen eines Standorts fragt iOS, ob eine VPN-Konfiguration hinzugefügt werden darf. LocSim nutzt sie nur, um dieses iPhone zu erreichen. Darüber verlässt kein Datenverkehr das Gerät."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La primera vez que estableces una ubicación, iOS pide añadir una configuración VPN. LocSim solo la usa para acceder a este iPhone. Ningún tráfico sale del dispositivo a través de ella."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La première fois que vous définissez une position, iOS demande d’ajouter une configuration VPN. LocSim l’utilise uniquement pour joindre cet iPhone. Aucun trafic ne quitte l’appareil par ce biais."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La prima volta che imposti una posizione, iOS chiede di aggiungere una configurazione VPN. LocSim la usa solo per raggiungere questo iPhone. Nessun traffico esce dal dispositivo attraverso di essa."
+          }
+        }
+      }
+    },
+    "Without location access, the simulation stops in the background. Tap to allow." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ohne Standortzugriff stoppt die Simulation im Hintergrund. Tippe, um ihn zu erlauben."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin acceso a la ubicación, la simulación se detiene en segundo plano. Toca para permitirlo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sans accès à la position, la simulation s’arrête en arrière-plan. Touchez pour l’autoriser."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Senza accesso alla posizione, la simulazione si interrompe in background. Tocca per consentirlo."
           }
         }
       }
@@ -1387,15 +5637,51 @@
             "state" : "translated",
             "value" : "Falsche Pairing-Datei"
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archivo de emparejamiento incorrecto"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mauvais fichier de jumelage"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File di abbinamento errato"
+          }
         }
       }
     },
-    "Zoom on Select" : {
+    "Zoom on Selection" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zoom bei Auswahl"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoom al seleccionar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoom à la sélection"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoom alla selezione"
           }
         }
       }
