@@ -171,6 +171,16 @@
         }
       }
     },
+    "Connecting needs Wi-Fi, but no internet. After that, cellular works. Hostname must match the pairing file. Keep Alive uses background location so the simulation continues while LocSim is in the background." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zum Verbinden ist WLAN nötig, Internet nicht. Danach geht auch Mobilfunk. Der Hostname muss zur Pairing-Datei passen. „Im Hintergrund aktiv halten“ nutzt den Standort im Hintergrund, damit die Simulation weiterläuft."
+          }
+        }
+      }
+    },
     "Connection" : {
       "localizations" : {
         "de" : {
@@ -491,17 +501,10 @@
         }
       }
     },
-    "The setup script copies it into LocSim. Otherwise, copy it with AirDrop or Finder and import it here." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Das Skript kopiert sie direkt in LocSim. Sonst kopiere sie per AirDrop oder Finder und importiere sie hier."
-          }
-        }
-      }
-    },
     "github.com/jkcoxson/idevice" : {
+      "shouldTranslate" : false
+    },
+    "github.com/SideStore/StosVPN" : {
       "shouldTranslate" : false
     },
     "Haptic Feedback" : {
@@ -767,6 +770,16 @@
         }
       }
     },
+    "Needed for location simulation. Only downloaded if iOS does not provide it, about 16 MB." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für die Standortsimulation nötig. Wird nur geladen, wenn iOS es nicht bereitstellt, etwa 16 MB."
+          }
+        }
+      }
+    },
     "No Entries" : {
       "localizations" : {
         "de" : {
@@ -843,16 +856,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OK"
-          }
-        }
-      }
-    },
-    "Needed for location simulation. Only downloaded if iOS does not provide it, about 16 MB." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Für die Standortsimulation nötig. Wird nur geladen, wenn iOS es nicht bereitstellt, etwa 16 MB."
           }
         }
       }
@@ -1287,6 +1290,16 @@
         }
       }
     },
+    "The setup script copies it into LocSim. Otherwise, copy it with AirDrop or Finder and import it here." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Skript kopiert sie direkt in LocSim. Sonst kopiere sie per AirDrop oder Finder und importiere sie hier."
+          }
+        }
+      }
+    },
     "This is a lockdown pairing file. LocSim needs an RPPairing file from tools/make-pairing.sh." : {
       "localizations" : {
         "de" : {
@@ -1353,16 +1366,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Willkommen bei LocSim"
-          }
-        }
-      }
-    },
-    "Connecting needs Wi-Fi, but no internet. After that, cellular works. Hostname must match the pairing file. Keep Alive uses background location so the simulation continues while LocSim is in the background." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zum Verbinden ist WLAN nötig, Internet nicht. Danach geht auch Mobilfunk. Der Hostname muss zur Pairing-Datei passen. „Im Hintergrund aktiv halten“ nutzt den Standort im Hintergrund, damit die Simulation weiterläuft."
           }
         }
       }
