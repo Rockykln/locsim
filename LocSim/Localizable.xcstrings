@@ -271,12 +271,12 @@
         }
       }
     },
-    "Create the RPPairing file with tools/make-pairing.sh." : {
+    "Create it once on a computer with the setup script, which copies it into LocSim over USB." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erstelle die RPPairing-Datei mit tools/make-pairing.sh."
+            "value" : "Einmal am Computer mit dem Skript aus der Anleitung erstellen. Es kopiert die Datei per USB in LocSim."
           }
         }
       }
@@ -847,12 +847,12 @@
         }
       }
     },
-    "Only downloaded if the device does not provide it. About 16 MB." : {
+    "Needed for location simulation. Only downloaded if iOS does not provide it, about 16 MB." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wird nur heruntergeladen, wenn das Gerät es nicht selbst bereitstellt. Etwa 16 MB."
+            "value" : "Für die Standortsimulation nötig. Wird nur geladen, wenn iOS es nicht bereitstellt, etwa 16 MB."
           }
         }
       }
@@ -1107,12 +1107,12 @@
         }
       }
     },
-    "Set on Selection sends a search result or favorite immediately." : {
+    "Set on Selection sends search results, coordinates and favorites right away." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "„Bei Auswahl setzen“ sendet ein Suchergebnis oder einen Favoriten sofort."
+            "value" : "„Bei Auswahl setzen“ sendet Suchergebnisse, Koordinaten und Favoriten sofort."
           }
         }
       }
@@ -1267,12 +1267,12 @@
         }
       }
     },
-    "The pairing file in Files was not valid and has been removed. Create a new one with tools/make-pairing.sh." : {
+    "The pairing file was not valid and has been removed. Run the setup script again." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die Pairing-Datei aus der Dateien-App war ungültig und wurde entfernt. Erstelle mit tools/make-pairing.sh eine neue."
+            "value" : "Die Pairing-Datei war ungültig und wurde entfernt. Führe das Skript erneut aus."
           }
         }
       }
@@ -1357,12 +1357,12 @@
         }
       }
     },
-    "Wi-Fi is only needed to connect, no internet required. While connected, locations can be changed on cellular. The local connection only reaches this iPhone and carries no other traffic." : {
+    "Connecting needs Wi-Fi, but no internet. After that, cellular works. Hostname must match the pairing file. Keep Alive uses background location so the simulation continues while LocSim is in the background." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "WLAN ist nur zum Verbinden nötig, Internet nicht. Solange die Verbindung besteht, lässt sich der Standort auch im Mobilfunknetz ändern. Die lokale Verbindung erreicht nur dieses iPhone und überträgt keinen anderen Datenverkehr."
+            "value" : "Zum Verbinden ist WLAN nötig, Internet nicht. Danach geht auch Mobilfunk. Der Hostname muss zur Pairing-Datei passen. „Im Hintergrund aktiv halten“ nutzt den Standort im Hintergrund, damit die Simulation weiterläuft."
           }
         }
       }

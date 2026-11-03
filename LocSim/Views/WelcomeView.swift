@@ -45,7 +45,7 @@ struct WelcomeView: View {
                     if let message {
                         Text(message).foregroundStyle(.red)
                     } else if !hasPairing, PairingStore.rejectedDrop {
-                        Text("The pairing file in Files was not valid and has been removed. Create a new one with tools/make-pairing.sh.")
+                        Text("The pairing file was not valid and has been removed. Run the setup script again.")
                             .foregroundStyle(.red)
                     }
                 }

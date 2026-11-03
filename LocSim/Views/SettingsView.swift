@@ -137,10 +137,10 @@ struct SettingsView: View {
             if let pairingMessage {
                 Text(pairingMessage).foregroundStyle(.red)
             } else if !hasPairing, PairingStore.rejectedDrop {
-                Text("The pairing file in Files was not valid and has been removed. Create a new one with tools/make-pairing.sh.")
+                Text("The pairing file was not valid and has been removed. Run the setup script again.")
                     .foregroundStyle(.red)
             } else {
-                Text("Create the RPPairing file with tools/make-pairing.sh.")
+                Text("Create it once on a computer with the setup script, which copies it into LocSim over USB.")
             }
         }
     }
@@ -176,7 +176,7 @@ struct SettingsView: View {
         } header: {
             Text("Map")
         } footer: {
-            Text("Set on Selection sends a search result or favorite immediately.")
+            Text("Set on Selection sends search results, coordinates and favorites right away.")
         }
     }
 
@@ -195,7 +195,7 @@ struct SettingsView: View {
         } header: {
             Text("Connection")
         } footer: {
-            Text("Wi-Fi is only needed to connect, no internet required. While connected, locations can be changed on cellular. The local connection only reaches this iPhone and carries no other traffic.")
+            Text("Connecting needs Wi-Fi, but no internet. After that, cellular works. Hostname must match the pairing file. Keep Alive uses background location so the simulation continues while LocSim is in the background.")
         }
     }
 
@@ -217,7 +217,7 @@ struct SettingsView: View {
         } header: {
             Text("Developer Disk Image")
         } footer: {
-            Text("Only downloaded if the device does not provide it. About 16 MB.")
+            Text("Needed for location simulation. Only downloaded if iOS does not provide it, about 16 MB.")
         }
     }
 
