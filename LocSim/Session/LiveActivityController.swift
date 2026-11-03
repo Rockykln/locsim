@@ -9,6 +9,8 @@ final class LiveActivityController {
     private var activity: Activity<SimulationActivityAttributes>?
     private var shown: SimulationActivityAttributes.ContentState?
     private var shownSet = 0
+    // When the shown Set was made; a replacement activity keeps counting from there.
+    private var startedAt = Date()
 
     init() {
         // A location from an earlier run ended with that process; its activity is stale.
@@ -46,6 +48,7 @@ final class LiveActivityController {
         let state = SimulationActivityAttributes.ContentState(
             name: name, coordinate: coordinate, reconnecting: reconnecting)
         guard state != shown || set != shownSet || activity?.activityState != .active else { return }
+        if set != shownSet { startedAt = Date() }
         shown = state
         shownSet = set
         let content = ActivityContent(state: state, staleDate: nil)
@@ -56,7 +59,7 @@ final class LiveActivityController {
         // iOS ends an activity after eight hours; a later change starts a new one.
         do {
             activity = try Activity.request(
-                attributes: SimulationActivityAttributes(startedAt: Date()), content: content, pushType: nil)
+                attributes: SimulationActivityAttributes(startedAt: startedAt), content: content, pushType: nil)
         } catch {
             activity = nil
         }

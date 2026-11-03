@@ -16,6 +16,9 @@
 	<array>
 		<string>en</string>
 		<string>de</string>
+		<string>fr</string>
+		<string>es</string>
+		<string>it</string>
 	</array>
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>
@@ -40,7 +43,9 @@
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Finds the Remote Pairing service of this device.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Shows your real position on the map and keeps the connection open in the background.</string>
+	<string>Shows your position on the map. While a location is simulated, LocSim uses location in the background to keep its connection to this iPhone open.</string>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>

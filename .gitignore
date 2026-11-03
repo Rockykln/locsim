@@ -21,6 +21,7 @@ Config/Commit.xcconfig
 *.plist
 !LocSim/Info.plist
 !LocSimTunnel/Info.plist
+!LocSimWidgets/Info.plist
 *.mobiledevicepairing
 *.mobiledevicepair
 
@@ -46,3 +47,5 @@ design/screenshots/*
 
 # Python
 __pycache__/
+
+.build/
