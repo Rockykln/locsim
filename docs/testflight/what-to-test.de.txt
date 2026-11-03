@@ -1,7 +1,7 @@
 Erste Beta von LocSim.
 
 Bitte testen:
-- Einrichtung: Pairing-Datei importieren, LocalDevVPN verbinden, im WLAN einen
+- Einrichtung: Pairing-Datei importieren, VPN-Konfiguration erlauben, im WLAN einen
   ersten Standort setzen.
 - Standort setzen: lang auf die Karte drücken, einen Ort suchen, Koordinaten
   eingeben (dezimal oder Grad/Minuten/Sekunden), Favoriten nutzen.

@@ -8,8 +8,8 @@
 Simulate the GPS location of an iPhone directly on the device, without a computer
 attached. Intended for developing and testing location-based apps.
 
-LocSim opens a RemoteXPC tunnel to the iPhone it runs on, through a loopback VPN,
-and drives the same DVT location simulation service that Xcode uses.
+LocSim opens a RemoteXPC tunnel to the iPhone it runs on, through its own local
+tunnel extension, and drives the same DVT location simulation service that Xcode uses.
 
 <p align="center">
   <picture>
@@ -24,6 +24,7 @@ and drives the same DVT location simulation service that Xcode uses.
   coordinates (`48.8566, 2.3522`, `48,8566 2,3522`, `48°51'23.8"N 2°21'07.9"E`)
 - Favorites with rename, reorder and copy
 - Keeps the simulated location while the app is in the background
+- Starts and stops its local tunnel on its own; no other app is needed
 - Reuses an existing tunnel after switching from Wi-Fi to cellular
 - Installs the Developer Disk Image on demand when it is not mounted
 - Restores the real location on Clear or when the app is closed
@@ -32,21 +33,25 @@ and drives the same DVT location simulation service that Xcode uses.
 ## How it works
 
 ```
-LocSim ──TCP──▶ 10.7.0.1:<port> ──LocalDevVPN──▶ remotepairingd (same iPhone)
-                                                   │ RPPairing + RemoteXPC tunnel
-                                                   ▼
-                                     com.apple.instruments.dtservicehub
-                                     (DVT LocationSimulation)
+LocSim ──TCP──▶ 10.7.0.1:<port> ──LocSimTunnel──▶ remotepairingd (same iPhone)
+                                                    │ RPPairing + RemoteXPC tunnel
+                                                    ▼
+                                      com.apple.instruments.dtservicehub
+                                      (DVT LocationSimulation)
 ```
 
-1. The tunnel is opened on the default RPPairing port 49152. If that fails, the
+1. LocSim starts its packet tunnel extension, which only routes `10.7.0.0/24`. It
+   swaps the source and destination of each packet, so the traffic reaches this
+   iPhone's own services. It has no server and no settings, runs while a connection
+   needs it and ends itself after three idle minutes.
+2. The tunnel is opened on the default RPPairing port 49152. If that fails, the
    port is discovered via Bonjour (`_remotepairing._tcp`), as it can differ on
    some devices.
-2. [idevice](https://github.com/jkcoxson/idevice) performs pair-verify with the
+3. [idevice](https://github.com/jkcoxson/idevice) performs pair-verify with the
    imported RPPairing file and builds the tunnel.
-3. If the Developer Disk Image is missing it is installed (cryptex on iOS 26.4+,
+4. If the Developer Disk Image is missing it is installed (cryptex on iOS 26.4+,
    personalized image before).
-4. The location is sent over DVT and resent periodically. iOS resets it as soon
+5. The location is sent over DVT and resent periodically. iOS resets it as soon
    as the connection closes.
 
 ## TestFlight
@@ -57,7 +62,6 @@ Beta builds are available through TestFlight on request.
 ## Requirements
 
 - iPhone on iOS 17.4 or later
-- [LocalDevVPN](https://apps.apple.com/app/localdevvpn/id6755608044) from the App Store
 - Wi-Fi only while the connection is established (any network, no internet
   required). Once connected, locations can be changed on cellular.
 - A Mac, Windows or Linux computer once, for Developer Mode and the pairing file
@@ -65,22 +69,23 @@ Beta builds are available through TestFlight on request.
 ## Installation
 
 Join the [TestFlight beta](#testflight), or build and install LocSim with Xcode,
-see [Building](#building). With a free
-Apple ID the app expires after 7 days and has to be run from Xcode again.
+see [Building](#building). Building for a
+device needs a paid Apple Developer membership, because free accounts cannot use
+Network Extensions.
 
 ## Setup
 
 Follow the [setup guide](https://locsim.rockykln.com/setup/): enable Developer Mode,
 allow connections over Wi-Fi, create a pairing file and import it into LocSim. From a
 clone of this repository, create the file with `tools/make-pairing.sh` or, on Windows,
-`tools\make-pairing.ps1`.
+`tools\make-pairing.ps1`. If LocSim is installed, the script copies the file into the
+app over USB and deletes it from the computer.
 
 ## Usage
 
-1. Join any Wi-Fi network and connect LocalDevVPN (default addresses
-   `10.7.0.1` / `10.7.1.1`; allow the VPN configuration on first use).
-2. Open LocSim and allow Local Network access, which is needed to find the
-   pairing port. Location access is optional and only used for the background
+1. Join any Wi-Fi network.
+2. Open LocSim, allow the VPN configuration when iOS asks (once) and allow Local
+   Network access, which is needed to find the pairing port. Location access is optional and only used for the background
    keep-alive and for showing your real position.
 3. Long-press the map, search for a place or enter coordinates, then
    *Set Location*.
@@ -90,7 +95,7 @@ Wi-Fi is only needed for step 3 the first time, when the connection is built.
 While it stays open, new locations can be set without Wi-Fi. After *Clear* or
 closing the app, the next connection needs Wi-Fi again.
 
-After a restart, only LocalDevVPN has to be reconnected. A new pairing file is
+After a restart, nothing has to be set up again. A new pairing file is
 needed after an iOS update, a device reset or after clearing trusted computers.
 
 ## Building
@@ -123,6 +128,8 @@ LocSim/
   Device/     idevice bridge, port discovery, pairing and DDI storage
   Session/    Spoofing state, keep-alive, search, settings
   Views/      SwiftUI screens
+LocSimTunnel/ Packet tunnel extension
+Shared/       Tunnel addresses, used by the app and the extension
 Config/       Shared xcconfig, local overrides are git-ignored
 tools/        Pairing file creation (macOS, Linux, Windows)
 ```
@@ -137,11 +144,11 @@ support request. The technical log is under *Settings > Log*.
 | LS-100 | No pairing file | Import one under *Settings > Pairing* |
 | LS-101 | Pairing file not valid | Create a new one with `tools/make-pairing.sh` |
 | LS-102 | Lockdown pairing file | LocSim needs an RPPairing file from `tools/make-pairing.sh` |
-| LS-200 | Invalid target address | Reset the target IP to `10.7.0.1` |
-| LS-201 | Device not reachable | Connect LocalDevVPN |
-| LS-202 | Pairing service unavailable | Check LocalDevVPN, join Wi-Fi, enable *Show this iPhone when on Wi-Fi*, allow Local Network for LocSim |
+| LS-201 | Device not reachable | Join a Wi-Fi network |
+| LS-202 | Pairing service unavailable | Join Wi-Fi, enable *Show this iPhone when on Wi-Fi*, allow Local Network for LocSim |
 | LS-203 | Pairing rejected | Create a new pairing file, e.g. after an iOS update |
-| LS-204 | Connection lost | Check LocalDevVPN and Wi-Fi; LocSim reconnects on its own while a location is active |
+| LS-204 | Connection lost | Check Wi-Fi; LocSim reconnects on its own while a location is active |
+| LS-205 | Local connection not started | Allow the VPN configuration when iOS asks |
 | LS-300 | Developer Disk Image not available | Check that Developer Mode is on |
 | LS-301 | Download failed | Check the internet connection |
 | LS-302 | Developer Disk Image not installed | Retry with an internet connection |
@@ -152,7 +159,8 @@ support request. The technical log is under *Settings > Log*.
 
 ## Privacy
 
-LocSim has no analytics and no accounts. Network traffic goes to the device
+LocSim has no analytics and no accounts. Its local tunnel carries only traffic to
+the device itself and collects nothing. Network traffic goes to the device
 itself, Apple Maps for map tiles and search, GitHub when the Developer Disk Image
 is downloaded and Apple's signing server when it is installed.
 
@@ -166,6 +174,8 @@ not affiliated with or endorsed by Apple.
 
 - [idevice](https://github.com/jkcoxson/idevice) by Jackson Coxson, MIT
 - [DeveloperDiskImage](https://github.com/doronz88/DeveloperDiskImage) by doronz88
+- [StosVPN](https://github.com/SideStore/StosVPN) by the SideStore Team; the local
+  tunnel is based on it
 - [StikDebug](https://github.com/StikDebug/StikDebug), which showed the on-device
   approach
 

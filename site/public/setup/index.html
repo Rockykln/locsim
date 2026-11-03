@@ -41,7 +41,6 @@
 <h2>Before you start</h2>
 <ul>
 <li>LocSim is installed on your iPhone (iOS 17.4 or later).</li>
-<li><a href="https://apps.apple.com/app/localdevvpn/id6755608044">LocalDevVPN</a> is installed from the App Store.</li>
 <li>The device is connected by USB, unlocked and trusts the computer.</li>
 </ul>
 <h2>1. Enable Developer Mode</h2>
@@ -67,20 +66,19 @@ bash make-pairing.sh</code></pre>
 powershell -ExecutionPolicy Bypass -File make-pairing.ps1</code></pre>
 <h2>4. Import the file into LocSim</h2>
 <ol>
-<li>Copy <code>rppairing.plist</code> to the device with AirDrop, or into the LocSim folder in the Files tab of Finder or the Apple Devices app. Avoid cloud storage.</li>
-<li>Open LocSim &gt; Settings &gt; Pairing and import the file.</li>
-<li>Delete the file from the computer, because it grants access to the device.</li>
+<li>If LocSim is installed, the script copies the file into the app and deletes it from the computer. Open LocSim, and the setup screen shows the file as imported.</li>
+<li>Otherwise, copy <code>rppairing.plist</code> to the device with AirDrop, or into the LocSim folder in the Files tab of Finder or the Apple Devices app. Avoid cloud storage. Then import it under LocSim &gt; Settings &gt; Pairing and delete it from the computer, because it grants access to the device.</li>
 </ol>
 <h2>5. Set your first location</h2>
 <ol>
-<li>Join any Wi-Fi network and connect LocalDevVPN. Allow the VPN configuration on first use.</li>
+<li>Join any Wi-Fi network. Allow the VPN configuration when iOS asks. LocSim only uses it to reach this iPhone.</li>
 <li>Open LocSim and allow Local Network access.</li>
 <li>Long-press the map, search for a place or enter coordinates, then tap Set Location.</li>
 </ol>
 <p>Clear restores the real location.</p>
 <h2>What you have to repeat</h2>
 <ul>
-<li><strong>After a restart:</strong> only connect LocalDevVPN again.</li>
+<li><strong>After a restart:</strong> nothing to do, LocSim starts its connection when needed.</li>
 <li><strong>After an iOS update, a device reset or clearing trusted computers:</strong> create a new pairing file (steps 3 and 4).</li>
 </ul>
 <p>Something not working? See <a href="/support/">Support</a>.</p>

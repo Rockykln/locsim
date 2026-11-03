@@ -19,8 +19,10 @@ Each upload of a version needs a higher build number than the last one.
 1. **App record.** In [App Store Connect](https://appstoreconnect.apple.com), create
    a new iOS app named **LocSim: Location Simulator** with the bundle ID
    `com.rockykln.locsim`. The home screen keeps the short name *LocSim*. Privacy
-   policy, support and beta pages: https://locsim.rockykln.com (source in `site/`). Register the bundle ID
-   under *Certificates, Identifiers & Profiles* first if it is not listed.
+   policy, support and beta pages: https://locsim.rockykln.com (source in `site/`). Register the bundle IDs
+   `com.rockykln.locsim` and `com.rockykln.locsim.tunnel` under *Certificates,
+   Identifiers & Profiles* first if they are not listed, both with the *Network
+   Extensions* capability.
 2. **API key.** Under *Users and Access > Integrations > App Store Connect API*,
    create a team key with the *Admin* role (required for cloud-managed signing).
    Download the `.p8` file; it can only be downloaded once.
@@ -78,5 +80,8 @@ README). Inviting people outside the team requires external testing:
   is excluded from availability until a French declaration is filed.
 - If the Developer Disk Image is missing, the app downloads it from a public GitHub
   repository and verifies it by SHA-256. Mention this in the review notes.
-- Testers need the same prerequisites as for a source build: Developer Mode,
-  LocalDevVPN and their own pairing file.
+- Testers need the same prerequisites as for a source build: Developer Mode and their
+  own pairing file.
+- The packet tunnel makes App Review treat LocSim as a possible VPN app (guideline 5.4,
+  organization accounts only). The review notes must explain that it only reaches the
+  device itself, and China should stay excluded from availability.

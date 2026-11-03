@@ -41,7 +41,6 @@
 <h2>Bevor du anfängst</h2>
 <ul>
 <li>LocSim ist auf deinem iPhone installiert (iOS 17.4 oder neuer).</li>
-<li><a href="https://apps.apple.com/app/localdevvpn/id6755608044">LocalDevVPN</a> ist aus dem App Store installiert.</li>
 <li>Das Gerät ist per USB verbunden, entsperrt und vertraut dem Computer.</li>
 </ul>
 <h2>1. Entwicklermodus einschalten</h2>
@@ -67,20 +66,19 @@ bash make-pairing.sh</code></pre>
 powershell -ExecutionPolicy Bypass -File make-pairing.ps1</code></pre>
 <h2>4. Datei in LocSim importieren</h2>
 <ol>
-<li>Kopiere <code>rppairing.plist</code> per AirDrop aufs Gerät oder in den LocSim-Ordner im Tab „Dateien“ von Finder oder „Apple-Geräte“. Vermeide Cloud-Speicher.</li>
-<li>Öffne LocSim &gt; Einstellungen &gt; Pairing und importiere die Datei.</li>
-<li>Lösche die Datei vom Computer, denn sie gewährt Zugriff auf das Gerät.</li>
+<li>Ist LocSim installiert, kopiert das Skript die Datei direkt in die App und löscht sie vom Computer. Öffne LocSim, dort ist die Datei dann als importiert markiert.</li>
+<li>Sonst kopiere <code>rppairing.plist</code> per AirDrop aufs Gerät oder in den LocSim-Ordner im Tab „Dateien“ von Finder oder „Apple-Geräte“. Vermeide Cloud-Speicher. Importiere sie dann unter LocSim &gt; Einstellungen &gt; Pairing und lösche sie vom Computer, denn sie gewährt Zugriff auf das Gerät.</li>
 </ol>
 <h2>5. Ersten Standort setzen</h2>
 <ol>
-<li>Verbinde dich mit einem beliebigen WLAN und schalte LocalDevVPN ein. Erlaube beim ersten Mal die VPN-Konfiguration.</li>
+<li>Verbinde dich mit einem beliebigen WLAN. Erlaube die VPN-Konfiguration, wenn iOS danach fragt. LocSim nutzt sie nur, um dieses iPhone zu erreichen.</li>
 <li>Öffne LocSim und erlaube den Zugriff aufs lokale Netzwerk.</li>
 <li>Drücke lange auf die Karte, suche einen Ort oder gib Koordinaten ein und tippe auf „Standort setzen“.</li>
 </ol>
 <p>„Zurücksetzen“ stellt den echten Standort wieder her.</p>
 <h2>Was du wiederholen musst</h2>
 <ul>
-<li><strong>Nach einem Neustart:</strong> nur LocalDevVPN wieder einschalten.</li>
+<li><strong>Nach einem Neustart:</strong> nichts zu tun, LocSim startet die Verbindung bei Bedarf.</li>
 <li><strong>Nach einem iOS-Update, einem Zurücksetzen oder dem Löschen vertrauenswürdiger Computer:</strong> eine neue Pairing-Datei erstellen (Schritte 3 und 4).</li>
 </ul>
 <p>Klappt etwas nicht? Siehe <a href="/de/support/">Support</a>.</p>
