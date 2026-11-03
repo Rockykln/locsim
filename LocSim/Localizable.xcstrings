@@ -3600,6 +3600,35 @@
         }
       }
     },
+    "Paste" : {
+      "comment" : "Demo stand-in for the system paste button",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einsetzen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pegar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coller"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Incolla"
+          }
+        }
+      }
+    },
     "Place or coordinates" : {
       "comment" : "Short search placeholder for narrow screens",
       "localizations" : {

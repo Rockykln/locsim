@@ -1,20 +1,53 @@
 [
   {
     "id": "1-map",
+    "site": true,
     "screenshot": "1-map.png",
+    "readme": true,
     "en": { "title": "Set any location.\nRight on the device.", "subtitle": "Simulate GPS to test location-based apps." },
-    "de": { "title": "Jeden Standort setzen.\nDirekt auf dem Gerät.", "subtitle": "GPS simulieren, um standortbasierte Apps zu testen." }
+    "de": { "title": "Jeden Standort setzen.\nDirekt auf dem Gerät.", "subtitle": "GPS simulieren, um standortbasierte Apps zu testen." },
+    "fr": { "title": "N’importe quelle position.\nSur l’appareil.", "subtitle": "Simulez le GPS pour tester vos apps de localisation." },
+    "es": { "title": "Cualquier ubicación.\nEn el propio iPhone.", "subtitle": "Simula el GPS para probar apps basadas en ubicación." },
+    "it": { "title": "Qualsiasi posizione.\nSul dispositivo.", "subtitle": "Simula il GPS per testare le app basate sulla posizione." }
   },
   {
     "id": "2-search",
+    "site": true,
     "screenshot": "2-search.png",
-    "en": { "title": "Search places or\npaste coordinates.", "subtitle": "Decimal or degrees, minutes, seconds." },
-    "de": { "title": "Orte suchen oder\nKoordinaten einfügen.", "subtitle": "Dezimal oder Grad, Minuten, Sekunden." }
+    "en": { "title": "Search places or\nenter coordinates.", "subtitle": "Decimal or degrees, minutes, seconds." },
+    "de": { "title": "Orte suchen oder\nKoordinaten eingeben.", "subtitle": "Dezimal oder Grad, Minuten, Sekunden." },
+    "fr": { "title": "Cherchez un lieu ou\nsaisissez des coordonnées.", "subtitle": "Décimales ou degrés, minutes, secondes." },
+    "es": { "title": "Busca lugares o\nescribe coordenadas.", "subtitle": "Decimales o grados, minutos y segundos." },
+    "it": { "title": "Cerca luoghi o\ninserisci coordinate.", "subtitle": "Decimali o gradi, minuti, secondi." }
   },
   {
-    "id": "3-favorites",
-    "screenshot": "3-favorites.png",
-    "en": { "title": "Your test locations,\none tap away.", "subtitle": "Save, rename and reorder favorites." },
-    "de": { "title": "Deine Testorte,\nnur einen Tipp entfernt.", "subtitle": "Favoriten sichern, umbenennen und sortieren." }
+    "id": "3-recents",
+    "screenshot": "3-recents.png",
+    "readme": true,
+    "en": { "title": "Paste a link.\nOr go back.", "subtitle": "Apple Maps and Google Maps links, your last five places." },
+    "de": { "title": "Link einfügen.\nOder zurück zum letzten Ort.", "subtitle": "Links aus Apple Karten und Google Maps, die letzten fünf Orte." },
+    "fr": { "title": "Collez un lien.\nOu revenez en arrière.", "subtitle": "Liens Plans et Google Maps, les cinq derniers lieux." },
+    "es": { "title": "Pega un enlace.\nO vuelve atrás.", "subtitle": "Enlaces de Mapas y Google Maps, los cinco últimos lugares." },
+    "it": { "title": "Incolla un link.\nO torna indietro.", "subtitle": "Link di Mappe e Google Maps, gli ultimi cinque luoghi." }
+  },
+  {
+    "id": "4-live",
+    "screenshot": "4-live.png",
+    "readme": true,
+    "en": { "title": "Clearly marked\nas simulated.", "subtitle": "Live Activity on the Lock Screen, Clear in one tap." },
+    "de": { "title": "Klar erkennbar\nals simuliert.", "subtitle": "Live-Aktivität auf dem Sperrbildschirm, mit einem Tipp zurück." },
+    "fr": { "title": "Clairement indiqué\ncomme simulé.", "subtitle": "Activité en direct sur l’écran verrouillé, réinitialisation en un geste." },
+    "es": { "title": "Siempre marcado\ncomo simulado.", "subtitle": "Actividad en directo en la pantalla bloqueada, restablecer con un toque." },
+    "it": { "title": "Sempre indicato\ncome simulato.", "subtitle": "Attività in tempo reale sulla schermata di blocco, ripristino con un tocco." }
+  },
+  {
+    "id": "5-favorites",
+    "site": true,
+    "screenshot": "5-favorites.png",
+    "en": { "title": "Your test locations,\none tap away.", "subtitle": "Save, rename and reorder favorites. Or ask Siri." },
+    "de": { "title": "Deine Testorte,\nnur einen Tipp entfernt.", "subtitle": "Favoriten sichern, umbenennen und sortieren. Oder Siri fragen." },
+    "fr": { "title": "Vos lieux de test,\nà portée de doigt.", "subtitle": "Enregistrez, renommez et triez vos favoris. Ou demandez à Siri." },
+    "es": { "title": "Tus lugares de prueba,\na un toque.", "subtitle": "Guarda, renombra y ordena favoritos. O pídeselo a Siri." },
+    "it": { "title": "I tuoi luoghi di test,\na un tocco.", "subtitle": "Salva, rinomina e ordina i preferiti. Oppure chiedi a Siri." }
   }
 ]

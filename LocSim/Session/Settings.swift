@@ -56,14 +56,69 @@ struct Favorite: Codable, Identifiable, Hashable {
     var coordinate: CLLocationCoordinate2D { .init(latitude: latitude, longitude: longitude) }
 }
 
+extension Favorite {
+    // Fields added later get defaults, so older and newer data both still load.
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = (try? c.decode(UUID.self, forKey: .id)) ?? UUID()
+        name = (try? c.decode(String.self, forKey: .name)) ?? ""
+        latitude = try c.decode(Double.self, forKey: .latitude)
+        longitude = try c.decode(Double.self, forKey: .longitude)
+    }
+}
+
+/// Decodes a stored list entry by entry: one unreadable entry must not cost all the others.
+private struct Lossy<Element: Decodable>: Decodable {
+    let elements: [Element]
+
+    // Accepts any value, so the container always moves on past a bad entry.
+    private struct Skip: Decodable {
+        init(from decoder: Decoder) {}
+    }
+
+    init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        var result: [Element] = []
+        while !container.isAtEnd {
+            if let element = try? container.decode(Element.self) {
+                result.append(element)
+            } else {
+                _ = try? container.decode(Skip.self)
+            }
+        }
+        elements = result
+    }
+}
+
+enum StoredList {
+    /// nil when there is data that cannot be read at all; the caller then keeps it untouched.
+    static func load<Element: Decodable>(_ key: String) -> [Element]? {
+        guard let data = UserDefaults.standard.data(forKey: key) else { return [] }
+        return (try? JSONDecoder().decode(Lossy<Element>.self, from: data))?.elements
+    }
+
+    static func save<Element: Encodable>(_ items: [Element], _ key: String) {
+        guard let data = try? JSONEncoder().encode(items) else { return }
+        UserDefaults.standard.set(data, forKey: key)
+    }
+}
+
 @MainActor
 final class FavoriteList: ObservableObject {
     static let shared = FavoriteList()
 
+    // Data that could not be read at all stays as it is until the list is changed on purpose.
+    private var unreadable = false
+
     @Published var items: [Favorite] {
         didSet {
             guard !Demo.isOn else { return }
-            UserDefaults.standard.set(try? JSONEncoder().encode(items), forKey: SettingsKey.favorites)
+            if unreadable {
+                UserDefaults.standard.set(UserDefaults.standard.data(forKey: SettingsKey.favorites),
+                                          forKey: SettingsKey.favorites + ".unreadable")
+                unreadable = false
+            }
+            StoredList.save(items, SettingsKey.favorites)
             // So Siri knows the favorite names in "Set LocSim to …".
             LocSimShortcuts.updateAppShortcutParameters()
         }
@@ -74,8 +129,9 @@ final class FavoriteList: ObservableObject {
             items = Demo.favorites
             return
         }
-        let data = UserDefaults.standard.data(forKey: SettingsKey.favorites)
-        items = data.flatMap { try? JSONDecoder().decode([Favorite].self, from: $0) } ?? []
+        let loaded: [Favorite]? = StoredList.load(SettingsKey.favorites)
+        items = loaded ?? []
+        unreadable = loaded == nil
     }
 
     /// The favorite at this spot, within a meter, so the star shows it is already saved.
@@ -101,13 +157,12 @@ final class RecentList: ObservableObject {
     @Published private(set) var items: [RecentLocation] {
         didSet {
             guard !Demo.isOn else { return }
-            UserDefaults.standard.set(try? JSONEncoder().encode(items), forKey: SettingsKey.recents)
+            StoredList.save(items, SettingsKey.recents)
         }
     }
 
     init() {
-        let data = UserDefaults.standard.data(forKey: SettingsKey.recents)
-        items = Demo.isOn ? [] : data.flatMap { try? JSONDecoder().decode([RecentLocation].self, from: $0) } ?? []
+        items = Demo.isOn ? Demo.recents : StoredList.load(SettingsKey.recents) ?? []
     }
 
     func add(_ c: CLLocationCoordinate2D, name: String?) {

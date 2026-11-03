@@ -341,7 +341,7 @@ struct MapScreen: View {
                 guard (try? await Task.sleep(nanoseconds: 4_000_000_000)) != nil else { return }
                 self.searchError = nil
             }
-        } else if searchFocused || Demo.screen == .search, hasSuggestions {
+        } else if searchFocused || Demo.screen == .search || Demo.screen == .recents, hasSuggestions {
             suggestions
         }
     }
@@ -477,6 +477,13 @@ struct MapScreen: View {
             Spacer(minLength: 8)
             if resolving != nil {
                 ProgressView().controlSize(.small)
+            } else if Demo.isOn {
+                // The Simulator's pasteboard is not reliable for screenshots; this looks like the
+                // enabled system button.
+                Button(String(localized: "Paste", comment: "Demo stand-in for the system paste button")) {}
+                    .buttonStyle(.borderedProminent)
+                    .buttonBorderShape(.capsule)
+                    .controlSize(.small)
             } else {
                 // Links copied from Maps or Safari are often only a URL on the pasteboard, not text.
                 PasteButton(supportedContentTypes: [.plainText, .text, .url]) { providers in
@@ -1015,7 +1022,7 @@ struct MapScreen: View {
             search.query = Demo.query
         case .favorites:
             showFavorites = true
-        case .map, nil:
+        case .map, .recents, .live, nil:
             break
         }
     }

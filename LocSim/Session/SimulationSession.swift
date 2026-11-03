@@ -118,6 +118,18 @@ final class SimulationSession: ObservableObject {
             target = Demo.place.coordinate
             targetName = Demo.place.name
             simulate(target)
+            #if DEBUG
+            if Demo.screen == .live {
+                // Shortly after launch, once the stale activities of earlier runs are gone.
+                Task { [weak self] in
+                    try? await Task.sleep(nanoseconds: 1_000_000_000)
+                    guard let self else { return }
+                    self.liveActivity.showDemo(
+                        name: Demo.place.name, coordinate: CoordinateParser.format(Demo.place.coordinate),
+                        startedAt: Demo.activityStart)
+                }
+            }
+            #endif
             return
         }
         tunnel.onDrop = { [weak self] in
