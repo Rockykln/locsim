@@ -1,70 +1,74 @@
 # LocSim
 
 [![Build](https://github.com/Rockykln/locsim/actions/workflows/build.yml/badge.svg)](https://github.com/Rockykln/locsim/actions/workflows/build.yml)
-![Platform](https://img.shields.io/badge/iOS-17.4%2B-lightgrey)
-![Swift](https://img.shields.io/badge/Swift-5-orange)
+![iOS](https://img.shields.io/badge/iOS-17.4%2B-lightgrey)
+[![TestFlight](https://img.shields.io/badge/TestFlight-public%20beta-0a84ff)](#testflight)
+![Languages](https://img.shields.io/badge/languages-en%20%7C%20de%20%7C%20fr%20%7C%20es%20%7C%20it-lightgrey)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-Simulate the GPS location of an iPhone directly on the device, without a computer
-attached. Intended for developing and testing location-based apps.
-
-LocSim opens a RemoteXPC tunnel to the iPhone it runs on, through its own local
-tunnel extension, and drives the same DVT location simulation service that Xcode uses.
+Simulate the location of an iPhone on the iPhone itself, without a computer attached.
+A developer tool for testing location-based apps.
 
 <p align="center">
   <picture>
+    <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset="docs/images/screenshots-dark-narrow.webp">
+    <source media="(max-width: 600px)" srcset="docs/images/screenshots-light-narrow.webp">
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/screenshots-dark.webp">
-    <img src="docs/images/screenshots-light.webp" alt="LocSim: map with an active simulated location, place search and favorites" width="800">
+    <img src="docs/images/screenshots-light.webp" alt="LocSim: map with an active simulated location, recent locations and the Live Activity on the Lock Screen" width="800">
   </picture>
 </p>
 
+<p align="center">
+  <a href="#testflight">Beta on TestFlight</a> ·
+  <a href="https://locsim.rockykln.com/setup/">Setup guide</a> ·
+  <a href="https://locsim.rockykln.com/support/">Support</a> ·
+  <a href="https://locsim.rockykln.com">Website</a>
+</p>
+
+LocSim uses the same location simulation service as Xcode. It reaches the iPhone's own
+developer services through a small local tunnel, after a one-time pairing with a
+computer.
+
 ## Features
 
-- Set a location by long-pressing the map, searching for a place or entering
-  coordinates (`48.8566, 2.3522`, `48,8566 2,3522`, `48°51'23.8"N 2°21'07.9"E`)
-- Favorites with rename, reorder and copy
-- Keeps the simulated location while the app is in the background
-- Starts and stops its local tunnel on its own; no other app is needed
-- Reuses an existing tunnel after switching from Wi-Fi to cellular
-- Installs the Developer Disk Image on demand when it is not mounted
-- Restores the real location on Clear or when the app is closed
-- English and German; the language follows *Settings > Apps > LocSim > Language*
+**Setting a location**
 
-## How it works
+- Long-press the map, search for a place or enter coordinates
+  (`48.8566, 2.3522`, `48,8566 2,3522`, `48°51'23.8"N 2°21'07.9"E`)
+- Paste coordinates, Apple Maps or Google Maps links
+- Favorites and the last five locations
 
-```
-LocSim ──TCP──▶ 10.7.0.1:<port> ──LocSimTunnel──▶ remotepairingd (same iPhone)
-                                                    │ RPPairing + RemoteXPC tunnel
-                                                    ▼
-                                      com.apple.instruments.dtservicehub
-                                      (DVT LocationSimulation)
-```
+**While a location is simulated**
 
-1. LocSim starts its packet tunnel extension, which only routes `10.7.0.0/24`. It
-   swaps the source and destination of each packet, so the traffic reaches this
-   iPhone's own services. It has no server and no settings, runs while a connection
-   needs it and ends itself after three idle minutes.
-2. The tunnel is opened on the default RPPairing port 49152. If that fails, the
-   port is discovered via Bonjour (`_remotepairing._tcp`), as it can differ on
-   some devices.
-3. [idevice](https://github.com/jkcoxson/idevice) performs pair-verify with the
-   imported RPPairing file and builds the tunnel.
-4. If the Developer Disk Image is missing it is installed (cryptex on iOS 26.4+,
-   personalized image before).
-5. The location is sent over DVT and resent periodically. iOS resets it as soon
-   as the connection closes.
+- Live Activity on the Lock Screen (since when) and in the Dynamic Island (timer), with a
+  Clear button; can be turned off in Settings
+- Keeps the location while LocSim is in the background, also on cellular
+- Shortcuts and Siri: set a favorite or coordinates, clear the location
+- Clear, or closing LocSim, restores the real location
 
-## TestFlight
+**Under the hood**
 
-Beta builds are available through TestFlight on request.
-[Request access by email](mailto:locsim@rockykln.com?subject=LocSim%20beta%20access%20request&body=Hello%2C%0A%0AI%20would%20like%20to%20join%20the%20LocSim%20beta%20on%20TestFlight.%0A%0AName%3A%0AApple%20ID%20email%20for%20the%20invite%3A%0ADevice%20%28for%20example%20iPhone%2016%20Pro%29%3A%0AiOS%20version%20%28Settings%20%3E%20General%20%3E%20About%29%3A%0AWhat%20I%20want%20to%20test%20with%20LocSim%3A%0A%0A%5B%20%5D%20Developer%20Mode%20is%20enabled%20on%20the%20device%0A%5B%20%5D%20I%20can%20create%20a%20pairing%20file%20with%20a%20Mac%2C%20Windows%20or%20Linux%20computer%0A%0AThanks%0A) and fill in the prepared fields.
+- Its own local tunnel; no other app is needed
+- Installs the Developer Disk Image when iOS has not mounted it, after asking before the
+  download (about 16 MB); it can also be downloaded in advance in Settings
+- Reconnects on its own after network changes
+- English, German, French, Spanish and Italian; the language follows
+  *Settings > Apps > LocSim > Language*
 
 ## Requirements
 
-- iPhone on iOS 17.4 or later
+- iPhone on iOS 17.4 or later with Developer Mode on
+- iPad: runs as an iPhone app; not tested extensively
 - Wi-Fi only while the connection is established (any network, no internet
   required). Once connected, locations can be changed on cellular.
 - A Mac, Windows or Linux computer once, for Developer Mode and the pairing file
+
+## TestFlight
+
+- **Public Beta**: stable test builds. [Join on TestFlight](https://testflight.apple.com/join/vyrbctky).
+- **Early Access**: new features land here first. Request a personal invite on the
+  [website](https://locsim.rockykln.com/#beta); it prepares the email for you.
+- **Development builds**: change often and can break. Also on request through the website.
 
 ## Installation
 
@@ -99,12 +103,56 @@ closing the app, the next connection needs Wi-Fi again.
 After a restart, nothing has to be set up again. A new pairing file is
 needed after an iOS update, a device reset or after clearing trusted computers.
 
+## How it works
+
+<details>
+<summary>Tunnel, pairing and location service</summary>
+
+```
+LocSim ──TCP──▶ 10.7.0.1:<port> ──LocSimTunnel──▶ remotepairingd (same iPhone)
+                                                    │ RPPairing + RemoteXPC tunnel
+                                                    ▼
+                                      com.apple.instruments.dtservicehub
+                                      (DVT LocationSimulation)
+```
+
+1. LocSim starts its packet tunnel extension, which only routes the host
+   `10.7.0.1`. It swaps the source and destination of each packet, so the traffic
+   reaches this iPhone's own services. It has no server and no settings, and stops
+   with LocSim, or by itself about two minutes after LocSim was closed.
+2. The tunnel is opened on the default RPPairing port 49152. If that fails, the
+   port is discovered via Bonjour (`_remotepairing._tcp`), as it can differ on
+   some devices.
+3. [idevice](https://github.com/jkcoxson/idevice) performs pair-verify with the
+   imported RPPairing file and builds the tunnel.
+4. If the Developer Disk Image is missing it is installed (cryptex on iOS 26.4+,
+   personalized image before).
+5. The location is sent over DVT and resent periodically. iOS resets it as soon
+   as the connection closes.
+
+</details>
+
+## Troubleshooting
+
+Errors show a code in the status line, for example LS-202. Tap it for details and
+*Copy Details* for a support request; the technical log is under *Settings > Log*.
+All codes and what to do are on the [support page](https://locsim.rockykln.com/support/).
+
+## Privacy
+
+No account, no analytics, no ads. The pairing file, favorites and recent locations stay
+on the device, and the local tunnel sends nothing off it. LocSim only talks to Apple
+Maps for map tiles and search, to GitHub when the Developer Disk Image has to be
+downloaded, and to Apple's signing server when it is installed. Details:
+[privacy policy](https://locsim.rockykln.com/privacy/).
+
 ## Building
 
 Requires Xcode and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
 ```
 curl -fLO https://github.com/jkcoxson/idevice/releases/download/v0.1.68/idevice-xcframework-v0.1.68.zip
+echo "c9eccdd1942de756d746a2569d93302774ab0eff1cff314ec8118f768b3d8dc7  idevice-xcframework-v0.1.68.zip" | shasum -a 256 -c -
 unzip -q idevice-xcframework-v0.1.68.zip
 mkdir -p Frameworks && mv swift/IDevice.xcframework Frameworks/ && rm -rf swift idevice-xcframework-v0.1.68.zip
 echo "DEVELOPMENT_TEAM = <your team id>" > Config/Local.xcconfig
@@ -121,49 +169,37 @@ and shown under *Settings > About*.
 GitHub Actions checks that every push and pull request builds. TestFlight
 uploads are described in [docs/RELEASING.md](docs/RELEASING.md).
 
+## Tests
+
+The logic without UIKit or the device library lives in `Packages/LocSimCore` and
+builds on macOS and Linux:
+
+```
+swift test --package-path Packages/LocSimCore
+```
+
+CI runs these tests on Linux; the iOS build only starts when they pass.
+
 ## Project layout
 
 ```
 LocSim/
   App/        App entry and lifecycle
+  Intents/    Shortcuts and Siri
   Device/     idevice bridge, port discovery, pairing and DDI storage
-  Session/    Spoofing state, keep-alive, search, settings
+  Session/    Simulation state, keep-alive, search, settings
   Views/      SwiftUI screens
 LocSimTunnel/ Packet tunnel extension
-Shared/       Tunnel addresses, used by the app and the extension
+LocSimWidgets/ Live Activity extension
+LiveActivity/ Live Activity types shared by the app and the extension
+Packages/     LocSimCore: parser, tunnel packets, ports, error codes, with unit tests
 Config/       Shared xcconfig, local overrides are git-ignored
-tools/        Pairing file creation (macOS, Linux, Windows)
+docs/         Release process, roadmap, TestFlight notes, README images
+design/       App icon, mockups, screenshots, social images
+site/         Website locsim.rockykln.com (Cloudflare Worker, static files in public/)
+tools/        Pairing file creation (macOS, Linux, Windows), screenshots,
+              fetch-vendor.sh to mirror all pinned downloads into vendor/
 ```
-
-## Troubleshooting
-
-Errors show a code in the status line; tap it for details and *Copy Details* for a
-support request. The technical log is under *Settings > Log*.
-
-| Code | Meaning | What to do |
-| --- | --- | --- |
-| LS-100 | No pairing file | Import one under *Settings > Pairing* |
-| LS-101 | Pairing file not valid | Create a new one with `tools/make-pairing.sh` |
-| LS-102 | Lockdown pairing file | LocSim needs an RPPairing file from `tools/make-pairing.sh` |
-| LS-201 | Device not reachable | Join a Wi-Fi network |
-| LS-202 | Pairing service unavailable | Join Wi-Fi, enable *Show this iPhone when on Wi-Fi*, allow Local Network for LocSim |
-| LS-203 | Pairing rejected | Create a new pairing file, e.g. after an iOS update |
-| LS-204 | Connection lost | Check Wi-Fi; LocSim reconnects on its own while a location is active |
-| LS-205 | Local connection not started | Allow the VPN configuration when iOS asks |
-| LS-300 | Developer Disk Image not available | Check that Developer Mode is on |
-| LS-301 | Download failed | Check the internet connection |
-| LS-302 | Developer Disk Image not installed | Retry with an internet connection |
-| LS-400 | Location service unavailable | Turn on *Mount Automatically* or restart the device |
-| LS-401 | Location not set | Try again |
-| LS-402 | Location not cleared | Close LocSim to restore the real location |
-| LS-900 | Unexpected error | Send the copied details |
-
-## Privacy
-
-LocSim has no analytics and no accounts. Its local tunnel carries only traffic to
-the device itself and collects nothing. Network traffic goes to the device
-itself, Apple Maps for map tiles and search, GitHub when the Developer Disk Image
-is downloaded and Apple's signing server when it is installed.
 
 ## Disclaimer
 
@@ -180,7 +216,8 @@ not affiliated with or endorsed by Apple.
 - [StikDebug](https://github.com/StikDebug/StikDebug), which showed the on-device
   approach
 
-See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and, for the Rust crates inside
+idevice, [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).
 
 ## License
 

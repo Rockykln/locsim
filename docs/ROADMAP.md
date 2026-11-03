@@ -6,29 +6,31 @@ Effort: S = up to a day, M = a few days, L = a week or more.
 
 | # | Item | Effort | Status |
 | --- | --- | --- | --- |
-| 1 | Live Activity while simulating | M | Approved |
+| 1 | Live Activity while simulating | M | Done |
 | 2 | Home Screen widget | M | Approved |
-| 3 | Shortcuts and Siri (App Intents) | M | Approved |
+| 3 | Shortcuts and Siri (App Intents) | M | Done |
 | 4 | Control Center control | S | Approved |
 | 5 | Route simulation | L | Proposed |
 | 6 | GPX import and export | M | Proposed |
-| 7 | Recent locations | S | Proposed |
+| 7 | Recent locations | S | Done |
 | 8 | Long press to drop a pin | S | Done |
 | 9 | Degrees, minutes, seconds | S | Done |
 | 10 | Pairing file check | S | Done |
-| 11 | Unit tests in CI | M | Proposed |
-| 12 | Accessibility pass | M | Approved |
+| 11 | Unit tests in CI | M | Done |
+| 12 | Accessibility pass | M | Done |
 | 13 | iPad layout | M | Approved |
-| 14 | Privacy policy page | S | Approved, before release |
+| 14 | Privacy policy page | S | Done |
 | 15 | More languages | S each | Approved |
 | 16 | Welcome screen with setup steps | S | Done |
+| 17 | Landscape on iPhone | M | Approved |
+| 18 | iPhone Duo layout (before the iPad layout) | M | Approved |
 
 ## Features
 
 ### 1. Live Activity while simulating
 
-Lock Screen and Dynamic Island show the simulated place, how long it has been
-active and a Stop button. Makes it obvious that the location is not real.
+Lock Screen and Dynamic Island show the simulated place, since when it is active
+(a running timer in the expanded Dynamic Island) and a Clear button. Makes it obvious that the location is not real.
 
 Note: a Live Activity cannot keep the connection alive; the app keeps doing that.
 
@@ -43,7 +45,8 @@ through the app.
 ### 3. Shortcuts and Siri (App Intents)
 
 Actions such as *Set location to favorite*, *Set coordinates* and *Clear
-location*, usable in Shortcuts automations and with Siri. Opens the app to run.
+location*, usable in Shortcuts automations and with Siri. Setting a location opens the app;
+clearing runs in the background.
 
 ### 4. Control Center control
 
@@ -63,7 +66,7 @@ Import waypoints and tracks as favorites or routes; export favorites to share th
 
 ### 7. Recent locations
 
-The last ten simulated places, available from the search field.
+The last five simulated places, available from the search field; can be turned off.
 
 ### 8. Long press to drop a pin
 
@@ -92,6 +95,24 @@ glass panels.
 ### 13. iPad layout
 
 Use the larger screen, e.g. favorites and settings in a sidebar next to the map.
+Comes after the iPhone Duo layout (18), which it can build on.
+
+### 17. Landscape on iPhone
+
+Map in landscape with the panel at the side instead of below, so it covers less of the
+map. Upside-down portrait stays off: iOS does not offer it on iPhones with Face ID.
+Fits together with the iPad layout (13).
+
+### 18. iPhone Duo layout
+
+Optimized for the foldable iPhone Duo before the iPad: it is an iPhone, runs the
+iPhone's iOS and is far more likely to be used with a SIM card on the go, where a
+simulated location matters most. Needs the iOS 27.1 SDK, which lets the app use the
+whole inner screen instead of running with bars at the sides, and a layout for the
+unfolded screen (map with the panel at the side, like landscape in 17) that also works
+folded. Xcode's Device Hub can simulate both poses. From April 2027 App Store
+submissions need iPhone Duo screenshots, so `tools/screenshots.sh` and the mockups need
+a Duo size too.
 
 ## Distribution
 
@@ -102,4 +123,5 @@ that LocSim collects no data.
 
 ### 15. More languages
 
-Only languages whose translation can be verified. German is done.
+Only languages whose translation can be verified. German, French, Spanish and Italian
+are done.

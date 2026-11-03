@@ -1,11 +1,14 @@
-First beta of LocSim. LocalDevVPN is no longer needed.
+Build 4: more reliable connection, recent locations, pasting coordinates, Shortcuts, a Live Activity and accessibility.
 
 Please test:
-- Setup: run the setup script with the iPhone connected by USB. It copies the pairing file into LocSim. Allow the VPN configuration when iOS asks.
-- Setting locations: long-press the map, search for a place, enter coordinates (decimal or degrees/minutes/seconds), use favorites.
-- Keeping it: leave the app, lock the device, switch to cellular. The location should stay simulated until you tap Clear.
-- Clear: the real location must come back, and the VPN icon disappears.
-- After a device restart: setting a location must work again.
-- Without a pairing file: Try Without a Device on the welcome screen.
+- Connection: set a location, leave the app, lock the device, switch to cellular and back. The location should stay simulated until you tap Clear.
+- Another VPN: with another VPN selected, Set Location asks before it replaces it.
+- Recent locations: the search field shows the last five. Clear removes them; Settings > Map > Recent Locations turns them off.
+- Paste: copy coordinates or an Apple Maps or Google Maps link, tap the search field and then Paste.
+- Favorites: the star is filled for a saved place; tapping it removes it.
+- Live Activity: while a location is active, the Lock Screen shows it with the time it was set and the expanded Dynamic Island with a running timer. Its Clear button ends the simulation. When LocSim was stopped in the background it says "Open LocSim to check the location".
+- Shortcuts and Siri: "Set LocSim to <favorite>", "Stop LocSim", and the actions Set Coordinates and Clear Location in the Shortcuts app.
+- Pairing: replace the pairing file with the setup script while a location is active. LocSim should close the old connection and check the new file.
+- VoiceOver and large text: status changes are announced, buttons are not cut off.
 
 If something fails, tap the status line, choose Copy Details and send it with your feedback.

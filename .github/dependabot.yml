@@ -1,0 +1,11 @@
+version: 2
+updates:
+  # Keeps the SHA-pinned actions current. The idevice and XcodeGen downloads in the
+  # workflows are pinned by version and SHA-256 and are updated by hand.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    # A release is only proposed after a week, not on its first day.
+    cooldown:
+      default-days: 7

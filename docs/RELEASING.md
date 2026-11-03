@@ -5,14 +5,17 @@ workflow archives with automatic, cloud-managed signing through the App Store Co
 API, so no certificates or provisioning profiles are stored in the repository or in
 secrets.
 
-## Build numbers
+## Version and build number
 
-Each upload of a version needs a higher build number than the last one.
+Both come from `project.yml`; the workflow does not override them.
 
-- **Xcode:** raise `CURRENT_PROJECT_VERSION` in `project.yml`, run `xcodegen generate`,
-  then *Product > Archive* and *Distribute App > App Store Connect*.
-- **Workflow:** uses its run number, which starts at 1 and may be lower than a number
-  already used from Xcode. Raise `MARKETING_VERSION` first if it is.
+- `MARKETING_VERSION` is the version shown to testers. Raise it for a new release.
+- `CURRENT_PROJECT_VERSION` is the build number. App Store Connect rejects an upload
+  whose build number is not higher than every earlier upload of the same version, from
+  Xcode or from the workflow. Raise it in `project.yml` and commit before every upload.
+
+To upload from Xcode, run `xcodegen generate` after raising the numbers, then
+*Product > Archive* and *Distribute App > App Store Connect*.
 
 ## One-time setup
 
@@ -22,7 +25,8 @@ Each upload of a version needs a higher build number than the last one.
    policy, support and beta pages: https://locsim.rockykln.com (source in `site/`). Register the bundle IDs
    `com.rockykln.locsim` and `com.rockykln.locsim.tunnel` under *Certificates,
    Identifiers & Profiles* first if they are not listed, both with the *Network
-   Extensions* capability.
+   Extensions* capability, and `com.rockykln.locsim.widgets` (Live Activity) without
+   extra capabilities.
 2. **API key.** Under *Users and Access > Integrations > App Store Connect API*,
    create a team key with the *Admin* role (required for cloud-managed signing).
    Download the `.p8` file; it can only be downloaded once.
@@ -41,17 +45,24 @@ Each upload of a version needs a higher build number than the last one.
 
 5. **Testers.** Under *TestFlight > Internal Testing*, create a group and add
    team members.
-6. **Before going public:** under *Settings > Actions > General*, require approval
-   for workflow runs from outside collaborators, and delete old workflow runs.
+6. **Repository settings** (set on 4 November 2026): workflow runs from all outside
+   contributors need approval (*Settings > Actions > General*), actions must be pinned
+   to a full SHA, the `testflight` environment needs approval and allows only `v*` tags,
+   and rulesets keep `main` and `v*` tags from being deleted or force-pushed by anyone
+   but admins. Secret scanning with push protection and Dependabot alerts are on.
 
 ## Uploading a build
 
-- Run the workflow manually under *Actions > testflight > Run workflow*, or
-- push a tag: `git tag v0.1.0 && git push origin v0.1.0`
+1. Raise `CURRENT_PROJECT_VERSION` in `project.yml` (and `MARKETING_VERSION` for a new
+   release) and commit.
+2. Tag the commit with `v`, `MARKETING_VERSION`, a dash and `CURRENT_PROJECT_VERSION`,
+   e.g. for version 1.0 build 4: `git tag v1.0-4 && git push origin v1.0-4`. The
+   workflow fails if the tag does not match `project.yml`.
+3. Approve the run in the `testflight` environment.
 
-The build number is the workflow run number and increases with every run. The
-version shown to testers is `MARKETING_VERSION` in `project.yml`; raise it for a
-new release.
+A manual run under *Actions > testflight > Run workflow* must select the tag (e.g.
+`v1.0-4`) under *Use workflow from*, not a branch: the environment only allows `v*` tags,
+and the tag check fails for any other ref.
 
 Processing in App Store Connect takes a few minutes after the upload. The build
 then appears for the internal group.
@@ -64,8 +75,8 @@ Build > Test Details* after processing.
 
 ## External testers
 
-Access requests arrive at locsim@rockykln.com (see the TestFlight section of the
-README). Inviting people outside the team requires external testing:
+Access requests for Early Access and development builds arrive at locsim@rockykln.com
+(the website's beta dialog, locsim.rockykln.com/#beta, prepares the email). Inviting people outside the team requires external testing:
 
 1. In App Store Connect, create an external group and fill in the beta app
    information (description, feedback email, privacy policy URL).
@@ -85,3 +96,11 @@ README). Inviting people outside the team requires external testing:
 - The packet tunnel makes App Review treat LocSim as a possible VPN app (guideline 5.4,
   organization accounts only). The review notes must explain that it only reaches the
   device itself, and China should stay excluded from availability.
+
+## Setup guide
+
+The setup guide links the scripts at a fixed commit, not at `main`, so a later change
+cannot reach users before it is part of a build. After uploading a build, point the
+links at the commit the build was made from and commit the pages:
+
+    tools/pin-setup.sh <commit>

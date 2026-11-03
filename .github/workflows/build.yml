@@ -9,19 +9,46 @@ on:
 permissions:
   contents: read
 
+# A newer push to the same branch or pull request replaces the running build.
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
 env:
   IDEVICE_VERSION: v0.1.68
   IDEVICE_SHA256: c9eccdd1942de756d746a2569d93302774ab0eff1cff314ec8118f768b3d8dc7
 
 jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Unit tests
+        run: swift test --package-path Packages/LocSimCore
+
   build:
-    runs-on: macos-15
+    needs: test
+    runs-on: macos-26
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
+      # The newest Xcode 26 on the image, so an image update does not break the build.
       - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_26.3.app
+        run: |
+          xcode=$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)
+          sudo xcode-select -s "$xcode"
+          xcodebuild -version
 
       - name: Fetch IDevice.xcframework
         run: |
@@ -48,9 +75,26 @@ jobs:
           xcodebuild -project LocSim.xcodeproj -scheme LocSim -configuration Release \
             -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
-            build | tee build.log | grep -E "error:|warning: .*LocSim|BUILD" || true
-          test -d build/Build/Products/Release-iphoneos/LocSim.app
-          test -d build/Build/Products/Release-iphoneos/LocSim.app/PlugIns/LocSimTunnel.appex
+            build 2>&1 | tee build.log > /dev/null
+
+      - name: Warnings
+        run: |
+          grep -E "warning: .*LocSim" build.log | sort -u || true
+          grep -E "^\*\* BUILD" build.log || true
+
+      - name: Check bundle
+        run: |
+          app=build/Build/Products/Release-iphoneos/LocSim.app
+          appex="$app/PlugIns/LocSimTunnel.appex"
+          test -d "$appex"
+          point=$(plutil -extract NSExtension.NSExtensionPointIdentifier raw "$appex/Info.plist")
+          test "$point" = "com.apple.networkextension.packet-tunnel"
+          widgets="$app/PlugIns/LocSimWidgets.appex"
+          test "$(plutil -extract NSExtension.NSExtensionPointIdentifier raw "$widgets/Info.plist")" = "com.apple.widgetkit-extension"
+          test -f "$app/PrivacyInfo.xcprivacy" && test -f "$appex/PrivacyInfo.xcprivacy"
+          for lang in de fr es it; do
+            test -f "$app/$lang.lproj/Localizable.strings" || { echo "missing $lang.lproj/Localizable.strings"; exit 1; }
+          done
 
       - name: Build log
         if: failure()

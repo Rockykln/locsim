@@ -1,6 +1,6 @@
 # Third-Party Notices
 
-LocSim links the following software into the app binary.
+LocSim includes or is based on the following software.
 
 ## idevice
 
@@ -17,8 +17,10 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-idevice itself depends on further Rust crates under MIT and/or Apache-2.0
-licenses; see the idevice repository for the full dependency list.
+The framework statically contains further Rust crates, among them rustls, aws-lc-rs
+and aws-lc-sys (AWS-LC, derived from BoringSSL and OpenSSL) and ring, under MIT,
+Apache-2.0, ISC, BSD-3-Clause and CDLA-Permissive-2.0. The full list with versions,
+copyright notices and license texts is in [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).
 
 ## StosVPN
 

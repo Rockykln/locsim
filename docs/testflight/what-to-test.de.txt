@@ -1,11 +1,14 @@
-Erste Beta von LocSim. LocalDevVPN ist nicht mehr nötig.
+Build 4: zuverlässigere Verbindung, letzte Orte, Koordinaten einfügen, Kurzbefehle, Live-Aktivität und Barrierefreiheit.
 
-Bitte testen:
-- Einrichtung: Skript aus der Anleitung mit per USB verbundenem iPhone ausführen. Es kopiert die Pairing-Datei in LocSim. Die VPN-Konfiguration erlauben, wenn iOS fragt.
-- Standort setzen: lang auf die Karte drücken, einen Ort suchen, Koordinaten eingeben (dezimal oder Grad/Minuten/Sekunden), Favoriten nutzen.
-- Halten: App verlassen, Gerät sperren, ins Mobilfunknetz wechseln. Der Standort soll simuliert bleiben, bis du auf „Zurücksetzen“ tippst.
-- „Zurücksetzen“: Der echte Standort muss zurückkommen, das VPN-Symbol verschwindet.
-- Nach einem Neustart des Geräts: Standort setzen muss wieder funktionieren.
-- Ohne Pairing-Datei: „Ohne Gerät ausprobieren“ im Willkommensbildschirm.
+Bitte teste:
+- Verbindung: Standort setzen, App verlassen, Gerät sperren, auf Mobilfunk und zurück wechseln. Der Standort sollte simuliert bleiben, bis du auf „Zurücksetzen“ tippst.
+- Anderes VPN: Ist ein anderes VPN ausgewählt, fragt „Standort setzen“, bevor es ersetzt wird.
+- Letzte Orte: Das Suchfeld zeigt die letzten fünf. „Löschen“ entfernt sie, Einstellungen > Karte > Letzte Orte schaltet sie ab.
+- Einfügen: Koordinaten oder einen Link aus Apple Karten oder Google Maps kopieren, ins Suchfeld tippen, dann „Einsetzen“.
+- Favoriten: Der Stern ist bei einem gespeicherten Ort gefüllt; ein Tipp entfernt ihn.
+- Live-Aktivität: Solange ein Standort aktiv ist, zeigt der Sperrbildschirm ihn mit der Uhrzeit, seit der er gilt, und die aufgeklappte Dynamic Island mit einem laufenden Zähler. „Zurücksetzen“ dort beendet die Simulation. Wurde LocSim im Hintergrund beendet, steht dort „Öffne LocSim, um den Standort zu prüfen“.
+- Kurzbefehle und Siri: „LocSim auf <Favorit> setzen“, „LocSim stoppen“ und die Aktionen „Koordinaten setzen“ und „Standort zurücksetzen“ in der Kurzbefehle-App.
+- Pairing: Die Pairing-Datei mit dem Setup-Skript ersetzen, während ein Standort aktiv ist. LocSim sollte die alte Verbindung schließen und die neue Datei prüfen.
+- VoiceOver und große Schrift: Statuswechsel werden angesagt, Knöpfe werden nicht abgeschnitten.
 
-Wenn etwas nicht klappt, tippe auf die Statuszeile, wähle „Details kopieren“ und schick den Text mit deinem Feedback.
+Wenn etwas nicht klappt, tippe auf die Statuszeile, wähle „Details kopieren“ und schick sie mit deinem Feedback.
