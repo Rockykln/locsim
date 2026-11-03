@@ -1,9 +1,11 @@
 import Foundation
+import LocSimCore
 
 /// Stores the imported RPPairing file. Files dropped into Documents are imported
 /// on next access.
 enum PairingStore {
     private static let fileName = "rppairing.plist"
+    // Checked first; other .plist files with "pair" in the name follow, e.g. "rppairing (1).plist".
     private static let dropNames = ["rppairing.plist", "pairingFile.plist", "pairing.plist"]
     /// Set when a file dropped into Documents failed validation, so Settings can say why.
     private(set) static var rejectedDrop = false
@@ -16,6 +18,16 @@ enum PairingStore {
     static var exists: Bool {
         adoptDroppedFile()
         return FileManager.default.fileExists(atPath: storeURL.path)
+    }
+
+    /// Imports a dropped file and reports whether one replaced or added the stored file.
+    @discardableResult
+    static func adoptNow() -> Bool {
+        adoptDroppedFile()
+    }
+
+    static func clearRejection() {
+        rejectedDrop = false
     }
 
     static func load() throws -> Data {
@@ -39,7 +51,7 @@ enum PairingStore {
         rejectedDrop = false
     }
 
-    private static let maxSize = 64 * 1024
+    private static let maxSize = PairingFileCheck.maxSize
 
     private static func read(_ url: URL) throws -> Data {
         let size = (try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
@@ -53,18 +65,14 @@ enum PairingStore {
 
     static func remove() {
         try? FileManager.default.removeItem(at: storeURL)
+        rejectedDrop = false
     }
 
     private static func validate(_ data: Data) throws {
-        let plist = try? PropertyListSerialization.propertyList(from: data, format: nil)
-        guard let dict = plist as? [String: Any] else {
-            throw DeviceError(.pairingInvalid, "Not a property list")
-        }
-        guard dict["private_key"] is Data, dict["public_key"] is Data else {
-            if dict["HostPrivateKey"] != nil {
-                throw DeviceError(.pairingLockdown, "Lockdown pairing file instead of RPPairing")
-            }
-            throw DeviceError(.pairingInvalid, "Missing public_key/private_key")
+        switch PairingFileCheck.check(data) {
+        case .valid: return
+        case .lockdown: throw DeviceError(.pairingLockdown, "Lockdown pairing file instead of RPPairing")
+        case .invalid(let reason): throw DeviceError(.pairingInvalid, reason)
         }
     }
 
@@ -84,11 +92,9 @@ enum PairingStore {
         }
     }
 
-    private static func adoptDroppedFile() {
-        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        for name in dropNames {
-            let url = docs.appendingPathComponent(name)
-            guard FileManager.default.fileExists(atPath: url.path) else { continue }
+    @discardableResult
+    private static func adoptDroppedFile() -> Bool {
+        for url in droppedFiles() {
             let data = try? read(url)
             let valid = data.map { (try? validate($0)) != nil } ?? false
             // The setup script may still be writing it over USB.
@@ -96,14 +102,30 @@ enum PairingStore {
                 .contentModificationDate, Date().timeIntervalSince(modified) < 5 {
                 continue
             }
-            // Dropped files are visible in Files and part of backups; never leave one behind.
-            defer { try? FileManager.default.removeItem(at: url) }
             if valid, let data {
-                try? save(data)
+                // Kept if it could not be stored, e.g. before the first unlock after a restart.
+                guard (try? save(data)) != nil else { return false }
+                // Dropped files are visible in Files and part of backups; never leave one behind.
+                try? FileManager.default.removeItem(at: url)
                 rejectedDrop = false
-                return
+                return true
             }
+            try? FileManager.default.removeItem(at: url)
             rejectedDrop = true
         }
+        return false
+    }
+
+    private static func droppedFiles() -> [URL] {
+        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let all = (try? FileManager.default.contentsOfDirectory(at: docs, includingPropertiesForKeys: nil)) ?? []
+        // Only files that look like a pairing file; other files the user keeps here are left alone.
+        let plists = all.filter {
+            $0.pathExtension.lowercased() == "plist" && $0.lastPathComponent.lowercased().contains("pair")
+        }
+        let known = dropNames.compactMap { name in plists.first { $0.lastPathComponent == name } }
+        let others = plists.filter { !dropNames.contains($0.lastPathComponent) }
+            .sorted { $0.lastPathComponent < $1.lastPathComponent }
+        return known + others
     }
 }

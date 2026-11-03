@@ -1,24 +1,23 @@
+import LocSimCore
 import NetworkExtension
 
-/// Connects LocSim to this device's own services. It routes nothing but the tunnel subnet,
-/// talks to no server and ends itself when LocSim is gone.
+/// Connects LocSim to this device's own services. It routes nothing but the peer address,
+/// talks to no server and ends itself shortly after LocSim stops sending its heartbeat.
 final class PacketTunnelProvider: NEPacketTunnelProvider {
-    // Long enough for a Developer Disk Image download, during which the tunnel is quiet.
-    private static let idleLimit: TimeInterval = 180
-
-    private let queue = DispatchQueue(label: "locsim.tunnel.idle")
-    private var lastPacket = Date()
+    private let queue = DispatchQueue(label: "locsim.tunnel.heartbeat")
+    // Uptime instead of the wall clock, which jumps when the time or time zone changes.
+    private var lastHeartbeat = ProcessInfo.processInfo.systemUptime
     private var watchdog: DispatchSourceTimer?
 
     override func startTunnel(options: [String: NSObject]?, completionHandler: @escaping (Error?) -> Void) {
         let settings = NEPacketTunnelNetworkSettings(tunnelRemoteAddress: TunnelAddress.device)
-        let ipv4 = NEIPv4Settings(addresses: [TunnelAddress.device], subnetMasks: [TunnelAddress.subnetMask])
-        ipv4.includedRoutes = [NEIPv4Route(destinationAddress: TunnelAddress.device, subnetMask: TunnelAddress.subnetMask)]
+        let ipv4 = NEIPv4Settings(addresses: [TunnelAddress.device], subnetMasks: [TunnelAddress.hostMask])
+        ipv4.includedRoutes = [NEIPv4Route(destinationAddress: TunnelAddress.peer, subnetMask: TunnelAddress.hostMask)]
         ipv4.excludedRoutes = [.default()]
         settings.ipv4Settings = ipv4
 
-        setTunnelNetworkSettings(settings) { [weak self] error in
-            guard let self, error == nil else { return completionHandler(error) }
+        setTunnelNetworkSettings(settings) { error in
+            guard error == nil else { return completionHandler(error) }
             self.startWatchdog()
             self.readPackets()
             completionHandler(nil)
@@ -26,11 +25,18 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
     }
 
     override func stopTunnel(with reason: NEProviderStopReason, completionHandler: @escaping () -> Void) {
-        queue.sync {
-            watchdog?.cancel()
-            watchdog = nil
+        queue.async {
+            self.watchdog?.cancel()
+            self.watchdog = nil
         }
         completionHandler()
+    }
+
+    override func handleAppMessage(_ messageData: Data, completionHandler: ((Data?) -> Void)?) {
+        if messageData == TunnelAddress.heartbeat {
+            queue.async { self.lastHeartbeat = ProcessInfo.processInfo.systemUptime }
+        }
+        completionHandler?(nil)
     }
 
     private func readPackets() {
@@ -45,25 +51,31 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
                 }
             }
             if !reflected.isEmpty {
-                self.queue.async { self.lastPacket = Date() }
                 self.packetFlow.writePackets(reflected, withProtocols: families)
             }
             self.readPackets()
         }
     }
 
-    // iOS keeps a tunnel running after its app was closed.
+    // iOS keeps a tunnel running after its app was closed or suspended.
     private func startWatchdog() {
-        queue.sync {
-            lastPacket = Date()
+        queue.async { [weak self] in
+            guard let self else { return }
+            lastHeartbeat = ProcessInfo.processInfo.systemUptime
             let timer = DispatchSource.makeTimerSource(queue: queue)
-            timer.schedule(deadline: .now() + 30, repeating: 30)
-            timer.setEventHandler { [weak self] in
-                guard let self, Date().timeIntervalSince(self.lastPacket) > Self.idleLimit else { return }
-                self.cancelTunnelWithError(nil)
-            }
+            timer.schedule(deadline: .now() + 30, repeating: 30, leeway: .seconds(10))
+            timer.setEventHandler { [weak self] in self?.checkHeartbeat() }
             timer.resume()
             watchdog = timer
         }
+    }
+
+    // Runs on `queue`.
+    private func checkHeartbeat() {
+        guard ProcessInfo.processInfo.systemUptime - lastHeartbeat > TunnelAddress.heartbeatTimeout else { return }
+        watchdog?.cancel()
+        watchdog = nil
+        // Not on `queue`, which stopTunnel uses.
+        DispatchQueue.global().async { [weak self] in self?.cancelTunnelWithError(nil) }
     }
 }

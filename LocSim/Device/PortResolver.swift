@@ -1,22 +1,18 @@
 import Darwin
 import Foundation
-
-struct PairingService {
-    let name: String
-    let port: UInt16
-    let addresses: [String]
-    let isLocal: Bool
-}
+import LocSimCore
 
 /// Discovers `_remotepairing._tcp` ports for when the default port fails. Other
 /// devices on the network advertise the service too, so local results come first.
 final class PortResolver: NSObject, NetServiceBrowserDelegate, NetServiceDelegate {
-    static let fallbackPort: UInt16 = 49152
+    static let fallbackPort = PairingPorts.fallback
 
     private var browser: NetServiceBrowser?
     private var pending: [NetService] = []
     private var found: [PairingService] = []
     private var continuation: CheckedContinuation<[PairingService], Never>?
+    /// iOS refused the search, usually because Local Network access is off.
+    private(set) var searchRefused = false
 
     @MainActor
     func browse(timeout: TimeInterval = 4) async -> [PairingService] {
@@ -32,15 +28,9 @@ final class PortResolver: NSObject, NetServiceBrowserDelegate, NetServiceDelegat
         }
     }
 
-    /// Local ports first, at most two from other devices.
-    static func candidatePorts(_ services: [PairingService]) -> [UInt16] {
-        var ports: [UInt16] = []
-        let remote = services.filter { !$0.isLocal }.prefix(2)
-        for service in services.filter(\.isLocal) + remote where !ports.contains(service.port) {
-            ports.append(service.port)
-        }
-        if !ports.contains(fallbackPort) { ports.append(fallbackPort) }
-        return ports
+    func netServiceBrowser(_ browser: NetServiceBrowser, didNotSearch errorDict: [String: NSNumber]) {
+        searchRefused = true
+        finish()
     }
 
     func netServiceBrowser(_ browser: NetServiceBrowser, didFind service: NetService, moreComing: Bool) {

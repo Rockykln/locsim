@@ -1,6 +1,7 @@
 import Darwin
 import Foundation
 import IDevice
+import LocSimCore
 
 struct LinkConfig {
     var host: String
@@ -17,6 +18,7 @@ final class DeviceLink: @unchecked Sendable {
     private let stateLock = NSLock()
     private var openFlag = false
     private var tunnelFlag = false
+    private var stuckFlag = false
 
     private var adapter: OpaquePointer?
     private var handshake: OpaquePointer?
@@ -25,25 +27,35 @@ final class DeviceLink: @unchecked Sendable {
 
     var isOpen: Bool { stateLock.withLock { openFlag } }
     var hasTunnel: Bool { stateLock.withLock { tunnelFlag } }
+    /// A call did not return in time and still blocks the queue; the link must be replaced.
+    var isStuck: Bool { stateLock.withLock { stuckFlag } }
+
+    private enum Timeout {
+        static let tunnel: TimeInterval = 30
+        static let query: TimeInterval = 30
+        static let mount: TimeInterval = 180
+        static let location: TimeInterval = 20
+        static let send: TimeInterval = 15
+    }
 
     func openTunnel(_ config: LinkConfig) async throws {
-        try await run { try self.openTunnelLocked(config) }
+        try await run(Timeout.tunnel) { try self.openTunnelLocked(config) }
     }
 
     func isDDIMounted() async throws -> Bool {
-        try await run { try self.ddiMountedLocked() }
+        try await run(Timeout.query) { try self.ddiMountedLocked() }
     }
 
     func mountDDI(from directory: URL, method: DDIMethod) async throws {
-        try await run { try self.mountDDILocked(directory, method) }
+        try await run(Timeout.mount) { try self.mountDDILocked(directory, method) }
     }
 
     func openLocation() async throws {
-        try await run { try self.openLocationLocked() }
+        try await run(Timeout.location) { try self.openLocationLocked() }
     }
 
     func set(latitude: Double, longitude: Double) async throws {
-        try await run {
+        try await run(Timeout.send) {
             guard let location = self.location else { throw DeviceError(.notConnected, "Not connected") }
             do {
                 try Self.check(location_simulation_set(location, latitude, longitude), .setLocation, "Set location")
@@ -55,7 +67,7 @@ final class DeviceLink: @unchecked Sendable {
     }
 
     func clear() async throws {
-        try await run {
+        try await run(Timeout.send) {
             defer { self.closeLocked() }
             guard let location = self.location else { return }
             try Self.check(location_simulation_clear(location), .clearLocation, "Clear location")
@@ -63,15 +75,30 @@ final class DeviceLink: @unchecked Sendable {
     }
 
     func close() async {
-        _ = try? await run { self.closeLocked() }
+        _ = try? await run(Timeout.send) { self.closeLocked() }
     }
 
-    private func run<T>(_ body: @escaping () throws -> T) async throws -> T {
+    // idevice calls can block on a dead connection without returning, so each one has a deadline.
+    private func run<T>(_ timeout: TimeInterval, _ body: @escaping () throws -> T) async throws -> T {
         try await withCheckedThrowingContinuation { cont in
+            let gate = ResumeGate()
             queue.async(qos: .utility, flags: .enforceQoS) {
+                // Timed out while waiting behind another call: that call is the stuck one.
+                guard gate.begin() else { return }
                 let result = Result { try body() }
                 self.publishState()
-                cont.resume(with: result)
+                if gate.claim() { cont.resume(with: result) }
+            }
+            DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + timeout) {
+                guard gate.claim() else { return }
+                if gate.didBegin {
+                    self.stateLock.withLock {
+                        self.stuckFlag = true
+                        self.openFlag = false
+                        self.tunnelFlag = false
+                    }
+                }
+                cont.resume(throwing: DeviceError(.notConnected, "Device did not respond within \(Int(timeout)) s"))
             }
         }
     }
@@ -255,7 +282,31 @@ final class DeviceLink: @unchecked Sendable {
         guard let err else { return }
         let message = err.pointee.message.map { String(cString: $0) } ?? "unknown error"
         let code = err.pointee.code
+        let subCode = err.pointee.sub_code
         idevice_error_free(err)
-        throw DeviceError(kind, "\(step): \(message) (\(code))")
+        throw DeviceError(kind, "\(step): \(message) (\(code))", code: code, subCode: subCode)
+    }
+}
+
+private final class ResumeGate: @unchecked Sendable {
+    private let lock = NSLock()
+    private var done = false
+    private var began = false
+
+    var didBegin: Bool { lock.withLock { began } }
+
+    /// False if the deadline passed before the call could start.
+    func begin() -> Bool {
+        lock.withLock {
+            began = !done
+            return began
+        }
+    }
+
+    func claim() -> Bool {
+        lock.withLock {
+            defer { done = true }
+            return !done
+        }
     }
 }
