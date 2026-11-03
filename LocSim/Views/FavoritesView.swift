@@ -6,6 +6,8 @@ struct FavoritesView: View, Equatable {
     @Environment(\.dismiss) private var dismiss
     @State private var renaming: Favorite?
     @State private var newName = ""
+    @State private var copied = 0
+    @AppStorage(SettingsKey.haptics) private var haptics = true
     let onSelect: (Favorite) -> Void
 
     nonisolated static func == (lhs: FavoritesView, rhs: FavoritesView) -> Bool { true }
@@ -71,7 +73,8 @@ struct FavoritesView: View, Equatable {
                 }
                 .contextMenu {
                     Button {
-                        UIPasteboard.general.string = CoordinateParser.format(favorite.coordinate)
+                        Clipboard.copy(CoordinateParser.format(favorite.coordinate))
+                        copied += 1
                     } label: {
                         Label("Copy Coordinates", systemImage: "doc.on.doc")
                     }
@@ -81,12 +84,18 @@ struct FavoritesView: View, Equatable {
                     } label: {
                         Label("Rename", systemImage: "pencil")
                     }
+                    Button(role: .destructive) {
+                        favorites.items.removeAll { $0.id == favorite.id }
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
                 }
             }
             .onDelete { favorites.items.remove(atOffsets: $0) }
             .onMove { favorites.items.move(fromOffsets: $0, toOffset: $1) }
         }
         .listStyle(.insetGrouped)
+        .sensoryFeedback(trigger: copied) { _, _ in haptics ? .success : nil }
     }
 
     private func row(_ favorite: Favorite) -> some View {
@@ -100,6 +109,7 @@ struct FavoritesView: View, Equatable {
                 Text(CoordinateParser.format(favorite.coordinate))
                     .font(.caption.monospacedDigit())
                     .foregroundStyle(.secondary)
+                    .accessibilityLabel(CoordinateParser.spoken(favorite.coordinate))
             }
             Spacer(minLength: 0)
             Image(systemName: "chevron.right")
@@ -115,7 +125,7 @@ struct FavoritesView: View, Equatable {
     private func rename() {
         guard let target = renaming,
               let index = favorites.items.firstIndex(where: { $0.id == target.id }) else { return }
-        let name = newName.trimmingCharacters(in: .whitespaces)
+        let name = newName.trimmingCharacters(in: .whitespacesAndNewlines)
         if !name.isEmpty { favorites.items[index].name = name }
         renaming = nil
     }

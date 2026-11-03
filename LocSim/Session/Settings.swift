@@ -1,5 +1,6 @@
 import CoreLocation
 import Foundation
+import LocSimCore
 
 enum SettingsKey {
     static let hostname = "pairingHostname"
@@ -15,11 +16,16 @@ enum SettingsKey {
     static let haptics = "haptics"
     static let favorites = "favorites"
     static let last = "lastCoordinate"
+    static let ddiDownloadAllowed = "ddiDownloadAllowed"
+    static let recents = "recentLocations"
+    static let recentsEnabled = "recentsEnabled"
+    static let liveActivity = "liveActivity"
 }
 
 enum Defaults {
     static let hostname = "locsim"
-    static let resend = 10
+    // The location stays while the connection is open; resending is a safeguard, so it can be rare.
+    static let resend = 30
     static let coordinate = CLLocationCoordinate2D(latitude: 48.85660, longitude: 2.35220)
 
     static func register() {
@@ -35,6 +41,8 @@ enum Defaults {
             SettingsKey.zoom: 900.0,
             SettingsKey.autoApply: false,
             SettingsKey.haptics: true,
+            SettingsKey.recentsEnabled: true,
+            SettingsKey.liveActivity: true,
         ])
     }
 }
@@ -50,10 +58,14 @@ struct Favorite: Codable, Identifiable, Hashable {
 
 @MainActor
 final class FavoriteList: ObservableObject {
+    static let shared = FavoriteList()
+
     @Published var items: [Favorite] {
         didSet {
             guard !Demo.isOn else { return }
             UserDefaults.standard.set(try? JSONEncoder().encode(items), forKey: SettingsKey.favorites)
+            // So Siri knows the favorite names in "Set LocSim to …".
+            LocSimShortcuts.updateAppShortcutParameters()
         }
     }
 
@@ -64,6 +76,61 @@ final class FavoriteList: ObservableObject {
         }
         let data = UserDefaults.standard.data(forKey: SettingsKey.favorites)
         items = data.flatMap { try? JSONDecoder().decode([Favorite].self, from: $0) } ?? []
+    }
+
+    /// The favorite at this spot, within a meter, so the star shows it is already saved.
+    func favorite(at c: CLLocationCoordinate2D) -> Favorite? {
+        items.first { $0.coordinate.distance(to: c) < 1 }
+    }
+}
+
+struct RecentLocation: Codable, Identifiable, Hashable {
+    var id = UUID()
+    var name: String?
+    var latitude: Double
+    var longitude: Double
+
+    var coordinate: CLLocationCoordinate2D { .init(latitude: latitude, longitude: longitude) }
+}
+
+/// The last locations that were set, newest first. Stays on the device like the favorites.
+@MainActor
+final class RecentList: ObservableObject {
+    static let limit = 5
+
+    @Published private(set) var items: [RecentLocation] {
+        didSet {
+            guard !Demo.isOn else { return }
+            UserDefaults.standard.set(try? JSONEncoder().encode(items), forKey: SettingsKey.recents)
+        }
+    }
+
+    init() {
+        let data = UserDefaults.standard.data(forKey: SettingsKey.recents)
+        items = Demo.isOn ? [] : data.flatMap { try? JSONDecoder().decode([RecentLocation].self, from: $0) } ?? []
+    }
+
+    func add(_ c: CLLocationCoordinate2D, name: String?) {
+        guard UserDefaults.standard.bool(forKey: SettingsKey.recentsEnabled) else { return }
+        // The same spot moves to the top instead of appearing twice.
+        var list = items.filter { $0.coordinate.distance(to: c) >= 10 }
+        list.insert(RecentLocation(name: name, latitude: c.latitude, longitude: c.longitude), at: 0)
+        items = Array(list.prefix(Self.limit))
+    }
+
+    func remove(_ item: RecentLocation) {
+        items.removeAll { $0.id == item.id }
+    }
+
+    func clear() {
+        items = []
+    }
+}
+
+extension CLLocationCoordinate2D {
+    func distance(to other: CLLocationCoordinate2D) -> CLLocationDistance {
+        CLLocation(latitude: latitude, longitude: longitude)
+            .distance(from: CLLocation(latitude: other.latitude, longitude: other.longitude))
     }
 }
 

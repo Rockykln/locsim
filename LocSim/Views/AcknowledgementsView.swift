@@ -1,16 +1,19 @@
 import SwiftUI
 
 struct AcknowledgementsView: View {
-    @State private var showingRepository = false
-    private let repository = URL(string: "https://github.com/jkcoxson/idevice")!
+    @State private var shownPage: WebPage?
+    private let idevice = URL(string: "https://github.com/jkcoxson/idevice")!
+    private let stosVPN = URL(string: "https://github.com/SideStore/StosVPN")!
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
-                Text("idevice")
+                Text(verbatim: "idevice")
                     .font(.headline)
-                Button("github.com/jkcoxson/idevice") {
-                    showingRepository = true
+                Button {
+                    shownPage = WebPage(url: idevice)
+                } label: {
+                    Text(verbatim: "github.com/jkcoxson/idevice")
                 }
                 .font(.subheadline)
                 Text(Self.ideviceLicense)
@@ -22,19 +25,28 @@ struct AcknowledgementsView: View {
                     .padding(.top, 12)
                 Text("LocSim's local connection is based on StosVPN.")
                     .font(.subheadline)
-                Link("github.com/SideStore/StosVPN", destination: URL(string: "https://github.com/SideStore/StosVPN")!)
-                    .font(.subheadline)
+                Button {
+                    shownPage = WebPage(url: stosVPN)
+                } label: {
+                    Text(verbatim: "github.com/SideStore/StosVPN")
+                }
+                .font(.subheadline)
                 Text(verbatim: Self.stosVPNLicense)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .textSelection(.enabled)
+                NavigationLink {
+                    RustLicensesView()
+                } label: {
+                    Label("Rust Libraries in idevice", systemImage: "doc.text")
+                }
+                .font(.subheadline)
+                .padding(.top, 12)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
         }
-        .sheet(isPresented: $showingRepository) {
-            SafariView(url: repository).ignoresSafeArea()
-        }
+        .webPageSheet($shownPage)
         .navigationTitle("Acknowledgements")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -69,3 +81,30 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 }
+
+/// Licenses of the Rust crates compiled into IDevice.xcframework, from THIRD_PARTY_LICENSES.md.
+private struct RustLicensesView: View {
+    private let paragraphs: [String] = {
+        guard let url = Bundle.main.url(forResource: "THIRD_PARTY_LICENSES", withExtension: "md"),
+              let text = try? String(contentsOf: url, encoding: .utf8) else { return [] }
+        return text.components(separatedBy: "\n\n")
+    }()
+
+    var body: some View {
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 10) {
+                ForEach(Array(paragraphs.enumerated()), id: \.offset) { _, paragraph in
+                    Text(verbatim: paragraph)
+                        .font(.system(.caption2, design: .monospaced))
+                        .foregroundStyle(.secondary)
+                        .textSelection(.enabled)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+        }
+        .navigationTitle("Rust Libraries")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+

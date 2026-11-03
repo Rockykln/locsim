@@ -3,30 +3,39 @@ import UniformTypeIdentifiers
 
 /// Setup steps, shown on launch until a pairing file is imported and from Settings.
 struct WelcomeView: View {
-    @EnvironmentObject private var session: SpoofSession
+    @EnvironmentObject private var session: SimulationSession
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var importing = false
     @State private var hasPairing = PairingStore.exists
     @State private var message: String?
+    /// Opened from Settings rather than on first launch.
+    var fromSettings = false
 
     var body: some View {
         NavigationStack {
             List {
                 Section {
+                    // Large titles never wrap, so at accessibility sizes the title moves into the list.
+                    if dynamicTypeSize.isAccessibilitySize {
+                        Text("Welcome to LocSim")
+                            .font(.largeTitle.bold())
+                            .accessibilityAddTraits(.isHeader)
+                    }
                     Text("A one-time setup with a computer and a USB cable. After that, LocSim works without a computer.")
                         .foregroundStyle(.secondary)
                 }
                 Section {
                     step(1, "Enable Developer Mode",
                          "Settings > Privacy & Security > Developer Mode. If the switch is missing, the setup guide shows how to make it appear.")
-                    step(2, "Create a pairing file", "Run the script from the setup guide on a Mac, Windows or Linux computer.") {
+                    step(2, "Allow connections over Wi-Fi",
+                         "On the computer, turn on Show this iPhone when on Wi-Fi in Finder or the Apple Devices app.")
+                    step(3, "Create the pairing file", "Run the script from the setup guide on a Mac, Windows or Linux computer.") {
                         Link(destination: AppLinks.setupGuide) {
                             Label("Open Setup Guide", systemImage: "arrow.up.right")
                         }
                     }
-                    step(3, "Allow the local connection",
-                         "After the import, iOS asks once to add a VPN configuration. LocSim only uses it to reach this iPhone's own developer services while a location is active. It carries no other traffic, nothing leaves the device through it and no data is collected.")
                     step(4, "Import the pairing file", "The setup script copies it into LocSim. Otherwise, copy it with AirDrop or Finder and import it here.", done: hasPairing) {
                         Button {
                             importing = true
@@ -34,6 +43,7 @@ struct WelcomeView: View {
                             Label(
                                 hasPairing ? String(localized: "Replace Pairing File") : String(localized: "Import Pairing File"),
                                 systemImage: "square.and.arrow.down")
+                            .fixedSize(horizontal: false, vertical: true)
                         }
                     }
                     if hasPairing {
@@ -41,12 +51,13 @@ struct WelcomeView: View {
                             Label("Check Pairing File", systemImage: "checkmark.shield")
                         }
                     }
+                    step(5, "Allow the local connection",
+                         "When you first set a location, iOS asks to add a VPN configuration. LocSim only uses it to reach this iPhone; no traffic leaves the device through it.")
                 } footer: {
                     if let message {
-                        Text(message).foregroundStyle(.red)
-                    } else if !hasPairing, PairingStore.rejectedDrop {
-                        Text("The pairing file was not valid and has been removed. Run the setup script again.")
-                            .foregroundStyle(.red)
+                        ErrorFooter(message)
+                    } else if PairingStore.rejectedDrop {
+                        ErrorFooter(String(localized: "The pairing file was not valid and has been removed. Run the setup script again."))
                     }
                 }
                 if !hasPairing {
@@ -62,12 +73,13 @@ struct WelcomeView: View {
                     }
                 }
             }
-            .navigationTitle("Welcome to LocSim")
+            .navigationTitle(dynamicTypeSize.isAccessibilitySize ? Text(verbatim: "") : Text("Welcome to LocSim"))
+            .navigationBarTitleDisplayMode(dynamicTypeSize.isAccessibilitySize ? .inline : .large)
             .safeAreaInset(edge: .bottom) {
                 Button {
                     dismiss()
                 } label: {
-                    (hasPairing ? Text("Get Started") : Text("Later"))
+                    (hasPairing ? (fromSettings ? Text("Done") : Text("Get Started")) : Text("Later"))
                         .font(.body.weight(.semibold))
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 6)
@@ -79,30 +91,39 @@ struct WelcomeView: View {
                 do {
                     try PairingStore.importFile(at: result.get())
                     message = nil
-                    Task { await session.checkPairing() }
+                    pairingReplaced()
                 } catch {
                     let deviceError = error as? DeviceError ?? DeviceError(.pairingInvalid, error.localizedDescription)
-                    let appError = AppError(deviceError)
-                    message = "\(appError.title): \(appError.message) (\(appError.code))"
+                    message = AppError(deviceError).summary
                 }
                 hasPairing = PairingStore.exists
             }
             // The setup script copies the file in over USB while this screen is open.
             .task(id: hasPairing) {
-                while !hasPairing, !Task.isCancelled {
-                    try? await Task.sleep(nanoseconds: 2_000_000_000)
+                while !hasPairing {
+                    // A cancelled task stops here; otherwise it would report the same file twice.
+                    do { try await Task.sleep(nanoseconds: 2_000_000_000) } catch { return }
                     guard scenePhase == .active, PairingStore.exists else { continue }
                     hasPairing = true
-                    await session.checkPairing()
+                    pairingReplaced()
                 }
             }
             // Picks up a file copied through the Files tab while the app was in the background.
             .onChange(of: scenePhase) { _, phase in
                 guard phase == .active else { return }
+                let replaced = PairingStore.adoptNow()
                 let hadPairing = hasPairing
                 hasPairing = PairingStore.exists
-                if hasPairing, !hadPairing { Task { await session.checkPairing() } }
+                if replaced || (hasPairing && !hadPairing) { pairingReplaced() }
             }
+        }
+    }
+
+    private func pairingReplaced() {
+        Task {
+            if session.isPreview { session.endPreview() }
+            await session.pairingChanged()
+            await session.checkPairing()
         }
     }
 
@@ -114,13 +135,14 @@ struct WelcomeView: View {
             Group {
                 if done {
                     Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+                        .accessibilityLabel(String(localized: "Step \(number), done"))
                 } else {
                     Text(verbatim: "\(number)").foregroundStyle(.secondary).monospacedDigit()
+                        .accessibilityLabel(String(localized: "Step \(number)"))
                 }
             }
             .font(.headline)
             .frame(width: 22)
-            .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 6) {
                 Text(title).font(.headline)
                 Text(detail).font(.subheadline).foregroundStyle(.secondary)
@@ -138,7 +160,7 @@ struct WelcomeView: View {
 
 /// Tries the pairing file against the device and shows the result.
 struct PairingCheckRow<Title: View>: View {
-    @EnvironmentObject private var session: SpoofSession
+    @EnvironmentObject private var session: SimulationSession
     @ViewBuilder let title: () -> Title
 
     var body: some View {
@@ -158,6 +180,15 @@ struct PairingCheckRow<Title: View>: View {
             }
         }
         .disabled(session.state == .connecting || session.state.isReconnecting)
+        .onChange(of: session.pairingCheck) { _, check in
+            let text: String
+            switch check {
+            case .valid: text = String(localized: "The pairing file works with this device.")
+            case .rejected(let error), .unreachable(let error): text = error.title
+            default: return
+            }
+            AccessibilityNotification.Announcement(text).post()
+        }
     }
 
     @ViewBuilder
@@ -166,15 +197,21 @@ struct PairingCheckRow<Title: View>: View {
         case .notChecked, .checking:
             EmptyView()
         case .valid:
-            Label("The pairing file works with this device.", systemImage: "checkmark.circle.fill")
-                .foregroundStyle(.green)
+            resultLabel(String(localized: "The pairing file works with this device."), "checkmark.circle.fill", .green)
         case .rejected(let error):
-            Label(String("\(error.message) (\(error.code))"), systemImage: "xmark.circle.fill")
-                .foregroundStyle(.red)
+            resultLabel(error.messageWithCode, "xmark.circle.fill", .red)
         case .unreachable(let error):
-            Label("Could not check. Allow the local connection, join a Wi-Fi network and try again. (\(error.code))",
-                  systemImage: "exclamationmark.triangle.fill")
-                .foregroundStyle(.orange)
+            resultLabel(String(localized: "Could not check. Allow the local connection, join a Wi-Fi network and try again. (\(error.code))"),
+                   "exclamationmark.triangle.fill", .orange)
+        }
+    }
+
+    // Only the icon is colored; colored footnote text is too faint to read.
+    private func resultLabel(_ text: String, _ symbol: String, _ color: Color) -> some View {
+        Label {
+            Text(text).foregroundStyle(.primary)
+        } icon: {
+            Image(systemName: symbol).foregroundStyle(color)
         }
     }
 }

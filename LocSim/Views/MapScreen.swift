@@ -1,19 +1,30 @@
+import LocSimCore
 import MapKit
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct MapScreen: View {
-    @EnvironmentObject private var session: SpoofSession
+    @EnvironmentObject private var session: SimulationSession
     @EnvironmentObject private var favorites: FavoriteList
+    @EnvironmentObject private var recents: RecentList
     @StateObject private var search = PlaceSearch()
     @State private var camera: MapCameraPosition = .automatic
     @State private var showSettings = false
     @State private var showWelcome = false
     @State private var showFavorites = false
+    @State private var favoritePick: Favorite?
     @State private var naming = false
     @State private var favoriteName = ""
     @State private var searchError: String?
     @State private var shownError: AppError?
     @State private var droppedPins = 0
+    @State private var feedback = 0
+    @State private var resolving: String?
+    @State private var mapCenter: CLLocationCoordinate2D?
+    @State private var visibleRegion: MKCoordinateRegion?
+    @State private var locationOff = false
+    @State private var question: AppError?
+    @State private var webPage: WebPage?
     @State private var suggestionsHeight: CGFloat = 0
     @FocusState private var searchFocused: Bool
     @Namespace private var mapScope
@@ -26,6 +37,8 @@ struct MapScreen: View {
     @State private var searchTask: Task<Void, Never>?
     @Environment(\.openURL) private var openURL
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     // Shown while nothing is simulated, once location access is allowed.
     @State private var showsUserLocation = false
     @AppStorage(SettingsKey.mapStyle) private var mapStyle = MapStyleOption.standard.rawValue
@@ -34,13 +47,29 @@ struct MapScreen: View {
     @AppStorage(SettingsKey.haptics) private var haptics = true
     @AppStorage(SettingsKey.precision) private var precision = 5
     @AppStorage(SettingsKey.coordinateFormat) private var coordinateFormat = CoordinateFormat.decimal.rawValue
+    @AppStorage(SettingsKey.recentsEnabled) private var recentsEnabled = true
 
+    // Split in three: as one chain of modifiers the body is too much for the type checker.
     var body: some View {
+        withPresentations(withFeedback(layers))
+            .onAppear {
+                let start: MapCameraPosition = Demo.camera
+                    ?? .camera(MapCamera(centerCoordinate: session.target, distance: zoom))
+                camera = start
+                mapCenter = session.target
+                showRealPositionIfAllowed()
+                if !session.hasPairing { showWelcome = true }
+                showDemo()
+            }
+    }
+
+    private var layers: some View {
         ZStack(alignment: .top) {
             map
                 .ignoresSafeArea()
             topBar
                 .frame(maxWidth: 640)
+                .dynamicTypeSize(...DynamicTypeSize.accessibility2)
         }
         .overlay(alignment: .bottom) {
             VStack(spacing: 0) {
@@ -56,6 +85,7 @@ struct MapScreen: View {
                 bottomPanel
             }
             .frame(maxWidth: 640)
+            .dynamicTypeSize(...DynamicTypeSize.accessibility2)
             .ignoresSafeArea(.keyboard)
         }
         .overlay(alignment: .top) {
@@ -63,15 +93,29 @@ struct MapScreen: View {
                 .padding(.horizontal, Metrics.margin)
                 .padding(.top, Metrics.barBottom + Metrics.dropdownGap)
                 .frame(maxWidth: 640)
+                .dynamicTypeSize(...DynamicTypeSize.accessibility2)
         }
         .ignoresSafeArea(.keyboard)
         .mapScope(mapScope)
+    }
+
+    private func withFeedback(_ content: some View) -> some View {
+        content
+        .sensoryFeedback(trigger: session.setCount) { _, _ in haptics ? .success : nil }
+        .onChange(of: session.setCount) { _, _ in
+            AccessibilityNotification.Announcement(String(localized: "Location set")).post()
+            // A Shortcut can set a place the map does not show; the map follows it there.
+            if let active = session.active, !isVisible(active) { fly(to: active) }
+        }
         .sensoryFeedback(trigger: session.state) { old, new in
-            guard haptics, old != new else { return nil }
-            switch new {
-            case .active: return .success
-            case .failed: return .error
-            default: return nil
+            guard haptics, old != new, case .failed = new else { return nil }
+            return .error
+        }
+        .sensoryFeedback(trigger: feedback) { _, _ in haptics ? .impact(weight: .light) : nil }
+        .onChange(of: session.state) { old, new in
+            announce(old, new)
+            if let error = new.error, [AppError.ddiConsentCode, AppError.otherVPNCode].contains(error.code) {
+                question = error
             }
         }
         .onChange(of: scenePhase) { _, phase in
@@ -87,15 +131,28 @@ struct MapScreen: View {
                 locateTask?.cancel()
             }
         }
+    }
+
+    private func withPresentations(_ content: some View) -> some View {
+        content
         .sheet(isPresented: $showWelcome) {
             WelcomeView().environmentObject(session)
         }
+        .webPageSheet($webPage)
         .sheet(isPresented: $showSettings) {
-            SettingsView().environmentObject(session)
+            SettingsView()
+                .environmentObject(session)
+                .environmentObject(recents)
         }
-        .sheet(isPresented: $showFavorites) {
+        // The pick is applied once the sheet is gone: a setup sheet opened while this one
+        // is still closing would not appear.
+        .sheet(isPresented: $showFavorites, onDismiss: {
+            guard let favorite = favoritePick else { return }
+            favoritePick = nil
+            select(favorite.coordinate, name: favorite.name, apply: autoApply)
+        }) {
             FavoritesView { favorite in
-                select(favorite.coordinate, name: favorite.name, apply: autoApply)
+                favoritePick = favorite
                 showFavorites = false
             }
             .equatable()
@@ -106,21 +163,36 @@ struct MapScreen: View {
             isPresented: Binding(get: { shownError != nil }, set: { if !$0 { shownError = nil } }),
             presenting: shownError
         ) { error in
-            Button("Copy Details") { UIPasteboard.general.string = error.report }
+            Button("Copy Details") { Clipboard.copy(error.report) }
             Button("OK", role: .cancel) {}
         } message: { error in
             Text("\(error.message)\n\nError \(error.code)")
+        }
+        .alert(
+            question?.title ?? "",
+            isPresented: Binding(get: { question != nil }, set: { if !$0 { question = nil } }),
+            presenting: question
+        ) { error in
+            // Setting the location again answers both questions; the session reads the error.
+            Button(error.code == AppError.ddiConsentCode ? String(localized: "Download") : String(localized: "Continue")) {
+                Task { await session.apply() }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: { error in
+            Text(error.message)
+        }
+        .alert("Location access is off", isPresented: $locationOff) {
+            Button("Open Settings") {
+                if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Allow location access for LocSim in Settings to show your position.")
         }
         .alert("Save favorite", isPresented: $naming) {
             TextField("Name", text: $favoriteName)
             Button("Save") { saveFavorite() }
             Button("Cancel", role: .cancel) {}
-        }
-        .onAppear {
-            camera = Demo.camera ?? region(session.target)
-            showRealPositionIfAllowed()
-            if !session.hasPairing { showWelcome = true }
-            showDemo()
         }
     }
 
@@ -138,6 +210,8 @@ struct MapScreen: View {
                         coordinate: session.target, anchor: MapPin.anchor
                     ) {
                         MapPin(showsActiveDot: activeIsAtPin)
+                            .accessibilityLabel(session.targetName ?? String(localized: "Dropped pin"))
+                            .accessibilityValue(CoordinateParser.spoken(session.target))
                     }
                     // The panel already shows the name.
                     .annotationTitles(.hidden)
@@ -145,6 +219,7 @@ struct MapScreen: View {
                 if mapReady, let active = session.active, !activeIsAtPin {
                     Annotation(String(localized: "Active"), coordinate: active) {
                         ActiveDot()
+                            .accessibilityLabel("Active location")
                     }
                     // The panel already shows the state.
                     .annotationTitles(.hidden)
@@ -159,6 +234,8 @@ struct MapScreen: View {
             .safeAreaPadding(.horizontal, 16)
             .onMapCameraChange(frequency: .onEnd) { context in
                 search.bias(to: context.region)
+                mapCenter = context.region.center
+                visibleRegion = context.region
                 mapReady = true
             }
             // In case the camera reports no change after the first layout.
@@ -170,6 +247,8 @@ struct MapScreen: View {
             .simultaneousGesture(TapGesture().onEnded { searchFocused = false })
             .onLongPress { dropPin(at: $0, proxy: proxy) }
             .sensoryFeedback(trigger: droppedPins) { _, _ in haptics ? .impact : nil }
+            // Long press has no VoiceOver equivalent.
+            .accessibilityAction(named: "Drop Pin at Map Center") { dropPinAtCenter() }
         }
     }
 
@@ -178,6 +257,15 @@ struct MapScreen: View {
         guard let active = session.active else { return false }
         return abs(active.latitude - session.target.latitude) < 1e-7
             && abs(active.longitude - session.target.longitude) < 1e-7
+    }
+
+    private func dropPinAtCenter() {
+        guard let center = mapCenter else { return }
+        searchTask?.cancel()
+        locateTask?.cancel()
+        session.target = center
+        session.targetName = nil
+        droppedPins += 1
     }
 
     private func dropPin(at point: CGPoint, proxy: MapProxy) {
@@ -213,7 +301,7 @@ struct MapScreen: View {
     private var topBar: some View {
         HStack(spacing: 8) {
             iconButton("globe", label: "Website") {
-                openURL(AppLinks.website)
+                webPage = WebPage(url: AppLinks.website)
             }
             searchField
             iconButton("star", label: "Favorites") { showFavorites = true }
@@ -238,13 +326,21 @@ struct MapScreen: View {
     @ViewBuilder
     private var dropdown: some View {
         if let searchError {
-            Text(searchError)
-                .font(.footnote)
-                .foregroundStyle(.red)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 10)
-                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            Label {
+                Text(searchError).foregroundStyle(.primary)
+            } icon: {
+                Image(systemName: "exclamationmark.circle.fill").foregroundStyle(.red)
+            }
+            .font(.footnote)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .task(id: searchError) {
+                // Cancelled by a newer error, which must stay for its own 4 seconds.
+                guard (try? await Task.sleep(nanoseconds: 4_000_000_000)) != nil else { return }
+                self.searchError = nil
+            }
         } else if searchFocused || Demo.screen == .search, hasSuggestions {
             suggestions
         }
@@ -275,13 +371,20 @@ struct MapScreen: View {
                 .textInputAutocapitalization(.never)
                 .onSubmit(submitSearch)
                 .onChange(of: search.query) { _, _ in searchError = nil }
+                .onChange(of: searchFocused) { _, focused in if !focused { searchError = nil } }
+            if resolving != nil, !search.query.isEmpty, search.completions.isEmpty {
+                ProgressView().controlSize(.small)
+            }
             if !search.query.isEmpty {
                 Button {
                     search.reset()
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundStyle(Color(uiColor: .systemGray))
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
                 }
+                .padding(.trailing, -12)
                 .accessibilityLabel("Clear search")
             }
         }
@@ -291,9 +394,13 @@ struct MapScreen: View {
     }
 
     private var hasSuggestions: Bool {
-        guard !search.query.trimmingCharacters(in: .whitespaces).isEmpty else { return false }
-        return search.coordinate != nil || !search.completions.isEmpty || Demo.suggestions != nil
+        // An empty field offers pasting and the last locations.
+        guard !search.query.trimmingCharacters(in: .whitespaces).isEmpty else { return Demo.screen != .search }
+        return search.coordinate != nil || !search.completions.isEmpty || search.hasNoMatches
+            || Demo.suggestions != nil
     }
+
+    private var showsRecents: Bool { recentsEnabled && !recents.items.isEmpty }
 
     // Secondary content uses opaque colors: translucent ones were sometimes not drawn on the material.
     private var suggestions: some View {
@@ -309,6 +416,16 @@ struct MapScreen: View {
 
     private var suggestionRows: some View {
         VStack(alignment: .leading, spacing: 0) {
+            if search.query.trimmingCharacters(in: .whitespaces).isEmpty {
+                emptyQueryRows
+            }
+            if search.hasNoMatches {
+                Text("No suggestions. Tap Search to look it up.")
+                    .font(.subheadline)
+                    .foregroundStyle(Color(uiColor: .systemGray))
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 9)
+            }
             if let coordinate = search.coordinate {
                 suggestionRow(
                     icon: "scope",
@@ -330,9 +447,14 @@ struct MapScreen: View {
                     if index > 0 || search.coordinate != nil {
                         Divider().overlay(Color(uiColor: .opaqueSeparator)).padding(.leading, 44)
                     }
-                    suggestionRow(icon: "mappin", title: completion.title, subtitle: completion.subtitle) {
+                    suggestionRow(icon: "mappin", title: completion.title, subtitle: completion.subtitle,
+                                  loading: resolving == completion.id) {
                         searchTask?.cancel()
-                        searchTask = Task { await pick(completion) }
+                        resolving = completion.id
+                        searchTask = Task {
+                            await pick(completion)
+                            if resolving == completion.id { resolving = nil }
+                        }
                     }
                 }
             }
@@ -340,14 +462,135 @@ struct MapScreen: View {
         .padding(.vertical, 6)
     }
 
+    // Paste goes through the system button, which reads the clipboard without a permission prompt.
+    @ViewBuilder
+    private var emptyQueryRows: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "doc.on.clipboard")
+                .frame(width: 20)
+                .foregroundStyle(Color(uiColor: .systemGray))
+                .accessibilityHidden(true)
+            Text("Coordinates or a Maps link")
+                .font(.subheadline)
+                .foregroundStyle(Color(uiColor: .systemGray))
+                .lineLimit(2)
+            Spacer(minLength: 8)
+            if resolving != nil {
+                ProgressView().controlSize(.small)
+            } else {
+                // Links copied from Maps or Safari are often only a URL on the pasteboard, not text.
+                PasteButton(supportedContentTypes: [.plainText, .text, .url]) { providers in
+                    Task { @MainActor in
+                        if let text = await Self.pastedText(providers) { paste(text) }
+                    }
+                }
+                .labelStyle(.titleOnly)
+                .buttonBorderShape(.capsule)
+                .controlSize(.small)
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 7)
+        if showsRecents {
+            Divider().overlay(Color(uiColor: .opaqueSeparator)).padding(.leading, 44)
+            HStack {
+                Text("Recent")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(Color(uiColor: .systemGray))
+                    .accessibilityAddTraits(.isHeader)
+                Spacer()
+                Button(String(localized: "Clear List", defaultValue: "Clear", comment: "Removes all recent locations")) {
+                    recents.clear()
+                    feedback += 1
+                }
+                .font(.footnote.weight(.semibold))
+                .frame(minHeight: 44)
+                .contentShape(Rectangle())
+                .accessibilityLabel("Clear recent locations")
+                // Lines up with the label inside the paste button above, not with its edge.
+                .padding(.trailing, 12)
+            }
+            .padding(.horizontal, 14)
+            .padding(.top, 8)
+            .padding(.bottom, 2)
+            ForEach(recents.items) { item in
+                suggestionRow(
+                    icon: "clock",
+                    title: item.name ?? CoordinateParser.format(item.coordinate),
+                    subtitle: item.name == nil ? "" : CoordinateParser.format(item.coordinate)
+                ) {
+                    select(item.coordinate, name: item.name, apply: autoApply)
+                }
+                .contextMenu {
+                    Button(role: .destructive) {
+                        recents.remove(item)
+                    } label: {
+                        Label("Remove", systemImage: "trash")
+                    }
+                }
+            }
+        }
+    }
+
+    private func paste(_ text: String) {
+        if let coordinate = CoordinateParser.parse(text) {
+            let name = MapLink.url(in: text).flatMap(MapLink.placeName)
+            select(coordinate, name: name, apply: autoApply)
+        } else if MapLink.url(in: text).map(MapLink.isMap) == true {
+            searchTask?.cancel()
+            resolving = text
+            searchTask = Task { await openLink(text) }
+        } else {
+            // Not a coordinate or Maps link: search for it like typed text.
+            search.query = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+    }
+
+    /// Text first, since it can hold the place name next to the link; a bare URL otherwise.
+    private static func pastedText(_ providers: [NSItemProvider]) async -> String? {
+        for provider in providers {
+            // A file URL is where iOS put a copy of the data, not what was copied.
+            if let text = await load(String.self, from: provider)?.trimmingCharacters(in: .whitespacesAndNewlines),
+               !text.isEmpty, !text.lowercased().hasPrefix("file:") {
+                return text
+            }
+        }
+        for provider in providers {
+            if let url = await load(URL.self, from: provider), !url.isFileURL { return url.absoluteString }
+        }
+        return nil
+    }
+
+    private static func load<T: _ObjectiveCBridgeable & Sendable>(
+        _ type: T.Type, from provider: NSItemProvider
+    ) async -> T? where T._ObjectiveCType: NSItemProviderReading {
+        guard provider.canLoadObject(ofClass: type) else { return nil }
+        return await withCheckedContinuation { continuation in
+            _ = provider.loadObject(ofClass: type) { value, _ in continuation.resume(returning: value) }
+        }
+    }
+
+    private func openLink(_ text: String) async {
+        defer { if resolving == text { resolving = nil } }
+        do {
+            guard let place = try await search.place(fromLink: text) else { return }
+            guard !Task.isCancelled else { return }
+            select(place.coordinate, name: place.name, apply: autoApply)
+        } catch {
+            guard !Task.isCancelled else { return }
+            searchError = error.localizedDescription
+        }
+    }
+
     private func suggestionRow(
-        icon: String, title: String, subtitle: String, action: @escaping () -> Void
+        icon: String, title: String, subtitle: String, loading: Bool = false, action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
             HStack(spacing: 12) {
                 Image(systemName: icon)
                     .frame(width: 20)
                     .foregroundStyle(Color(uiColor: .systemGray))
+                    .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .foregroundStyle(.primary)
@@ -360,12 +603,14 @@ struct MapScreen: View {
                     }
                 }
                 Spacer(minLength: 0)
+                if loading { ProgressView().controlSize(.small) }
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 9)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .disabled(loading)
     }
 
     private func iconButton(_ symbol: String, label: LocalizedStringKey, action: @escaping () -> Void) -> some View {
@@ -379,6 +624,7 @@ struct MapScreen: View {
         .buttonStyle(.plain)
         .glassCircle()
         .accessibilityLabel(Text(label))
+        .accessibilityShowsLargeContentViewer()
     }
 
     // MARK: - Panel
@@ -395,6 +641,8 @@ struct MapScreen: View {
         .buttonStyle(.plain)
         .glassCircle()
         .accessibilityLabel("Show pin")
+        // The map itself is hard to reach with VoiceOver, so the action is offered here too.
+        .accessibilityAction(named: "Drop Pin at Map Center") { dropPinAtCenter() }
     }
 
     private var locateButton: some View {
@@ -419,9 +667,18 @@ struct MapScreen: View {
             session.active != nil ? String(localized: "Show active location") : String(localized: "Show my location"))
     }
 
-    private func fly(to coordinate: CLLocationCoordinate2D) {
-        withAnimation(.smooth(duration: 1.0)) {
-            camera = .camera(MapCamera(centerCoordinate: coordinate, distance: zoom))
+    private func isVisible(_ c: CLLocationCoordinate2D) -> Bool {
+        guard let r = visibleRegion else { return false }
+        return abs(c.latitude - r.center.latitude) <= r.span.latitudeDelta / 2
+            && abs(c.longitude - r.center.longitude) <= r.span.longitudeDelta / 2
+    }
+
+    private func fly(to coordinate: CLLocationCoordinate2D, duration: Double = 1.0) {
+        let target = MapCameraPosition.camera(MapCamera(centerCoordinate: coordinate, distance: zoom))
+        if reduceMotion {
+            camera = target
+        } else {
+            withAnimation(.smooth(duration: duration)) { camera = target }
         }
     }
 
@@ -447,8 +704,8 @@ struct MapScreen: View {
             if Task.isCancelled { return }
         }
         guard manager.authorizationStatus != .denied, manager.authorizationStatus != .restricted else {
-            // Only an earlier denial sends the user to Settings, not the answer just given.
-            if !wasAsked, let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
+            // Only an earlier denial needs an explanation, not the answer just given.
+            if !wasAsked { locationOff = true }
             return
         }
         let requested = Date().addingTimeInterval(-1)
@@ -470,114 +727,26 @@ struct MapScreen: View {
         guard !Task.isCancelled else { return }
         if let coordinate {
             fly(to: coordinate)
+        } else if reduceMotion {
+            camera = .userLocation(fallback: camera)
         } else {
             withAnimation { camera = .userLocation(fallback: camera) }
         }
     }
 
     private var bottomPanel: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(alignment: .top, spacing: 12) {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(session.targetName ?? String(localized: "Dropped pin"))
-                        .font(.headline)
-                        .lineLimit(1)
-                    Text(CoordinateParser.format(session.target))
-                        .font(.subheadline.monospacedDigit())
-                        .foregroundStyle(.secondary)
-                        .textSelection(.enabled)
+        // At the largest text sizes on small iPhones the panel can grow past the top bar;
+        // then it scrolls instead.
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                ViewThatFits(in: .vertical) {
+                    panelContent
+                    ScrollView { panelContent }
+                        .scrollBounceBehavior(.basedOnSize)
                 }
-                Spacer(minLength: 0)
-                Button {
-                    favoriteName = session.targetName ?? ""
-                    naming = true
-                } label: {
-                    Image(systemName: "star")
-                        .font(.system(size: 16, weight: .medium))
-                        .frame(width: 36, height: 36)
-                        .contentShape(Circle())
-                }
-                .buttonStyle(.plain)
-                .glassCircle()
-                .accessibilityLabel("Save favorite")
-            }
-
-            Button {
-                if let error = session.state.error { shownError = error }
-            } label: {
-                HStack(spacing: 8) {
-                    Circle()
-                        .fill(stateColor)
-                        .frame(width: 8, height: 8)
-                    Text(statusLine)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2)
-                    if session.state.isFailure {
-                        Image(systemName: "info.circle")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-            }
-            .buttonStyle(.plain)
-            .accessibilityHint(session.state.isFailure ? Text("Shows error details") : Text(verbatim: ""))
-
-            if session.isPreview {
-                HStack(spacing: 8) {
-                    Label("Preview: the location of this iPhone does not change.", systemImage: "eye")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    Spacer(minLength: 0)
-                    Button("End Preview") {
-                        session.endPreview()
-                        if !session.hasPairing { showWelcome = true }
-                    }
-                    .font(.caption.weight(.semibold))
-                }
-            }
-
-            if session.backgroundDenied {
-                Button {
-                    if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
-                } label: {
-                    Label("Without location access, the location stops in the background. Tap to allow.",
-                          systemImage: "exclamationmark.triangle.fill")
-                        .font(.caption)
-                        .foregroundStyle(.orange)
-                        .multilineTextAlignment(.leading)
-                }
-                .buttonStyle(.plain)
-            }
-
-            HStack(spacing: 10) {
-                Button {
-                    searchFocused = false
-                    Task { await session.apply() }
-                } label: {
-                    Label(
-                        session.state == .connecting
-                            ? String(localized: "Connecting") : String(localized: "Set Location"),
-                        systemImage: "location.fill")
-                        .font(.body.weight(.semibold))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 6)
-                }
-                .primaryButton()
-                .disabled(session.state == .connecting)
-
-                Button {
-                    Task { await session.clear() }
-                } label: {
-                    Label("Clear", systemImage: "arrow.uturn.backward")
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
-                        .padding(.vertical, 6)
-                }
-                .secondaryButton()
-                .disabled(!session.canClear)
+                .frame(maxHeight: Metrics.panelMaxHeight)
+            } else {
+                panelContent
             }
         }
         .padding(18)
@@ -587,10 +756,177 @@ struct MapScreen: View {
         .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).minY } action: { panelTop = $0 }
     }
 
+    private var panelContent: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .top, spacing: 12) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(session.targetName ?? String(localized: "Dropped pin"))
+                        .font(.headline)
+                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? 2 : 1)
+                    Text(CoordinateParser.format(session.target))
+                        .font(.subheadline.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                        .accessibilityLabel(CoordinateParser.spoken(session.target))
+                        // Own menu instead of text selection, which would copy through Universal Clipboard.
+                        .contextMenu {
+                            Button {
+                                Clipboard.copy(CoordinateParser.format(session.target))
+                                feedback += 1
+                            } label: {
+                                Label("Copy Coordinates", systemImage: "doc.on.doc")
+                            }
+                        }
+                }
+                Spacer(minLength: 0)
+                favoriteButton
+            }
+
+            if let error = session.state.error {
+                Button {
+                    shownError = error
+                } label: {
+                    status
+                }
+                .buttonStyle(.plain)
+                .accessibilityHint("Shows error details")
+            } else {
+                status
+                    .accessibilityElement(children: .combine)
+            }
+
+            if session.isPreview {
+                let row = dynamicTypeSize.isAccessibilitySize
+                    ? AnyLayout(VStackLayout(alignment: .leading, spacing: 6)) : AnyLayout(HStackLayout(spacing: 8))
+                row {
+                    Label("Preview: the location of this iPhone does not change.", systemImage: "eye")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 0) }
+                    Button("End Preview") {
+                        session.endPreview()
+                        if !session.hasPairing { showWelcome = true }
+                    }
+                    .font(.caption.weight(.semibold))
+                    .frame(minHeight: 44)
+                    .contentShape(Rectangle())
+                }
+            }
+
+            if session.backgroundDenied {
+                Button {
+                    if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
+                } label: {
+                    Label {
+                        Text("Without location access, the simulation stops in the background. Tap to allow.")
+                            .foregroundStyle(.primary)
+                    } icon: {
+                        Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
+                    }
+                    .font(.caption)
+                    .multilineTextAlignment(.leading)
+                }
+                .buttonStyle(.plain)
+            }
+
+            // Stacked at large text sizes, so neither label is cut off.
+            let layout = dynamicTypeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(spacing: 10)) : AnyLayout(HStackLayout(spacing: 10))
+            layout {
+                Button {
+                    setLocation()
+                } label: {
+                    HStack(spacing: 8) {
+                        if session.state == .connecting {
+                            ProgressView().controlSize(.small)
+                        } else {
+                            Image(systemName: "location.fill")
+                        }
+                        Text(session.state == .connecting ? String(localized: "Connecting") : String(localized: "Set Location"))
+                    }
+                    .font(.body.weight(.semibold))
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? 2 : 1)
+                    .minimumScaleFactor(0.8)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 6)
+                }
+                .primaryButton()
+                .disabled(session.state == .connecting)
+
+                Button {
+                    feedback += 1
+                    Task { await session.clear() }
+                } label: {
+                    // While connecting this stops the attempt.
+                    Label(session.state == .connecting ? String(localized: "Cancel") : String(localized: "Clear"),
+                          systemImage: "arrow.uturn.backward")
+                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? 2 : 1)
+                        .minimumScaleFactor(0.8)
+                        .frame(maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : nil)
+                        .padding(.vertical, 6)
+                }
+                .secondaryButton()
+                .disabled(!session.canClear)
+            }
+        }
+    }
+
+    private var status: some View {
+        HStack(spacing: 8) {
+            Circle()
+                .fill(stateColor)
+                .frame(width: 8, height: 8)
+                .accessibilityHidden(true)
+            Text(statusLine)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+            if session.state.isFailure {
+                Image(systemName: "info.circle")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .accessibilityHidden(true)
+            }
+        }
+    }
+
+    private var favoriteButton: some View {
+        let saved = favorites.favorite(at: session.target)
+        return Button {
+            if let saved {
+                favorites.items.removeAll { $0.id == saved.id }
+                feedback += 1
+            } else {
+                favoriteName = session.targetName ?? ""
+                naming = true
+            }
+        } label: {
+            Image(systemName: saved == nil ? "star" : "star.fill")
+                .font(.system(size: 16, weight: .medium))
+                .foregroundStyle(saved == nil ? Color.primary : Color.yellow)
+                .frame(width: 44, height: 44)
+                .contentShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .glassCircle()
+        .accessibilityLabel(saved == nil ? String(localized: "Save favorite") : String(localized: "Remove favorite"))
+    }
+
+    private func announce(_ old: SimulationSession.State, _ new: SimulationSession.State) {
+        guard old != new else { return }
+        let text: String
+        switch new {
+        case .idle where old == .active: text = String(localized: "Location cleared")
+        case .reconnecting(let error) where !old.isReconnecting: text = "\(String(localized: "Reconnecting")), \(error.title)"
+        case .failed(let error): text = error.title
+        default: return
+        }
+        AccessibilityNotification.Announcement(text).post()
+    }
+
     private var statusLine: String {
         var parts: [String] = []
         switch session.state {
-        case .idle: parts.append(session.active == nil ? String(localized: "Not active") : String(localized: "Idle"))
+        case .idle: parts.append(String(localized: "Not active"))
         case .connecting: parts.append(String(localized: "Connecting"))
         case .active:
             parts.append(String(localized: "Active"))
@@ -620,7 +956,11 @@ struct MapScreen: View {
 
     private func submitSearch() {
         if let coordinate = search.coordinate {
-            select(coordinate, name: nil, apply: autoApply)
+            select(coordinate, name: MapLink.url(in: search.query).flatMap(MapLink.placeName), apply: autoApply)
+            return
+        }
+        if MapLink.url(in: search.query).map(MapLink.isMap) == true {
+            paste(search.query)
             return
         }
         guard !search.query.trimmingCharacters(in: .whitespaces).isEmpty else { return }
@@ -655,16 +995,18 @@ struct MapScreen: View {
         session.targetName = name
         searchFocused = false
         search.reset()
-        withAnimation(.smooth(duration: 1.2)) {
-            camera = .camera(MapCamera(centerCoordinate: coordinate, distance: zoom))
-        }
-        if apply {
-            Task { await session.apply() }
-        }
+        fly(to: coordinate, duration: 1.2)
+        if apply { setLocation() }
     }
 
-    private func region(_ c: CLLocationCoordinate2D) -> MapCameraPosition {
-        .region(MKCoordinateRegion(center: c, latitudinalMeters: 1500, longitudinalMeters: 1500))
+    /// Every Set goes through here; without a pairing file it opens the setup steps instead.
+    private func setLocation() {
+        searchFocused = false
+        guard session.hasPairing else {
+            showWelcome = true
+            return
+        }
+        Task { await session.apply() }
     }
 
     private func showDemo() {
@@ -679,8 +1021,10 @@ struct MapScreen: View {
     }
 
     private func saveFavorite() {
-        let name = favoriteName.trimmingCharacters(in: .whitespaces)
+        let name = favoriteName.trimmingCharacters(in: .whitespacesAndNewlines)
         let c = session.target
+        guard favorites.favorite(at: c) == nil else { return }
+        feedback += 1
         favorites.items.append(Favorite(
             name: name.isEmpty ? CoordinateParser.format(c) : name,
             latitude: c.latitude,
@@ -697,6 +1041,8 @@ private enum Metrics {
     static let dropdownGap: CGFloat = 8
     static let dropdownMaxHeight: CGFloat = 320
     static let panelRadius: CGFloat = 30
+    // Leaves the top bar free on a 667 pt iPhone SE at the largest text sizes.
+    static let panelMaxHeight: CGFloat = 420
     static let legalZone = CGSize(width: 170, height: 44)
 }
 

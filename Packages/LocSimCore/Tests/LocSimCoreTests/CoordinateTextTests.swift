@@ -87,6 +87,64 @@ final class CoordinateTextTests: XCTestCase {
         assertParses("N48°51.4' E2°21.1'", 48.856667, 2.351667, accuracy: 1e-5)
     }
 
+    func testAppleShortLinks() throws {
+        XCTAssertNil(CoordinateText.parse("https://maps.apple/p/12.5,3.25"))
+        XCTAssertNil(CoordinateText.parse("Café 21\nhttps://maps.apple/p/k8b3.4Dx-19"))
+        let bare = try XCTUnwrap(MapLink.url(in: "maps.apple/p/AbC123"))
+        XCTAssertEqual(bare.absoluteString, "https://maps.apple/p/AbC123")
+        XCTAssertTrue(MapLink.isAppleShortLink(bare))
+        assertParses("maps.apple.com/place?coordinate=52.52,13.405", 52.52, 13.405)
+        XCTAssertNil(MapLink.url(in: "notmaps.apple/p/x"))
+
+        // The redirects of a short link, with a last step that no longer names the place.
+        let steps = try ["https://maps.apple.com/p/AbC123",
+                         "https://maps.apple.com/place?place-id=I1234&address=Unter+den+Linden&name=Cafe",
+                         "https://maps.apple.com/place?place-id=I1234&coordinate=52.517,13.389&name=Cafe",
+                         "https://maps.apple.com/unsupported"].map { try XCTUnwrap(URL(string: $0)) }
+        XCTAssertEqual(MapLink.bestStep(steps), steps[2])
+        XCTAssertEqual(MapLink.bestStep(Array(steps.prefix(2))), steps[1])
+        XCTAssertNil(MapLink.bestStep([steps[0], steps[3]]))
+        XCTAssertTrue(MapLink.hasCoordinates(steps[2]))
+        XCTAssertFalse(MapLink.hasCoordinates(steps[1]))
+    }
+
+    func testGeoAndGoogleEdgeCases() throws {
+        // A name in geo: is a search, not 0,0.
+        XCTAssertNil(CoordinateText.parse("geo:0,0?q=Eiffel+Tower"))
+        XCTAssertEqual(MapLink.placeName(try XCTUnwrap(MapLink.url(in: "geo:0,0?q=Eiffel+Tower"))), "Eiffel Tower")
+        assertParses("geo:0,0?q=48.85,2.35(Cafe)", 48.85, 2.35)
+        assertParses("Pin: geo:48.85,2.35.", 48.85, 2.35)
+        // Google place links: the place, not the map center.
+        assertParses("https://www.google.com/maps/place/Eiffel+Tower/@48.8583701,2.2919064,17z/data=!3m1!4b1!4m6!3m5!1s0x0:0x0!8m2!3d48.8583701!4d2.2944813",
+                     48.8583701, 2.2944813)
+        // A search's map center is not the place; the name is searched instead.
+        let search = try XCTUnwrap(MapLink.url(in: "https://www.google.com/maps/search/Pizza/@48.85,2.35,15z"))
+        XCTAssertNil(CoordinateText.parse(search.absoluteString))
+        XCTAssertEqual(MapLink.placeName(search), "Pizza")
+        assertParses("https://www.google.com/maps/dir/48.85,2.35/52.52,13.40/@50,8,6z", 52.52, 13.40)
+        assertParses("google.com/maps/@48.85,2.35,15z", 48.85, 2.35)
+        assertParses("maps.apple.com?ll=48.85,2.35", 48.85, 2.35)
+        assertParses("https://www.google.com/maps?q=loc:48.85,2.35", 48.85, 2.35)
+        // Numbers in an address are not coordinates.
+        XCTAssertNil(CoordinateText.parse("https://maps.apple.com/?q=10+20+Main+Street"))
+        XCTAssertNil(CoordinateText.parse("https://maps.apple.com/?ll=0x1p5,1e1"))
+    }
+
+    func testSignsAndHemispheres() {
+        assertParses("\u{2013}33°52′ 151°12′", -33.866667, 151.2, accuracy: 1e-5)
+        assertParses("\u{2010}33.5, 151.2", -33.5, 151.2)
+        XCTAssertNil(CoordinateText.parse("48°51'23\"N 2°21'07\"E 12"))
+        XCTAssertNil(CoordinateText.parse("48°51'N 2°21'E foo"))
+        assertParses("48.85, W 2.35", 48.85, -2.35)
+        assertParses("N 48.85, 2.35 W", 48.85, -2.35)
+        assertParses("48°51'N, W 2°21'", 48.85, -2.35, accuracy: 1e-2)
+        XCTAssertNil(CoordinateText.parse("48.85 2.35 E N"))
+        // Unchanged: decimal commas and consistent letters.
+        assertParses("48,8566 2,3522", 48.8566, 2.3522)
+        assertParses("N 48.8566 E 2.3522", 48.8566, 2.3522)
+        assertParses("2.3522 E, 48.8566 N", 48.8566, 2.3522)
+    }
+
     func testOnlyMapHosts() throws {
         XCTAssertFalse(MapLink.isMap(try XCTUnwrap(URL(string: "https://music.apple.com/?ll=1,2"))))
         XCTAssertFalse(MapLink.isMap(try XCTUnwrap(URL(string: "https://docs.google.com/document/d/1"))))

@@ -18,7 +18,7 @@ enum Demo {
 
     static var isOn: Bool { screen != nil }
 
-    private static let german = Locale.preferredLanguages.first?.hasPrefix("de") == true
+    private static let german = Bundle.main.preferredLocalizations.first == "de"
 
     // Typical test locations instead of landmarks; public places only.
     private static let places: [(en: String, de: String, latitude: Double, longitude: Double)] = [

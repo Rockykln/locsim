@@ -1,9 +1,10 @@
 import CoreLocation
 import Foundation
+import LocSimCore
 import UIKit
 
 @MainActor
-final class SpoofSession: ObservableObject {
+final class SimulationSession: ObservableObject {
     enum State: Equatable {
         case idle
         case connecting
@@ -47,8 +48,15 @@ final class SpoofSession: ObservableObject {
 
     @Published var target: CLLocationCoordinate2D = LastCoordinate.load()
     @Published var targetName: String?
-    @Published private(set) var active: CLLocationCoordinate2D?
-    @Published private(set) var state: State = .idle
+    @Published private(set) var active: CLLocationCoordinate2D? {
+        didSet { syncActivity() }
+    }
+    @Published private(set) var state: State = .idle {
+        didSet { syncActivity() }
+    }
+    /// Name of the place that is simulated, kept apart from the pin, which may have moved since.
+    private var activeName: String?
+    private let liveActivity = LiveActivityController()
     @Published private(set) var port: UInt16?
     @Published private(set) var lastSent: Date?
     @Published private(set) var log: [String] = []
@@ -57,20 +65,36 @@ final class SpoofSession: ObservableObject {
     @Published private(set) var pairingCheck = PairingCheck.notChecked
     /// Shows the app without a device connection; the location of the device does not change.
     @Published private(set) var isPreview = false
+    /// Mirrors the device link, which is not observable, so Clear updates when it opens or closes.
+    @Published private(set) var linkOpen = false
+    /// Counts successful Sets, so the UI can confirm each one, not only the first.
+    @Published private(set) var setCount = 0
+    let recents = RecentList()
 
-    private let link = DeviceLink()
+    private var link = DeviceLink()
     private let tunnel = LoopbackTunnel()
     private let keepAlive = KeepAlive()
     private var resendTask: Task<Void, Never>?
     private var busy = false
-    private var pending: CLLocationCoordinate2D?
+    // Set while Clear waits for the device, so no resend or Set can bring the location back.
+    private var clearing = false
+    // The name travels with the queued Set, so a pin moved in the meantime cannot rename it.
+    private var pending: (coordinate: CLLocationCoordinate2D, name: String?)?
+    private var resendAfterWork = false
+    private var pendingCheck = false
     // Incremented by clear/disconnect so that work started earlier is discarded.
     private var generation = 0
-    var hasBeenActive = false
     private var lastPort: UInt16?
     private var failedResends = 0
     private var backgroundFailures = 0
-    private static let backgroundRetries = 3
+
+    private enum Timing {
+        static let backgroundRetries = 3
+        static let clearTimeout: UInt64 = 3
+        static let minResend = ResendPolicy.minimum
+        static let logLines = 300
+        static let freshWhileKeptAlive: TimeInterval = 600
+    }
 
     private static let timeFormat: DateFormatter = {
         let f = DateFormatter()
@@ -78,7 +102,12 @@ final class SpoofSession: ObservableObject {
         return f
     }()
 
-    init() {
+    static let shared: SimulationSession = {
+        Defaults.register()
+        return SimulationSession()
+    }()
+
+    private init() {
         keepAlive.onStatus = { [weak self] message in
             Task { @MainActor in self?.write(message) }
         }
@@ -91,33 +120,42 @@ final class SpoofSession: ObservableObject {
             simulate(target)
             return
         }
-        // iOS can keep the tunnel running after the app was closed.
-        Task { [weak self] in await self?.tunnel.stop() }
-        // Quit launches the user never opened, e.g. a location resume after reboot.
-        Task { [weak self] in
-            try? await Task.sleep(nanoseconds: 5_000_000_000)
-            guard let self, !self.hasBeenActive, self.active == nil,
-                  UIApplication.shared.applicationState == .background else { return }
-            exit(0)
+        tunnel.onDrop = { [weak self] in
+            Task { await self?.tunnelDropped() }
         }
+        // iOS can keep the tunnel running after the app was closed. A Shortcut that launched the
+        // app may already be starting it; that start wins.
+        let token = tunnel.startCount
+        Task { [weak self] in await self?.tunnel.stopLeftover(since: token) }
     }
 
     private var isSimulated: Bool { Demo.isOn || isPreview }
     var hasPairing: Bool { isSimulated || PairingStore.exists }
     func requestLocationPermission() { keepAlive.requestPermission() }
-    var canClear: Bool { active != nil || state == .connecting || link.hasTunnel }
+    var canClear: Bool { active != nil || state == .connecting || linkOpen }
 
     func apply() async {
         await apply(target)
     }
 
     func apply(_ coordinate: CLLocationCoordinate2D) async {
+        await apply(coordinate, name: targetName)
+    }
+
+    private func apply(_ coordinate: CLLocationCoordinate2D, name: String?) async {
         if isSimulated {
             target = coordinate
             return simulate(coordinate)
         }
-        guard !busy else {
-            pending = coordinate
+        // A repeated Set is the answer to these two errors.
+        switch state.error?.code ?? "" {
+        case AppError.otherVPNCode: tunnel.allowTakeover = true
+        case AppError.ddiConsentCode: allowDDIDownload()
+        default: break
+        }
+        guard !busy, !clearing else {
+            pending = (coordinate, name)
+            if active == nil { state = .connecting }
             write("queued \(CoordinateParser.format(coordinate))")
             return
         }
@@ -137,20 +175,25 @@ final class SpoofSession: ObservableObject {
         do {
             try await send(coordinate, reconnect: true, started: started)
             guard started == generation else { return await discard() }
+            // Counted first: the Live Activity reads it when active and state change.
+            setCount += 1
+            activeName = name
             active = coordinate
             state = .active
             failedResends = 0
             backgroundFailures = 0
             write("set \(CoordinateParser.format(coordinate))")
+            recents.add(coordinate, name: name)
             if UserDefaults.standard.bool(forKey: SettingsKey.keepAlive) { keepAlive.start() }
             startResend()
         } catch {
             guard started == generation else { return await discard() }
             // A failed Set must not fall back to the previous location later.
-            resendTask?.cancel()
-            resendTask = nil
+            stopResending()
             active = nil
-            keepAlive.stop()
+            // The device side may still be open (e.g. DDI not mounted); the next Set starts fresh.
+            await link.close()
+            syncLink()
             fail(error)
         }
     }
@@ -161,14 +204,20 @@ final class SpoofSession: ObservableObject {
             return
         }
         generation += 1
-        pending = nil
-        failedResends = 0
-        backgroundFailures = 0
-        resendTask?.cancel()
-        resendTask = nil
-        keepAlive.stop()
-        let finished = await clearLink()
+        stopResending()
+        // Nothing was set yet, so there is nothing to clear on the device.
+        if active == nil, state == .connecting {
+            // The attempt still running sees the new generation and closes the link itself.
+            state = .idle
+            write("connection cancelled")
+            await releaseTunnelIfIdle()
+            return
+        }
+        // Nothing may resend or set while the device clears; a Set made meanwhile runs afterwards.
+        clearing = true
         active = nil
+        let finished = await clearLink()
+        clearing = false
         await releaseTunnelIfIdle()
         if finished {
             state = .idle
@@ -176,10 +225,13 @@ final class SpoofSession: ObservableObject {
         } else {
             fail(DeviceError(.clearLocation, "Clearing the location did not finish"))
         }
+        runPending()
     }
 
     // Releasing the connection can block inside idevice, so Clear must not wait for it forever.
     private func clearLink() async -> Bool {
+        // The stuck link is dropped; stopping the tunnel then ends the simulation on the device.
+        if renewLinkIfStuck() { return true }
         let started = generation
         return await withCheckedContinuation { continuation in
             let once = ResumeOnce(continuation)
@@ -192,10 +244,11 @@ final class SpoofSession: ObservableObject {
                     await self.link.close()
                 }
                 once.finish(true)
+                self.syncLink()
                 self.recoverFromLateClear(started)
             }
             Task { @MainActor in
-                try? await Task.sleep(nanoseconds: 3_000_000_000)
+                try? await Task.sleep(nanoseconds: Timing.clearTimeout * 1_000_000_000)
                 once.finish(false)
             }
         }
@@ -209,21 +262,100 @@ final class SpoofSession: ObservableObject {
     }
 
     func disconnect() async {
+        if isPreview { return endPreview() }
         generation += 1
+        stopResending()
+        active = nil
+        state = .idle
+        write("disconnected")
+        await link.close()
+        syncLink()
+        await releaseTunnelIfIdle()
+    }
+
+    /// Pairing file removed or replaced: the running connection still uses the old one.
+    func pairingChanged() async {
+        pairingCheck = .notChecked
+        PairingStore.clearRejection()
+        if case .failed = state { state = .idle }
+        guard !isSimulated, active != nil || linkOpen || state == .connecting else { return }
+        await disconnect()
+        write("pairing file changed, connection closed")
+    }
+
+    private func stopResending() {
         pending = nil
+        resendAfterWork = false
         failedResends = 0
         backgroundFailures = 0
         resendTask?.cancel()
         resendTask = nil
         keepAlive.stop()
-        active = nil
-        state = .idle
-        write("disconnected")
+    }
+
+    private func syncLink() {
+        linkOpen = link.hasTunnel
+    }
+
+    /// Replaces a link whose last call never returned. Its queue stays blocked, so the old
+    /// link is closed once that call comes back, e.g. after the tunnel was stopped.
+    @discardableResult
+    private func renewLinkIfStuck() -> Bool {
+        guard link.isStuck else { return false }
+        let old = link
+        link = DeviceLink()
+        write("device did not respond, connection replaced")
+        Task.detached { await old.close() }
+        syncLink()
+        return true
+    }
+
+    /// The tunnel extension stopped, e.g. another VPN was turned on or iOS ended it.
+    private func tunnelDropped() async {
+        write("local tunnel stopped")
+        guard !clearing else { return }
+        // Work in progress may just have rebuilt the link; resend once it is done.
+        if busy {
+            resendAfterWork = active != nil
+            return
+        }
         await link.close()
-        await releaseTunnelIfIdle()
+        syncLink()
+        guard active != nil else { return }
+        await resend()
+    }
+
+    /// Sends right away after returning to the app instead of waiting for the next interval.
+    func becameActive() async {
+        if active != nil {
+            liveActivity.markStale(after: nil)
+            // Brings back an activity that could not be started or was ended while in the background.
+            syncActivity()
+        }
+        guard active != nil, !isSimulated, !busy, !clearing else { return }
+        if let lastSent, Date().timeIntervalSince(lastSent) < Double(Timing.minResend) { return }
+        await resend()
     }
 
     func clearLog() { log.removeAll() }
+
+    /// Applies the Live Activity setting to a running session.
+    func liveActivityChanged() { syncActivity() }
+
+    // Not in the preview, where the location of the device does not change.
+    private func syncActivity() {
+        guard let active, !isSimulated else { return liveActivity.end() }
+        switch state {
+        case .active, .reconnecting:
+            liveActivity.show(
+                name: activeName ?? String(localized: "Dropped pin"),
+                coordinate: CoordinateParser.format(active),
+                reconnecting: state.isReconnecting,
+                set: setCount)
+        default:
+            break
+        }
+    }
 
     /// Applies the Keep Alive setting to a running session.
     func keepAliveChanged(_ on: Bool) {
@@ -239,6 +371,12 @@ final class SpoofSession: ObservableObject {
 
     // Release location updates and any idle tunnel while nothing is simulated.
     func enteredBackground() async {
+        if active != nil {
+            // Without Keep Alive iOS suspends LocSim and the simulation ends with the tunnel. With it,
+            // resends keep moving the date on, so it only passes if iOS ended LocSim.
+            let keptAlive = keepAlive.isRunning && !backgroundDenied
+            liveActivity.markStale(after: keptAlive ? Timing.freshWhileKeptAlive : TunnelAddress.heartbeatTimeout)
+        }
         guard active == nil, state != .connecting, !busy else { return }
         keepAlive.stop()
         if link.hasTunnel {
@@ -250,16 +388,22 @@ final class SpoofSession: ObservableObject {
 
     private func finishWork() {
         busy = false
+        syncLink()
+        if resendAfterWork, pending == nil {
+            resendAfterWork = false
+            Task { [weak self] in await self?.resend() }
+        }
         runPending()
         Task { await releaseTunnelIfIdle() }
     }
 
     private func releaseTunnelIfIdle() async {
-        guard active == nil, !busy, pending == nil else { return }
+        guard active == nil, !busy, !clearing, pending == nil else { return }
         await tunnel.stop()
     }
 
     private func send(_ c: CLLocationCoordinate2D, reconnect: Bool, started: Int) async throws {
+        renewLinkIfStuck()
         if !link.isOpen {
             try await reopen(started)
         }
@@ -268,6 +412,7 @@ final class SpoofSession: ObservableObject {
         } catch let error where reconnect && !(error is CancellationError) {
             try ensureCurrent(started)
             write("send failed: \(error.localizedDescription)")
+            renewLinkIfStuck()
             try await reopen(started)
             try await link.set(latitude: c.latitude, longitude: c.longitude)
         }
@@ -292,6 +437,7 @@ final class SpoofSession: ObservableObject {
                 throw CancellationError()
             } catch {
                 write("reopen failed: \(error.localizedDescription)")
+                renewLinkIfStuck()
             }
         }
         try await connect(started)
@@ -299,81 +445,96 @@ final class SpoofSession: ObservableObject {
 
     private func connect(_ started: Int) async throws {
         try ensureCurrent(started)
-        if !state.isReconnecting { state = .connecting }
-        let defaults = UserDefaults.standard
+        // While a location is active the state stays as it is until a resend fails.
+        if active == nil { state = .connecting }
+        try await openTunnel(started)
+        try await finishConnect(started)
+    }
+
+    /// Opens the RPPairing tunnel: last known or default port first, Bonjour only when that fails.
+    private func openTunnel(_ started: Int) async throws {
         let pairing = try PairingStore.load()
         let host = TunnelAddress.peer
         try await tunnel.start()
         try ensureCurrent(started)
         let hostname = Self.setting(SettingsKey.hostname, default: Defaults.hostname)
         let portText = Self.setting(SettingsKey.port, default: "")
-        let manual = UInt16(portText).flatMap { $0 > 0 ? $0 : nil }
+        let manual = PairingPorts.manual(portText)
         if manual == nil, !portText.isEmpty { write("ignoring invalid port \"\(portText)\"") }
         var lastError: Error = DeviceError(.tunnel, "No port to try")
         var tried: UInt16?
 
-        // The port is usually 49152 but can differ, so try the last known or default
-        // port first and only browse when that fails.
-        if manual == nil {
-            let first = lastPort ?? PortResolver.fallbackPort
-            write("tunnel \(host):\(first) (\(lastPort == nil ? "default" : "last used"))")
-            do {
-                try await link.openTunnel(LinkConfig(host: host, port: first, hostname: hostname, pairing: pairing))
-                try ensureCurrent(started)
-                port = first
-                lastPort = first
-            } catch is CancellationError {
-                throw CancellationError()
-            } catch {
-                write(error.localizedDescription)
-                lastError = error
-                lastPort = nil
-                tried = first
-            }
-            if tried == nil {
-                // Failures after the tunnel is up are not port problems; report them as they are.
-                try await finishConnect(defaults, started)
-                return
-            }
-        }
-
-        let ports: [UInt16]
-        if let manual {
-            ports = [manual]
-            write("port \(manual) (manual)")
-        } else {
-            let services = await PortResolver().browse()
-            try ensureCurrent(started)
-            // Names and addresses of other devices on the network stay out of the log.
-            for s in services { write("bonjour port \(s.port) \(s.isLocal ? "local" : "remote")") }
-            if services.isEmpty {
-                write("bonjour: no _remotepairing._tcp service found")
-            } else if !services.contains(where: { $0.isLocal }) {
-                write("no local service, join any Wi-Fi to connect; cellular works once the tunnel is up")
-            }
-            ports = PortResolver.candidatePorts(services).filter { $0 != tried }
-        }
-
-        var connected = false
-        for candidate in ports {
-            write("tunnel \(host):\(candidate)")
+        func attempt(_ candidate: UInt16) async throws -> Bool {
             do {
                 try await link.openTunnel(LinkConfig(host: host, port: candidate, hostname: hostname, pairing: pairing))
                 try ensureCurrent(started)
                 port = candidate
                 lastPort = candidate
-                connected = true
-                break
+                return true
             } catch is CancellationError {
                 throw CancellationError()
             } catch {
-                // Keep the most telling error; "socket io" from other ports says little.
-                if AppError(lastError).code == "LS-202" || tried == nil { lastError = error }
                 write(error.localizedDescription)
+                renewLinkIfStuck()
+                if tried == nil || Self.rank(error) >= Self.rank(lastError) { lastError = error }
+                return false
             }
         }
-        guard connected else { throw lastError }
-        try await finishConnect(defaults, started)
+
+        if manual == nil {
+            let first = lastPort ?? PortResolver.fallbackPort
+            write("tunnel \(host):\(first) (\(lastPort == nil ? "default" : "last used"))")
+            if try await attempt(first) {
+                write("tunnel up on port \(first)")
+                return
+            }
+            lastPort = nil
+            tried = first
+        }
+
+        let ports: [UInt16]
+        var refused = false
+        if let manual {
+            ports = [manual]
+            write("port \(manual) (manual)")
+        } else {
+            let resolver = PortResolver()
+            let services = await resolver.browse()
+            try ensureCurrent(started)
+            refused = resolver.searchRefused
+            // Names and addresses of other devices on the network stay out of the log.
+            for s in services { write("bonjour port \(s.port) \(s.isLocal ? "local" : "remote")") }
+            if refused {
+                write("bonjour: search refused, Local Network access may be off")
+            } else if services.isEmpty {
+                write("bonjour: no _remotepairing._tcp service found")
+            } else if !services.contains(where: { $0.isLocal }) {
+                write("no local service, join any Wi-Fi to connect; cellular works once the tunnel is up")
+            }
+            ports = PairingPorts.candidates(services).filter { $0 != tried }
+        }
+
+        for candidate in ports {
+            write("tunnel \(host):\(candidate)")
+            if try await attempt(candidate) {
+                write("tunnel up on port \(candidate)")
+                return
+            }
+        }
+        if refused, Self.rank(lastError) < 3 {
+            throw DeviceError(.localNetwork, "Bonjour search refused; last error: \(lastError.localizedDescription)")
+        }
+        throw lastError
+    }
+
+    // Which failure to report when several ports fail: a refusal says the most, "socket io" the least.
+    private static func rank(_ error: Error) -> Int {
+        switch AppError(error).code {
+        case "LS-203": return 3
+        case "LS-201", "LS-206": return 2
+        case "LS-202": return 0
+        default: return 1
+        }
     }
 
     private static func setting(_ key: String, default value: String) -> String {
@@ -381,9 +542,8 @@ final class SpoofSession: ObservableObject {
         return stored.isEmpty ? value : stored
     }
 
-    private func finishConnect(_ defaults: UserDefaults, _ started: Int) async throws {
-        write("tunnel up on port \(port ?? 0)")
-        if defaults.bool(forKey: SettingsKey.autoMount) {
+    private func finishConnect(_ started: Int) async throws {
+        if UserDefaults.standard.bool(forKey: SettingsKey.autoMount) {
             try await ensureDDI(started)
         }
         try await link.openLocation()
@@ -399,6 +559,9 @@ final class SpoofSession: ObservableObject {
             return
         }
         let method = DDIMethod.current
+        guard DDIStore.isDownloaded(method) || UserDefaults.standard.bool(forKey: SettingsKey.ddiDownloadAllowed) else {
+            throw DeviceError(.ddiConsent, "DDI not mounted and not downloaded")
+        }
         write("DDI not mounted, installing (\(method.rawValue))")
         let dir = try await DDIStore.prepare(method) { [weak self] line in self?.write(line) }
         try ensureCurrent(started)
@@ -411,11 +574,9 @@ final class SpoofSession: ObservableObject {
         resendTask?.cancel()
         resendTask = Task { [weak self] in
             while !Task.isCancelled {
-                let base = max(UserDefaults.standard.integer(forKey: SettingsKey.resend), 3)
-                // While reconnecting the delay doubles per failure, up to a minute.
-                let failures = min(self?.failedResends ?? 0, 4)
-                let seconds = failures == 0 ? base : min(base << failures, 60)
-                try? await Task.sleep(nanoseconds: UInt64(seconds) * 1_000_000_000)
+                let seconds = ResendPolicy.delay(
+                    base: UserDefaults.standard.integer(forKey: SettingsKey.resend), failures: self?.failedResends ?? 0)
+                try? await Task.sleep(for: .seconds(seconds), tolerance: .seconds(Double(seconds) / 10))
                 guard !Task.isCancelled else { return }
                 await self?.resend()
             }
@@ -423,17 +584,21 @@ final class SpoofSession: ObservableObject {
     }
 
     private func resend() async {
-        guard let active, !busy else { return }
+        guard let active, !busy, !clearing else { return }
         busy = true
         defer { finishWork() }
         let started = generation
         do {
             try await send(active, reconnect: true, started: started)
             guard started == generation else { return await discard() }
+            tunnel.beat()
+            if UIApplication.shared.applicationState == .background {
+                liveActivity.keepFresh(for: Timing.freshWhileKeptAlive)
+            }
             if failedResends > 0 { write("reconnected") }
             failedResends = 0
             backgroundFailures = 0
-            if state != .active { state = .active }
+            if state != .active, self.active != nil { state = .active }
         } catch {
             guard started == generation else { return await discard() }
             failedResends += 1
@@ -442,7 +607,7 @@ final class SpoofSession: ObservableObject {
             // In the background, give up after a few attempts instead of retrying for hours.
             let inBackground = UIApplication.shared.applicationState == .background
             backgroundFailures = inBackground ? backgroundFailures + 1 : 0
-            if backgroundFailures >= Self.backgroundRetries {
+            if backgroundFailures >= Timing.backgroundRetries {
                 await giveUp(error)
             } else {
                 state = .reconnecting(appError)
@@ -451,31 +616,39 @@ final class SpoofSession: ObservableObject {
     }
 
     private func giveUp(_ error: Error) async {
-        resendTask?.cancel()
-        resendTask = nil
-        keepAlive.stop()
+        stopResending()
         active = nil
-        failedResends = 0
-        backgroundFailures = 0
         await link.close()
+        syncLink()
         fail(error)
         write("stopped reconnecting")
     }
 
     private func runPending() {
+        if pendingCheck, pending == nil {
+            pendingCheck = false
+            Task { [weak self] in await self?.checkPairing() }
+            return
+        }
         guard pending != nil else { return }
         // Read the queue when the task runs, so a Set made in between is not overridden.
         Task { [weak self] in
             guard let self, let next = self.pending else { return }
             self.pending = nil
-            await self.apply(next)
+            await self.apply(next.coordinate, name: next.name)
         }
     }
 
     // Undoes a send that completed after Clear.
     private func discard() async {
+        // Stopping the tunnel ends the simulation; a stuck link would only delay that.
+        if renewLinkIfStuck() {
+            if active == nil, state == .connecting { state = .idle }
+            return
+        }
         try? await link.clear()
         await link.close()
+        syncLink()
         if active == nil, state == .connecting { state = .idle }
         write("discarded work started before clear")
     }
@@ -488,27 +661,43 @@ final class SpoofSession: ObservableObject {
             pairingCheck = .valid
             return
         }
-        guard !busy, active == nil else { return }
+        guard active == nil else { return }
+        // Picked up once the current work is done.
+        guard !busy else {
+            pairingCheck = .checking
+            pendingCheck = true
+            return
+        }
         busy = true
         defer { finishWork() }
         pairingCheck = .checking
+        let started = generation
         do {
-            let pairing = try PairingStore.load()
-            try await tunnel.start()
-            let port = UInt16(Self.setting(SettingsKey.port, default: "")).flatMap { $0 > 0 ? $0 : nil }
-            try await link.openTunnel(LinkConfig(
-                host: TunnelAddress.peer,
-                port: port ?? lastPort ?? PortResolver.fallbackPort,
-                hostname: Self.setting(SettingsKey.hostname, default: Defaults.hostname),
-                pairing: pairing))
+            renewLinkIfStuck()
+            try await openTunnel(started)
             await link.close()
             pairingCheck = .valid
             write("pairing file valid")
+        } catch is CancellationError {
+            // A Clear stopped the check; the device side must not stay open.
+            await link.close()
+            pairingCheck = .notChecked
         } catch {
             let appError = AppError(error)
             pairingCheck = appError.rejectsPairing ? .rejected(appError) : .unreachable(appError)
             write("pairing check: \(appError.code) \(appError.detail)")
         }
+    }
+
+    /// Downloads the DDI ahead of time, e.g. on cellular, so that connecting later only mounts it.
+    func downloadDDI() async throws {
+        allowDDIDownload()
+        _ = try await DDIStore.prepare(DDIMethod.current) { [weak self] line in self?.write(line) }
+        write("DDI downloaded")
+    }
+
+    func allowDDIDownload() {
+        UserDefaults.standard.set(true, forKey: SettingsKey.ddiDownloadAllowed)
     }
 
     func resetPairingCheck() { pairingCheck = .notChecked }
@@ -533,10 +722,13 @@ final class SpoofSession: ObservableObject {
     }
 
     private func simulate(_ coordinate: CLLocationCoordinate2D) {
+        activeName = targetName
         active = coordinate
         state = .active
         port = Demo.isOn ? PortResolver.fallbackPort : nil
         lastSent = Demo.isOn ? Demo.sentTime : Date()
+        setCount += 1
+        if !Demo.isOn { recents.add(coordinate, name: targetName) }
         write("set \(CoordinateParser.format(coordinate)) (demo)")
     }
 
@@ -548,7 +740,7 @@ final class SpoofSession: ObservableObject {
 
     private func write(_ line: String) {
         log.append("\(Self.timeFormat.string(from: Date())) \(line)")
-        if log.count > 300 { log.removeFirst(log.count - 300) }
+        if log.count > Timing.logLines { log.removeFirst(log.count - Timing.logLines) }
     }
 }
 

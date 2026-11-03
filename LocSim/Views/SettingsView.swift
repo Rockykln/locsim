@@ -1,10 +1,14 @@
+import LocSimCore
 import SwiftUI
 import UniformTypeIdentifiers
 
 struct SettingsView: View {
-    @EnvironmentObject private var session: SpoofSession
+    @EnvironmentObject private var session: SimulationSession
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
+    @Environment(\.scenePhase) private var scenePhase
+    @EnvironmentObject private var recents: RecentList
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     @AppStorage(SettingsKey.hostname) private var hostname = Defaults.hostname
     @AppStorage(SettingsKey.port) private var port = ""
@@ -17,12 +21,18 @@ struct SettingsView: View {
     @AppStorage(SettingsKey.zoom) private var zoom = ZoomOption.block.rawValue
     @AppStorage(SettingsKey.autoApply) private var autoApply = false
     @AppStorage(SettingsKey.haptics) private var haptics = true
+    @AppStorage(SettingsKey.recentsEnabled) private var recentsEnabled = true
+    @AppStorage(SettingsKey.liveActivity) private var liveActivity = true
 
     @State private var importing = false
     @State private var hasPairing = PairingStore.exists
     @State private var ddiDownloaded = DDIStore.isDownloaded(DDIMethod.current)
+    @State private var ddiLoading = false
+    @State private var ddiError: String?
     @State private var pairingMessage: String?
     @State private var showWelcome = false
+    @State private var confirmRemove = false
+    @State private var webPage: WebPage?
 
     var body: some View {
         NavigationStack {
@@ -45,11 +55,27 @@ struct SettingsView: View {
                 hasPairing = PairingStore.exists
                 ddiDownloaded = DDIStore.isDownloaded(DDIMethod.current)
             }
+            // A file copied in by the setup script replaces the stored one; the old connection must go.
+            .onChange(of: scenePhase) { _, phase in
+                guard phase == .active else { return }
+                if PairingStore.adoptNow() { pairingReplaced() }
+                hasPairing = PairingStore.exists
+            }
             .sheet(isPresented: $showWelcome, onDismiss: {
                 hasPairing = PairingStore.exists
                 pairingMessage = nil
             }) {
-                WelcomeView().environmentObject(session)
+                WelcomeView(fromSettings: true).environmentObject(session)
+            }
+            .webPageSheet($webPage)
+            .confirmationDialog("Remove the pairing file?", isPresented: $confirmRemove, titleVisibility: .visible) {
+                Button("Remove Pairing File", role: .destructive) {
+                    PairingStore.remove()
+                    hasPairing = false
+                    Task { await session.pairingChanged() }
+                }
+            } message: {
+                Text("A running simulation stops. You need the setup script to create a new one.")
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
@@ -63,14 +89,21 @@ struct SettingsView: View {
                 do {
                     try PairingStore.importFile(at: result.get())
                     pairingMessage = nil
-                    Task { await session.checkPairing() }
+                    pairingReplaced()
                 } catch {
                     let deviceError = error as? DeviceError ?? DeviceError(.pairingInvalid, error.localizedDescription)
-                    let appError = AppError(deviceError)
-                    pairingMessage = "\(appError.title): \(appError.message) (\(appError.code))"
+                    pairingMessage = AppError(deviceError).summary
                 }
                 hasPairing = PairingStore.exists
             }
+        }
+    }
+
+    private func pairingReplaced() {
+        Task {
+            if session.isPreview { session.endPreview() }
+            await session.pairingChanged()
+            await session.checkPairing()
         }
     }
 
@@ -80,6 +113,7 @@ struct SettingsView: View {
                 Circle()
                     .fill(stateColor)
                     .frame(width: 10, height: 10)
+                    .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(stateTitle)
                         .font(.headline)
@@ -90,11 +124,18 @@ struct SettingsView: View {
                             .lineLimit(3)
                     }
                 }
+                .accessibilityElement(children: .combine)
                 Spacer(minLength: 0)
-                if session.active != nil || session.state == .connecting {
-                    Button("Disconnect") { Task { await session.disconnect() } }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
+                if session.isPreview || session.active != nil || session.state == .connecting {
+                    Button(session.isPreview ? String(localized: "End Preview") : String(localized: "Clear")) {
+                        if session.isPreview {
+                            session.endPreview()
+                        } else {
+                            Task { await session.clear() }
+                        }
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
                 }
             }
             .padding(.vertical, 4)
@@ -117,9 +158,7 @@ struct SettingsView: View {
                 }
                 .foregroundStyle(.primary)
                 Button(role: .destructive) {
-                    PairingStore.remove()
-                    hasPairing = false
-                    session.resetPairingCheck()
+                    confirmRemove = true
                 } label: {
                     item("Remove Pairing File", "trash.fill", .red)
                 }
@@ -135,12 +174,11 @@ struct SettingsView: View {
             Text("Pairing")
         } footer: {
             if let pairingMessage {
-                Text(pairingMessage).foregroundStyle(.red)
-            } else if !hasPairing, PairingStore.rejectedDrop {
-                Text("The pairing file was not valid and has been removed. Run the setup script again.")
-                    .foregroundStyle(.red)
+                ErrorFooter(pairingMessage)
+            } else if PairingStore.rejectedDrop {
+                ErrorFooter(String(localized: "The pairing file was not valid and has been removed. Run the setup script again."))
             } else {
-                Text("Create it once on a computer with the setup script, which copies it into LocSim over USB.")
+                Text("Created once with the setup script on a computer.")
             }
         }
     }
@@ -155,7 +193,7 @@ struct SettingsView: View {
             Picker(selection: $zoom) {
                 ForEach(ZoomOption.allCases) { Text($0.title).tag($0.rawValue) }
             } label: {
-                item("Zoom on Select", "plus.magnifyingglass", .teal)
+                item("Zoom on Selection", "plus.magnifyingglass", .teal)
             }
             Picker(selection: $coordinateFormat) {
                 ForEach(CoordinateFormat.allCases) { Text($0.title).tag($0.rawValue) }
@@ -171,12 +209,20 @@ struct SettingsView: View {
                 item("Set on Selection", "location.fill", .red)
             }
             Toggle(isOn: $haptics) {
-                item("Haptic Feedback", "iphone.radiowaves.left.and.right", .pink)
+                item("Haptics", "iphone.radiowaves.left.and.right", .pink)
             }
+            Toggle(isOn: $recentsEnabled) {
+                item("Recent Locations", "clock.fill", .gray, value: recentsEnabled ? "\(recents.items.count)" : nil)
+            }
+            .onChange(of: recentsEnabled) { _, on in if !on { recents.clear() } }
+            Toggle(isOn: $liveActivity) {
+                item("Live Activity", "platter.filled.bottom.iphone", .blue)
+            }
+            .onChange(of: liveActivity) { _, _ in session.liveActivityChanged() }
         } header: {
             Text("Map")
         } footer: {
-            Text("Set on Selection sends search results, coordinates and favorites right away.")
+            Text("Set on Selection sends a choice right away. Recent Locations keeps the last five.")
         }
     }
 
@@ -186,7 +232,8 @@ struct SettingsView: View {
             field("Hostname", "desktopcomputer", .blue, text: $hostname,
                   placeholder: Defaults.hostname, keyboard: .asciiCapable)
             Stepper(value: $resend, in: 3...60) {
-                item("Resend Interval", "arrow.clockwise", .green, value: "\(resend) s")
+                item("Resend Interval", "arrow.clockwise", .green,
+                     value: Duration.seconds(resend).formatted(.units(allowed: [.seconds], width: .abbreviated)))
             }
             Toggle(isOn: $keepAlive) {
                 item("Keep Alive in Background", "moon.fill", .indigo)
@@ -195,7 +242,11 @@ struct SettingsView: View {
         } header: {
             Text("Connection")
         } footer: {
-            Text("Connecting needs Wi-Fi, but no internet. After that, cellular works. Hostname must match the pairing file. Keep Alive uses background location so the simulation continues while LocSim is in the background.")
+            if !port.isEmpty, UInt16(port).map({ $0 > 0 }) != true {
+                ErrorFooter(String(localized: "Port must be a number from 1 to 65535. Leave it empty to find it automatically."))
+            } else {
+                Text("Connecting needs Wi-Fi, then cellular works too. Keep Alive keeps the simulation running in the background.")
+            }
         }
     }
 
@@ -211,13 +262,41 @@ struct SettingsView: View {
                     DDIStore.remove()
                     ddiDownloaded = false
                 } label: {
-                    Label("Delete DDI Files", systemImage: "trash")
+                    item("Delete DDI Files", "trash.fill", .red)
                 }
+                .foregroundStyle(.red)
+            } else {
+                Button {
+                    downloadDDI()
+                } label: {
+                    HStack {
+                        item("Download DDI Files", "arrow.down.to.line", .purple)
+                        if ddiLoading { ProgressView() }
+                    }
+                }
+                .disabled(ddiLoading)
             }
         } header: {
             Text("Developer Disk Image")
         } footer: {
-            Text("Needed for location simulation. Only downloaded if iOS does not provide it, about 16 MB.")
+            VStack(alignment: .leading, spacing: 6) {
+                if let ddiError { ErrorFooter(ddiError) }
+                Text("Needed if iOS does not provide it. About 16 MB from GitHub, can be downloaded here in advance.")
+            }
+        }
+    }
+
+    private func downloadDDI() {
+        ddiLoading = true
+        ddiError = nil
+        Task {
+            defer { ddiLoading = false }
+            do {
+                try await session.downloadDDI()
+            } catch {
+                ddiError = AppError(error).summary
+            }
+            ddiDownloaded = DDIStore.isDownloaded(DDIMethod.current)
         }
     }
 
@@ -233,6 +312,7 @@ struct SettingsView: View {
                     Image(systemName: "arrow.up.right")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                        .accessibilityHidden(true)
                 }
             }
             .foregroundStyle(.primary)
@@ -241,55 +321,67 @@ struct SettingsView: View {
             } label: {
                 item("Acknowledgements", "doc.text.fill", .gray)
             }
-            Link(destination: AppLinks.website) {
-                HStack {
-                    item("Website", "safari.fill", .blue)
-                    Image(systemName: "arrow.up.right")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .foregroundStyle(.primary)
-            Link(destination: AppLinks.repository) {
-                HStack {
-                    item("Repository", "chevron.left.forwardslash.chevron.right", Color(white: 0.25))
-                    Image(systemName: "arrow.up.right")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .foregroundStyle(.primary)
+            externalLink("Privacy Policy", "hand.raised.fill", .blue, AppLinks.privacy)
+            externalLink("Support", "questionmark.circle.fill", .blue, AppLinks.support)
+            externalLink("Website", "safari.fill", .blue, AppLinks.website)
+            externalLink("Repository", "chevron.left.forwardslash.chevron.right", .indigo, AppLinks.repository)
         }
+    }
+
+    private func externalLink(_ title: LocalizedStringKey, _ symbol: String, _ color: Color, _ url: URL) -> some View {
+        Button {
+            webPage = WebPage(url: url)
+        } label: {
+            HStack {
+                item(title, symbol, color)
+                Image(systemName: "arrow.up.right")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .accessibilityHidden(true)
+            }
+        }
+        .foregroundStyle(.primary)
     }
 
     private func item(
         _ title: LocalizedStringKey, _ symbol: String, _ color: Color, value: String? = nil
     ) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: symbol)
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(.white)
-                .frame(width: 28, height: 28)
-                .background(color.gradient, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
-                .accessibilityHidden(true)
-            Text(title)
-            Spacer(minLength: 8)
-            if let value {
-                Text(value)
-                    .foregroundStyle(.secondary)
-                    .monospacedDigit()
+        // At large text sizes the value goes below the title, which then has the full width.
+        let stacked = dynamicTypeSize.isAccessibilitySize
+        return VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 12) {
+                Image(systemName: symbol)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 28, height: 28)
+                    .background(color.gradient, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+                    .accessibilityHidden(true)
+                Text(title)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .layoutPriority(1)
+                Spacer(minLength: 8)
+                if let value, !stacked { valueText(value) }
             }
+            if let value, stacked { valueText(value) }
         }
+    }
+
+    private func valueText(_ value: String) -> some View {
+        Text(value)
+            .foregroundStyle(.secondary)
+            .monospacedDigit()
     }
 
     private func field(
         _ title: LocalizedStringKey, _ symbol: String, _ color: Color, text: Binding<String>, placeholder: String,
         keyboard: UIKeyboardType = .numbersAndPunctuation
     ) -> some View {
-        HStack(spacing: 12) {
+        let stacked = dynamicTypeSize.isAccessibilitySize
+        let layout = stacked ? AnyLayout(VStackLayout(alignment: .leading, spacing: 6)) : AnyLayout(HStackLayout(spacing: 12))
+        return layout {
             item(title, symbol, color)
             TextField(placeholder, text: text)
-                .multilineTextAlignment(.trailing)
+                .multilineTextAlignment(stacked ? .leading : .trailing)
                 .foregroundStyle(.secondary)
                 .monospacedDigit()
                 .autocorrectionDisabled()
@@ -300,9 +392,9 @@ struct SettingsView: View {
 
     private var stateTitle: String {
         switch session.state {
-        case .idle: return String(localized: "Not connected")
+        case .idle: return String(localized: "Not active")
         case .connecting: return String(localized: "Connecting")
-        case .active: return String(localized: "Active")
+        case .active: return session.isPreview ? String(localized: "Preview") : String(localized: "Active")
         case .reconnecting: return String(localized: "Reconnecting")
         case .failed(let error): return error.title
         }
@@ -313,9 +405,10 @@ struct SettingsView: View {
         case .active:
             var parts: [String] = []
             if let active = session.active { parts.append(CoordinateParser.format(active)) }
-            if let port = session.port { parts.append("\(String(localized: "port")) \(port)") }
+            if let port = session.port { parts.append(String(localized: "Port \(Int(port))")) }
+            if session.isPreview { parts.append(String(localized: "The location of this iPhone does not change.")) }
             return parts.joined(separator: " · ")
-        case .reconnecting(let error), .failed(let error): return "\(error.message) (\(error.code))"
+        case .reconnecting(let error), .failed(let error): return error.messageWithCode
         default: return nil
         }
     }
@@ -331,7 +424,7 @@ struct SettingsView: View {
 }
 
 struct LogView: View {
-    @EnvironmentObject private var session: SpoofSession
+    @EnvironmentObject private var session: SimulationSession
 
     var body: some View {
         ScrollView {
@@ -339,9 +432,9 @@ struct LogView: View {
                 ContentUnavailableView("No Entries", systemImage: "text.alignleft")
                     .padding(.top, 80)
             } else {
+                // No text selection: the system copy would go through Universal Clipboard.
                 Text(session.log.joined(separator: "\n"))
                     .font(.system(.caption, design: .monospaced))
-                    .textSelection(.enabled)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding()
             }
@@ -352,7 +445,8 @@ struct LogView: View {
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Button {
-                    UIPasteboard.general.string = session.log.joined(separator: "\n")
+                    // The log holds coordinates; keep it off the user's other devices.
+                    Clipboard.copy(session.log.joined(separator: "\n"), expiresAfter: 600)
                 } label: {
                     Image(systemName: "doc.on.doc")
                 }
@@ -364,6 +458,21 @@ struct LogView: View {
                 }
                 .accessibilityLabel("Clear Log")
             }
+        }
+    }
+}
+
+/// Footer for an error: the icon carries the color, the text stays readable.
+struct ErrorFooter: View {
+    let text: String
+
+    init(_ text: String) { self.text = text }
+
+    var body: some View {
+        Label {
+            Text(text)
+        } icon: {
+            Image(systemName: "exclamationmark.circle.fill").foregroundStyle(.red)
         }
     }
 }
