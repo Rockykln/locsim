@@ -1,13 +1,11 @@
-First beta of LocSim.
+First beta of LocSim. LocalDevVPN is no longer needed.
 
 Please test:
-- Setup: import the pairing file, allow the VPN configuration, set a first location on Wi-Fi.
-- Setting locations: long-press the map, search for a place, enter coordinates
-  (decimal or degrees/minutes/seconds), use favorites.
-- Keeping it: leave the app, lock the device, switch to cellular. The location
-  should stay simulated until you tap Clear.
-- Clear: the real location must come back.
+- Setup: run the setup script with the iPhone connected by USB. It copies the pairing file into LocSim. Allow the VPN configuration when iOS asks.
+- Setting locations: long-press the map, search for a place, enter coordinates (decimal or degrees/minutes/seconds), use favorites.
+- Keeping it: leave the app, lock the device, switch to cellular. The location should stay simulated until you tap Clear.
+- Clear: the real location must come back, and the VPN icon disappears.
 - After a device restart: setting a location must work again.
+- Without a pairing file: Try Without a Device on the welcome screen.
 
-If something fails, tap the status line, choose Copy Details and send it with
-your feedback.
+If something fails, tap the status line, choose Copy Details and send it with your feedback.

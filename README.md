@@ -85,8 +85,9 @@ app over USB and deletes it from the computer.
 
 1. Join any Wi-Fi network.
 2. Open LocSim, allow the VPN configuration when iOS asks (once) and allow Local
-   Network access, which is needed to find the pairing port. Location access is optional and only used for the background
-   keep-alive and for showing your real position.
+   Network access, which is needed to find the pairing port. Location access is
+   optional and only used for the background keep-alive and for showing your real
+   position.
 3. Long-press the map, search for a place or enter coordinates, then
    *Set Location*.
 4. *Clear* restores the real location and closes the connection.
