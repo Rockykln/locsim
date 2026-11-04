@@ -9,6 +9,9 @@ public enum TunnelAddress {
     public static let hostMask = "255.255.255.255"
     /// Message the app sends while it needs the tunnel; the extension stops once it no longer arrives.
     public static let heartbeat = Data("alive".utf8)
-    public static let heartbeatInterval: TimeInterval = 30
+    /// Longer than the default resend interval, so a resend carries the beat and the timer rarely fires.
+    /// Interval plus tolerance stays 30 s inside the timeout.
+    public static let heartbeatInterval: TimeInterval = 85
+    public static let heartbeatTolerance: TimeInterval = 5
     public static let heartbeatTimeout: TimeInterval = 120
 }

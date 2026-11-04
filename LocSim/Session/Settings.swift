@@ -25,7 +25,8 @@ enum SettingsKey {
 enum Defaults {
     static let hostname = "locsim"
     // The location stays while the connection is open; resending is a safeguard, so it can be rare.
-    static let resend = 30
+    // 60 s plus tolerance stays well inside the tunnel's heartbeat timeout of 120 s.
+    static let resend = 60
     static let coordinate = CLLocationCoordinate2D(latitude: 48.85660, longitude: 2.35220)
 
     static func register() {

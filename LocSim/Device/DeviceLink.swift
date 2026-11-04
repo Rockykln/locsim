@@ -82,14 +82,11 @@ final class DeviceLink: @unchecked Sendable {
     private func run<T>(_ timeout: TimeInterval, _ body: @escaping () throws -> T) async throws -> T {
         try await withCheckedThrowingContinuation { cont in
             let gate = ResumeGate()
-            queue.async(qos: .utility, flags: .enforceQoS) {
-                // Timed out while waiting behind another call: that call is the stuck one.
-                guard gate.begin() else { return }
-                let result = Result { try body() }
-                self.publishState()
-                if gate.claim() { cont.resume(with: result) }
-            }
-            DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + timeout) {
+            // A timer source, not asyncAfter: cancelling it once the call returns also removes the wakeup.
+            let deadline = DispatchSource.makeTimerSource(queue: .global(qos: .utility))
+            deadline.schedule(deadline: .now() + timeout, leeway: .milliseconds(500))
+            deadline.setEventHandler {
+                deadline.cancel()
                 guard gate.claim() else { return }
                 if gate.didBegin {
                     self.stateLock.withLock {
@@ -99,6 +96,18 @@ final class DeviceLink: @unchecked Sendable {
                     }
                 }
                 cont.resume(throwing: DeviceError(.notConnected, "Device did not respond within \(Int(timeout)) s"))
+            }
+            // Started before the call, which may finish and cancel it right away.
+            deadline.resume()
+            queue.async(qos: .utility, flags: .enforceQoS) {
+                // Timed out while waiting behind another call: that call is the stuck one.
+                guard gate.begin() else { return }
+                let result = Result { try body() }
+                self.publishState()
+                if gate.claim() {
+                    deadline.cancel()
+                    cont.resume(with: result)
+                }
             }
         }
     }

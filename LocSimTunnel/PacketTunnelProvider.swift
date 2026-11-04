@@ -63,7 +63,8 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
             guard let self else { return }
             lastHeartbeat = ProcessInfo.processInfo.systemUptime
             let timer = DispatchSource.makeTimerSource(queue: queue)
-            timer.schedule(deadline: .now() + 30, repeating: 30, leeway: .seconds(10))
+            // One shot, moved on when it fires: wakes about every two minutes instead of every 30 s.
+            timer.schedule(deadline: .now() + TunnelAddress.heartbeatTimeout, leeway: .seconds(10))
             timer.setEventHandler { [weak self] in self?.checkHeartbeat() }
             timer.resume()
             watchdog = timer
@@ -72,7 +73,11 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
 
     // Runs on `queue`.
     private func checkHeartbeat() {
-        guard ProcessInfo.processInfo.systemUptime - lastHeartbeat > TunnelAddress.heartbeatTimeout else { return }
+        let left = TunnelAddress.heartbeatTimeout - (ProcessInfo.processInfo.systemUptime - lastHeartbeat)
+        if left > 0 {
+            watchdog?.schedule(deadline: .now() + left + 1, leeway: .seconds(10))
+            return
+        }
         watchdog?.cancel()
         watchdog = nil
         // Not on `queue`, which stopTunnel uses.
