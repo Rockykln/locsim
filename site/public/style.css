@@ -88,6 +88,8 @@ main :is(p, li, td, address, dd) a { font-weight: 600; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
 
 h1, h2, h3 { overflow-wrap: break-word; text-wrap: balance; }
+/* Long German compounds in page titles would otherwise break anywhere on phones. */
+h1 { -webkit-hyphens: auto; hyphens: auto; }
 h1 { font-size: clamp(2.4rem, 5.2vw, 4.4rem); line-height: 1.04; letter-spacing: -0.035em; font-weight: 700; margin: 0 0 1.25rem; }
 h2 { font-size: clamp(1.7rem, 3.4vw, 2.75rem); line-height: 1.12; letter-spacing: -0.025em; font-weight: 700; margin: 0 0 1rem; }
 h3 { font-size: 1.05rem; line-height: 1.35; letter-spacing: -0.005em; margin: 0 0 0.35rem; }
@@ -101,8 +103,8 @@ address { font-style: normal; }
 .eyebrow { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1rem; }
 
 code { font: 0.88em ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--code); padding: 0.1em 0.35em; border-radius: 4px; overflow-wrap: anywhere; }
-pre { margin: 0 0 1rem; padding: 0.75rem 0.9rem; background: var(--code); border-radius: 10px; }
-pre code { padding: 0; background: none; white-space: pre-wrap; overflow-wrap: anywhere; }
+pre { margin: 0 0 1rem; padding: 0.75rem 0.9rem; background: var(--code); border-radius: 10px; white-space: pre; overflow-x: auto; }
+pre code { padding: 0; background: none; white-space: inherit; overflow-wrap: normal; }
 
 /* Header */
 
@@ -188,7 +190,7 @@ pre code { padding: 0; background: none; white-space: pre-wrap; overflow-wrap: a
 .step p { grid-column: 1 / -1; }
 .step-number { font-size: 1.05rem; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
 
-table { width: 100%; border-collapse: collapse; font-size: 0.97rem; margin: 0.5rem 0 1rem; }
+table { width: 100%; border-collapse: collapse; font-size: 0.97rem; margin: 0.5rem 0 1rem; -webkit-hyphens: manual; hyphens: manual; }
 th, td { text-align: left; vertical-align: top; padding: 0.8rem 1rem 0.8rem 0; border-bottom: 1px solid var(--line); }
 th { font-weight: 600; }
 td:first-child { white-space: nowrap; }
@@ -206,9 +208,14 @@ td:first-child { white-space: nowrap; }
 
 .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 2rem clamp(2rem, 6vw, 6rem); }
 
-details { border-bottom: 1px solid var(--line); padding: 0.9rem 0; }
+details { border-bottom: 1px solid var(--line); padding: 0.75rem 0; }
 details:first-of-type { border-top: 1px solid var(--line); }
-summary { cursor: pointer; font-weight: 600; }
+/* Wrapped question lines start under the text, not under the marker. */
+summary { position: relative; padding-left: 1.1em; cursor: pointer; font-weight: 600; list-style: none; }
+summary::-webkit-details-marker { display: none; }
+summary::before { content: ""; position: absolute; left: 0.1em; top: 0.55em; border: 0.3em solid transparent; border-left: 0.45em solid currentColor; border-right: 0; }
+details[open] > summary::before { top: 0.65em; transform: rotate(90deg); }
+.site-nav .lang-menu summary::before { content: none; }
 details p { margin: 0.5rem 0 0.25rem; color: var(--muted); }
 
 .cta { text-align: center; }
@@ -272,10 +279,6 @@ details p { margin: 0.5rem 0 0.25rem; color: var(--muted); }
   transform: rotate(45deg);
 }
 
-details { border-bottom: 1px solid var(--line); padding: 0.75rem 0; }
-details:first-of-type { border-top: 1px solid var(--line); }
-summary { cursor: pointer; font-weight: 600; }
-details p { margin: 0.5rem 0 0.25rem; color: var(--muted); }
 
 .code-filter {
   width: 100%;
@@ -306,8 +309,7 @@ details p { margin: 0.5rem 0 0.25rem; color: var(--muted); }
 
 .help-options svg { width: 22px; height: 22px; color: var(--text); margin-bottom: 0.35rem; }
 .still-stuck { margin-top: 1.25rem; font-weight: 600; }
-.code-group td { overflow-wrap: anywhere; hyphens: auto; }
-.code-group td a { hyphens: manual; }
+.code-group td { overflow-wrap: break-word; }
 
 /* Phones: code and meaning on one line, what to do below across the full width. */
 @media (max-width: 560px) {
@@ -317,7 +319,7 @@ details p { margin: 0.5rem 0 0.25rem; color: var(--muted); }
   .code-group tr[hidden] { display: none; }
   .code-group td { padding: 0; border: 0; }
   .code-group td:nth-child(2) { font-weight: 600; }
-  .code-group td:nth-child(3) { grid-column: 1 / -1; margin-top: 0.3rem; color: var(--muted); hyphens: manual; }
+  .code-group td:nth-child(3) { grid-column: 1 / -1; margin-top: 0.3rem; color: var(--muted); }
 }
 .code-filter { border-color: var(--muted); }
 
@@ -361,7 +363,9 @@ details p { margin: 0.5rem 0 0.25rem; color: var(--muted); }
   .compare tbody td::before, .compare tbody td:last-child::before { content: attr(data-label); position: static; width: auto; height: auto; border: 0; transform: none; font-weight: 500; color: var(--muted); }
   .compare tbody td:last-child::before { font-weight: 600; color: var(--accent); }
   .site-nav { gap: 0.85rem; font-size: 0.9rem; }
-  .help-options a { padding: 0.65rem 0.9rem; }
+  .help-options { gap: 0.5rem; }
+  .help-options a { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0.9rem; }
+  .help-options svg { flex: none; margin: 0; }
   .help-options span { display: none; }
 }
 
@@ -381,6 +385,11 @@ details p { margin: 0.5rem 0 0.25rem; color: var(--muted); }
   .site-nav { gap: 0.55rem; }
 }
 
+/* Four footer links do not fit one line; two even columns read better than a lone last link. */
+@media (max-width: 400px) {
+  .site-footer nav { display: grid; grid-template-columns: repeat(2, max-content); column-gap: 2rem; }
+}
+
 @media (max-width: 350px) {
   :root { --gutter: 0.75rem; }
   .brand img { width: 34px; height: 26px; }
@@ -393,6 +402,8 @@ html.dialog-open, html.dialog-open body { overflow: hidden; overscroll-behavior:
 button.button { font: inherit; font-size: 0.98rem; font-weight: 600; cursor: pointer; }
 .beta-dialog { width: min(34rem, calc(100% - 2rem)); max-height: calc(100dvh - 2rem); padding: 0; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28); overscroll-behavior: contain; }
 .beta-dialog::backdrop { background: rgba(14, 13, 23, 0.5); }
+:root[data-theme="dark"] .beta-dialog::backdrop { background: rgba(0, 0, 0, 0.72); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .beta-dialog::backdrop { background: rgba(0, 0, 0, 0.72); } }
 .beta-dialog section { padding: 1.4rem 1.5rem 1.5rem; }
 .beta-dialog section[hidden] { display: none; }
 .beta-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }

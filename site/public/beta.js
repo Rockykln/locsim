@@ -5,7 +5,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // The Clipboard API needs HTTPS; the selection fallback also works without it.
   function copyText(text, host) {
-    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).catch(function () { return copyBySelection(text, host); });
+    }
+    return copyBySelection(text, host);
+  }
+
+  function copyBySelection(text, host) {
+    var before = document.activeElement;
     return new Promise(function (resolve, reject) {
       var area = document.createElement("textarea");
       area.value = text;
@@ -22,6 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
         ok = false;
       } finally {
         host.removeChild(area);
+        if (before && before.focus) before.focus();
       }
       if (ok) resolve(); else reject();
     });
@@ -36,10 +44,11 @@ document.addEventListener("DOMContentLoaded", function () {
     var body = "";
     var tooLong = false;
 
-    function show(step) {
+    function show(step, noFocus) {
       dialog.querySelectorAll("[data-step]").forEach(function (section) {
         section.hidden = section.getAttribute("data-step") !== step;
       });
+      if (noFocus) return;
       var title = dialog.querySelector('[data-step="' + step + '"] h2');
       if (title) title.focus();
     }
@@ -51,7 +60,8 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!viewport) return;
       // The keyboard is translucent: the form also covers the area behind it, with room at
       // the end so the last fields can still be scrolled above it.
-      var keyboard = Math.max(0, window.innerHeight - viewport.height);
+      // While pinch-zoomed the visible area is small without any keyboard.
+      var keyboard = Math.abs(viewport.scale - 1) < 0.01 ? Math.max(0, window.innerHeight - viewport.height) : 0;
       dialog.style.setProperty("--vv-top", viewport.offsetTop + "px");
       dialog.style.setProperty("--vv-height", (viewport.height + keyboard) + "px");
       dialog.style.setProperty("--vv-keyboard", keyboard + "px");
@@ -59,17 +69,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // The page behind the dialog must not scroll, also not on iOS.
     function open() {
-      show(start);
-      root.classList.add("dialog-open");
+      if (dialog.open) return;
+      show(start, true);
       fit();
+      dialog.showModal();
+      root.classList.add("dialog-open");
       if (viewport) {
         viewport.addEventListener("resize", fit);
         viewport.addEventListener("scroll", fit);
       }
-      dialog.showModal();
+      show(start);
     }
     dialog.addEventListener("close", function () {
       root.classList.remove("dialog-open");
+      // Otherwise a reload of a #beta link opens the dialog again.
+      if (location.hash === "#" + dialog.id) {
+        history.replaceState(null, "", location.pathname + location.search);
+      }
       if (viewport) {
         viewport.removeEventListener("resize", fit);
         viewport.removeEventListener("scroll", fit);
@@ -86,9 +102,18 @@ document.addEventListener("DOMContentLoaded", function () {
     // Links such as locsim.rockykln.com/#beta open it directly.
     if (location.hash === "#" + dialog.id) open();
 
-    // A drag that starts in a field and ends on the backdrop is no click outside.
-    var pressed = null;
-    dialog.addEventListener("pointerdown", function (event) { pressed = event.target; });
+    // On phones the dialog fills the screen, so a tap on its empty area also lands on the
+    // dialog element. Only a press and release outside its box count as a backdrop click;
+    // a drag that starts in a field and ends outside does not.
+    function outside(event) {
+      var box = dialog.getBoundingClientRect();
+      return event.clientX < box.left || event.clientX > box.right ||
+        event.clientY < box.top || event.clientY > box.bottom;
+    }
+    var pressedOutside = false;
+    dialog.addEventListener("pointerdown", function (event) {
+      pressedOutside = event.target === dialog && outside(event);
+    });
 
     dialog.addEventListener("click", function (event) {
       var target = event.target.closest("[data-go], [data-close]");
@@ -102,8 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         show(target.getAttribute("data-go"));
       }
-      // A click on the backdrop lands on the dialog itself.
-      else if (event.target === dialog && pressed === dialog) dialog.close();
+      else if (event.target === dialog && pressedOutside && outside(event)) dialog.close();
     });
 
     // Live count for fields with a limit.
@@ -121,9 +145,10 @@ document.addEventListener("DOMContentLoaded", function () {
     dialog.addEventListener("focusin", count, { once: true });
 
     // "Device:" but not "What did you do?:"; French puts a space before the colon.
+    var colon = root.lang === "fr" ? "\u00a0:" : ":";
     function heading(label) {
       if (/[?:]$/.test(label)) return label;
-      return label + (root.lang === "fr" ? "\u00a0:" : ":");
+      return label + colon;
     }
 
     form.addEventListener("submit", function (event) {
@@ -149,7 +174,7 @@ document.addEventListener("DOMContentLoaded", function () {
       body = lines.join("\n").replace(/\n{3,}/g, "\n\n");
       var subject = form.getAttribute("data-subject");
       var key = form.getAttribute("data-subject-field");
-      if (key && form.elements[key].value.trim()) subject += ": " + form.elements[key].value.trim();
+      if (key && form.elements[key].value.trim()) subject += colon + " " + form.elements[key].value.trim();
       // Mail links take line breaks as CRLF. Some mail apps cut links after about 2000
       // characters; a longer text is copied instead and the link only fills in the subject.
       var href = "mailto:" + form.getAttribute("data-to") + "?subject=" + encodeURIComponent(subject);
