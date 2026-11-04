@@ -39,7 +39,7 @@ enum Defaults {
             SettingsKey.mapStyle: MapStyleOption.standard.rawValue,
             SettingsKey.precision: 5,
             SettingsKey.coordinateFormat: CoordinateFormat.decimal.rawValue,
-            SettingsKey.zoom: 900.0,
+            SettingsKey.zoom: ZoomOption.district.rawValue,
             SettingsKey.autoApply: false,
             SettingsKey.haptics: true,
             SettingsKey.recentsEnabled: true,

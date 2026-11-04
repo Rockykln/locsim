@@ -44,7 +44,7 @@ struct MapScreen: View {
     // Shown while nothing is simulated, once location access is allowed.
     @State private var showsUserLocation = false
     @AppStorage(SettingsKey.mapStyle) private var mapStyle = MapStyleOption.standard.rawValue
-    @AppStorage(SettingsKey.zoom) private var zoom = ZoomOption.block.rawValue
+    @AppStorage(SettingsKey.zoom) private var zoom = ZoomOption.district.rawValue
     @AppStorage(SettingsKey.autoApply) private var autoApply = false
     @AppStorage(SettingsKey.haptics) private var haptics = true
     @AppStorage(SettingsKey.precision) private var precision = 5

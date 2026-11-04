@@ -18,7 +18,7 @@ struct SettingsView: View {
     @AppStorage(SettingsKey.mapStyle) private var mapStyle = MapStyleOption.standard.rawValue
     @AppStorage(SettingsKey.precision) private var precision = 5
     @AppStorage(SettingsKey.coordinateFormat) private var coordinateFormat = CoordinateFormat.decimal.rawValue
-    @AppStorage(SettingsKey.zoom) private var zoom = ZoomOption.block.rawValue
+    @AppStorage(SettingsKey.zoom) private var zoom = ZoomOption.district.rawValue
     @AppStorage(SettingsKey.autoApply) private var autoApply = false
     @AppStorage(SettingsKey.haptics) private var haptics = true
     @AppStorage(SettingsKey.recentsEnabled) private var recentsEnabled = true
