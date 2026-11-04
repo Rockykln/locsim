@@ -96,7 +96,16 @@ enum PairingStore {
     private static func adoptDroppedFile() -> Bool {
         for url in droppedFiles() {
             let data = try? read(url)
-            let valid = data.map { (try? validate($0)) != nil } ?? false
+            var lockdown = false
+            let valid = data.map { data in
+                do {
+                    try validate(data)
+                    return true
+                } catch {
+                    lockdown = (error as? DeviceError)?.kind == .pairingLockdown
+                    return false
+                }
+            } ?? false
             // The setup script may still be writing it over USB.
             if !valid, let modified = try? url.resourceValues(forKeys: [.contentModificationDateKey])
                 .contentModificationDate, Date().timeIntervalSince(modified) < 5 {
@@ -110,7 +119,11 @@ enum PairingStore {
                 rejectedDrop = false
                 return true
             }
-            try? FileManager.default.removeItem(at: url)
+            // Only a file the setup script wrote is ours to delete. Other names and lockdown
+            // pairing files may be the user's own copy, kept for other tools.
+            if dropNames.contains(url.lastPathComponent), !lockdown {
+                try? FileManager.default.removeItem(at: url)
+            }
             rejectedDrop = true
         }
         return false
