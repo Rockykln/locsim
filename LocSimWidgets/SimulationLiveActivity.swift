@@ -52,6 +52,7 @@ struct SimulationLiveActivity: Widget {
         ActivityConfiguration(for: SimulationActivityAttributes.self) { context in
             LockScreenView(context: context)
                 .padding(14)
+                .modifier(LockScreenBackground())
         } dynamicIsland: { context in
             let status = Status(context)
             return DynamicIsland {
@@ -86,8 +87,9 @@ struct SimulationLiveActivity: Widget {
                 DynamicIslandExpandedRegion(.bottom) {
                     HStack {
                         Text(context.state.coordinate)
-                            .font(.footnote.monospacedDigit())
-                            .foregroundStyle(.secondary)
+                            .font(.footnote.monospacedDigit().weight(.medium))
+                            // Gray on the black island is too faint for digits.
+                            .foregroundStyle(.primary.opacity(0.8))
                             .lineLimit(1)
                             // Shrinks rather than cutting off digits next to a long Clear label.
                             .minimumScaleFactor(0.7)
@@ -146,8 +148,9 @@ private struct LockScreenView: View {
                 .accessibilityElement(children: .combine)
                 HStack(alignment: .center) {
                     Text(context.state.coordinate)
-                        .font(.caption.monospacedDigit())
-                        .foregroundStyle(.secondary)
+                        .font(.footnote.monospacedDigit().weight(.medium))
+                        // Digits need more contrast than the secondary gray gives on the Lock Screen.
+                        .foregroundStyle(.primary.opacity(0.75))
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
                     Spacer(minLength: 8)
@@ -155,6 +158,22 @@ private struct LockScreenView: View {
                 }
                 .padding(.top, 4)
             }
+        }
+    }
+}
+
+/// Light in light mode, so the activity matches the rest of the system there; dark mode keeps
+/// the system's own background.
+private struct LockScreenBackground: ViewModifier {
+    @Environment(\.colorScheme) private var colorScheme
+
+    func body(content: Content) -> some View {
+        if colorScheme == .light {
+            content
+                .activityBackgroundTint(Color.white.opacity(0.82))
+                .activitySystemActionForegroundColor(.black)
+        } else {
+            content
         }
     }
 }

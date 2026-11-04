@@ -45,14 +45,16 @@ PHONE_TOP = 650
 PHONE_LEFT = (WIDTH - PHONE_W) // 2
 
 THEMES = {
+    # A bright morning sky: the same hues as the dark night sky, but pale, so the light
+    # screenshots read as light at a glance.
     "light": dict(
-        title="#1d1030", subtitle="#3e2b58",
-        sky=[(0, "#9d8bd3"), (0.32, "#bf98d6"), (0.62, "#eba5c8"), (0.86, "#ffc2b4"), (1, "#ffd9bd")],
-        glow="#fff1d6", glow_opacity=0.75,
-        cloud="#fff7f5", cloud_opacity=1, shade="#8a5d9c", shade_opacity=0.45,
+        title="#1d1030", subtitle="#4b3f63",
+        sky=[(0, "#e9e6fb"), (0.3, "#f0e9fa"), (0.6, "#fbe9f1"), (0.85, "#fff0e6"), (1, "#fff6ec")],
+        glow="#ffffff", glow_opacity=0.85,
+        cloud="#ffffff", cloud_opacity=0.95, shade="#c8b6e6", shade_opacity=0.3,
         stars=0,
         metal="#e4e1ea, #8d899a 22%, #f1eff5 48%, #7a7688 74%, #d7d4de",
-        shadow="0 70px 140px rgba(60, 20, 80, 0.38), 0 24px 48px rgba(60, 20, 80, 0.26)",
+        shadow="0 70px 140px rgba(70, 40, 110, 0.22), 0 24px 48px rgba(70, 40, 110, 0.16)",
     ),
     "dark": dict(
         title="#ffffff", subtitle="#cdc4ea",
