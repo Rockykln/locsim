@@ -26,7 +26,8 @@ if ($Arch -eq "ARM64" -and [Environment]::OSVersion.Version.Build -lt 22000) {
 }
 
 # -LiteralPath everywhere: folders like "Projects [old]" would otherwise be read as wildcards.
-$Verified = (Test-Path -LiteralPath $Marker) -and ((Get-Content -LiteralPath $Marker -Raw).Trim() -eq "$Version $Sha256")
+# An empty marker reads as $null; the [string] cast keeps .Trim() from throwing.
+$Verified = (Test-Path -LiteralPath $Marker) -and ([string](Get-Content -LiteralPath $Marker -Raw)).Trim() -eq "$Version $Sha256")
 if (-not ($Verified -and (Test-Path -LiteralPath $Bin) -and (Test-Path -LiteralPath $List))) {
     if (Test-Path -LiteralPath $Dir) { Remove-Item -LiteralPath $Dir -Recurse -Force }
     New-Item -ItemType Directory -Force -Path $Dir | Out-Null

@@ -39,8 +39,10 @@ command -v sha256sum >/dev/null || command -v shasum >/dev/null \
   || { echo "This script needs sha256sum or shasum." >&2; exit 1; }
 if [[ "$ASSET" == linux ]]; then
   # The Linux build of idevice-tools is linked against glibc 2.38.
-  glibc="$(getconf GNU_LIBC_VERSION 2>/dev/null | awk '{print $2}')"
-  if [[ -z "$glibc" ]] || ! printf '2.38\n%s\n' "$glibc" | sort -V -C; then
+  # getconf fails on musl; "|| true" keeps set -e from ending the script without a message.
+  glibc="$(getconf GNU_LIBC_VERSION 2>/dev/null | awk '{print $2}' || true)"
+  # awk instead of sort -V, which BusyBox does not have.
+  if [[ -z "$glibc" ]] || ! awk -v v="$glibc" 'BEGIN { split(v, p, "."); exit !(p[1] + 0 > 2 || (p[1] + 0 == 2 && p[2] + 0 >= 38)) }'; then
     echo "idevice-tools $VERSION needs glibc 2.38 or newer (found: ${glibc:-none, e.g. musl})." >&2
     echo "That is Debian 13, Ubuntu 24.04, Fedora 39 or newer. Or use macOS or Windows." >&2
     exit 1
@@ -105,7 +107,10 @@ fi
 echo "Make sure the iPhone is connected by USB, unlocked and trusts this computer."
 rm -f "$OUT"
 # A pairing file left behind by a failed or interrupted run must not stay on the disk.
-trap 'rm -f "$OUT"' EXIT INT TERM
+trap 'rm -f "$OUT"' EXIT
+# Without an explicit exit, bash would run the trap and carry on after Ctrl+C.
+trap 'exit 130' INT
+trap 'exit 143' TERM
 if ! pair_log="$("$BIN" ${UDID_ARGS[@]+"${UDID_ARGS[@]}"} remotepairing_lockdown pair "$HOSTNAME_ARG" "$OUT" 2>&1)" || [[ ! -s "$OUT" ]]; then
   echo "Pairing failed:" >&2
   printf '%s\n' "${pair_log:-no output from idevice-tools}" >&2
@@ -123,7 +128,7 @@ if afc_err="$("$BIN" ${UDID_ARGS[@]+"${UDID_ARGS[@]}"} afc --documents com.rocky
   echo "Copied into LocSim and removed here. Open LocSim to finish."
 else
   # The file is kept for a manual import.
-  trap - EXIT INT TERM
+  trap - EXIT
   {
     echo "Could not copy the file into LocSim:"
     printf '%s\n' "${afc_err:-idevice-tools exited with an error}"

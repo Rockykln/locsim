@@ -9,6 +9,7 @@ Everything is drawn here; no stock photos or device artwork.
 Usage: design/mockups/render.py [--readme-only|--web-assets] [--lang en,de,...] [--jobs N]
 (needs firefox, ImageMagick 7 and oxipng or optipng)
 """
+import argparse
 import html
 import json
 import os
@@ -17,7 +18,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
@@ -28,7 +29,8 @@ SITE = os.path.join(REPO, "site", "public", "img")
 TITLED = os.path.join(OUT, "titled")
 DOCS = os.path.join(REPO, "docs", "images")
 
-LANGS = ["en", "de", "fr", "es", "it"]
+ALL_LANGS = ["en", "de", "fr", "es", "it"]
+LANGS = list(ALL_LANGS)
 WIDTH, HEIGHT = 1320, 2868          # App Store, 6.9" iPhone
 TITLE_WIDTH = 1060
 TITLE_MAX = 124
@@ -183,6 +185,8 @@ def transparent(on_black, on_white, target, work, width=660):
     """Recovers color and alpha from renders on black and on white."""
     # In the work folder, so nothing is left next to the target (e.g. in site/public) on failure.
     alpha = os.path.join(work, "alpha.png")
+    if os.path.exists(target):
+        os.remove(target)
     subprocess.run(["magick", on_black, on_white, "-alpha", "off", "-compose", "difference", "-composite",
                     "-colorspace", "gray", "-negate", alpha], check=True)
     subprocess.run(["magick", on_black, "(", alpha, "-colorspace", "sRGB", "-type", "TrueColor", ")",
@@ -243,11 +247,16 @@ def slide_page(index, slide, lang, theme, size, sky, work, page_bg="#000", bare=
         screen=screen_html(slide["screenshot"], lang, theme, work))
 
 
+def readme_slides(slides):
+    """The slides marked "readme", or all of them if none is marked."""
+    return [s for s in slides if s.get("readme")] or slides
+
+
 def readme(slides):
-    """Joins the English images of the slides marked "readme" into one row per theme, plus a
+    """Joins the English images of the README slides into one row per theme, plus a
     narrow version with the first and the last of them for phones, where three are too small."""
     os.makedirs(DOCS, exist_ok=True)
-    picked = [s for s in slides if s.get("readme")] or slides
+    picked = readme_slides(slides)
     narrow = [picked[0], picked[-1]] if len(picked) > 2 else picked
     for theme in THEMES:
         for chosen, suffix, width in ((picked, "", "1600x"), (narrow, "-narrow", "900x")):
@@ -281,29 +290,57 @@ def medium_display(path):
     optimize(target)
 
 
-def web_assets(slides, work):
-    """Website hero and feature images: the sky alone and each phone without text."""
-    for theme in THEMES:
-        sky = os.path.join(work, "sky.png")
-        firefox(f"<!doctype html><html><body style='margin:0'>{sky_svg(theme, WIDTH * 3)}</body></html>",
-                sky, (WIDTH * 3, HEIGHT), work)
-        subprocess.run(["magick", sky, "-crop", f"{WIDTH * 3}x{HEIGHT}+0+0", "+repage", "-alpha", "off", "-resize",
-                        "2400x", "-strip", "-quality", "78", "-define", "webp:method=6",
-                        os.path.join(SITE, f"sky-{theme}.webp")], check=True)
-        # Only the slides the website shows ("site": true in slides.json).
-        for slide in [s for s in slides if s.get("site")]:
-            for lang in LANGS:
-                shots = []
-                for bg in ("#000", "#fff"):
-                    shot = os.path.join(work, f"phone-{bg[1:]}.png")
-                    firefox(slide_page(0, slide, lang, theme, 100, "", work, bg, bare=True), shot, (WIDTH, HEIGHT), work)
-                    shots.append(shot)
-                name = f"phone-{slide['id']}-{lang}-{theme}"
-                transparent(*shots, os.path.join(SITE, f"{name}.webp"), work, width=900)
-                print(name)
+def run_jobs(fn, items, jobs):
+    """Runs fn on each item in parallel and prints what it returns. The first failure cancels
+    the jobs that have not started yet and ends the run with an error."""
+    with ThreadPoolExecutor(max_workers=jobs) as pool:
+        futures = [pool.submit(fn, item) for item in items]
+        try:
+            for future in as_completed(futures):
+                print(future.result(), flush=True)
+        except BaseException as exc:
+            pool.shutdown(wait=True, cancel_futures=True)
+            if isinstance(exc, Exception):
+                sys.exit(f"render failed: {exc}")
+            raise
 
 
-def render_slide(job, slides, sizes, skies, readme_only, work_root):
+def web_sky(theme, work_root):
+    work = tempfile.mkdtemp(dir=work_root)
+    sky = os.path.join(work, "sky.png")
+    firefox(f"<!doctype html><html><body style='margin:0'>{sky_svg(theme, WIDTH * 3)}</body></html>",
+            sky, (WIDTH * 3, HEIGHT), work)
+    name = f"sky-{theme}"
+    subprocess.run(["magick", sky, "-crop", f"{WIDTH * 3}x{HEIGHT}+0+0", "+repage", "-alpha", "off", "-resize",
+                    "2400x", "-strip", "-quality", "78", "-define", "webp:method=6",
+                    os.path.join(SITE, f"{name}.webp")], check=True)
+    shutil.rmtree(work, ignore_errors=True)
+    return name
+
+
+def web_phone(theme, slide, lang, work_root):
+    work = tempfile.mkdtemp(dir=work_root)
+    shots = []
+    for bg in ("#000", "#fff"):
+        shot = os.path.join(work, f"phone-{bg[1:]}.png")
+        firefox(slide_page(0, slide, lang, theme, 100, "", work, bg, bare=True), shot, (WIDTH, HEIGHT), work)
+        shots.append(shot)
+    name = f"phone-{slide['id']}-{lang}-{theme}"
+    transparent(*shots, os.path.join(SITE, f"{name}.webp"), work, width=900)
+    shutil.rmtree(work, ignore_errors=True)
+    return name
+
+
+def web_assets(slides, jobs, work):
+    """Website hero and feature images: the sky alone and each phone without text.
+    Only the slides the website shows ("site": true in slides.json)."""
+    todo = [lambda t=theme: web_sky(t, work) for theme in THEMES]
+    todo += [lambda t=theme, s=slide, l=lang: web_phone(t, s, l, work)
+             for theme in THEMES for slide in slides if slide.get("site") for lang in LANGS]
+    run_jobs(lambda job: job(), todo, jobs)
+
+
+def render_slide(job, sizes, skies, readme_only, readme_ids, work_root):
     """One App Store image (and, for the README, its version without background)."""
     theme, index, slide, lang = job
     work = tempfile.mkdtemp(dir=work_root)
@@ -316,8 +353,8 @@ def render_slide(job, slides, sizes, skies, readme_only, work_root):
                         "-alpha", "off", "-strip", target], check=True)
         optimize(target)
         medium_display(target)
-    # Only the README uses the images without background: English, slides marked "readme".
-    if lang == "en" and slide.get("readme"):
+    # Only the README uses the images without background: English, README slides.
+    if lang == "en" and slide["id"] in readme_ids:
         shots = []
         for bg in ("#000", "#fff"):
             shot = os.path.join(work, f"site-{bg[1:]}.png")
@@ -328,53 +365,74 @@ def render_slide(job, slides, sizes, skies, readme_only, work_root):
     return name
 
 
-def option(args, name):
-    """--name value or --name=value."""
-    for i, arg in enumerate(args):
-        if arg == name:
-            if i + 1 >= len(args):
-                sys.exit(f"{name} needs a value")
-            return args[i + 1]
-        if arg.startswith(name + "="):
-            return arg.split("=", 1)[1]
-    return None
+def lang_list(value):
+    codes = [code.strip() for code in value.split(",") if code.strip()]
+    unknown = [code for code in codes if code not in ALL_LANGS]
+    if unknown or not codes:
+        raise argparse.ArgumentTypeError(
+            f"unknown language: {', '.join(unknown) or 'none given'} (known: {','.join(ALL_LANGS)})")
+    return codes
+
+
+def job_count(value):
+    try:
+        n = int(value)
+    except ValueError:
+        n = 0
+    if n < 1:
+        raise argparse.ArgumentTypeError(f"needs a whole number of at least 1, not {value!r}")
+    return n
 
 
 def main():
     global LANGS
-    args = sys.argv[1:]
+    parser = argparse.ArgumentParser(description="Renders the App Store, README and website mockups.")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--readme-only", action="store_true", help="only the README image (English)")
+    mode.add_argument("--web-assets", action="store_true", help="only the website sky and phones")
+    parser.add_argument("--lang", type=lang_list, metavar="en,de,...",
+                        help=f"languages to render (default: all of {','.join(ALL_LANGS)})")
+    parser.add_argument("--jobs", type=job_count, metavar="N",
+                        default=max(1, min(4, (os.cpu_count() or 2) // 2)),
+                        help="images rendered at once (default: half the CPU cores, at most 4)")
+    args = parser.parse_args()
+    if args.lang:
+        LANGS = args.lang
+    if args.readme_only and "en" not in LANGS:
+        parser.error("--readme-only renders the English README image; include en in --lang")
     slides = json.load(open(os.path.join(HERE, "slides.json")))
-    if option(args, "--lang"):
-        LANGS = [code.strip() for code in option(args, "--lang").split(",") if code.strip()]
-        unknown = [code for code in LANGS if code not in slides[0]]
-        if unknown:
-            sys.exit(f"unknown language: {', '.join(unknown)}")
-    jobs = int(option(args, "--jobs") or max(1, min(4, (os.cpu_count() or 2) // 2)))
-    readme_only = "--readme-only" in args
+    missing = [f"{s['id']} ({lang})" for s in slides for lang in LANGS if lang not in s]
+    if missing:
+        sys.exit(f"slides.json has no text for: {', '.join(missing)}")
+    readme_ids = {s["id"] for s in readme_slides(slides)}
     os.makedirs(OUT, exist_ok=True)
     os.makedirs(SITE, exist_ok=True)
     os.makedirs(TITLED, exist_ok=True)
     with tempfile.TemporaryDirectory() as work:
-        if "--web-assets" in args:
-            return web_assets(slides, work)
+        if args.web_assets:
+            return web_assets(slides, args.jobs, work)
         sizes = title_sizes(slides, work)
         # The panorama with its cloud filters is drawn once per theme, then placed as an image.
+        # The README images have no background, so --readme-only does not need it.
         skies = {}
-        for theme in THEMES:
+        for theme in THEMES if not args.readme_only else ():
             panorama = os.path.join(work, f"sky-{theme}.png")
             firefox(f"<!doctype html><html><body style='margin:0'>{sky_svg(theme, WIDTH * len(slides))}</body></html>",
                     panorama, (WIDTH * len(slides), HEIGHT), work)
             skies[theme] = f'<img src="file://{panorama}" width="{WIDTH * len(slides)}" height="{HEIGHT}" alt="">'
         todo = [(theme, index, slide, lang) for theme in THEMES
                 for index, slide in enumerate(slides) for lang in LANGS]
-        if readme_only:
-            todo = [j for j in todo if j[3] == "en" and j[2].get("readme")]
-        with ThreadPoolExecutor(max_workers=jobs) as pool:
-            for name in pool.map(lambda j: render_slide(j, slides, sizes, skies, readme_only, work), todo):
-                print(name, flush=True)
+        if args.readme_only:
+            todo = [j for j in todo if j[3] == "en" and j[2]["id"] in readme_ids]
+        if "en" in LANGS:
+            # Every README image is rendered again below; older ones (renamed or unmarked
+            # slides) must not end up in the README.
+            for old in os.listdir(TITLED):
+                os.remove(os.path.join(TITLED, old))
+        run_jobs(lambda j: render_slide(j, sizes, skies, args.readme_only, readme_ids, work), todo, args.jobs)
     if "en" in LANGS:
         readme(slides)
-    if not readme_only and set(LANGS) == {"en", "de", "fr", "es", "it"}:
+    if not args.readme_only and set(LANGS) == set(ALL_LANGS):
         preview(slides)
 
 

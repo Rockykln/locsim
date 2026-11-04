@@ -21,17 +21,21 @@ slides and joins up in the App Store. Title font: Inter (`fonts/`, SIL OFL 1.1).
 2. Run `design/mockups/render.py` (needs Firefox, ImageMagick 7 and oxipng or optipng).
    `--lang de,fr` renders only some languages, `--jobs N` sets how many images are rendered
    at once (default: half the CPU cores, at most 4). Titles are measured and get one size
-   per language. A Firefox render that fails stops the run instead of keeping an old image.
+   per language. A render that fails stops the run with an error instead of keeping an old
+   image; images that have not started yet are skipped.
 3. App Store images land in `design/mockups/out/` (6.9", 1320 × 2868) and `out/6.3/`
    (1206 × 2622, the size App Store Connect requires), neither committed. The README
-   image lands in `docs/images/`; `--readme-only` renders only what it needs.
+   images land in `docs/images/`: `screenshots-<theme>.webp` with all README slides and
+   `screenshots-<theme>-narrow.webp` with only the first and the last of them, for phones.
+   `--readme-only` renders only what they need.
 4. For the website, run `render.py --web-assets`. It writes the sky and, for the slides
    marked `"site": true`, the phones without text or shadow to `site/public/img/` as
-   `phone-<slide id>-<lang>-<theme>.webp`. The texts are HTML in the pages.
+   `phone-<slide id>-<lang>-<theme>.webp`. `--lang` and `--jobs` work here too. The texts
+   are HTML in the pages.
 
 `preview.webp` shows all App Store images at a glance (one row per language and theme)
-and is updated whenever all five languages are rendered. The README image uses the slides
-marked `"readme": true`.
+and is updated whenever all five languages are rendered. The README images use the slides
+marked `"readme": true`, or all slides if none is marked.
 
 ![All App Store images](preview.webp)
 

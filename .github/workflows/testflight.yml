@@ -61,10 +61,12 @@ jobs:
             [ -n "${!name}" ] || { echo "::error::secret $name is missing in the testflight environment"; exit 1; }
           done
 
-      # The newest Xcode 26 on the image, so an image update does not break the build.
+      # The newest Xcode 26 release on the image, so an image update does not break the build.
+      # Betas and release candidates are skipped: sort -V puts Xcode_26.1_beta after Xcode_26.1.
       - name: Select Xcode
         run: |
-          xcode=$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)
+          xcode=$(ls -d /Applications/Xcode_26*.app | grep -viE 'beta|_rc|release_candidate' | sort -V | tail -1 || true)
+          [ -n "$xcode" ] || { echo "::error::no Xcode 26 release found in /Applications"; exit 1; }
           sudo xcode-select -s "$xcode"
           xcodebuild -version
 
