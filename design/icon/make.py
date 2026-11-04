@@ -27,6 +27,9 @@ SKY = {
 GLOW = {"light": 0.25, "dark": 0.35}
 # Centers the motif on the 1024 canvas at about 64 % of its width.
 PLACE = 'transform="translate(-26 -4) scale(1.05)"'
+# The pin sits a little above the road, so it does not look pinned onto the line.
+# 15 px on the 1024 canvas, as set in Icon Composer.
+PIN_LIFT = 15 / 1.05
 # The motif alone, cropped for the website logo.
 MARK_VIEW = (160, 150, 704, 660)
 
@@ -66,10 +69,10 @@ def pin_layer(gray=False, ground_shadow=True):
     hole = "#ffffff" if not gray else "#6a6a6a"
     defs = gradient("pin", [(0, top), (1, bottom)])
     shadow = '<ellipse cx="512" cy="600" rx="78" ry="20" fill="#2a0f2a" opacity="0.28"/>' if ground_shadow else ""
-    body = (shadow +
+    body = (f'<g transform="translate(0 {-PIN_LIFT:.2f})">' + shadow +
             f'<path d="{pin_path(512, 330, 150, 600)}" fill="url(#pin)" stroke="#ffffff" stroke-width="22" '
             'stroke-linejoin="round" paint-order="stroke"/>'
-            f'<circle cx="512" cy="330" r="56" fill="{hole}"/>')
+            f'<circle cx="512" cy="330" r="56" fill="{hole}"/></g>')
     return defs, body
 
 
