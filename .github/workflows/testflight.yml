@@ -1,9 +1,9 @@
 name: testflight
 
+# Manual only: builds are usually uploaded from Xcode, and tags mark every build.
+# Start it under Actions > testflight > Run workflow with a v* tag selected.
 on:
   workflow_dispatch:
-  push:
-    tags: ["v*"]
 
 permissions:
   contents: read

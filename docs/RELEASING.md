@@ -56,13 +56,13 @@ To upload from Xcode, run `xcodegen generate` after raising the numbers, then
 1. Raise `CURRENT_PROJECT_VERSION` in `project.yml` (and `MARKETING_VERSION` for a new
    release) and commit.
 2. Tag the commit with `v`, `MARKETING_VERSION`, a dash and `CURRENT_PROJECT_VERSION`,
-   e.g. for version 1.0 build 4: `git tag v1.0-4 && git push origin v1.0-4`. The
-   workflow fails if the tag does not match `project.yml`.
-3. Approve the run in the `testflight` environment.
-
-A manual run under *Actions > testflight > Run workflow* must select the tag (e.g.
-`v1.0-4`) under *Use workflow from*, not a branch: the environment only allows `v*` tags,
-and the tag check fails for any other ref.
+   e.g. for version 1.0 build 4: `git tag -a v1.0-4 -m "Build 4" && git push origin v1.0-4`.
+   Every build gets its tag, also one uploaded from Xcode, so patches can branch off the
+   shipped state. Pushing a tag starts nothing.
+3. Upload from Xcode, or run the workflow by hand: *Actions > testflight > Run workflow*,
+   select the tag (e.g. `v1.0-4`) under *Use workflow from*, then approve the run in the
+   `testflight` environment. The environment only allows `v*` tags, and the tag check
+   fails if the tag does not match `project.yml`.
 
 Processing in App Store Connect takes a few minutes after the upload. The build
 then appears for the internal group.
