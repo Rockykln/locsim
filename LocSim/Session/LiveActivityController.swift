@@ -11,6 +11,9 @@ final class LiveActivityController {
     private var shownSet = 0
     // When the shown Set was made; a replacement activity keeps that start time.
     private var startedAt = Date()
+    // iOS ended the activity (after eight hours); its later removal is no swipe by the user.
+    private var endedBySystem = false
+    private var stateTask: Task<Void, Never>?
     // Kept across updates: an update while LocSim goes to the background must not clear it.
     private var staleDate: Date?
     // Set only when the user swiped the activity away, not when iOS ended it.
@@ -57,9 +60,10 @@ final class LiveActivityController {
     #if DEBUG
     /// For the screenshot of the Lock Screen in demo mode.
     func showDemo(name: String, coordinate: String, startedAt: Date) {
-        let state = SimulationActivityAttributes.ContentState(name: name, coordinate: coordinate, reconnecting: false)
+        let state = SimulationActivityAttributes.ContentState(
+            name: name, coordinate: coordinate, reconnecting: false, startedAt: startedAt)
         activity = try? Activity.request(
-            attributes: SimulationActivityAttributes(startedAt: startedAt),
+            attributes: SimulationActivityAttributes(),
             content: ActivityContent(state: state, staleDate: nil), pushType: nil)
     }
     #endif
@@ -75,13 +79,14 @@ final class LiveActivityController {
               ActivityAuthorizationInfo().areActivitiesEnabled else { return end() }
         noteDismissal()
         if dismissedSet == set { return }
-        let state = SimulationActivityAttributes.ContentState(
-            name: String(name.prefix(Self.nameLimit)), coordinate: coordinate, reconnecting: reconnecting)
-        guard state != shown || set != shownSet || !isRunning else { return }
         if set != shownSet {
             startedAt = Date()
             dismissedSet = nil
         }
+        let state = SimulationActivityAttributes.ContentState(
+            name: String(name.prefix(Self.nameLimit)), coordinate: coordinate, reconnecting: reconnecting,
+            startedAt: startedAt)
+        guard state != shown || !isRunning else { return }
         shown = state
         shownSet = set
         let content = ActivityContent(state: state, staleDate: staleDate)
@@ -90,24 +95,34 @@ final class LiveActivityController {
             return
         }
         // iOS ends an activity after eight hours and keeps it on screen for a while; a later
-        // change replaces it, so only one is ever shown.
-        if let old = activity {
-            Task { await old.end(nil, dismissalPolicy: .immediate) }
-        }
+        // change replaces it, so only one is ever shown. The old one goes only once the new one
+        // is there: in the background the request fails.
+        let old = activity
         do {
-            activity = try Activity.request(
-                attributes: SimulationActivityAttributes(startedAt: startedAt), content: content, pushType: nil)
+            let new = try Activity.request(attributes: SimulationActivityAttributes(), content: content, pushType: nil)
+            activity = new
+            observe(new)
+            if let old { Task { await old.end(nil, dismissalPolicy: .immediate) } }
         } catch {
             // Starting is only allowed in the foreground; the next change there tries again.
-            activity = nil
             shown = nil
         }
     }
 
-    // A dismissed activity that was still running was swiped away by the user.
+    private func observe(_ activity: Activity<SimulationActivityAttributes>) {
+        endedBySystem = false
+        stateTask?.cancel()
+        stateTask = Task { [weak self] in
+            for await state in activity.activityStateUpdates where state == .ended {
+                self?.endedBySystem = true
+            }
+        }
+    }
+
+    // A dismissed activity that iOS had not ended was swiped away by the user.
     private func noteDismissal() {
         guard activity?.activityState == .dismissed, shown != nil else { return }
-        dismissedSet = shownSet
+        if !endedBySystem { dismissedSet = shownSet }
         activity = nil
     }
 
@@ -131,6 +146,8 @@ final class LiveActivityController {
         shown = nil
         staleDate = nil
         activity = nil
+        stateTask?.cancel()
+        stateTask = nil
         // All of them, also one iOS ended after eight hours that is still on screen.
         let ids = Self.current()
         Task { await Self.end(ids) }

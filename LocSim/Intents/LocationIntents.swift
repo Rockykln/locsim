@@ -92,8 +92,18 @@ enum LocationIntentRunner {
         }
         session.target = c
         session.targetName = name
+        let sets = session.setCount
         await session.apply()
+        // While another Set or a Clear runs, this one is only queued; Shortcuts should hear how it ended.
+        var waited = 0
+        while session.isWorking, waited < 120 {
+            try? await Task.sleep(nanoseconds: 250_000_000)
+            waited += 1
+        }
         if let error = session.state.error { throw LocationIntentError(error.summary) }
+        guard session.setCount > sets else {
+            throw LocationIntentError(String(localized: "The location was not set."))
+        }
     }
 }
 

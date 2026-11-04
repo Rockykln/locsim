@@ -34,6 +34,9 @@ private enum Status {
         }
     }
 
+    /// Gray text is too faint on the Lock Screen; the outdated hint must stay readable.
+    var textColor: Color { self == .stale ? .primary : color }
+
     /// Always says that the location is simulated, so it is never taken for the real one.
     var caption: String {
         switch self {
@@ -56,11 +59,13 @@ struct SimulationLiveActivity: Widget {
                     StatusIcon(status: status)
                         .font(.title2)
                         .padding(.leading, 4)
+                        // The caption in the center says the same.
+                        .accessibilityHidden(true)
                 }
                 // Only seen unlocked, where a running timer updates; the Lock Screen shows the start time.
                 DynamicIslandExpandedRegion(.trailing) {
                     if status != .stale {
-                        ElapsedTime(since: context.attributes.startedAt)
+                        ElapsedTime(since: context.state.startedAt)
                             .font(.headline)
                             .padding(.trailing, 4)
                     }
@@ -69,13 +74,14 @@ struct SimulationLiveActivity: Widget {
                     VStack(spacing: 1) {
                         Text(status.caption)
                             .font(.caption.weight(.semibold))
-                            .foregroundStyle(status.color)
+                            .foregroundStyle(status.textColor)
                             .lineLimit(1)
                             .minimumScaleFactor(0.8)
                         Text(context.state.name)
                             .font(.headline)
                             .lineLimit(1)
                     }
+                    .accessibilityElement(children: .combine)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
                     HStack {
@@ -122,13 +128,13 @@ private struct LockScreenView: View {
                     HStack(alignment: .firstTextBaseline) {
                         Text(status.caption)
                             .font(.caption.weight(.semibold))
-                            .foregroundStyle(status.color)
+                            .foregroundStyle(status.textColor)
                             // The outdated hint is long in some languages and may take two lines.
                             .lineLimit(status == .stale ? 2 : 1)
                             .minimumScaleFactor(0.85)
                         Spacer(minLength: 8)
                         if status != .stale {
-                            StartTime(since: context.attributes.startedAt)
+                            StartTime(since: context.state.startedAt)
                                 .font(.caption.weight(.medium))
                         }
                     }
@@ -168,9 +174,13 @@ private struct ElapsedTime: View {
     let since: Date
 
     var body: some View {
+        // A timer takes all the width it is offered, which squeezes the place name.
         Text(since, style: .timer)
             .monospacedDigit()
             .multilineTextAlignment(.trailing)
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
+            .frame(width: 76, alignment: .trailing)
     }
 }
 

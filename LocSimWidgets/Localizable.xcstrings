@@ -223,7 +223,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dalle %@"
+            "value" : "Dalle ore %@"
           }
         }
       }

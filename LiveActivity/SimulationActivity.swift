@@ -9,9 +9,9 @@ struct SimulationActivityAttributes: ActivityAttributes {
         var name: String
         var coordinate: String
         var reconnecting: Bool
+        // Part of the state, not of the attributes: a new Set updates the activity in place.
+        var startedAt: Date
     }
-
-    var startedAt: Date
 }
 
 /// The Stop button of the Live Activity. The system runs it in the app's process,
