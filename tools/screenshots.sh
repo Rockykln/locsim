@@ -87,6 +87,12 @@ launch() {
 }
 
 lock() {
+    # simctl cannot set the wallpaper; the Lock Screen only looks light on a light one.
+    if [ "$1" = light ]; then
+        printf 'Light run: the Lock Screen needs a light wallpaper (Settings > Wallpaper in the Simulator). '
+    else
+        printf 'Dark run: the Lock Screen needs a dark wallpaper. '
+    fi
     # After a restart the Live Activity can take a while to appear.
     printf 'When the Live Activity shows, lock the Simulator (Cmd-L), wait until it is on the Lock Screen, then press Enter. '
     read -r _
@@ -125,7 +131,7 @@ for lang in $LANGS; do
         # Lock Screen with the Live Activity. A restart unlocks the Simulator again.
         launch live
         sleep 8
-        lock
+        lock "$theme"
         sleep 4
         shoot "$OUT/$lang/$theme/4-live.png"
         xcrun simctl shutdown "$UDID"
