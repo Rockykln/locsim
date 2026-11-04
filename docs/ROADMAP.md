@@ -9,7 +9,7 @@ Effort: S = up to a day, M = a few days, L = a week or more.
 | 1 | Live Activity while simulating | M | Done |
 | 2 | Home Screen widget | M | Approved |
 | 3 | Shortcuts and Siri (App Intents) | M | Done |
-| 4 | Control Center control | S | Approved |
+| 4 | Control Center control | S | Approved, build 5 |
 | 5 | Route simulation | L | Proposed |
 | 6 | GPX import and export | M | Proposed |
 | 7 | Recent locations | S | Done |
@@ -22,8 +22,8 @@ Effort: S = up to a day, M = a few days, L = a week or more.
 | 14 | Privacy policy page | S | Done |
 | 15 | More languages | S each | Approved |
 | 16 | Welcome screen with setup steps | S | Done |
-| 17 | Landscape on iPhone | M | Approved |
-| 18 | iPhone Duo layout (before the iPad layout) | M | Approved |
+| 17 | Landscape on iPhone | M | Approved, build 5 |
+| 18 | iPhone Duo layout (before the iPad layout) | M | Approved, build 5 |
 
 ## Features
 
@@ -81,6 +81,12 @@ Accept and optionally display `48°51'23.8"N 2°21'07.9"E`.
 Verify the imported file against the device on demand and show a clear result,
 instead of only finding out on the next connection.
 
+### 16. Welcome screen with setup steps
+
+Shown on launch until a pairing file is imported, and from Settings: the setup steps
+with a link to the setup guide, the pairing file import and a way to try the app without
+a device.
+
 ## Quality
 
 ### 11. Unit tests in CI
@@ -91,6 +97,8 @@ Tests for coordinate parsing, error mapping and port selection; run on every pus
 
 VoiceOver labels and order, Dynamic Type up to the largest sizes, contrast of the
 glass panels.
+
+## Layout
 
 ### 13. iPad layout
 
@@ -106,13 +114,15 @@ Fits together with the iPad layout (13).
 ### 18. iPhone Duo layout
 
 Optimized for the foldable iPhone Duo before the iPad: it is an iPhone, runs the
-iPhone's iOS and is far more likely to be used with a SIM card on the go, where a
-simulated location matters most. Needs the iOS 27.1 SDK, which lets the app use the
-whole inner screen instead of running with bars at the sides, and a layout for the
-unfolded screen (map with the panel at the side, like landscape in 17) that also works
-folded. Xcode's Device Hub can simulate both poses. From April 2027 App Store
-submissions need iPhone Duo screenshots, so `tools/screenshots.sh` and the mockups need
-a Duo size too.
+iPhone's iOS and is more likely to be used with a SIM card on the go, where a simulated
+location matters most. Needs a layout for the unfolded screen (map with the panel at the
+side, like landscape in 17) that also works folded, and a Duo size in
+`tools/screenshots.sh` and the mockups.
+
+Still to be confirmed with the SDK and the simulator: that the iOS 27.1 SDK is needed to
+use the whole inner screen instead of running with bars at the sides, that the simulator
+can show both poses, and that App Store submissions need iPhone Duo screenshots from
+April 2027.
 
 ## Distribution
 

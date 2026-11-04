@@ -40,8 +40,9 @@ computer.
 
 **While a location is simulated**
 
-- Live Activity on the Lock Screen (since when) and in the Dynamic Island (timer), with a
-  Clear button; can be turned off in Settings
+- Live Activity on the Lock Screen (since when, with a Clear button) and in the Dynamic
+  Island (status icon; expanded, a running timer and the Clear button); can be turned off
+  in Settings
 - Keeps the location while LocSim is in the background, also on cellular
 - Shortcuts and Siri: set a favorite or coordinates, clear the location
 - Clear, or closing LocSim, restores the real location
@@ -53,7 +54,8 @@ computer.
   download (about 16 MB); it can also be downloaded in advance in Settings
 - Reconnects on its own after network changes
 - English, German, French, Spanish and Italian; the language follows
-  *Settings > Apps > LocSim > Language*
+  *Settings > Apps > LocSim > Language* (iOS 18 and later) or *Settings > LocSim >
+  Language* (iOS 17)
 
 ## Requirements
 
@@ -148,7 +150,7 @@ downloaded, and to Apple's signing server when it is installed. Details:
 
 ## Building
 
-Requires Xcode and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
+Requires Xcode 26 or later and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
 ```
 curl -fLO https://github.com/jkcoxson/idevice/releases/download/v0.1.68/idevice-xcframework-v0.1.68.zip
@@ -166,8 +168,8 @@ The team ID is the 10-character value after `OU=` in
 pulling changes. The build commit is stamped into the app by a scheme pre-action
 and shown under *Settings > About*.
 
-GitHub Actions checks that every push and pull request builds. TestFlight
-uploads are described in [docs/RELEASING.md](docs/RELEASING.md).
+GitHub Actions builds every push to `main` and every pull request. The TestFlight
+workflow only runs when started by hand; see [docs/RELEASING.md](docs/RELEASING.md).
 
 ## Tests
 
@@ -198,7 +200,8 @@ docs/         Release process, roadmap, TestFlight notes, README images
 design/       App icon, mockups, screenshots, social images
 site/         Website locsim.rockykln.com (Cloudflare Worker, static files in public/)
 tools/        Pairing file creation (macOS, Linux, Windows), screenshots,
-              fetch-vendor.sh to mirror all pinned downloads into vendor/
+              fetch-vendor.sh to mirror all pinned downloads into vendor/,
+              pin-setup.sh to point the setup guide at a build's commit
 ```
 
 ## Disclaimer

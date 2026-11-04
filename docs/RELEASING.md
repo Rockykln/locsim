@@ -1,7 +1,7 @@
 # Releasing to TestFlight
 
-Builds are uploaded either from Xcode on the Mac or by the `testflight` workflow. The
-workflow archives with automatic, cloud-managed signing through the App Store Connect
+Builds are uploaded either from Xcode on the Mac or by the `testflight` workflow, which
+only runs when started by hand. The workflow archives with automatic, cloud-managed signing through the App Store Connect
 API, so no certificates or provisioning profiles are stored in the repository or in
 secrets.
 
@@ -48,8 +48,8 @@ To upload from Xcode, run `xcodegen generate` after raising the numbers, then
 6. **Repository settings** (set on 4 November 2026): workflow runs from all outside
    contributors need approval (*Settings > Actions > General*), actions must be pinned
    to a full SHA, the `testflight` environment needs approval and allows only `v*` tags,
-   and rulesets keep `main` and `v*` tags from being deleted or force-pushed by anyone
-   but admins. Secret scanning with push protection and Dependabot alerts are on.
+   and rulesets protect `main` and all `v*` tags: they cannot be deleted or force-pushed,
+   so a tag cannot be moved to another commit. Admins can bypass the rulesets. Secret scanning with push protection and Dependabot alerts are on.
 
 ## Uploading a build
 
