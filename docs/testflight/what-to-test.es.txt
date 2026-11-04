@@ -1,0 +1,14 @@
+Build 4: conexión más fiable, ubicaciones recientes, pegar coordenadas, atajos, actividad en directo y accesibilidad.
+
+Prueba lo siguiente:
+- Conexión: establece una ubicación, sal de la app, bloquea el dispositivo, cambia a datos móviles y vuelve. La ubicación debe seguir simulada hasta que toques “Restablecer”.
+- Otra VPN: si hay otra VPN seleccionada, “Establecer ubicación” pregunta antes de sustituirla.
+- Ubicaciones recientes: el campo de búsqueda muestra las cinco últimas. “Borrar” las elimina; Ajustes > Mapa > Ubicaciones recientes las desactiva.
+- Pegar: copia coordenadas o un enlace de Mapas o Google Maps, toca el campo de búsqueda y después “Pegar”.
+- Favoritos: la estrella está rellena en un lugar guardado; al tocarla se elimina.
+- Actividad en directo: mientras haya una ubicación activa, la pantalla bloqueada la muestra con la hora en que se estableció, y la Dynamic Island ampliada con un contador. “Restablecer” termina la simulación. Si LocSim se detuvo en segundo plano, indica “Abre LocSim para comprobar la ubicación”.
+- Atajos y Siri: “Establecer LocSim en <favorito>”, “Detener LocSim” y las acciones “Establecer coordenadas” y “Restablecer ubicación” en la app Atajos.
+- Emparejamiento: sustituye el archivo de emparejamiento con el script de configuración mientras haya una ubicación activa. LocSim debe cerrar la conexión anterior y comprobar el archivo nuevo.
+- VoiceOver y texto grande: los cambios de estado se anuncian y los botones no se cortan.
+
+Si algo falla, toca la línea de estado, elige “Copiar detalles” y envíalos con tus comentarios.

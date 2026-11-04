@@ -1,0 +1,14 @@
+Build 4 : connexion plus fiable, lieux récents, collage de coordonnées, raccourcis, activité en direct et accessibilité.
+
+À tester :
+- Connexion : définissez une position, quittez l’app, verrouillez l’appareil, passez en données cellulaires puis revenez. La position doit rester simulée jusqu’à ce que vous touchiez « Réinitialiser ».
+- Autre VPN : si un autre VPN est sélectionné, « Définir la position » demande avant de le remplacer.
+- Lieux récents : le champ de recherche affiche les cinq derniers. « Effacer » les supprime ; Réglages > Carte > Lieux récents les désactive.
+- Coller : copiez des coordonnées ou un lien Plans ou Google Maps, touchez le champ de recherche puis « Coller ».
+- Favoris : l’étoile est pleine pour un lieu enregistré ; la toucher le supprime.
+- Activité en direct : tant qu’une position est active, l’écran verrouillé l’affiche avec l’heure à laquelle elle a été définie, et la Dynamic Island développée avec un chronomètre. « Réinitialiser » y met fin à la simulation. Si LocSim a été arrêté en arrière-plan, elle indique « Ouvrez LocSim pour vérifier la position ».
+- Raccourcis et Siri : « Régler LocSim sur <favori> », « Arrêter LocSim », ainsi que les actions « Définir des coordonnées » et « Réinitialiser la position » dans l’app Raccourcis.
+- Jumelage : remplacez le fichier de jumelage avec le script de configuration pendant qu’une position est active. LocSim doit fermer l’ancienne connexion et vérifier le nouveau fichier.
+- VoiceOver et grande taille de texte : les changements d’état sont annoncés, les boutons ne sont pas coupés.
+
+En cas de problème, touchez la ligne d’état, choisissez « Copier les détails » et envoyez-les avec vos commentaires.

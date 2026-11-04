@@ -1,0 +1,14 @@
+Build 4: connessione più affidabile, posizioni recenti, incolla coordinate, comandi rapidi, attività in tempo reale e accessibilità.
+
+Da testare:
+- Connessione: imposta una posizione, esci dall’app, blocca il dispositivo, passa alla rete cellulare e torna indietro. La posizione deve restare simulata finché non tocchi “Ripristina”.
+- Altra VPN: se è selezionata un’altra VPN, “Imposta posizione” chiede prima di sostituirla.
+- Posizioni recenti: il campo di ricerca mostra le ultime cinque. “Cancella” le rimuove; Impostazioni > Mappa > Posizioni recenti le disattiva.
+- Incolla: copia delle coordinate o un link di Mappe o Google Maps, tocca il campo di ricerca e poi “Incolla”.
+- Preferiti: la stella è piena per un luogo salvato; toccandola lo rimuovi.
+- Attività in tempo reale: finché una posizione è attiva, la schermata di blocco la mostra con l’ora in cui è stata impostata e la Dynamic Island espansa con un timer. “Ripristina” termina la simulazione. Se LocSim è stato interrotto in background, compare “Apri LocSim per verificare la posizione”.
+- Comandi rapidi e Siri: “Imposta LocSim su <preferito>”, “Ferma LocSim” e le azioni “Imposta coordinate” e “Ripristina posizione” nell’app Comandi Rapidi.
+- Abbinamento: sostituisci il file di abbinamento con lo script di configurazione mentre una posizione è attiva. LocSim deve chiudere la vecchia connessione e controllare il nuovo file.
+- VoiceOver e testo grande: i cambi di stato vengono annunciati, i pulsanti non vengono tagliati.
+
+Se qualcosa non funziona, tocca la riga di stato, scegli “Copia dettagli” e inviali con il tuo feedback.
