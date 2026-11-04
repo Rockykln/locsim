@@ -145,6 +145,37 @@ final class CoordinateTextTests: XCTestCase {
         assertParses("2.3522 E, 48.8566 N", 48.8566, 2.3522)
     }
 
+    func testProbeRegressions() throws {
+        // DMS across lines, with a closing period or a thin space.
+        assertParses("48°51'23.8\"N\n2°21'07.9\"E", 48.856611, 2.352194, accuracy: 1e-5)
+        assertParses("48°51'23.8\"N,\n2°21'07.9\"E", 48.856611, 2.352194, accuracy: 1e-5)
+        assertParses("48°51'23.8\"N\t2°21'07.9\"E", 48.856611, 2.352194, accuracy: 1e-5)
+        assertParses("48°51'23.8\"N 2°21'07.9\"E.", 48.856611, 2.352194, accuracy: 1e-5)
+        assertParses("48°51'23.8\"N\u{2009}2°21'07.9\"E", 48.856611, 2.352194, accuracy: 1e-5)
+        assertParses("\u{2014}33.8688, 151.2093", -33.8688, 151.2093)
+        // Labels and coordinates in Google paths.
+        assertParses("https://www.google.com/maps?q=48.8566,2.3522+(Cafe)", 48.8566, 2.3522)
+        assertParses("https://www.google.com/maps/search/48.8566,+2.3522/@48.80,2.30,14z", 48.8566, 2.3522)
+        assertParses("https://www.google.com/maps/place/48.8566,+2.3522/@48.80,2.30,14z", 48.8566, 2.3522)
+        assertParses("https://www.google.com/maps/place/48.8566,2.3522", 48.8566, 2.3522)
+        XCTAssertNil(CoordinateText.parse("https://www.google.com/maps/dir/48.80,2.30/Eiffel+Tower/@48.8,2.3,12z"))
+        // Keys used by newer link formats, and coordinates written out in q.
+        assertParses("https://maps.apple.com/directions?destination=48.8566,2.3522", 48.8566, 2.3522)
+        assertParses("https://www.google.com/maps/dir/?api=1&destination=48.8566%2C2.3522", 48.8566, 2.3522)
+        assertParses("https://www.google.com/maps/@?api=1&map_action=map&center=48.8566%2C2.3522", 48.8566, 2.3522)
+        assertParses("https://www.google.com/maps?q=48%C2%B051'23.8%22N+2%C2%B021'07.9%22E", 48.856611, 2.352194, accuracy: 1e-5)
+        assertParses("HTTPS://MAPS.GOOGLE.COM/?Q=48.8566,2.3522", 48.8566, 2.3522)
+        // Several links, or coordinates next to another link.
+        assertParses("Meet at https://example.com then https://maps.google.com/?q=48.8566,2.3522", 48.8566, 2.3522)
+        // Words around coordinates mean a place name, also without a link; only the link is removed.
+        assertParses("48.8566, 2.3522 https://example.com/info", 48.8566, 2.3522)
+        // A geo: label with spaces stays whole.
+        let geo = try XCTUnwrap(MapLink.url(in: "geo:0,0?q=48.8566,2.3522(Cafe Central)"))
+        XCTAssertEqual(MapLink.placeName(geo), "Cafe Central")
+        let bracketed = try XCTUnwrap(MapLink.url(in: "(geo:0,0?q=48.8566,2.3522(Cafe))"))
+        XCTAssertEqual(MapLink.placeName(bracketed), "Cafe")
+    }
+
     func testOnlyMapHosts() throws {
         XCTAssertFalse(MapLink.isMap(try XCTUnwrap(URL(string: "https://music.apple.com/?ll=1,2"))))
         XCTAssertFalse(MapLink.isMap(try XCTUnwrap(URL(string: "https://docs.google.com/document/d/1"))))

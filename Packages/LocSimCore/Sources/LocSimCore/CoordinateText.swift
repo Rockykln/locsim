@@ -28,8 +28,17 @@ public enum CoordinateFormat: String, CaseIterable, Identifiable, Sendable {
 public enum CoordinateText {
     public static func parse(_ text: String) -> Coordinate? {
         if let link = mapLink(text) { return link }
-        // Numbers in a Maps link without coordinates, e.g. in a place ID, are no coordinates.
-        if let url = MapLink.url(in: text), MapLink.isMap(url) { return nil }
+        if let url = MapLink.url(in: text) {
+            // Numbers in a Maps link without coordinates, e.g. in a place ID, are no coordinates.
+            if MapLink.isMap(url) { return nil }
+            // Coordinates written next to another link: "Meet at 48.85, 2.35 https://…"
+            let rest = text.replacingOccurrences(of: url.absoluteString, with: " ")
+            return rest == text ? parseText(text) : parseText(rest)
+        }
+        return parseText(text)
+    }
+
+    private static func parseText(_ text: String) -> Coordinate? {
         let input = normalize(text)
         // "48.85, W 2.35": each half has its own letter, wherever it stands.
         if let c = parseHalves(input) { return c }
@@ -42,13 +51,14 @@ public enum CoordinateText {
     }
 
     private static let hemisphereRegex = try! NSRegularExpression(pattern: hemisphere)
+    private static let separators = CharacterSet.whitespacesAndNewlines.union(CharacterSet(charactersIn: ",;."))
     private static let singleNumber = try! NSRegularExpression(pattern: "^\(number)\\s*°?$")
 
     /// Two halves split by a comma or semicolon, each with one value and at most one letter.
     /// nil when the text is not like that, e.g. with decimal commas ("48,85 2,35").
     private static func parseHalves(_ text: String) -> Coordinate? {
         let halves = text.split(whereSeparator: { $0 == "," || $0 == ";" }).map {
-            String($0).trimmingCharacters(in: .whitespaces)
+            String($0).trimmingCharacters(in: .whitespacesAndNewlines)
         }
         guard halves.count == 2 else { return nil }
         var values: [Value] = []
@@ -58,7 +68,7 @@ public enum CoordinateText {
             guard letters.count <= 1 else { return nil }
             let letter = letters.first.flatMap { Range($0.range, in: half) }.map { String(half[$0]) }
             let rest = hemisphereRegex.stringByReplacingMatches(in: half, range: range, withTemplate: "")
-                .trimmingCharacters(in: .whitespaces)
+                .trimmingCharacters(in: .whitespacesAndNewlines)
             guard let value = singleValue(rest) else { return nil }
             values.append(Value(magnitude: value.magnitude, negative: value.negative, hemisphere: letter))
         }
@@ -114,8 +124,18 @@ public enum CoordinateText {
         }
         guard MapLink.isMap(url) else { return nil }
         // Not "sll": in Apple's links that is only the center of the search area.
-        for key in ["ll", "coordinate", "q", "query", "daddr"] {
-            if let value = MapLink.value(key, in: url), let c = pair(value) { return c }
+        for key in ["ll", "coordinate", "q", "query", "daddr", "destination"] {
+            guard let value = MapLink.value(key, in: url) else { continue }
+            // "48.85,2.35 (Cafe)": the label in brackets is not part of the coordinates.
+            let bare = String(value.prefix { $0 != "(" }).trimmingCharacters(in: .whitespaces)
+            if let c = pair(bare) { return c }
+            // Coordinates written out, e.g. q=48°51'23.8"N 2°21'07.9"E.
+            if bare.range(of: #"\d"#, options: .regularExpression) != nil, let c = parseText(bare) { return c }
+        }
+        // Google's map URL API: /maps/@?api=1&map_action=map&center=48.85,2.35
+        if MapLink.value("map_action", in: url) == "map", let center = MapLink.value("center", in: url),
+           let c = pair(center) {
+            return c
         }
         // Google Maps: the place itself is in the data part, !3d<lat>!4d<lon>.
         let path = url.path
@@ -126,9 +146,15 @@ public enum CoordinateText {
         let parts = url.pathComponents
         let maps = parts.firstIndex(of: "maps")
         let kind = maps.flatMap { parts.indices.contains($0 + 1) ? parts[$0 + 1] : nil }
-        // Directions: the destination is the last stop given as coordinates.
+        // Directions: only the destination counts, the last stop. A named one is searched instead.
         if kind == "dir" {
-            return parts.reversed().lazy.filter { !$0.hasPrefix("@") }.compactMap { pair($0) }.first
+            let stops = parts.dropFirst((maps ?? 0) + 2).filter { !$0.hasPrefix("@") && !$0.hasPrefix("data=") }
+            return stops.last.flatMap { pair($0.replacingOccurrences(of: "+", with: " ")) }
+        }
+        // /maps/search/48.85,+2.35/… and /maps/place/48.85,+2.35/…: the term itself is the place.
+        if kind == "search" || kind == "place", let maps, parts.indices.contains(maps + 2),
+           let c = pair(parts[maps + 2].replacingOccurrences(of: "+", with: " ")) {
+            return c
         }
         // The map center, /maps/@48.85,2.35,15z, is only the place for a plain map or a place
         // link; in a search it is just the area that was shown.
@@ -169,7 +195,8 @@ public enum CoordinateText {
     private static func normalize(_ text: String) -> String {
         text.replacingOccurrences(of: "º", with: "°")
             // Minus written as a dash or hyphen character, e.g. copied from a document.
-            .replacingOccurrences(of: "[\u{2010}-\u{2013}\u{2212}\u{FE63}\u{FF0D}]", with: "-", options: .regularExpression)
+            .replacingOccurrences(of: "[\u{2010}-\u{2014}\u{2212}\u{FE63}\u{FF0D}]", with: "-", options: .regularExpression)
+            .replacingOccurrences(of: "[\u{2000}-\u{200A}\u{202F}\u{205F}]", with: " ", options: .regularExpression)
             .replacingOccurrences(of: "\u{00A0}", with: " ")
             .replacingOccurrences(of: "\u{202F}", with: " ")
             .trimmingCharacters(in: .whitespacesAndNewlines)
@@ -224,7 +251,8 @@ public enum CoordinateText {
         // Anything outside the two values, "… 12" or a letter on the other side, is not a coordinate.
         let leftover = NSMutableString(string: text)
         for match in matches.reversed() { leftover.replaceCharacters(in: match.range, with: " ") }
-        guard (leftover as String).trimmingCharacters(in: CharacterSet(charactersIn: " ,;")).isEmpty else { return nil }
+        // Separators, line breaks and a closing period ("… 2°21'07.9\"E.") may remain.
+        guard (leftover as String).trimmingCharacters(in: Self.separators).isEmpty else { return nil }
 
         var values: [Value] = []
         for match in matches {

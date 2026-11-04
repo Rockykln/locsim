@@ -4,20 +4,33 @@ import Foundation
 public enum MapLink {
     public static func url(in text: String) -> URL? {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        // geo: URIs, full links, and Maps links typed or copied without the scheme
-        // ("maps.apple/p/…", "google.com/maps/@…"), which are taken as https.
-        let pattern = #"(?<![\w])geo:[^\s<>"]+|https?://[^\s<>"]+"#
+        // geo: URIs (a label in brackets may contain spaces), full links, and Maps links typed or
+        // copied without the scheme ("maps.apple/p/…", "google.com/maps/@…"), which are taken as https.
+        let pattern = #"(?<![\w])geo:[^\s<>"(]+(?:\([^)<>"]*\))?|https?://[^\s<>"]+"#
             + #"|(?<![\w./@])(?:maps\.apple(?:\.com)?|(?:www\.)?google\.[a-z.]{2,6}/maps|maps\.google\.[a-z.]{2,6})[/?][^\s<>"]*"#
-        guard let range = trimmed.range(of: pattern, options: [.regularExpression, .caseInsensitive])
-        else { return nil }
-        var link = String(trimmed[range])
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) else { return nil }
+        var first: URL?
+        for match in regex.matches(in: trimmed, range: NSRange(trimmed.startIndex..., in: trimmed)) {
+            guard let range = Range(match.range, in: trimmed), let url = clean(String(trimmed[range])) else { continue }
+            // A Maps link wins over other links in the same text.
+            if url.scheme?.lowercased() == "geo" || isMap(url) { return url }
+            if first == nil { first = url }
+        }
+        return first
+    }
+
+    private static func clean(_ found: String) -> URL? {
+        var link = found
         let isGeo = link.lowercased().hasPrefix("geo:")
         if !isGeo, !link.lowercased().hasPrefix("http") { link = "https://" + link }
         // Chats put links in sentences or brackets: "see https://…)." should not keep ")."
-        // A geo: label in brackets, "geo:0,0?q=48.85,2.35(Cafe)", keeps its closing bracket.
-        let trailing = isGeo && link.contains("(") ? ".,;:!?]}'\"" : ".,;:!?)]}'\""
-        while let last = link.last, trailing.contains(last) { link.removeLast() }
-        return URL(string: link)
+        while let last = link.last, ".,;:!?]}'\"".contains(last) { link.removeLast() }
+        // A closing bracket stays only if it closes one in the link, e.g. a geo: label.
+        while link.last == ")", link.filter({ $0 == ")" }).count > link.filter({ $0 == "(" }).count {
+            link.removeLast()
+            while let last = link.last, ".,;:!?".contains(last) { link.removeLast() }
+        }
+        return URL(string: link) ?? URL(string: link.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed) ?? link)
     }
 
     public static func isMap(_ url: URL) -> Bool {
@@ -56,7 +69,7 @@ public enum MapLink {
     /// Query values with "+" for spaces, as Google writes them.
     static func value(_ name: String, in url: URL) -> String? {
         let items = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems ?? []
-        return items.first(where: { $0.name == name })?.value?.replacingOccurrences(of: "+", with: " ")
+        return items.first(where: { $0.name.lowercased() == name })?.value?.replacingOccurrences(of: "+", with: " ")
     }
 
     /// The place name in a link, to label the pin or to search for when there are no coordinates.
