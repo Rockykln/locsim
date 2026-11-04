@@ -30,6 +30,10 @@ targets:
       - LiveActivity
       - path: THIRD_PARTY_LICENSES.md
         buildPhase: resources
+      # Icon Composer file: iOS 26 draws it with Liquid Glass. Older iOS versions use the
+      # PNGs of the same name in the asset catalog.
+      - path: design/icon/AppIcon.icon
+        buildPhase: resources
     dependencies:
       - framework: Frameworks/IDevice.xcframework
         embed: false

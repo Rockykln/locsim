@@ -10,8 +10,12 @@ ImageMagick):
   (1024 × 1024, no transparency).
 - `AppIcon-tinted.svg`: grayscale on black, which iOS tints itself.
 - `mark.svg`: the motif alone, used as `site/public/brand-light.svg` and `brand-dark.svg`.
-- `layers/`: background, map and pin as separate layers for Icon Composer, so iOS 26 can
-  add its glass effect and the clear and tinted looks.
+- `layers/`: map and pin as separate layers for Icon Composer (the backgrounds are only
+  for the flat PNGs; in Icon Composer the sky is the icon's fill).
+- `AppIcon.icon`: the Icon Composer file built from those layers, with the glass settings.
+  iOS 26 uses it; older versions fall back to the PNGs in the asset catalog. Changes to
+  the motif have to be made in both: here in `make.py`, and in Icon Composer by importing
+  the new layers (the pin there is moved up by 15 pt, `layers/pin.svg` already is).
 
 The export writes `AppIcon-1024*.png` into `LocSim/Assets.xcassets/AppIcon.appiconset/`
 and `apple-touch-icon.png`, `favicon-96.png`, `favicon.ico` and the brand logos into
