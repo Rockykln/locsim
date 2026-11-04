@@ -28,7 +28,11 @@ struct MapScreen: View {
     @State private var suggestionsHeight: CGFloat = 0
     @FocusState private var searchFocused: Bool
     @Namespace private var mapScope
-    @State private var mapBottom: CGFloat = 0
+    @State private var mapFrame: CGRect = .zero
+    private var mapBottom: CGFloat { mapFrame.maxY }
+    @State private var containerWidth: CGFloat = 0
+    // Trailing edge of the search and panel column in sidebar layout.
+    @State private var columnTrailing: CGFloat = 0
     @State private var panelTop: CGFloat = .infinity
     @State private var topBarBottom: CGFloat = 0
     @State private var panelContentHeight: CGFloat = 0
@@ -65,41 +69,75 @@ struct MapScreen: View {
             }
     }
 
+    /// On wide screens, such as the unfolded iPhone Duo held sideways, search and panel form a
+    /// column at the leading edge and the map gets the rest, instead of a wide panel across it.
+    private var usesSidebar: Bool { containerWidth >= Metrics.sidebarMinWidth }
+
+    private var chromeWidth: CGFloat { usesSidebar ? Metrics.sidebarWidth : 640 }
+
     private var layers: some View {
-        ZStack(alignment: .top) {
+        ZStack(alignment: usesSidebar ? .topLeading : .top) {
             map
                 .ignoresSafeArea()
             topBar
-                .frame(maxWidth: 640)
+                .frame(maxWidth: chromeWidth)
                 .dynamicTypeSize(...DynamicTypeSize.accessibility2)
-                .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).maxY } action: { topBarBottom = $0 }
-        }
-        .overlay(alignment: .bottom) {
-            VStack(spacing: 0) {
-                HStack {
-                    Spacer()
-                    VStack(spacing: 10) {
-                        pinButton
-                        locateButton
-                    }
+                .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: {
+                    topBarBottom = $0.maxY
+                    columnTrailing = $0.maxX
                 }
-                .padding(.horizontal, Metrics.margin)
-                .padding(.bottom, 10)
+        }
+        .overlay(alignment: usesSidebar ? .bottomLeading : .bottom) {
+            VStack(spacing: 0) {
+                if !usesSidebar {
+                    HStack {
+                        Spacer()
+                        mapButtons
+                    }
+                    .padding(.horizontal, Metrics.margin)
+                    .padding(.bottom, 10)
+                }
                 bottomPanel
             }
-            .frame(maxWidth: 640)
+            .frame(maxWidth: chromeWidth)
             .dynamicTypeSize(...DynamicTypeSize.accessibility2)
             .ignoresSafeArea(.keyboard)
         }
-        .overlay(alignment: .top) {
+        .overlay(alignment: .bottomTrailing) {
+            // Beside the column the buttons sit at the map's own edge.
+            if usesSidebar {
+                mapButtons
+                    .padding(.trailing, Metrics.margin)
+                    .padding(.bottom, 4)
+                    .dynamicTypeSize(...DynamicTypeSize.accessibility2)
+                    .ignoresSafeArea(.keyboard)
+            }
+        }
+        .overlay(alignment: .topTrailing) {
+            if usesSidebar {
+                MapCompass(scope: mapScope)
+                    .frame(width: Metrics.control)
+                    .padding(.trailing, Metrics.margin)
+                    .padding(.top, Metrics.barTop)
+            }
+        }
+        .overlay(alignment: usesSidebar ? .topLeading : .top) {
             dropdown
                 .padding(.horizontal, Metrics.margin)
                 .padding(.top, Metrics.barBottom + Metrics.dropdownGap)
-                .frame(maxWidth: 640)
+                .frame(maxWidth: chromeWidth)
                 .dynamicTypeSize(...DynamicTypeSize.accessibility2)
         }
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { containerWidth = $0 }
         .ignoresSafeArea(.keyboard)
         .mapScope(mapScope)
+    }
+
+    private var mapButtons: some View {
+        VStack(spacing: 10) {
+            pinButton
+            locateButton
+        }
     }
 
     private func withFeedback(_ content: some View) -> some View {
@@ -231,10 +269,13 @@ struct MapScreen: View {
             .mapStyle(resolvedMapStyle)
             .mapControls {}
             // Measured from the panel, which stays put; safe area insets would include the keyboard.
-            .safeAreaPadding(.bottom, max(0, mapBottom - panelTop - 2))
-            .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).maxY } action: { mapBottom = $0 }
+            // In sidebar layout the panel is beside the map, not on it.
+            .safeAreaPadding(.bottom, usesSidebar ? 0 : max(0, mapBottom - panelTop - 2))
+            .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { mapFrame = $0 }
             // Symmetric to keep the camera centered; moves the legal label past the panel corner.
-            .safeAreaPadding(.horizontal, 16)
+            // Beside the column, the camera centers in the part of the map that is not covered.
+            .safeAreaPadding(.leading, usesSidebar ? max(16, columnTrailing - mapFrame.minX) : 16)
+            .safeAreaPadding(.trailing, 16)
             .onMapCameraChange(frequency: .onEnd) { context in
                 search.bias(to: context.region)
                 mapCenter = context.region.center
@@ -287,8 +328,13 @@ struct MapScreen: View {
 
     // Area around MapKit's legal link where taps must not move the pin.
     private var legalZone: CGRect {
-        CGRect(x: 0, y: panelTop - Metrics.legalZone.height,
-               width: Metrics.legalZone.width, height: Metrics.legalZone.height)
+        if usesSidebar {
+            // At the bottom of the map, next to the column; the home indicator area is included.
+            let height = Metrics.legalZone.height * 2
+            return CGRect(x: columnTrailing, y: mapBottom - height, width: Metrics.legalZone.width, height: height)
+        }
+        return CGRect(x: 0, y: panelTop - Metrics.legalZone.height,
+                      width: Metrics.legalZone.width, height: Metrics.legalZone.height)
     }
 
     private var resolvedMapStyle: MapStyle {
@@ -313,10 +359,13 @@ struct MapScreen: View {
         .padding(.horizontal, Metrics.margin)
         .padding(.top, Metrics.barTop)
         .overlay(alignment: .topTrailing) {
-            MapCompass(scope: mapScope)
-                .frame(width: Metrics.control)
-                .padding(.trailing, Metrics.margin)
-                .offset(y: Metrics.barBottom + Metrics.compassGap)
+            // In sidebar layout it sits at the map's top corner instead.
+            if !usesSidebar {
+                MapCompass(scope: mapScope)
+                    .frame(width: Metrics.control)
+                    .padding(.trailing, Metrics.margin)
+                    .offset(y: Metrics.barBottom + Metrics.compassGap)
+            }
         }
         .overlay(alignment: .topLeading) {
             MapScaleView(scope: mapScope)
@@ -691,6 +740,11 @@ struct MapScreen: View {
         guard abs(c.longitude - r.center.longitude) <= r.span.longitudeDelta / 2 else { return false }
         // Close enough on the spans a camera move can leave; the map is shown from the top of the screen.
         let y = (r.center.latitude + r.span.latitudeDelta / 2 - c.latitude) / r.span.latitudeDelta * mapBottom
+        if usesSidebar {
+            let x = mapFrame.minX
+                + (c.longitude - (r.center.longitude - r.span.longitudeDelta / 2)) / r.span.longitudeDelta * mapFrame.width
+            return x > columnTrailing && y > 0 && y < mapBottom
+        }
         return y > topBarBottom && y < min(panelTop, mapBottom)
     }
 
@@ -1075,6 +1129,10 @@ private enum Metrics {
     // Leaves the top bar free on a 667 pt iPhone SE at the largest text sizes.
     static let panelMaxHeight: CGFloat = 420
     static let legalZone = CGSize(width: 170, height: 44)
+    // The unfolded iPhone Duo is about 890 pt wide sideways and 626 pt upright; only sideways
+    // leaves room for a column next to a usable map.
+    static let sidebarMinWidth: CGFloat = 800
+    static let sidebarWidth: CGFloat = 380
 }
 
 private let longPressDuration = 0.3
