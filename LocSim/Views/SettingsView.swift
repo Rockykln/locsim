@@ -25,8 +25,9 @@ struct SettingsView: View {
     @AppStorage(SettingsKey.liveActivity) private var liveActivity = true
 
     @State private var importing = false
-    @State private var hasPairing = PairingStore.exists
-    @State private var ddiDownloaded = DDIStore.isDownloaded(DDIMethod.current)
+    // Read in onAppear: an initial value here would touch the disk every time the parent redraws.
+    @State private var hasPairing = false
+    @State private var ddiDownloaded = false
     @State private var ddiLoading = false
     @State private var ddiError: String?
     @State private var pairingMessage: String?
@@ -44,17 +45,15 @@ struct SettingsView: View {
                 ddiSection
                 Section {
                     NavigationLink {
-                        LogView().environmentObject(session)
+                        LogView(log: session.log).environmentObject(session)
                     } label: {
-                        item("Log", "text.alignleft", .gray, value: "\(session.log.count)")
+                        LogRow(log: session.log, label: item)
                     }
                 }
                 aboutSection
             }
-            .onChange(of: session.state) { _, _ in
-                hasPairing = PairingStore.exists
-                ddiDownloaded = DDIStore.isDownloaded(DDIMethod.current)
-            }
+            .onAppear(perform: readFiles)
+            .onChange(of: session.state) { _, _ in readFiles() }
             // A file copied in by the setup script replaces the stored one; the old connection must go.
             .onChange(of: scenePhase) { _, phase in
                 guard phase == .active else { return }
@@ -90,9 +89,11 @@ struct SettingsView: View {
                     try PairingStore.importFile(at: result.get())
                     pairingMessage = nil
                     pairingReplaced()
+                    announce(String(localized: "Pairing file imported"))
                 } catch {
                     let deviceError = error as? DeviceError ?? DeviceError(.pairingInvalid, error.localizedDescription)
                     pairingMessage = AppError(deviceError).summary
+                    announce(pairingMessage)
                 }
                 hasPairing = PairingStore.exists
             }
@@ -245,7 +246,7 @@ struct SettingsView: View {
             if !port.isEmpty, UInt16(port).map({ $0 > 0 }) != true {
                 ErrorFooter(String(localized: "Port must be a number from 1 to 65535. Leave it empty to find it automatically."))
             } else {
-                Text("Connecting needs Wi-Fi, then cellular works too. Keep Alive keeps the simulation running in the background.")
+                Text("Connecting needs Wi-Fi, then cellular works too. “Keep Alive in Background” keeps the simulation running in the background.")
             }
         }
     }
@@ -293,11 +294,19 @@ struct SettingsView: View {
             defer { ddiLoading = false }
             do {
                 try await session.downloadDDI()
+                announce(String(localized: "Developer Disk Image downloaded"))
             } catch {
                 ddiError = AppError(error).summary
+                announce(ddiError)
             }
             ddiDownloaded = DDIStore.isDownloaded(DDIMethod.current)
         }
+    }
+
+    // The result appears in a footer VoiceOver would not reach on its own.
+    private func announce(_ text: String?) {
+        guard let text else { return }
+        AccessibilityNotification.Announcement(text).post()
     }
 
     private var aboutSection: some View {
@@ -325,6 +334,9 @@ struct SettingsView: View {
             externalLink("Support", "questionmark.circle.fill", .blue, AppLinks.support)
             externalLink("Website", "safari.fill", .blue, AppLinks.website)
             externalLink("Repository", "chevron.left.forwardslash.chevron.right", .indigo, AppLinks.repository)
+        } header: {
+            // The support page and the problem report point here for version and commit.
+            Text("About")
         }
     }
 
@@ -341,6 +353,11 @@ struct SettingsView: View {
             }
         }
         .foregroundStyle(.primary)
+    }
+
+    private func readFiles() {
+        hasPairing = PairingStore.exists
+        ddiDownloaded = DDIStore.isDownloaded(DDIMethod.current)
     }
 
     private func item(
@@ -387,6 +404,8 @@ struct SettingsView: View {
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
                 .keyboardType(keyboard)
+                // Without it VoiceOver reads only the placeholder, e.g. "Auto".
+                .accessibilityLabel(Text(title))
         }
     }
 
@@ -423,20 +442,36 @@ struct SettingsView: View {
     }
 }
 
+/// Observes the log on its own, so Settings is not redrawn for every new line.
+private struct LogRow<Label: View>: View {
+    @ObservedObject var log: LogStore
+    let label: (LocalizedStringKey, String, Color, String?) -> Label
+
+    var body: some View {
+        label("Log", "text.alignleft", .gray, "\(log.lines.count)")
+    }
+}
+
 struct LogView: View {
     @EnvironmentObject private var session: SimulationSession
+    @ObservedObject var log: LogStore
 
     var body: some View {
         ScrollView {
-            if session.log.isEmpty {
+            if log.lines.isEmpty {
                 ContentUnavailableView("No Entries", systemImage: "text.alignleft")
                     .padding(.top, 80)
             } else {
+                // One text per line: VoiceOver can step through them, and only new lines are laid out.
                 // No text selection: the system copy would go through Universal Clipboard.
-                Text(session.log.joined(separator: "\n"))
-                    .font(.system(.caption, design: .monospaced))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding()
+                LazyVStack(alignment: .leading, spacing: 2) {
+                    ForEach(log.lines) { line in
+                        Text(line.text)
+                    }
+                }
+                .font(.system(.caption, design: .monospaced))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
             }
         }
         .defaultScrollAnchor(.bottom)
@@ -446,7 +481,7 @@ struct LogView: View {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Button {
                     // The log holds coordinates; keep it off the user's other devices.
-                    Clipboard.copy(session.log.joined(separator: "\n"), expiresAfter: 600)
+                    Clipboard.copy(log.text, expiresAfter: 600)
                 } label: {
                     Image(systemName: "doc.on.doc")
                 }

@@ -95,6 +95,8 @@ struct WelcomeView: View {
                 } catch {
                     let deviceError = error as? DeviceError ?? DeviceError(.pairingInvalid, error.localizedDescription)
                     message = AppError(deviceError).summary
+                    // Shown below the button, where VoiceOver would not find it on its own.
+                    if let message { AccessibilityNotification.Announcement(message).post() }
                 }
                 hasPairing = PairingStore.exists
             }

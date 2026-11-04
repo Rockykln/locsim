@@ -30,6 +30,8 @@ struct MapScreen: View {
     @Namespace private var mapScope
     @State private var mapBottom: CGFloat = 0
     @State private var panelTop: CGFloat = .infinity
+    @State private var topBarBottom: CGFloat = 0
+    @State private var panelContentHeight: CGFloat = 0
     @State private var locateTask: Task<Void, Never>?
     // Annotations added before the map has settled stay invisible until the next redraw.
     @State private var mapReady = false
@@ -70,6 +72,7 @@ struct MapScreen: View {
             topBar
                 .frame(maxWidth: 640)
                 .dynamicTypeSize(...DynamicTypeSize.accessibility2)
+                .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).maxY } action: { topBarBottom = $0 }
         }
         .overlay(alignment: .bottom) {
             VStack(spacing: 0) {
@@ -337,8 +340,11 @@ struct MapScreen: View {
             .padding(.vertical, 10)
             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
             .task(id: searchError) {
-                // Cancelled by a newer error, which must stay for its own 4 seconds.
-                guard (try? await Task.sleep(nanoseconds: 4_000_000_000)) != nil else { return }
+                AccessibilityNotification.Announcement(searchError).post()
+                // VoiceOver users need longer: the message is read out, then found again by swiping.
+                let seconds: UInt64 = UIAccessibility.isVoiceOverRunning ? 12 : 4
+                // Cancelled by a newer error, which must stay for its own time.
+                guard (try? await Task.sleep(nanoseconds: seconds * 1_000_000_000)) != nil else { return }
                 self.searchError = nil
             }
         } else if searchFocused || Demo.screen == .search || Demo.screen == .recents, hasSuggestions {
@@ -535,6 +541,8 @@ struct MapScreen: View {
                         Label("Remove", systemImage: "trash")
                     }
                 }
+                // A context menu is hard to reach with VoiceOver.
+                .accessibilityAction(named: "Remove") { recents.remove(item) }
             }
         }
     }
@@ -601,7 +609,7 @@ struct MapScreen: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .foregroundStyle(.primary)
-                        .lineLimit(1)
+                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? 3 : 1)
                     if !subtitle.isEmpty {
                         Text(subtitle)
                             .font(.caption)
@@ -674,10 +682,16 @@ struct MapScreen: View {
             session.active != nil ? String(localized: "Show active location") : String(localized: "Show my location"))
     }
 
+    /// Only the part of the map between the top bar and the panel counts as visible.
+    // Only read for its authorization status; one instance instead of a new one per state change.
+    private static let locationManager = CLLocationManager()
+
     private func isVisible(_ c: CLLocationCoordinate2D) -> Bool {
-        guard let r = visibleRegion else { return false }
-        return abs(c.latitude - r.center.latitude) <= r.span.latitudeDelta / 2
-            && abs(c.longitude - r.center.longitude) <= r.span.longitudeDelta / 2
+        guard let r = visibleRegion, r.span.latitudeDelta > 0, mapBottom > 0 else { return false }
+        guard abs(c.longitude - r.center.longitude) <= r.span.longitudeDelta / 2 else { return false }
+        // Close enough on the spans a camera move can leave; the map is shown from the top of the screen.
+        let y = (r.center.latitude + r.span.latitudeDelta / 2 - c.latitude) / r.span.latitudeDelta * mapBottom
+        return y > topBarBottom && y < min(panelTop, mapBottom)
     }
 
     private func fly(to coordinate: CLLocationCoordinate2D, duration: Double = 1.0) {
@@ -695,7 +709,7 @@ struct MapScreen: View {
         guard !Demo.isOn, session.active == nil, session.state.error?.code != AppError.clearFailedCode else {
             return
         }
-        switch CLLocationManager().authorizationStatus {
+        switch Self.locationManager.authorizationStatus {
         case .authorizedAlways, .authorizedWhenInUse: showsUserLocation = true
         default: break
         }
@@ -743,20 +757,22 @@ struct MapScreen: View {
 
     private var bottomPanel: some View {
         // At the largest text sizes on small iPhones the panel can grow past the top bar;
-        // then it scrolls instead.
+        // then it scrolls instead. Its height follows the content, so a short panel stays short.
         Group {
             if dynamicTypeSize.isAccessibilitySize {
-                ViewThatFits(in: .vertical) {
+                ScrollView {
+                    // Inside the scroll view, so scrolled text reaches the rounded edge instead of being cut.
                     panelContent
-                    ScrollView { panelContent }
-                        .scrollBounceBehavior(.basedOnSize)
+                        .padding(18)
+                        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { panelContentHeight = $0 }
                 }
-                .frame(maxHeight: Metrics.panelMaxHeight)
+                .scrollBounceBehavior(.basedOnSize)
+                .frame(height: panelContentHeight > 0 ? min(panelContentHeight, Metrics.panelMaxHeight) : nil)
             } else {
                 panelContent
+                    .padding(18)
             }
         }
-        .padding(18)
         .glassPanel(cornerRadius: Metrics.panelRadius)
         .padding(.horizontal, Metrics.margin)
         .padding(.bottom, 4)
@@ -782,6 +798,10 @@ struct MapScreen: View {
                             } label: {
                                 Label("Copy Coordinates", systemImage: "doc.on.doc")
                             }
+                        }
+                        .accessibilityAction(named: "Copy Coordinates") {
+                            Clipboard.copy(CoordinateParser.format(session.target))
+                            feedback += 1
                         }
                 }
                 Spacer(minLength: 0)
@@ -923,7 +943,8 @@ struct MapScreen: View {
         let text: String
         switch new {
         case .idle where old == .active: text = String(localized: "Location cleared")
-        case .reconnecting(let error) where !old.isReconnecting: text = "\(String(localized: "Reconnecting")), \(error.title)"
+        case .reconnecting(let error) where !old.isReconnecting:
+            text = String(localized: "Reconnecting: \(error.title)", comment: "VoiceOver announcement, then the error title")
         case .failed(let error): text = error.title
         default: return
         }
@@ -931,6 +952,8 @@ struct MapScreen: View {
     }
 
     private var statusLine: String {
+        // Until the device answers, the state still says active although the location is going.
+        if session.isClearing { return String(localized: "Clearing") }
         var parts: [String] = []
         switch session.state {
         case .idle: parts.append(String(localized: "Not active"))
@@ -951,6 +974,7 @@ struct MapScreen: View {
     }
 
     private var stateColor: Color {
+        if session.isClearing { return .orange }
         switch session.state {
         case .active: return .green
         case .failed: return .red

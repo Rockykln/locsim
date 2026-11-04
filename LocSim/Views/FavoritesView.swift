@@ -4,6 +4,7 @@ import SwiftUI
 struct FavoritesView: View, Equatable {
     @EnvironmentObject private var favorites: FavoriteList
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var renaming: Favorite?
     @State private var newName = ""
     @State private var copied = 0
@@ -90,6 +91,11 @@ struct FavoritesView: View, Equatable {
                         Label("Delete", systemImage: "trash")
                     }
                 }
+                // Rename and Delete come with the swipe actions; copying is only in the menu.
+                .accessibilityAction(named: "Copy Coordinates") {
+                    Clipboard.copy(CoordinateParser.format(favorite.coordinate))
+                    copied += 1
+                }
             }
             .onDelete { favorites.items.remove(atOffsets: $0) }
             .onMove { favorites.items.move(fromOffsets: $0, toOffset: $1) }
@@ -105,7 +111,7 @@ struct FavoritesView: View, Equatable {
             VStack(alignment: .leading, spacing: 2) {
                 Text(favorite.name)
                     .foregroundStyle(.primary)
-                    .lineLimit(1)
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? 3 : 1)
                 Text(CoordinateParser.format(favorite.coordinate))
                     .font(.caption.monospacedDigit())
                     .foregroundStyle(.secondary)

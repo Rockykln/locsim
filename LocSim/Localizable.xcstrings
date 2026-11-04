@@ -263,6 +263,35 @@
         }
       }
     },
+    "About" : {
+      "comment" : "Settings section header: version, commit, language and links. Must match the support pages.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Info"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Información"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "À propos"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Info"
+          }
+        }
+      }
+    },
     "Acknowledgements" : {
       "localizations" : {
         "de" : {
@@ -837,6 +866,35 @@
         }
       }
     },
+    "Clearing" : {
+      "comment" : "Status: waiting for the device to end the simulated location",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wird zurückgesetzt …"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restableciendo…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réinitialisation…"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ripristino…"
+          }
+        }
+      }
+    },
     "Commit" : {
       "comment" : "Git commit of the build",
       "localizations" : {
@@ -895,7 +953,7 @@
         }
       }
     },
-    "Connecting needs Wi-Fi, then cellular works too. Keep Alive keeps the simulation running in the background." : {
+    "Connecting needs Wi-Fi, then cellular works too. “Keep Alive in Background” keeps the simulation running in the background." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1480,6 +1538,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Developer Disk Image"
+          }
+        }
+      }
+    },
+    "Developer Disk Image downloaded" : {
+      "comment" : "VoiceOver announcement after the download in Settings",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image geladen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image descargada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image téléchargée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image scaricata"
           }
         }
       }
@@ -3178,7 +3265,7 @@
         }
       }
     },
-    "No results for \"%@\"" : {
+    "No results for “%@”" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3512,6 +3599,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "File di abbinamento"
+          }
+        }
+      }
+    },
+    "Pairing file imported" : {
+      "comment" : "VoiceOver announcement after importing the pairing file",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pairing-Datei importiert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archivo de emparejamiento importado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fichier de jumelage importé"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File di abbinamento importato"
           }
         }
       }
@@ -3937,6 +4053,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Riconnessione…"
+          }
+        }
+      }
+    },
+    "Reconnecting: %@" : {
+      "comment" : "VoiceOver announcement, then the error title",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbindet erneut: %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconectando: %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconnexion : %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Riconnessione: %@"
           }
         }
       }
@@ -5294,6 +5439,35 @@
         }
       }
     },
+    "The location was not set." : {
+      "comment" : "Shortcut error: a queued Set did not run, e.g. because Clear came after it",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Standort wurde nicht gesetzt."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha establecido la ubicación."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La position n’a pas été définie."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La posizione non è stata impostata."
+          }
+        }
+      }
+    },
     "The pairing file was not valid and has been removed. Run the setup script again." : {
       "localizations" : {
         "de" : {
@@ -5402,6 +5576,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lo script di configurazione lo copia in LocSim. Altrimenti copialo con AirDrop o il Finder e importalo qui."
+          }
+        }
+      }
+    },
+    "This iPhone" : {
+      "comment" : "VPN settings: where the tunnel goes",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses iPhone"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este iPhone"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cet iPhone"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questo iPhone"
           }
         }
       }

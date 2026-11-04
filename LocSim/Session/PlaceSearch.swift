@@ -4,7 +4,7 @@ import MapKit
 
 struct SearchError: LocalizedError {
     let query: String
-    var errorDescription: String? { String(localized: "No results for \"\(query)\"") }
+    var errorDescription: String? { String(localized: "No results for “\(query)”") }
 }
 
 struct UnsupportedMapLink: LocalizedError {
@@ -25,8 +25,13 @@ final class PlaceSearch: NSObject, ObservableObject, MKLocalSearchCompleterDeleg
     }
 
     @Published var query = "" {
-        didSet { update() }
+        didSet {
+            // Parsed once per change; views read it many times per redraw.
+            if query != oldValue { coordinate = CoordinateParser.parse(query) }
+            update()
+        }
     }
+    private(set) var coordinate: CLLocationCoordinate2D?
     @Published private(set) var completions: [MKLocalSearchCompletion] = []
     /// The query the completer last answered, so an empty list can be told apart from a pending one.
     @Published private(set) var answeredQuery: String?
@@ -38,8 +43,6 @@ final class PlaceSearch: NSObject, ObservableObject, MKLocalSearchCompleterDeleg
         completer.delegate = self
         completer.resultTypes = [.address, .pointOfInterest]
     }
-
-    var coordinate: CLLocationCoordinate2D? { CoordinateParser.parse(query) }
 
     var hasNoMatches: Bool {
         let trimmed = query.trimmingCharacters(in: .whitespaces)
