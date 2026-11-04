@@ -61,11 +61,12 @@ def map_layer(gray=False):
     return defs, body
 
 
-def pin_layer(gray=False):
+def pin_layer(gray=False, ground_shadow=True):
     top, bottom = PIN if not gray else ("#ffffff", "#e6e6e6")
     hole = "#ffffff" if not gray else "#6a6a6a"
     defs = gradient("pin", [(0, top), (1, bottom)])
-    body = ('<ellipse cx="512" cy="600" rx="78" ry="20" fill="#2a0f2a" opacity="0.28"/>'
+    shadow = '<ellipse cx="512" cy="600" rx="78" ry="20" fill="#2a0f2a" opacity="0.28"/>' if ground_shadow else ""
+    body = (shadow +
             f'<path d="{pin_path(512, 330, 150, 600)}" fill="url(#pin)" stroke="#ffffff" stroke-width="22" '
             'stroke-linejoin="round" paint-order="stroke"/>'
             f'<circle cx="512" cy="330" r="56" fill="{hole}"/>')
@@ -94,7 +95,9 @@ def sources():
     # iOS colors the tinted icon itself from a grayscale image on black.
     files["AppIcon-tinted.svg"] = svg(gmd + gpd, f'<rect width="1024" height="1024" fill="#000"/><g {PLACE}>{gmb}{gpb}</g>')
     files["layers/map.svg"] = svg(md, f"<g {PLACE}>{mb}</g>")
-    files["layers/pin.svg"] = svg(pd, f"<g {PLACE}>{pb}</g>")
+    # Icon Composer adds its own shadows, so the layer has none painted in.
+    lpd, lpb = pin_layer(ground_shadow=False)
+    files["layers/pin.svg"] = svg(lpd, f"<g {PLACE}>{lpb}</g>")
     # Standing alone, a soft shadow keeps the pale map apart from a light page.
     shadow = ('<filter id="lift" x="-10%" y="-10%" width="120%" height="130%">'
               '<feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#3a2060" flood-opacity="0.28"/></filter>')
