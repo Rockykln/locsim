@@ -150,7 +150,7 @@ downloaded, and to Apple's signing server when it is installed. Details:
 
 ## Building
 
-Requires Xcode 26 or later and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
+Requires Xcode 27.1 or later (its iOS 27.1 SDK lets LocSim use the whole inner screen of the iPhone Duo) and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
 ```
 curl -fLO https://github.com/jkcoxson/idevice/releases/download/v0.1.68/idevice-xcframework-v0.1.68.zip

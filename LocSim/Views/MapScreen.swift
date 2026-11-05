@@ -32,7 +32,9 @@ struct MapScreen: View {
     private var mapBottom: CGFloat { mapFrame.maxY }
     @State private var containerWidth: CGFloat = 0
     // Only the edges the layout uses: the bottom inset changes with every keyboard frame.
-    @State private var topInset: CGFloat = 0
+    // Large until measured, so the first layout pass keeps the normal top bar offset.
+    @State private var topInset: CGFloat = 100
+    @State private var bottomInset: CGFloat = 0
     @State private var trailingInset: CGFloat = 0
     @State private var leadingInset: CGFloat = 0
     // Trailing edge of the search and panel column in sidebar layout.
@@ -80,7 +82,8 @@ struct MapScreen: View {
 
     /// On wide screens, such as the unfolded iPhone Duo held sideways, search and panel form a
     /// column at the leading edge and the map gets the rest, instead of a wide panel across it.
-    private var usesSidebar: Bool { containerWidth >= Metrics.sidebarMinWidth }
+    // The full width: a side status bar must not take the sidebar away.
+    private var usesSidebar: Bool { containerWidth + leadingInset + trailingInset >= Metrics.sidebarMinWidth }
 
     private var chromeWidth: CGFloat { usesSidebar ? Metrics.sidebarWidth : 640 }
 
@@ -123,7 +126,8 @@ struct MapScreen: View {
             .ignoresSafeArea(.keyboard)
             .ignoresSafeArea(.container, edges: extendsIntoSideBar ? .trailing : [])
             // The cover screen leaves more room below than the home indicator needs.
-            .padding(.bottom, extendsIntoSideBar ? -Metrics.coverBottomTrim : 0)
+            // Never closer than 12 pt to the edge, whatever the device reports below.
+            .padding(.bottom, extendsIntoSideBar ? -min(Metrics.coverBottomTrim, max(0, bottomInset - 8)) : 0)
         }
         .overlay(alignment: .bottomTrailing) {
             // Beside the column the buttons sit at the map's own edge, under the side status bar
@@ -156,6 +160,7 @@ struct MapScreen: View {
         .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.top } action: { topInset = $0 }
         .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.trailing } action: { trailingInset = $0 }
         .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.leading } action: { leadingInset = $0 }
+        .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.bottom } action: { bottomInset = $0 }
         #if DEBUG
         .onGeometryChange(for: String.self) { proxy in
             let i = proxy.safeAreaInsets
@@ -635,7 +640,7 @@ struct MapScreen: View {
                     AccessibilityNotification.Announcement(String(localized: "Recent locations cleared")).post()
                 }
                 .font(.footnote.weight(.semibold))
-                .frame(minHeight: 44)
+                .frame(minWidth: 44, minHeight: 44)
                 .contentShape(Rectangle())
                 .accessibilityLabel("Clear recent locations")
                 // Lines up with the label inside the paste button above, not with its edge.
@@ -823,7 +828,7 @@ struct MapScreen: View {
         if usesSidebar {
             let x = mapFrame.minX
                 + (c.longitude - (r.center.longitude - r.span.longitudeDelta / 2)) / r.span.longitudeDelta * mapFrame.width
-            return x > columnTrailing && y > 0 && y < mapBottom
+            return x > columnTrailing && x < mapFrame.maxX - trailingInset && y > 0 && y < mapBottom
         }
         return y > topBarBottom && y < min(panelTop, mapBottom)
     }
@@ -1251,7 +1256,6 @@ private enum Metrics {
     static let margin: CGFloat = 12
     static let control: CGFloat = 46
     static let barTop: CGFloat = 4
-    static let barBottom: CGFloat = barTop + control
     static let compassGap: CGFloat = 7.5
     static let dropdownGap: CGFloat = 8
     static let dropdownMaxHeight: CGFloat = 320
@@ -1259,7 +1263,7 @@ private enum Metrics {
     // Leaves the top bar free on a 667 pt iPhone SE at the largest text sizes.
     static let panelMaxHeight: CGFloat = 420
     static let legalZone = CGSize(width: 170, height: 44)
-    // The unfolded iPhone Duo is about 890 pt wide sideways and 626 pt upright; only sideways
+    // The unfolded iPhone Duo is about 951 pt wide sideways and 669 pt upright; only sideways
     // leaves room for a column next to a usable map.
     static let sidebarMinWidth: CGFloat = 800
     static let sidebarWidth: CGFloat = 380
