@@ -121,7 +121,7 @@ enum Demo {
     /// A bit closer than the normal start view, over the canal ring.
     static var camera: MapCameraPosition? {
         guard isOn else { return nil }
-        return .camera(MapCamera(centerCoordinate: place.coordinate, distance: 3000, heading: 0, pitch: 0))
+        return .camera(MapCamera(centerCoordinate: place.coordinate, distance: 3600, heading: 0, pitch: 0))
     }
 
     /// Matches the 9:41 status bar of the screenshots.
