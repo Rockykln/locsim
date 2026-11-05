@@ -50,7 +50,10 @@ struct SetCoordinatesIntent: AppIntent {
             throw LocationIntentError(String(localized: "No coordinates found in “\(coordinates)”."))
         }
         try await LocationIntentRunner.set(c, name: nil)
-        return .result(dialog: "LocSim simulates \(CoordinateParser.format(c)).")
+        // Siri reads degree symbols poorly; the coordinate is spoken in words and shown as usual.
+        return .result(dialog: IntentDialog(
+            full: "LocSim simulates \(CoordinateParser.spoken(c)).",
+            supporting: "LocSim simulates \(CoordinateParser.format(c))."))
     }
 }
 
@@ -88,9 +91,11 @@ enum LocationIntentRunner {
     static func set(_ c: CLLocationCoordinate2D, name: String?) async throws {
         let session = SimulationSession.shared
         // Without the one-time setup there is nothing to connect to; say so instead of failing later.
-        guard session.hasPairing else {
+        // The preview only moves the pin; a Shortcut must not report a location as simulated.
+        guard PairingStore.exists || Demo.isOn else {
             throw LocationIntentError(String(localized: "LocSim is not set up yet. Open LocSim and follow the setup steps."))
         }
+        if session.isPreview { session.endPreview() }
         // Waits also while this Set is queued behind another one, so Shortcuts hear how it ended.
         switch await session.setAndWait(c, name: name) {
         case .set:

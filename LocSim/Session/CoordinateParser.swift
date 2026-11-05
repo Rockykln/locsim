@@ -18,7 +18,7 @@ extension CoordinateFormat {
 /// The app's view of `CoordinateText`, with CoreLocation types and the user's format settings.
 enum CoordinateParser {
     static func parse(_ text: String) -> CLLocationCoordinate2D? {
-        CoordinateText.parse(text, language: Locale.current.language.languageCode?.identifier)
+        CoordinateText.parse(text, language: CoordinateText.currentLanguage)
             .map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
     }
 

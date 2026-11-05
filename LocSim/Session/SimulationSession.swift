@@ -163,7 +163,8 @@ final class SimulationSession: ObservableObject {
         WidgetSync.clearActive()
         keepAlive.onFix = { [weak self] fix in
             let coordinate = fix.coordinate
-            Task { @MainActor in self?.checkFix(coordinate) }
+            let accuracy = fix.horizontalAccuracy
+            Task { @MainActor in self?.checkFix(coordinate, accuracy: accuracy) }
         }
         if Demo.isOn {
             target = Demo.place.coordinate
@@ -509,6 +510,12 @@ final class SimulationSession: ObservableObject {
     /// Applies the Live Activity setting to a running session.
     func liveActivityChanged() { syncActivity() }
 
+    /// The widgets and the Live Activity show coordinates in the chosen format too.
+    func coordinateFormatChanged() {
+        WidgetSync.setFavorites(FavoriteList.shared.items)
+        syncActivity()
+    }
+
     /// Applies a new resend interval now instead of after the current wait.
     func resendIntervalChanged() {
         guard resendTask != nil else { return }
@@ -520,8 +527,7 @@ final class SimulationSession: ObservableObject {
         // The widget only shows a real simulation, not the preview or demo mode.
         if let active, !isSimulated, state == .active || state.isReconnecting {
             WidgetSync.setActive(
-                name: activeName ?? String(localized: "Dropped pin"), coordinate: CoordinateParser.format(active),
-                since: setAt)
+                name: activeName ?? String(localized: "Dropped pin"), at: active, since: setAt)
         } else if active == nil || isSimulated {
             WidgetSync.clearActive()
         }
@@ -530,7 +536,7 @@ final class SimulationSession: ObservableObject {
             guard state == .active || state.isReconnecting else { return }
             liveActivity.show(
                 name: activeName ?? String(localized: "Dropped pin"),
-                coordinate: CoordinateParser.format(active),
+                at: active,
                 connecting: false,
                 reconnecting: state.isReconnecting,
                 set: activeSet,
@@ -538,7 +544,7 @@ final class SimulationSession: ObservableObject {
         } else if state == .connecting, let next = connectingTo {
             liveActivity.show(
                 name: next.name ?? String(localized: "Dropped pin"),
-                coordinate: CoordinateParser.format(next.coordinate),
+                at: next.coordinate,
                 connecting: true,
                 reconnecting: false,
                 set: next.set,
@@ -787,11 +793,13 @@ final class SimulationSession: ObservableObject {
     /// iOS can drop the simulation, e.g. when another device of the same Apple Account shares
     /// its real location. A fix far from the simulated place means that happened: send again
     /// right away instead of waiting for the next interval.
-    private func checkFix(_ fix: CLLocationCoordinate2D) {
-        guard let active, !isSimulated, state == .active else { return }
+    private func checkFix(_ fix: CLLocationCoordinate2D, accuracy: CLLocationAccuracy) {
+        // A Set or resend in progress sends anyway.
+        guard let active, !isSimulated, state == .active, !busy, !clearing else { return }
         let distance = CLLocation(latitude: fix.latitude, longitude: fix.longitude)
             .distance(from: CLLocation(latitude: active.latitude, longitude: active.longitude))
-        guard distance > KeepAlive.jump else { return }
+        // A coarse fix that may still be at the simulated place is no reset.
+        guard distance - max(0, accuracy) > KeepAlive.jump else { return }
         // A reset that keeps coming back must not turn into a send loop.
         if let sentAt, Date().timeIntervalSince(sentAt) < Double(Timing.minResend) { return }
         write("location reset by iOS, sending again")

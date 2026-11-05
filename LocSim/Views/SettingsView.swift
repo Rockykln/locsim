@@ -131,8 +131,9 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(stateTitle)
                         .font(.headline)
-                    if let detail = stateDetail {
+                    if let detail = stateDetail() {
                         Text(detail)
+                            .accessibilityLabel(stateDetail(spoken: true) ?? detail)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 3)
@@ -218,10 +219,12 @@ struct SettingsView: View {
             } label: {
                 item("Coordinate Format", "globe.europe.africa", .teal)
             }
+            .onChange(of: coordinateFormat) { _, _ in session.coordinateFormatChanged() }
             if coordinateFormat == CoordinateFormat.decimal.rawValue {
                 Stepper(value: $precision, in: 3...7) {
                     item("Decimal Places", "number", .teal, value: "\(precision)")
                 }
+                .onChange(of: precision) { _, _ in session.coordinateFormatChanged() }
             }
             Toggle(isOn: $autoApply) {
                 item("Set on Selection", "location.fill", .red)
@@ -249,6 +252,9 @@ struct SettingsView: View {
             field("Port", "number", .blue, text: $port, placeholder: String(localized: "Auto"))
             field("Hostname", "desktopcomputer", .blue, text: $hostname,
                   placeholder: Defaults.hostname, keyboard: .asciiCapable)
+                // A check result was for the old values.
+                .onChange(of: hostname) { _, _ in session.resetPairingCheck() }
+                .onChange(of: port) { _, _ in session.resetPairingCheck() }
             Stepper(value: $resend, in: 3...60) {
                 item("Resend Interval", "arrow.clockwise", .green,
                      value: Duration.seconds(resend).formatted(.units(allowed: [.seconds], width: .abbreviated)))
@@ -441,12 +447,15 @@ struct SettingsView: View {
         }
     }
 
-    private var stateDetail: String? {
+    /// `spoken` reads the coordinate in words for VoiceOver.
+    private func stateDetail(spoken: Bool = false) -> String? {
         if session.isClearing { return nil }
         switch session.state {
         case .active:
             var parts: [String] = []
-            if let active = session.active { parts.append(CoordinateParser.format(active)) }
+            if let active = session.active {
+                parts.append(spoken ? CoordinateParser.spoken(active) : CoordinateParser.format(active))
+            }
             if let port = session.port { parts.append(String(localized: "Port \(Int(port))")) }
             if session.isPreview { parts.append(String(localized: "The location of this iPhone does not change.")) }
             return parts.joined(separator: " · ")

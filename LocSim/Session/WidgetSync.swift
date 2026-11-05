@@ -1,3 +1,4 @@
+import CoreLocation
 import Foundation
 import WidgetKit
 
@@ -7,9 +8,12 @@ import WidgetKit
 enum WidgetSync {
     private static var shown = WidgetSnapshot.load()
 
-    static func setActive(name: String, coordinate: String, since: Date) {
-        let active = WidgetSnapshot.Place(id: shown.active?.id ?? UUID(), name: name, coordinate: coordinate)
-        guard shown.active?.name != name || shown.active?.coordinate != coordinate || shown.since != since else { return }
+    static func setActive(name: String, at c: CLLocationCoordinate2D, since: Date) {
+        let active = WidgetSnapshot.Place(
+            id: shown.active?.id ?? UUID(), name: name, coordinate: CoordinateParser.format(c),
+            spoken: CoordinateParser.spoken(c))
+        guard shown.active?.name != name || shown.active?.coordinate != active.coordinate || shown.since != since
+        else { return }
         shown.active = active
         shown.since = since
         shown.freshUntil = Date().addingTimeInterval(freshFor)
@@ -42,7 +46,9 @@ enum WidgetSync {
     /// The widget lists the most used favorites first, like the Home Screen quick actions.
     static func setFavorites(_ favorites: [Favorite]) {
         let places = FavoriteUsage.ranked(favorites).prefix(3).map {
-            WidgetSnapshot.Place(id: $0.id, name: $0.name, coordinate: CoordinateParser.format($0.coordinate))
+            WidgetSnapshot.Place(
+                id: $0.id, name: $0.name, coordinate: CoordinateParser.format($0.coordinate),
+                spoken: CoordinateParser.spoken($0.coordinate))
         }
         guard places != shown.favorites else { return }
         shown.favorites = places

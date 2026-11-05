@@ -13,9 +13,11 @@ struct SimulationActivityAttributes: ActivityAttributes {
         var startedAt: Date
         /// The Set is still connecting; nothing is simulated yet.
         var connecting = false
+        /// For VoiceOver, which reads degree symbols poorly.
+        var spokenCoordinate: String?
 
         enum CodingKeys: String, CodingKey {
-            case name, coordinate, reconnecting, startedAt, connecting
+            case name, coordinate, reconnecting, startedAt, connecting, spokenCoordinate
         }
     }
 }
@@ -31,6 +33,7 @@ extension SimulationActivityAttributes.ContentState {
         reconnecting = try c.decodeIfPresent(Bool.self, forKey: .reconnecting) ?? false
         startedAt = try c.decodeIfPresent(Date.self, forKey: .startedAt) ?? Date()
         connecting = try c.decodeIfPresent(Bool.self, forKey: .connecting) ?? false
+        spokenCoordinate = try c.decodeIfPresent(String.self, forKey: .spokenCoordinate)
     }
 }
 
@@ -45,8 +48,11 @@ struct StopSimulationIntent: LiveActivityIntent {
     @MainActor
     func perform() async throws -> some IntentResult {
         #if LOCSIM_APP
-        await SimulationSession.shared.clear()
+        let session = SimulationSession.shared
+        await session.clear()
         // iOS may suspend LocSim as soon as this returns; the activity must be gone by then.
+        // Kept when the Clear failed or a new Set started meanwhile: the location may still be simulated.
+        guard session.state.error == nil, session.active == nil, session.state != .connecting else { return .result() }
         for activity in Activity<SimulationActivityAttributes>.activities {
             await activity.end(nil, dismissalPolicy: .immediate)
         }

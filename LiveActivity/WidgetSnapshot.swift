@@ -7,6 +7,10 @@ struct WidgetSnapshot: Codable, Equatable {
         var id: UUID
         var name: String
         var coordinate: String
+        /// For VoiceOver, which reads degree symbols poorly.
+        var spoken: String?
+
+        var spokenCoordinate: String { spoken ?? coordinate }
     }
 
     /// The simulated location; nil while nothing is simulated.

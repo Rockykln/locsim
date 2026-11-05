@@ -95,6 +95,7 @@ private struct LocationStatusView: View {
                     .font(.headline)
                     .lineLimit(1)
                 Text(active.coordinate)
+                    .accessibilityLabel(Text(active.spokenCoordinate))
                     .font(.caption2.monospacedDigit())
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
@@ -150,6 +151,7 @@ private struct LocationStatusView: View {
                     .font(.headline)
                     .lineLimit(2)
                 Text(active.coordinate)
+                    .accessibilityLabel(Text(active.spokenCoordinate))
                     .font(.caption2.monospacedDigit())
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
@@ -168,7 +170,7 @@ private struct LocationStatusView: View {
 
     @ViewBuilder
     private var favorites: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 2) {
             Text("Favorites")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
@@ -188,6 +190,9 @@ private struct LocationStatusView: View {
                             Image(systemName: "star.fill")
                                 .foregroundStyle(.yellow)
                         }
+                        // The whole row, so a tap between rows does not miss or open the app empty.
+                        .frame(maxWidth: .infinity, minHeight: 30, alignment: .leading)
+                        .contentShape(Rectangle())
                     }
                     .accessibilityHint(Text("Opens LocSim and sets this location"))
                 }
