@@ -31,6 +31,9 @@ struct MapScreen: View {
     @State private var mapFrame: CGRect = .zero
     private var mapBottom: CGFloat { mapFrame.maxY }
     @State private var containerWidth: CGFloat = 0
+    @State private var containerHeight: CGFloat = 0
+    // Top of the keyboard in global coordinates, 0 while it is hidden.
+    @State private var keyboardTop: CGFloat = 0
     // Only the edges the layout uses: the bottom inset changes with every keyboard frame.
     // Large until measured, so the first layout pass keeps the normal top bar offset.
     @State private var topInset: CGFloat = 100
@@ -87,6 +90,17 @@ struct MapScreen: View {
 
     private var chromeWidth: CGFloat { usesSidebar ? Metrics.sidebarWidth : 640 }
 
+    /// The sidebar column is far taller than the iPhone SE the fixed cap was made for.
+    private var panelMaxHeight: CGFloat {
+        usesSidebar ? max(Metrics.panelMaxHeight, containerHeight - barBottom - 24) : Metrics.panelMaxHeight
+    }
+
+    /// Ends above the keyboard: the layers ignore it, and rows behind it could not be reached.
+    private var dropdownMaxHeight: CGFloat {
+        guard keyboardTop > 0, topBarBottom > 0 else { return Metrics.dropdownMaxHeight }
+        return max(88, min(Metrics.dropdownMaxHeight, keyboardTop - topBarBottom - Metrics.dropdownGap - 8))
+    }
+
     /// On the iPhone Duo's cover screen the system bar runs down the side, over the map. The
     /// panel and the pin and locate buttons reach under it too, so they get the full width.
     private var extendsIntoSideBar: Bool { !usesSidebar && trailingInset > 0 }
@@ -101,6 +115,8 @@ struct MapScreen: View {
         ZStack(alignment: usesSidebar ? .topLeading : .top) {
             map
                 .ignoresSafeArea()
+                // VoiceOver reads search and panel first, then the map.
+                .accessibilitySortPriority(-1)
             topBar
                 .frame(maxWidth: chromeWidth)
                 .dynamicTypeSize(...DynamicTypeSize.accessibility2)
@@ -157,6 +173,17 @@ struct MapScreen: View {
                 .dynamicTypeSize(...DynamicTypeSize.accessibility2)
         }
         .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { containerWidth = $0 }
+        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { containerHeight = $0 }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillChangeFrameNotification)) { note in
+            guard let frame = note.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
+            // Not UIScreen.main: on the iPhone Duo it is unclear which display that is.
+            keyboardTop = frame.height > 0 ? frame.minY : 0
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+            keyboardTop = 0
+        }
+        // The controls are rebuilt in other places when the layout switches; VoiceOver should look again.
+        .onChange(of: usesSidebar) { _, _ in AccessibilityNotification.LayoutChanged().post() }
         .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.top } action: { topInset = $0 }
         .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.trailing } action: { trailingInset = $0 }
         .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.leading } action: { leadingInset = $0 }
@@ -482,6 +509,9 @@ struct MapScreen: View {
                             Text("Search place or coordinates")
                             Text("Place or coordinates")
                                 .minimumScaleFactor(0.75)
+                            // Large text in the narrow sidebar column.
+                            Text("Search")
+                                .minimumScaleFactor(0.75)
                         }
                         .lineLimit(1)
                         .foregroundStyle(Color(uiColor: .placeholderText))
@@ -539,7 +569,7 @@ struct MapScreen: View {
                 .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { suggestionsHeight = $0 }
         }
         .scrollBounceBehavior(.basedOnSize)
-        .frame(height: min(suggestionsHeight, Metrics.dropdownMaxHeight))
+        .frame(height: min(suggestionsHeight, dropdownMaxHeight))
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
         .shadow(color: .black.opacity(0.15), radius: 12, y: 4)
     }
@@ -552,7 +582,7 @@ struct MapScreen: View {
             if search.hasNoMatches {
                 Text("No suggestions. Tap Search to look it up.")
                     .font(.subheadline)
-                    .foregroundStyle(Color(uiColor: .systemGray))
+                    .foregroundStyle(Color.dropdownSecondary)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 9)
             }
@@ -598,11 +628,11 @@ struct MapScreen: View {
         HStack(spacing: 12) {
             Image(systemName: "doc.on.clipboard")
                 .frame(width: 20)
-                .foregroundStyle(Color(uiColor: .systemGray))
+                .foregroundStyle(Color.dropdownSecondary)
                 .accessibilityHidden(true)
             Text("Coordinates or a Maps link")
                 .font(.subheadline)
-                .foregroundStyle(Color(uiColor: .systemGray))
+                .foregroundStyle(Color.dropdownSecondary)
                 .lineLimit(2)
             Spacer(minLength: 8)
             if resolving != nil {
@@ -631,7 +661,7 @@ struct MapScreen: View {
             HStack {
                 Text("Recent")
                     .font(.footnote.weight(.semibold))
-                    .foregroundStyle(Color(uiColor: .systemGray))
+                    .foregroundStyle(Color.dropdownSecondary)
                     .accessibilityAddTraits(.isHeader)
                 Spacer()
                 Button(String(localized: "Clear List", defaultValue: "Clear", comment: "Removes all recent locations")) {
@@ -730,7 +760,7 @@ struct MapScreen: View {
             HStack(spacing: 12) {
                 Image(systemName: icon)
                     .frame(width: 20)
-                    .foregroundStyle(Color(uiColor: .systemGray))
+                    .foregroundStyle(Color.dropdownSecondary)
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
@@ -739,7 +769,7 @@ struct MapScreen: View {
                     if !subtitle.isEmpty {
                         Text(subtitle)
                             .font(.caption)
-                            .foregroundStyle(Color(uiColor: .systemGray))
+                            .foregroundStyle(Color.dropdownSecondary)
                             .lineLimit(dynamicTypeSize.isAccessibilitySize ? 3 : 1)
                     }
                 }
@@ -907,7 +937,7 @@ struct MapScreen: View {
             if dynamicTypeSize.isAccessibilitySize {
                 // Sized in the layout pass, not from a measurement: an unmeasured scroll view
                 // would take the whole height for a frame.
-                CappedHeight(maxHeight: Metrics.panelMaxHeight) {
+                CappedHeight(maxHeight: panelMaxHeight) {
                     ScrollView {
                         // Inside the scroll view, so scrolled text reaches the rounded edge instead of being cut.
                         panelContent
@@ -1338,4 +1368,11 @@ private struct LongPressRecognizer: UIGestureRecognizerRepresentable {
             shouldRecognizeSimultaneouslyWith other: UIGestureRecognizer
         ) -> Bool { true }
     }
+}
+
+private extension Color {
+    /// Secondary text on the suggestions' material: system gray is too faint in light mode.
+    static let dropdownSecondary = Color(uiColor: UIColor { traits in
+        traits.userInterfaceStyle == .dark ? .systemGray : UIColor(red: 0.424, green: 0.424, blue: 0.439, alpha: 1)
+    })
 }
