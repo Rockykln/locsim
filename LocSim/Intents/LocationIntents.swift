@@ -111,6 +111,47 @@ struct LocationIntentError: Error, CustomLocalizedStringResourceConvertible {
     var localizedStringResource: LocalizedStringResource { "\(message)" }
 }
 
+/// A place by name or address, found with the same search as the map. Coordinates and map
+/// links work too, so one action covers everything a person might say or paste.
+struct SetPlaceIntent: AppIntent {
+    static let title: LocalizedStringResource = "Set Location to Place"
+    static let description = IntentDescription(
+        "Opens LocSim, finds a place by its name or address and simulates its location. Coordinates and map links work too.")
+    static let openAppWhenRun = true
+
+    @available(iOS 26.0, *)
+    static var supportedModes: IntentModes { .foreground }
+
+    @Parameter(title: "Place", description: "A place name or address, for example Eiffel Tower or Alexanderplatz, Berlin")
+    var place: String
+
+    static var parameterSummary: some ParameterSummary {
+        Summary("Set location to \(\.$place)")
+    }
+
+    @MainActor
+    func perform() async throws -> some IntentResult & ProvidesDialog {
+        let found: PlaceSearch.Place
+        if let c = CoordinateParser.parse(place) {
+            found = .init(name: CoordinateParser.format(c), coordinate: c)
+        } else {
+            let search = PlaceSearch()
+            do {
+                if let linked = try await search.place(fromLink: place) {
+                    found = linked
+                } else {
+                    search.query = place
+                    found = try await search.search()
+                }
+            } catch {
+                throw LocationIntentError(error.localizedDescription)
+            }
+        }
+        try await LocationIntentRunner.set(found.coordinate, name: found.name)
+        return .result(dialog: "LocSim simulates \(found.name).")
+    }
+}
+
 struct LocSimShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
