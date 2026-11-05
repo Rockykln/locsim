@@ -219,6 +219,7 @@ struct MapScreen: View {
             }
         }
         .onAppear { UIDevice.current.beginGeneratingDeviceOrientationNotifications() }
+        .onChange(of: verticalSizeClass) { _, _ in updateIslandSide() }
         .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { containerHeight = $0 }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillChangeFrameNotification)) { note in
             guard let frame = note.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
@@ -248,14 +249,16 @@ struct MapScreen: View {
     /// On both screens of the iPhone Duo the compass joins the pin and locate buttons.
     private var compassWithButtons: Bool { usesSidebar || extendsIntoSideBar || phoneLandscape }
 
-    // The interface orientation says where the top of the iPhone, with the Dynamic Island, is.
+    // Where the top of the iPhone, with the Dynamic Island, is. The device orientation says it
+    // directly; the scene's interface orientation stayed unknown on iOS 26 and later.
     private func updateIslandSide() {
-        let scene = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first
-        switch scene?.effectiveGeometry.interfaceOrientation {
-        // Home indicator on the right, so the top of the device is on the left.
-        case .landscapeRight: islandOnLeading = true
-        case .landscapeLeft: islandOnLeading = false
-        default: islandOnLeading = nil
+        guard phoneLandscape else { return islandOnLeading = nil }
+        switch UIDevice.current.orientation {
+        // Turned to the left: the top of the device, and the island, is on the left.
+        case .landscapeLeft: islandOnLeading = true
+        case .landscapeRight: islandOnLeading = false
+        // Flat on a table or upside down: keep the side last seen.
+        default: break
         }
     }
 
