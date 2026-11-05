@@ -1,6 +1,7 @@
 import AppIntents
 import CoreLocation
 import Foundation
+import LocSimCore
 
 /// Setting a location needs the app in the foreground: the first connection may ask for the
 /// VPN configuration, and the background keep-alive can only start from there.
@@ -138,7 +139,9 @@ struct SetPlaceIntent: AppIntent {
     func perform() async throws -> some IntentResult & ProvidesDialog {
         let found: PlaceSearch.Place
         if let c = CoordinateParser.parse(place) {
-            found = .init(name: CoordinateParser.format(c), coordinate: c)
+            // A map link keeps the place name it carries, as when pasted into the search field.
+            let name = MapLink.url(in: place).flatMap(MapLink.placeName) ?? CoordinateParser.format(c)
+            found = .init(name: name, coordinate: c)
         } else {
             let search = PlaceSearch()
             do {
