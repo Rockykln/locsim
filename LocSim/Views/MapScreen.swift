@@ -31,7 +31,9 @@ struct MapScreen: View {
     @State private var mapFrame: CGRect = .zero
     private var mapBottom: CGFloat { mapFrame.maxY }
     @State private var containerWidth: CGFloat = 0
-    @State private var containerInsets = EdgeInsets()
+    // Only the edges the layout uses: the bottom inset changes with every keyboard frame.
+    @State private var topInset: CGFloat = 0
+    @State private var trailingInset: CGFloat = 0
     // Trailing edge of the search and panel column in sidebar layout.
     @State private var columnTrailing: CGFloat = 0
     @State private var panelTop: CGFloat = .infinity
@@ -83,9 +85,9 @@ struct MapScreen: View {
 
     /// On the iPhone Duo's cover screen the system bar runs down the side; the pin and locate
     /// buttons then stand right next to it instead of above the panel.
-    private var usesSideButtons: Bool { !usesSidebar && containerInsets.trailing > 0 }
+    private var usesSideButtons: Bool { !usesSidebar && trailingInset > 0 }
 
-    private var barTop: CGFloat { max(Metrics.barTop, Metrics.minTopGap - containerInsets.top) }
+    private var barTop: CGFloat { max(Metrics.barTop, Metrics.minTopGap - topInset) }
     private var barBottom: CGFloat { barTop + Metrics.control }
 
     private var layers: some View {
@@ -150,7 +152,8 @@ struct MapScreen: View {
                 .dynamicTypeSize(...DynamicTypeSize.accessibility2)
         }
         .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { containerWidth = $0 }
-        .onGeometryChange(for: EdgeInsets.self) { $0.safeAreaInsets } action: { containerInsets = $0 }
+        .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.top } action: { topInset = $0 }
+        .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.trailing } action: { trailingInset = $0 }
         .ignoresSafeArea(.keyboard)
         .mapScope(mapScope)
     }
