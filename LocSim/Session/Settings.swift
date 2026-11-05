@@ -123,6 +123,7 @@ final class FavoriteList: ObservableObject {
             StoredList.save(items, SettingsKey.favorites)
             // So Siri knows the favorite names in "Set LocSim to …".
             LocSimShortcuts.updateAppShortcutParameters()
+            WidgetSync.setFavorites(items)
         }
     }
 
@@ -134,6 +135,9 @@ final class FavoriteList: ObservableObject {
         let loaded: [Favorite]? = StoredList.load(SettingsKey.favorites)
         items = loaded ?? []
         unreadable = loaded == nil
+        // didSet does not run in init; the widget may still list favorites from an older version.
+        let current = items
+        Task { @MainActor in WidgetSync.setFavorites(current) }
     }
 
     /// The favorite at this spot, within a meter, so the star shows it is already saved.

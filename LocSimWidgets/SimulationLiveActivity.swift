@@ -7,6 +7,7 @@ import WidgetKit
 struct LocSimWidgets: WidgetBundle {
     var body: some Widget {
         SimulationLiveActivity()
+        LocationStatusWidget()
     }
 }
 

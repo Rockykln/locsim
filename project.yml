@@ -98,6 +98,8 @@ targets:
         SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
         SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD: NO
         INFOPLIST_FILE: LocSimWidgets/Info.plist
+        # The app group the app writes the widget's data into.
+        CODE_SIGN_ENTITLEMENTS: LocSimWidgets/LocSimWidgets.entitlements
         GENERATE_INFOPLIST_FILE: NO
         DEAD_CODE_STRIPPING: YES
         ENABLE_BITCODE: NO
