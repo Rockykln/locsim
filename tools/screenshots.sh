@@ -6,9 +6,9 @@
 #                                                      "iPhone 17", else the first one listed)
 # Output: design/screenshots/<lang>/<theme>/<name>.png, then run design/mockups/render.py.
 #
-# First every other screen is taken without help. The Lock Screen shots with the Live
-# Activity come last, light for all languages and then dark, because simctl can neither
-# lock the Simulator nor set its wallpaper.
+# First every other screen is taken without help, light and dark. The Lock Screen shots with
+# the Live Activity come last, one per language, because simctl can neither lock the
+# Simulator nor set its wallpaper.
 set -eu
 
 DEVICE=${DEVICE:-"iPhone 17"}
@@ -184,30 +184,31 @@ if [ "$pass1" = 1 ]; then
     done
 fi
 
-# Pass 2: the Lock Screen with the Live Activity.
+# Pass 2: the Lock Screen with the Live Activity, one shot per language in light mode. It is
+# saved as <lang>/4-live.png, which render.py uses for the light and the dark images alike.
 if wants live; then
-    for theme in light dark; do
-        say "=== Lock Screen shots, $theme ===
-In the Simulator, pick a $theme stock wallpaper (Settings > Wallpaper).
+    say "=== Lock Screen shots ===
+In the Simulator, pick a light stock wallpaper (Settings > Wallpaper).
 Then press Enter here. The script waits until you do."
+    read -r _
+    for lang in $LANGS; do
+        system_language "$lang"
+        xcrun simctl ui "$UDID" appearance light
+        mkdir -p "$OUT/$lang"
+        # Right after a restart iOS starts no Live Activity yet; the map warms it up.
+        echo "$lang: starting LocSim, the Live Activity follows in about 25 seconds"
+        launch map
+        sleep 15
+        launch live
+        sleep 8
+        # Locked, the Simulator dims into Always On; a click wakes the Lock Screen without unlocking.
+        printf '%s: once the Live Activity shows, press Cmd-L in the Simulator, click its screen once so it is lit, then press Enter here. ' "$lang"
         read -r _
-        for lang in $LANGS; do
-            system_language "$lang"
-            xcrun simctl ui "$UDID" appearance "$theme"
-            mkdir -p "$OUT/$lang/$theme"
-            # Right after a restart iOS starts no Live Activity yet; the map warms it up.
-            echo "$lang $theme: starting LocSim, the Live Activity follows in about 25 seconds"
-            launch map
-            sleep 15
-            launch live
-            sleep 8
-            # Locked, the Simulator dims into Always On; a click wakes the Lock Screen without unlocking.
-            printf '%s %s: once the Live Activity shows, press Cmd-L in the Simulator, click its screen once so it is lit, then press Enter here. ' "$lang" "$theme"
-            read -r _
-            # Right away, before the screen dims again.
-            sleep 1
-            shoot "$OUT/$lang/$theme/4-live.png"
-        done
+        # Right away, before the screen dims again.
+        sleep 1
+        shoot "$OUT/$lang/4-live.png"
+        # Older per-theme shots would win over this one in render.py.
+        rm -f "$OUT/$lang/light/4-live.png" "$OUT/$lang/dark/4-live.png"
     done
 fi
 xcrun simctl terminate "$UDID" "$BUNDLE" 2>/dev/null || true
