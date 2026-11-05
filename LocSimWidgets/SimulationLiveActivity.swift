@@ -7,6 +7,10 @@ import WidgetKit
 struct LocSimWidgets: WidgetBundle {
     var body: some Widget {
         SimulationLiveActivity()
+        if #available(iOS 18.0, *) {
+            SetLastLocationControl()
+            ClearLocationControl()
+        }
     }
 }
 
