@@ -26,7 +26,13 @@ struct FavoriteEntity: AppEntity {
     }
 }
 
-struct FavoriteQuery: EntityStringQuery {
+// Enumerable: the list is short, and Siri can then choose among all favorites itself.
+struct FavoriteQuery: EntityStringQuery, EnumerableEntityQuery {
+    @MainActor
+    func allEntities() async throws -> [FavoriteEntity] {
+        FavoriteList.shared.items.map(FavoriteEntity.init)
+    }
+
     @MainActor
     func entities(for identifiers: [UUID]) async throws -> [FavoriteEntity] {
         FavoriteList.shared.items.filter { identifiers.contains($0.id) }.map(FavoriteEntity.init)
