@@ -88,9 +88,12 @@ struct MapScreen: View {
     /// panel and the pin and locate buttons reach under it too, so they get the full width.
     private var extendsIntoSideBar: Bool { !usesSidebar && trailingInset > 0 }
 
-    // On the cover screen the bar starts about where the system's own controls begin.
+    /// The iPhone Duo shows the status bar as a column at the side, on both screens.
+    private var hasSideStatusBar: Bool { trailingInset > 0 || leadingInset > 0 }
+
+    // With the status bar at the side, the bar starts about where the system's own controls begin.
     private var barTop: CGFloat {
-        max(Metrics.barTop, (extendsIntoSideBar ? Metrics.coverTopGap : Metrics.minTopGap) - topInset)
+        max(Metrics.barTop, (hasSideStatusBar ? Metrics.coverTopGap : Metrics.minTopGap) - topInset)
     }
     private var barBottom: CGFloat { barTop + Metrics.control }
 
@@ -1262,7 +1265,7 @@ private enum Metrics {
     static let sidebarMinWidth: CGFloat = 800
     static let sidebarWidth: CGFloat = 380
     static let minTopGap: CGFloat = 16
-    // Estimates for the iPhone Duo cover screen until measured on the device.
+    // Estimates for the iPhone Duo until measured on the device.
     static let coverTopGap: CGFloat = 44
     static let coverBottomTrim: CGFloat = 16
 }
