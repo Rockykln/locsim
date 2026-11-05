@@ -71,41 +71,39 @@ struct SimulationLiveActivity: Widget {
                             .padding(.trailing, 4)
                     }
                 }
-                // The caption is centered on top; name and coordinate start at the same edge,
-                // a little right of the status icon.
+                // iOS sizes the center region to its content and centers it, so only the
+                // caption goes there. Name and coordinate share the full-width bottom region,
+                // where they start at the same edge, a little right of the status icon.
                 DynamicIslandExpandedRegion(.center) {
-                    VStack(alignment: .leading, spacing: 1) {
-                        Text(status.caption)
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(status.textColor)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.8)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                        Text(context.state.name)
-                            .font(.headline)
-                            .lineLimit(1)
-                            .padding(.leading, Metrics.islandIndent)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .accessibilityElement(children: .combine)
+                    Text(status.caption)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(status.textColor)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    HStack(spacing: 0) {
-                        // As wide as the leading region, so the coordinate lines up with the name.
+                    HStack(alignment: .bottom, spacing: 0) {
+                        // As wide as the status icon above, so the text starts right of it.
                         StatusIcon(status: status)
                             .font(.title2)
                             .padding(.leading, 4)
-                            .padding(.trailing, Metrics.islandGap + Metrics.islandIndent)
                             .hidden()
                             .accessibilityHidden(true)
-                        Text(context.state.coordinate)
-                            .font(.footnote.monospacedDigit().weight(.medium))
-                            // Gray on the black island is too faint for digits.
-                            .foregroundStyle(.primary.opacity(0.8))
-                            .lineLimit(1)
-                            // Shrinks rather than cutting off digits next to a long Clear label.
-                            .minimumScaleFactor(0.7)
-                            .layoutPriority(1)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(context.state.name)
+                                .font(.headline)
+                                .lineLimit(1)
+                            Text(context.state.coordinate)
+                                .font(.footnote.monospacedDigit().weight(.medium))
+                                // Gray on the black island is too faint for digits.
+                                .foregroundStyle(.primary.opacity(0.8))
+                                .lineLimit(1)
+                                // Shrinks rather than cutting off digits next to a long Clear label.
+                                .minimumScaleFactor(0.7)
+                        }
+                        .padding(.leading, Metrics.islandIndent)
+                        .accessibilityElement(children: .combine)
+                        .layoutPriority(1)
                         Spacer(minLength: 8)
                         ClearButton()
                             .padding(.trailing, 4)
@@ -257,8 +255,6 @@ private struct ClearButton: View {
 }
 
 private enum Metrics {
-    /// Space iOS leaves between the leading and the center region of the expanded island.
-    static let islandGap: CGFloat = 8
-    /// How far name and coordinate sit right of where the center region starts.
-    static let islandIndent: CGFloat = 6
+    /// Space between the status icon and the start of name and coordinate.
+    static let islandIndent: CGFloat = 10
 }
