@@ -137,7 +137,7 @@ struct WelcomeView: View {
         Task {
             if session.isPreview { session.endPreview() }
             await session.pairingChanged()
-            await session.checkPairing()
+            await session.checkNewPairing()
         }
     }
 

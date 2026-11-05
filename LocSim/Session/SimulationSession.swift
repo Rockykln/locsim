@@ -883,6 +883,13 @@ final class SimulationSession: ObservableObject {
     }
 
     /// Tries the pairing file against the device, unless a connection is in use.
+    /// After an import: checks only once the VPN configuration exists. Before that the check
+    /// would bring up the iOS prompt, which the setup steps announce for the first Set.
+    func checkNewPairing() async {
+        guard await tunnel.hasConfiguration() else { return setPairingCheck(.notChecked) }
+        await checkPairing()
+    }
+
     func checkPairing() async {
         guard !isSimulated else { return }
         // A running simulation already proves that the device accepts the file.

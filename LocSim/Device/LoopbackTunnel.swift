@@ -149,6 +149,11 @@ final class LoopbackTunnel {
         observer = nil
     }
 
+    /// Whether iOS already has LocSim's VPN configuration, so starting asks nothing.
+    func hasConfiguration() async -> Bool {
+        await existingManager() != nil
+    }
+
     private func existingManager() async -> NETunnelProviderManager? {
         let managers = try? await NETunnelProviderManager.loadAllFromPreferences()
         return managers?.first(where: Self.isOwn)
