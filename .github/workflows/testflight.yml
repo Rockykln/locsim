@@ -41,7 +41,8 @@ jobs:
 
   upload:
     needs: verify
-    runs-on: macos-26
+    # The iOS 27.1 SDK lets the app use the whole inner screen of the iPhone Duo.
+    runs-on: xcode-27
     timeout-minutes: 30
     # Secrets live in this environment; it requires approval and only allows v* tags.
     environment: testflight
@@ -61,8 +62,8 @@ jobs:
             [ -n "${!name}" ] || { echo "::error::secret $name is missing in the testflight environment"; exit 1; }
           done
 
-      # The newest Xcode 26 release on the image, so an image update does not break the build.
-      # Betas and release candidates are skipped: sort -V puts Xcode_26.1_beta after Xcode_26.1.
+      # The newest Xcode 27 release on the image, so an image update does not break the build.
+      # Betas and release candidates are skipped: sort -V puts Xcode_27.1_beta after Xcode_27.1.
       # Images often install the iOS platform only for their default Xcode; without it the
       # step falls back to that one.
       - name: Select Xcode
@@ -70,9 +71,9 @@ jobs:
           default=$(xcode-select -p)
           # grep without -q reads all of the output, so pipefail does not see a SIGPIPE.
           has_ios() { xcodebuild -showsdks 2>/dev/null | grep iphoneos > /dev/null; }
-          xcode=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | grep -viE 'beta|_rc|release_candidate' | sort -V | tail -1 || true)
+          xcode=$(ls -d /Applications/Xcode_27*.app 2>/dev/null | grep -viE 'beta|_rc|release_candidate' | sort -V | tail -1 || true)
           if [ -z "$xcode" ]; then
-            echo "::warning::no Xcode_26 release found in /Applications, using the default $default"
+            echo "::warning::no Xcode_27 release found in /Applications, using the default $default"
           else
             sudo xcode-select -s "$xcode"
             if ! has_ios; then
@@ -80,7 +81,11 @@ jobs:
               sudo xcode-select -s "$default"
             fi
           fi
-          xcodebuild -version | grep -E '^Xcode 26' > /dev/null || { echo "::error::Xcode 26 is required, found: $(xcodebuild -version | head -1)"; exit 1; }
+          version=$(xcodebuild -version | awk '/^Xcode/ { print $2 }')
+          major=${version%%.*}
+          minor=$(echo "$version" | cut -d. -f2)
+          [ "$major" -gt 27 ] || { [ "$major" -eq 27 ] && [ "${minor:-0}" -ge 1 ]; } \
+            || { echo "::error::Xcode 27.1 or later is required, found: $version"; exit 1; }
           has_ios || { echo "::error::the selected Xcode lists no iOS SDK (xcodebuild -showsdks)"; exit 1; }
           xcodebuild -version
 
