@@ -24,13 +24,23 @@ final class LoopbackTunnel {
     func start() async throws {
         wanted = true
         startCount += 1
+        let token = startCount
+        let previous = session
         // A late status change from the previous run must not count as a drop of this one.
         stopWatching()
         let connection: NEVPNConnection
         do {
             // Agreement to replace another VPN is for this attempt only.
             defer { allowTakeover = false }
-            connection = try await enabledManager().connection
+            do {
+                connection = try await enabledManager().connection
+            } catch {
+                // The previous tunnel may still be up; without its heartbeat the extension ends itself.
+                if let previous, previous.status == .connected, wanted, startCount == token, session == nil {
+                    watch(previous)
+                }
+                throw error
+            }
             _ = await wait(seconds: 5) { connection.status != .disconnecting }
             switch connection.status {
             case .connected:
@@ -83,7 +93,7 @@ final class LoopbackTunnel {
     private func watch(_ connection: NEVPNConnection) {
         stopWatching()
         session = connection as? NETunnelProviderSession
-        beat()
+        sendBeat()
         observer = NotificationCenter.default.addObserver(
             forName: .NEVPNStatusDidChange, object: connection, queue: .main
         ) { [weak self] note in
@@ -99,9 +109,24 @@ final class LoopbackTunnel {
 
     /// Tells the extension LocSim still needs it. Called with every resend, so one wakeup does both.
     func beat() {
+        // A recent beat is enough. The pending timer is anchored to that beat, so the gap the
+        // extension sees stays at most heartbeatInterval + tolerance (90 s of the 120 s timeout).
+        if let lastBeat, heartbeat != nil, ContinuousClock.now - lastBeat < Self.beatSkipWindow { return }
+        sendBeat()
+    }
+
+    private static let beatSkipWindow: Duration = .seconds(30)
+    private var lastBeat: ContinuousClock.Instant?
+
+    private func sendBeat() {
         guard let session, wanted else { return }
-        try? session.sendProviderMessage(TunnelAddress.heartbeat) { _ in }
-        // Starts over with every beat, so a resend that beat in between saves the wakeup.
+        do {
+            try session.sendProviderMessage(TunnelAddress.heartbeat) { _ in }
+            lastBeat = .now
+        } catch {
+            lastBeat = nil
+        }
+        // Starts over with every sent beat, so a resend that beat in between saves the wakeup.
         heartbeat?.cancel()
         heartbeat = Task { [weak self] in
             do {
@@ -111,13 +136,14 @@ final class LoopbackTunnel {
             } catch {
                 return
             }
-            self?.beat()
+            self?.sendBeat()
         }
     }
 
     private func stopWatching() {
         heartbeat?.cancel()
         heartbeat = nil
+        lastBeat = nil
         session = nil
         if let observer { NotificationCenter.default.removeObserver(observer) }
         observer = nil
