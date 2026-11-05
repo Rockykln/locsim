@@ -43,7 +43,8 @@ APP="$BUILD/Build/Products/Debug-iphonesimulator/LocSim.app"
 boot() {
     xcrun simctl boot "$UDID" 2>/dev/null || true
     # Shows this device in the Simulator window; Cmd-L only locks the one on screen.
-    open -a Simulator --args -CurrentDeviceUDID "$UDID"
+    open "$(xcode-select -p)/Applications/Simulator.app" --args -CurrentDeviceUDID "$UDID" 2>/dev/null ||
+        echo "Could not open the Simulator window; show $DEVICE in it by hand." >&2
     xcrun simctl bootstatus "$UDID" -b >/dev/null
     xcrun simctl status_bar "$UDID" override --time 9:41 \
         --dataNetwork wifi --wifiMode active --wifiBars 3 \
