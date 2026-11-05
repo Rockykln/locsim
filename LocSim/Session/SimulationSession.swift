@@ -531,7 +531,9 @@ final class SimulationSession: ObservableObject {
         } else if active == nil || isSimulated {
             WidgetSync.clearActive()
         }
-        guard !isSimulated else { return liveActivity.end() }
+        // The demo shows its own activity for the screenshots; a scene change must not end it.
+        if Demo.isOn { return }
+        guard !isPreview else { return liveActivity.end() }
         if let active {
             guard state == .active || state.isReconnecting else { return }
             liveActivity.show(
