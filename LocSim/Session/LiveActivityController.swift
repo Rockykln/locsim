@@ -36,7 +36,10 @@ final class LiveActivityController {
         ) { _ in
             Self.endAllBeforeExit()
             // The simulated location ends with the process; the widget must not keep showing it.
-            MainActor.assumeIsolated { WidgetSync.clearActive() }
+            MainActor.assumeIsolated {
+                WidgetSync.clearActive()
+                FavoriteUsage.end()
+            }
         }
     }
 

@@ -236,6 +236,8 @@ struct MapScreen: View {
             return .error
         }
         .sensoryFeedback(trigger: feedback) { _, _ in haptics ? .impact(weight: .light) : nil }
+        // The Search quick action on the Home Screen.
+        .onReceive(NotificationCenter.default.publisher(for: .focusSearch)) { _ in searchFocused = true }
         .onChange(of: session.state) { old, new in
             announce(old, new)
             if new.error != nil { setFromApp = nil }

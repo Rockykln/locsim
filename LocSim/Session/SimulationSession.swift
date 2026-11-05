@@ -49,7 +49,13 @@ final class SimulationSession: ObservableObject {
     @Published var target: CLLocationCoordinate2D = LastCoordinate.load()
     @Published var targetName: String? = LastCoordinate.loadName()
     @Published private(set) var active: CLLocationCoordinate2D? {
-        didSet { syncActivity() }
+        didSet {
+            syncActivity()
+            if active?.latitude != oldValue?.latitude || active?.longitude != oldValue?.longitude {
+                // The preview changes nothing on the device, so it counts as no use.
+                FavoriteUsage.activeChanged(to: isSimulated ? nil : active)
+            }
+        }
     }
     @Published private(set) var state: State = .idle {
         didSet { syncActivity() }
