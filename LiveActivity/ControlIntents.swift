@@ -16,6 +16,8 @@ struct SetLastLocationIntent: AppIntent {
     @MainActor
     func perform() async throws -> some IntentResult {
         #if LOCSIM_APP
+        // Nothing set yet: only open LocSim instead of simulating the default place.
+        guard LastCoordinate.isSaved else { return .result() }
         try await LocationIntentRunner.set(LastCoordinate.load(), name: LastCoordinate.loadName())
         #endif
         return .result()

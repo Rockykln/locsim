@@ -199,6 +199,9 @@ enum LastCoordinate {
         return .init(latitude: pair[0], longitude: pair[1])
     }
 
+    /// Whether a location was ever set; until then `load()` returns the default place.
+    static var isSaved: Bool { UserDefaults.standard.array(forKey: SettingsKey.last) != nil }
+
     /// The place name that went with it, so a restart does not turn it into a dropped pin.
     static func loadName() -> String? {
         UserDefaults.standard.string(forKey: SettingsKey.lastName)
