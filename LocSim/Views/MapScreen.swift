@@ -8,6 +8,7 @@ struct MapScreen: View {
     @EnvironmentObject private var favorites: FavoriteList
     @EnvironmentObject private var recents: RecentList
     @StateObject private var search = PlaceSearch()
+    @ObservedObject private var requests = ExternalRequests.shared
     @State private var camera: MapCameraPosition = .automatic
     @State private var showSettings = false
     @State private var showWelcome = false
@@ -312,8 +313,12 @@ struct MapScreen: View {
             return .error
         }
         .sensoryFeedback(trigger: feedback) { _, _ in haptics ? .impact(weight: .light) : nil }
-        // The Search quick action on the Home Screen.
-        .onReceive(NotificationCenter.default.publisher(for: .focusSearch)) { _ in searchFocused = true }
+        // Quick actions and widget taps; also delivered when they arrived before this screen.
+        .onReceive(requests.$next) { request in
+            guard let request else { return }
+            requests.next = nil
+            handle(request.kind)
+        }
         .onChange(of: session.state) { old, new in
             announce(old, new)
             if new.error != nil { setFromApp = nil }
@@ -1354,6 +1359,18 @@ struct MapScreen: View {
         }
         if let favorite = favorites.items.first(where: { same($0.coordinate) }) { return favorite.name }
         return recents.items.first { $0.name != nil && same($0.coordinate) }?.name
+    }
+
+    private func handle(_ kind: ExternalRequests.Kind) {
+        // Settings and Favorites would hide the map and the search field.
+        showSettings = false
+        showFavorites = false
+        switch kind {
+        case .set(let latitude, let longitude, let name):
+            select(CLLocationCoordinate2D(latitude: latitude, longitude: longitude), name: name, apply: true)
+        case .search:
+            searchFocused = true
+        }
     }
 
     /// Every Set goes through here; without a pairing file it opens the setup steps instead.

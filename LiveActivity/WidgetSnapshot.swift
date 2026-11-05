@@ -12,6 +12,8 @@ struct WidgetSnapshot: Codable, Equatable {
     /// The simulated location; nil while nothing is simulated.
     var active: Place?
     var since: Date?
+    /// After this the app may have ended without saying so; the widget then asks to check.
+    var freshUntil: Date?
     var favorites: [Place]
 
     static let empty = WidgetSnapshot(active: nil, since: nil, favorites: [])

@@ -7,7 +7,7 @@ import WidgetKit
 struct LocationStatusWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: WidgetSnapshot.kind, provider: SnapshotProvider()) { entry in
-            LocationStatusView(snapshot: entry.snapshot)
+            LocationStatusView(snapshot: entry.snapshot, stale: entry.stale)
                 .containerBackground(.fill.tertiary, for: .widget)
         }
         .configurationDisplayName("Location Status")
@@ -19,25 +19,37 @@ struct LocationStatusWidget: Widget {
 struct SnapshotEntry: TimelineEntry {
     let date: Date
     let snapshot: WidgetSnapshot
+    var stale = false
 }
 
-/// The app reloads the widget when something changes, so one entry is enough.
+/// The app reloads the widget when something changes. A second entry turns it outdated in
+/// case LocSim ends without saying so, like the Live Activity.
 struct SnapshotProvider: TimelineProvider {
     func placeholder(in context: Context) -> SnapshotEntry {
         SnapshotEntry(date: Date(), snapshot: .empty)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (SnapshotEntry) -> Void) {
-        completion(SnapshotEntry(date: Date(), snapshot: WidgetSnapshot.load()))
+        completion(entries(WidgetSnapshot.load())[0])
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<SnapshotEntry>) -> Void) {
-        completion(Timeline(entries: [SnapshotEntry(date: Date(), snapshot: WidgetSnapshot.load())], policy: .never))
+        completion(Timeline(entries: entries(WidgetSnapshot.load()), policy: .never))
+    }
+
+    private func entries(_ snapshot: WidgetSnapshot) -> [SnapshotEntry] {
+        let now = Date()
+        guard snapshot.active != nil, let until = snapshot.freshUntil else {
+            return [SnapshotEntry(date: now, snapshot: snapshot)]
+        }
+        if until <= now { return [SnapshotEntry(date: now, snapshot: snapshot, stale: true)] }
+        return [SnapshotEntry(date: now, snapshot: snapshot), SnapshotEntry(date: until, snapshot: snapshot, stale: true)]
     }
 }
 
 private struct LocationStatusView: View {
     let snapshot: WidgetSnapshot
+    let stale: Bool
     @Environment(\.widgetFamily) private var family
 
     var body: some View {
@@ -51,11 +63,18 @@ private struct LocationStatusView: View {
 
     // MARK: Lock Screen
 
-    private var symbol: String { snapshot.active == nil ? "location.slash" : "location.fill" }
+    private var symbol: String { snapshot.active == nil || stale ? "location.slash" : "location.fill" }
+
+    /// LocSim may have ended since, so the place is no longer claimed as simulated.
+    private var caption: LocalizedStringKey {
+        stale ? "Open LocSim to check the location" : "Simulated location"
+    }
 
     /// One line above the clock.
     private var inline: some View {
-        if let active = snapshot.active {
+        if stale {
+            Label("Open LocSim to check the location", systemImage: symbol)
+        } else if let active = snapshot.active {
             Label("Simulated · \(active.name)", systemImage: symbol)
         } else {
             Label("Real location", systemImage: symbol)
@@ -65,8 +84,9 @@ private struct LocationStatusView: View {
     private var rectangular: some View {
         VStack(alignment: .leading, spacing: 1) {
             Label {
-                Text(snapshot.active == nil ? "Not simulated" : "Simulated location")
+                Text(snapshot.active == nil ? "Not simulated" : caption)
                     .font(.caption.weight(.semibold))
+                    .lineLimit(stale ? 2 : 1)
             } icon: {
                 Image(systemName: symbol)
             }
@@ -94,7 +114,7 @@ private struct LocationStatusView: View {
             Image(systemName: symbol)
                 .font(.title2)
         }
-        .accessibilityLabel(Text(snapshot.active == nil ? "Not simulated" : "Simulated location"))
+        .accessibilityLabel(Text(snapshot.active == nil ? "Not simulated" : caption))
     }
 
     // MARK: Home Screen
@@ -116,15 +136,16 @@ private struct LocationStatusView: View {
 
     private var status: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Image(systemName: snapshot.active == nil ? "location.slash" : "location.fill")
+            Image(systemName: symbol)
                 .font(.title3)
-                .foregroundStyle(snapshot.active == nil ? Color.secondary : Color.blue)
+                .foregroundStyle(snapshot.active == nil || stale ? Color.secondary : Color.blue)
                 .accessibilityHidden(true)
             Spacer(minLength: 4)
             if let active = snapshot.active {
-                Text("Simulated location")
+                Text(caption)
                     .font(.caption.weight(.semibold))
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(stale ? Color.primary : Color.blue)
+                    .lineLimit(stale ? 3 : 1)
                 Text(active.name)
                     .font(.headline)
                     .lineLimit(2)

@@ -44,6 +44,8 @@ enum QuickActions {
         let session = SimulationSession.shared
         switch kind {
         case .clear:
+            // The list may be older than the simulation it offers to end.
+            guard session.canClear else { return true }
             Task { await session.clear() }
         case .last:
             guard LastCoordinate.isSaved else { return true }
@@ -53,35 +55,43 @@ enum QuickActions {
                   let favorite = FavoriteList.shared.items.first(where: { $0.id == id }) else { return true }
             set(favorite.coordinate, name: favorite.name)
         case .search:
-            NotificationCenter.default.post(name: .focusSearch, object: nil)
+            ExternalRequests.shared.post(.search)
         }
         return true
     }
 
-    // Like a tap in the app: the pin moves there, and without the setup the setup steps show.
     private static func set(_ coordinate: CLLocationCoordinate2D, name: String?) {
-        let session = SimulationSession.shared
-        session.target = coordinate
-        session.targetName = name
-        guard session.hasPairing else { return }
-        Task { await session.apply() }
+        ExternalRequests.shared.post(.set(latitude: coordinate.latitude, longitude: coordinate.longitude, name: name))
     }
 }
 
-extension Notification.Name {
-    /// Asks the map screen to focus its search field.
-    static let focusSearch = Notification.Name("com.rockykln.locsim.focusSearch")
+/// Sets and searches asked for from outside the map: quick actions and widget taps. The map
+/// screen runs them like its own taps (camera, setup steps), also when it appears only later.
+@MainActor
+final class ExternalRequests: ObservableObject {
+    static let shared = ExternalRequests()
+
+    enum Kind: Equatable {
+        case set(latitude: Double, longitude: Double, name: String?)
+        case search
+    }
+
+    struct Request: Equatable {
+        let id = UUID()
+        let kind: Kind
+    }
+
+    @Published var next: Request?
+
+    func post(_ kind: Kind) { next = Request(kind: kind) }
 }
 
 /// SwiftUI has no hook for quick actions, so a scene delegate receives them.
 final class QuickActionSceneDelegate: NSObject, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let item = connectionOptions.shortcutItem else { return }
-        // At launch the map is not there yet; wait a moment so Search can focus the field.
-        Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 500_000_000)
-            QuickActions.perform(item)
-        }
+        // The map screen picks the request up once it is there.
+        MainActor.assumeIsolated { _ = QuickActions.perform(item) }
     }
 
     func windowScene(
