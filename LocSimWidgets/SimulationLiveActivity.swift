@@ -71,8 +71,9 @@ struct SimulationLiveActivity: Widget {
                             .padding(.trailing, 4)
                     }
                 }
+                // Name and coordinate start at the same edge, right of the status icon.
                 DynamicIslandExpandedRegion(.center) {
-                    VStack(spacing: 1) {
+                    VStack(alignment: .leading, spacing: 1) {
                         Text(status.caption)
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(status.textColor)
@@ -82,10 +83,18 @@ struct SimulationLiveActivity: Widget {
                             .font(.headline)
                             .lineLimit(1)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityElement(children: .combine)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    HStack {
+                    HStack(spacing: 0) {
+                        // As wide as the leading region, so the coordinate lines up with the name.
+                        StatusIcon(status: status)
+                            .font(.title2)
+                            .padding(.leading, 4)
+                            .padding(.trailing, Metrics.islandGap)
+                            .hidden()
+                            .accessibilityHidden(true)
                         Text(context.state.coordinate)
                             .font(.footnote.monospacedDigit().weight(.medium))
                             // Gray on the black island is too faint for digits.
@@ -96,6 +105,7 @@ struct SimulationLiveActivity: Widget {
                             .layoutPriority(1)
                         Spacer(minLength: 8)
                         ClearButton()
+                            .padding(.trailing, 4)
                     }
                 }
             } compactLeading: {
@@ -226,7 +236,7 @@ private struct ClearButton: View {
     @Environment(\.isLuminanceReduced) private var dimmed
 
     var body: some View {
-        let button = Button(intent: StopSimulationIntent()) {
+        Button(intent: StopSimulationIntent()) {
             // Never wrapped: long words like "Zurücksetzen" would break; the place name gives way.
             Label("Clear", systemImage: "arrow.uturn.backward")
                 .font(.subheadline.weight(.semibold))
@@ -235,14 +245,15 @@ private struct ClearButton: View {
                 .fixedSize()
                 .frame(minHeight: 30)
         }
+        // A neutral translucent fill: blue is kept for the status. The glass button style is
+        // not drawn in Live Activities (tested on iOS 27), the button disappears with it.
+        .buttonStyle(.bordered)
+        .tint(dimmed ? .white : .primary)
         .accessibilityLabel(Text("Clear the simulated location"))
-        // Neutral glass like the system's own buttons; blue is kept for the status.
-        if #available(iOS 26.0, *) {
-            button.buttonStyle(.glass)
-        } else {
-            button
-                .buttonStyle(.bordered)
-                .tint(dimmed ? .white : .primary)
-        }
     }
+}
+
+private enum Metrics {
+    /// Space iOS leaves between the leading and the center region of the expanded island.
+    static let islandGap: CGFloat = 8
 }
