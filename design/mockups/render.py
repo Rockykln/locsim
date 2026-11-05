@@ -334,10 +334,10 @@ def check_subtitles(slides, work):
     open(stamp, "w").close()
 
 
-# The Simulator's Lock Screen shows the Control Center grabber below the status icons, at first
-# with a switch icon under it; a real iPhone hides both once Control Center was used. Both are
-# covered with the mirrored strip of wallpaper below them.
-GRABBER = dict(x=890, y=126, w=190, h=106)
+# The Simulator's Lock Screen shows the Control Center grabber, a short line below the status
+# icons; a real iPhone hides it once Control Center was used. It is covered with the mirrored
+# strip of wallpaper right below it, softened so no edge shows.
+GRABBER = dict(x=898, y=135, w=170, h=16)
 
 
 def hide_grabber(path):
@@ -346,9 +346,12 @@ def hide_grabber(path):
     if size != "1206x2622":
         return
     g = GRABBER
+    soft = f"{g['w'] + 20}x{g['h'] + 14}+{g['x'] - 10}+{g['y'] - 7}"
     subprocess.run(["magick", path,
                     "(", "+clone", "-crop", f"{g['w']}x{g['h']}+{g['x']}+{g['y'] + g['h']}", "+repage", "-flip", ")",
-                    "-geometry", f"+{g['x']}+{g['y']}", "-composite", path], check=True)
+                    "-geometry", f"+{g['x']}+{g['y']}", "-composite",
+                    "(", "+clone", "-crop", soft, "+repage", "-blur", "0x3", ")",
+                    "-geometry", f"+{g['x'] - 10}+{g['y'] - 7}", "-composite", path], check=True)
 
 
 def screen_html(file, lang, theme, work, shots=""):
