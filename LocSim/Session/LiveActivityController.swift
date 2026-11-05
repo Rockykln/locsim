@@ -1,4 +1,5 @@
 import ActivityKit
+import CoreLocation
 import Foundation
 import UIKit
 
@@ -82,15 +83,18 @@ final class LiveActivityController {
     }
 
     /// `set` counts the Sets; an activity the user swiped away only comes back with the next one.
-    func show(name: String, coordinate: String, connecting: Bool, reconnecting: Bool, set: Int, startedAt: Date) {
+    func show(
+        name: String, at c: CLLocationCoordinate2D, connecting: Bool, reconnecting: Bool, set: Int, startedAt: Date
+    ) {
         guard UserDefaults.standard.bool(forKey: SettingsKey.liveActivity),
               ActivityAuthorizationInfo().areActivitiesEnabled else { return end() }
         noteDismissal()
         if dismissedSet == set { return }
         if set != shownSet { dismissedSet = nil }
         let state = SimulationActivityAttributes.ContentState(
-            name: String(name.prefix(Self.nameLimit)), coordinate: coordinate, reconnecting: reconnecting,
-            startedAt: startedAt, connecting: connecting)
+            name: String(name.prefix(Self.nameLimit)), coordinate: CoordinateParser.format(c),
+            reconnecting: reconnecting, startedAt: startedAt, connecting: connecting,
+            spokenCoordinate: CoordinateParser.spoken(c))
         guard state != shown || !isRunning else { return }
         shown = state
         shownSet = set

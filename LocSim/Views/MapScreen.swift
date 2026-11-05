@@ -8,6 +8,7 @@ struct MapScreen: View {
     @EnvironmentObject private var favorites: FavoriteList
     @EnvironmentObject private var recents: RecentList
     @StateObject private var search = PlaceSearch()
+    @ObservedObject private var requests = ExternalRequests.shared
     @State private var camera: MapCameraPosition = .automatic
     @State private var showSettings = false
     @State private var showWelcome = false
@@ -106,7 +107,8 @@ struct MapScreen: View {
 
     /// Sideways, only the Dynamic Island's side needs its inset; the other side goes nearer the edge.
     private var freeSide: Edge.Set {
-        guard phoneLandscape, let islandOnLeading else { return [] }
+        // Without side insets (iPhone SE) both sides are already the same distance from the edge.
+        guard phoneLandscape, leadingInset > 0, trailingInset > 0, let islandOnLeading else { return [] }
         return islandOnLeading ? .trailing : .leading
     }
 
@@ -236,6 +238,8 @@ struct MapScreen: View {
         }
         // The controls are rebuilt in other places when the layout switches; VoiceOver should look again.
         .onChange(of: usesSidebar) { _, _ in AccessibilityNotification.LayoutChanged().post() }
+        // Turning the phone moves the buttons and the panel too.
+        .onChange(of: phoneLandscape) { _, _ in AccessibilityNotification.LayoutChanged().post() }
         .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.top } action: { topInset = $0 }
         .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.trailing } action: { trailingInset = $0 }
         .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.leading } action: { leadingInset = $0 }
@@ -312,8 +316,12 @@ struct MapScreen: View {
             return .error
         }
         .sensoryFeedback(trigger: feedback) { _, _ in haptics ? .impact(weight: .light) : nil }
-        // The Search quick action on the Home Screen.
-        .onReceive(NotificationCenter.default.publisher(for: .focusSearch)) { _ in searchFocused = true }
+        // Quick actions and widget taps; also delivered when they arrived before this screen.
+        .onReceive(requests.$next) { request in
+            guard let request else { return }
+            requests.next = nil
+            handle(request.kind)
+        }
         .onChange(of: session.state) { old, new in
             announce(old, new)
             if new.error != nil { setFromApp = nil }
@@ -542,6 +550,8 @@ struct MapScreen: View {
             searchField
                 // Sideways the bar spans the screen; the field stays a readable width at the left.
                 .frame(maxWidth: phoneLandscape ? Metrics.landscapeSearchWidth : .infinity)
+                // Otherwise the spacer takes half the room and the field ends short of the dropdown.
+                .layoutPriority(1)
             if phoneLandscape { Spacer(minLength: 8) }
             iconButton("star", label: "Favorites") { showFavorites = true }
             iconButton("gearshape", label: "Settings") { showSettings = true }
@@ -691,7 +701,8 @@ struct MapScreen: View {
                 suggestionRow(
                     icon: "scope",
                     title: CoordinateParser.format(coordinate),
-                    subtitle: String(localized: "Coordinates")
+                    subtitle: String(localized: "Coordinates"),
+                    spokenTitle: CoordinateParser.spoken(coordinate)
                 ) {
                     select(coordinate, name: nil, apply: autoApply)
                 }
@@ -784,7 +795,9 @@ struct MapScreen: View {
                 suggestionRow(
                     icon: "clock",
                     title: item.name ?? CoordinateParser.format(item.coordinate),
-                    subtitle: item.name == nil ? "" : CoordinateParser.format(item.coordinate)
+                    subtitle: item.name == nil ? "" : CoordinateParser.format(item.coordinate),
+                    spokenTitle: item.name ?? CoordinateParser.spoken(item.coordinate),
+                    spokenSubtitle: item.name == nil ? nil : CoordinateParser.spoken(item.coordinate)
                 ) {
                     select(item.coordinate, name: item.name, apply: autoApply)
                 }
@@ -855,7 +868,8 @@ struct MapScreen: View {
     }
 
     private func suggestionRow(
-        icon: String, title: String, subtitle: String, loading: Bool = false, action: @escaping () -> Void
+        icon: String, title: String, subtitle: String, spokenTitle: String? = nil, spokenSubtitle: String? = nil,
+        loading: Bool = false, action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
             HStack(spacing: 12) {
@@ -865,10 +879,12 @@ struct MapScreen: View {
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
+                        .accessibilityLabel(spokenTitle ?? title)
                         .foregroundStyle(.primary)
                         .lineLimit(dynamicTypeSize.isAccessibilitySize ? 3 : 1)
                     if !subtitle.isEmpty {
                         Text(subtitle)
+                            .accessibilityLabel(spokenSubtitle ?? subtitle)
                             .font(.caption)
                             .foregroundStyle(Color.dropdownSecondary)
                             .lineLimit(dynamicTypeSize.isAccessibilitySize ? 3 : 1)
@@ -1059,7 +1075,8 @@ struct MapScreen: View {
         }
         .glassPanel(cornerRadius: Metrics.panelRadius)
         .padding(.horizontal, Metrics.margin)
-        .padding(.bottom, 4)
+        // Without a home indicator (iPhone SE) the panel keeps the side margin below too.
+        .padding(.bottom, max(4, Metrics.margin - bottomInset))
         .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: {
             panelTop = $0.minY
             panelLeading = $0.minX
@@ -1197,7 +1214,8 @@ struct MapScreen: View {
                 .fill(stateColor)
                 .frame(width: 8, height: 8)
                 .accessibilityHidden(true)
-            Text(statusLine)
+            Text(statusLine())
+                .accessibilityLabel(statusLine(spoken: true))
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
@@ -1255,7 +1273,8 @@ struct MapScreen: View {
         AccessibilityNotification.Announcement(text).post()
     }
 
-    private var statusLine: String {
+    /// `spoken` reads the coordinate in words for VoiceOver.
+    private func statusLine(spoken: Bool = false) -> String {
         // Until the device answers, the state still says active although the location is going.
         if session.isClearing { return String(localized: "Clearing") }
         var parts: [String] = []
@@ -1266,7 +1285,7 @@ struct MapScreen: View {
             parts.append(String(localized: "Active"))
             // The pin shows the active location unless it was moved since.
             if let active = session.active, CoordinateParser.format(active) != CoordinateParser.format(session.target) {
-                parts.append(CoordinateParser.format(active))
+                parts.append(spoken ? CoordinateParser.spoken(active) : CoordinateParser.format(active))
             }
         case .reconnecting(let error):
             // Without the ellipsis the other "Reconnecting" has, since a separator follows.
@@ -1356,6 +1375,18 @@ struct MapScreen: View {
         return recents.items.first { $0.name != nil && same($0.coordinate) }?.name
     }
 
+    private func handle(_ kind: ExternalRequests.Kind) {
+        // Settings and Favorites would hide the map and the search field.
+        showSettings = false
+        showFavorites = false
+        switch kind {
+        case .set(let latitude, let longitude, let name):
+            select(CLLocationCoordinate2D(latitude: latitude, longitude: longitude), name: name, apply: true)
+        case .search:
+            searchFocused = true
+        }
+    }
+
     /// Every Set goes through here; without a pairing file it opens the setup steps instead.
     private func setLocation() {
         searchFocused = false
@@ -1388,7 +1419,11 @@ struct MapScreen: View {
             latitude: c.latitude,
             longitude: c.longitude))
         // The pin carries the name from now on, also into the next Set.
-        if !name.isEmpty { session.targetName = name }
+        if !name.isEmpty {
+            session.targetName = name
+            // Set Last Location and the next launch show it too.
+            if same(LastCoordinate.load(), c) { LastCoordinate.save(c, name: name) }
+        }
     }
 }
 

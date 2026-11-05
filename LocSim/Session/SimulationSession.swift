@@ -112,6 +112,7 @@ final class SimulationSession: ObservableObject {
     }
     // The question (other VPN, DDI download) the last failed Set asked; only the user answers it.
     private var askedCode: String?
+    private static let questionCodes = [AppError.otherVPNCode, AppError.ddiConsentCode]
     // Shortcuts wait for the outcome of their own Set.
     private var requests = 0
     private var outcomes: [Int: SetOutcome] = [:]
@@ -162,7 +163,8 @@ final class SimulationSession: ObservableObject {
         WidgetSync.clearActive()
         keepAlive.onFix = { [weak self] fix in
             let coordinate = fix.coordinate
-            Task { @MainActor in self?.checkFix(coordinate) }
+            let accuracy = fix.horizontalAccuracy
+            Task { @MainActor in self?.checkFix(coordinate, accuracy: accuracy) }
         }
         if Demo.isOn {
             target = Demo.place.coordinate
@@ -271,6 +273,8 @@ final class SimulationSession: ObservableObject {
         }
 
         target = coordinate
+        // A queued Set brings its own name; the pin must not keep the previous one.
+        targetName = name
         LastCoordinate.save(coordinate, name: name)
         // Shown as connecting while LocSim is still in the foreground: iOS refuses new activities later.
         connectingTo = (coordinate, name, set, Date())
@@ -301,7 +305,7 @@ final class SimulationSession: ObservableObject {
         } catch {
             guard started == generation else { return await discard() }
             // A failed Set must not fall back to the previous location later.
-            stopResending()
+            stopResending(keepQueued: true)
             active = nil
             // The device side may still be open (e.g. DDI not mounted); the next Set starts fresh.
             await link.close()
@@ -425,9 +429,12 @@ final class SimulationSession: ObservableObject {
         write("pairing file changed, connection closed")
     }
 
-    private func stopResending() {
-        resolve(pending?.request, .notSet)
-        pending = nil
+    /// A failing Set keeps the newer Set queued behind it; Clear and disconnect drop it.
+    private func stopResending(keepQueued: Bool = false) {
+        if !keepQueued {
+            resolve(pending?.request, .notSet)
+            pending = nil
+        }
         resendAfterWork = false
         failedResends = 0
         backgroundFailures = 0
@@ -484,6 +491,7 @@ final class SimulationSession: ObservableObject {
         lastSent = sentAt
         if active != nil {
             liveActivity.markStale(after: Timing.freshWhileKeptAlive)
+            WidgetSync.markStale(after: WidgetSync.freshFor)
             // Brings back an activity that could not be started or was ended while in the background.
             syncActivity()
         }
@@ -502,6 +510,12 @@ final class SimulationSession: ObservableObject {
     /// Applies the Live Activity setting to a running session.
     func liveActivityChanged() { syncActivity() }
 
+    /// The widgets and the Live Activity show coordinates in the chosen format too.
+    func coordinateFormatChanged() {
+        WidgetSync.setFavorites(FavoriteList.shared.items)
+        syncActivity()
+    }
+
     /// Applies a new resend interval now instead of after the current wait.
     func resendIntervalChanged() {
         guard resendTask != nil else { return }
@@ -513,8 +527,7 @@ final class SimulationSession: ObservableObject {
         // The widget only shows a real simulation, not the preview or demo mode.
         if let active, !isSimulated, state == .active || state.isReconnecting {
             WidgetSync.setActive(
-                name: activeName ?? String(localized: "Dropped pin"), coordinate: CoordinateParser.format(active),
-                since: setAt)
+                name: activeName ?? String(localized: "Dropped pin"), at: active, since: setAt)
         } else if active == nil || isSimulated {
             WidgetSync.clearActive()
         }
@@ -523,7 +536,7 @@ final class SimulationSession: ObservableObject {
             guard state == .active || state.isReconnecting else { return }
             liveActivity.show(
                 name: activeName ?? String(localized: "Dropped pin"),
-                coordinate: CoordinateParser.format(active),
+                at: active,
                 connecting: false,
                 reconnecting: state.isReconnecting,
                 set: activeSet,
@@ -531,7 +544,7 @@ final class SimulationSession: ObservableObject {
         } else if state == .connecting, let next = connectingTo {
             liveActivity.show(
                 name: next.name ?? String(localized: "Dropped pin"),
-                coordinate: CoordinateParser.format(next.coordinate),
+                at: next.coordinate,
                 connecting: true,
                 reconnecting: false,
                 set: next.set,
@@ -544,7 +557,9 @@ final class SimulationSession: ObservableObject {
     // Without Keep Alive iOS suspends LocSim soon in the background; the activity must turn outdated then.
     private func keepActivityFresh() {
         let background = UIApplication.shared.applicationState == .background
-        if !background || (keepAlive.isRunning && !backgroundDenied) { liveActivity.keepFresh() }
+        guard !background || (keepAlive.isRunning && !backgroundDenied) else { return }
+        liveActivity.keepFresh()
+        WidgetSync.keepFresh()
     }
 
     /// Applies the Keep Alive setting to a running session.
@@ -566,6 +581,7 @@ final class SimulationSession: ObservableObject {
             // resends keep moving the date on, so it only passes if iOS ended LocSim.
             let keptAlive = keepAlive.isRunning && !backgroundDenied
             liveActivity.markStale(after: keptAlive ? Timing.freshWhileKeptAlive : TunnelAddress.heartbeatTimeout)
+            WidgetSync.markStale(after: keptAlive ? WidgetSync.freshFor : TunnelAddress.heartbeatTimeout)
         }
         guard active == nil, state != .connecting, !busy else { return }
         keepAlive.stop()
@@ -777,11 +793,13 @@ final class SimulationSession: ObservableObject {
     /// iOS can drop the simulation, e.g. when another device of the same Apple Account shares
     /// its real location. A fix far from the simulated place means that happened: send again
     /// right away instead of waiting for the next interval.
-    private func checkFix(_ fix: CLLocationCoordinate2D) {
-        guard let active, !isSimulated, state == .active else { return }
+    private func checkFix(_ fix: CLLocationCoordinate2D, accuracy: CLLocationAccuracy) {
+        // A Set or resend in progress sends anyway.
+        guard let active, !isSimulated, state == .active, !busy, !clearing else { return }
         let distance = CLLocation(latitude: fix.latitude, longitude: fix.longitude)
             .distance(from: CLLocation(latitude: active.latitude, longitude: active.longitude))
-        guard distance > KeepAlive.jump else { return }
+        // A coarse fix that may still be at the simulated place is no reset.
+        guard distance - max(0, accuracy) > KeepAlive.jump else { return }
         // A reset that keeps coming back must not turn into a send loop.
         if let sentAt, Date().timeIntervalSince(sentAt) < Double(Timing.minResend) { return }
         write("location reset by iOS, sending again")
@@ -813,6 +831,8 @@ final class SimulationSession: ObservableObject {
             if backgroundFailures >= Timing.backgroundRetries {
                 await giveUp(error)
             } else {
+                // The alert shows during reconnecting too; its answer must count.
+                if Self.questionCodes.contains(appError.code) { askedCode = appError.code }
                 state = .reconnecting(appError)
             }
         }
@@ -820,7 +840,7 @@ final class SimulationSession: ObservableObject {
 
     private func giveUp(_ error: Error) async {
         let started = generation
-        stopResending()
+        stopResending(keepQueued: true)
         active = nil
         await link.close()
         syncLink()
@@ -944,7 +964,7 @@ final class SimulationSession: ObservableObject {
 
     private func fail(_ error: Error) {
         let appError = AppError(error)
-        if [AppError.otherVPNCode, AppError.ddiConsentCode].contains(appError.code) { askedCode = appError.code }
+        if Self.questionCodes.contains(appError.code) { askedCode = appError.code }
         state = .failed(appError)
         write("\(appError.code) \(appError.detail)")
     }

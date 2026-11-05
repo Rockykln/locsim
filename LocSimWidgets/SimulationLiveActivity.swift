@@ -113,6 +113,7 @@ struct SimulationLiveActivity: Widget {
                                 .font(.headline)
                                 .lineLimit(1)
                             Text(context.state.coordinate)
+                                .accessibilityLabel(Text(context.state.spokenCoordinate ?? context.state.coordinate))
                                 .font(.footnote.monospacedDigit().weight(.medium))
                                 // Gray on the black island is too faint for digits.
                                 .foregroundStyle(.primary.opacity(0.8))
@@ -183,6 +184,7 @@ private struct LockScreenView: View {
                 .accessibilityElement(children: .combine)
                 HStack(alignment: .center) {
                     Text(context.state.coordinate)
+                        .accessibilityLabel(Text(context.state.spokenCoordinate ?? context.state.coordinate))
                         .font(.footnote.monospacedDigit().weight(.medium))
                         // The system's gray adapts to light and dark; once the screen is dimmed,
                         // gray fades too much, so the digits turn white.
@@ -210,8 +212,14 @@ private struct GlassBackground: ViewModifier {
     func body(content: Content) -> some View {
         content
             .background(dimmed ? Color.black.opacity(0.6) : Color.clear)
-            .activityBackgroundTint(Color.clear)
+            .activityBackgroundTint(Self.tint)
             .activitySystemActionForegroundColor(dimmed || colorScheme == .dark ? .white : .black)
+    }
+
+    // Before iOS 26 a clear tint has no blur behind it, so text would stand on the bare wallpaper.
+    private static var tint: Color? {
+        if #available(iOS 26.0, *) { return .clear }
+        return nil
     }
 }
 

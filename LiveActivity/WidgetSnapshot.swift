@@ -7,11 +7,17 @@ struct WidgetSnapshot: Codable, Equatable {
         var id: UUID
         var name: String
         var coordinate: String
+        /// For VoiceOver, which reads degree symbols poorly.
+        var spoken: String?
+
+        var spokenCoordinate: String { spoken ?? coordinate }
     }
 
     /// The simulated location; nil while nothing is simulated.
     var active: Place?
     var since: Date?
+    /// After this the app may have ended without saying so; the widget then asks to check.
+    var freshUntil: Date?
     var favorites: [Place]
 
     static let empty = WidgetSnapshot(active: nil, since: nil, favorites: [])

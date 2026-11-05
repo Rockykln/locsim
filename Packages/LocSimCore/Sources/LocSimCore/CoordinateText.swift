@@ -27,8 +27,12 @@ public enum CoordinateFormat: String, CaseIterable, Identifiable, Sendable {
 /// Apple Maps, Google Maps, OpenStreetMap, Waze and Bing links and geo: URIs are read as well.
 /// Decimal output always uses a period, so it can be pasted anywhere.
 public enum CoordinateText {
-    /// The language of the current locale, which decides whether "O" means east or west.
-    public static var currentLanguage: String? { Locale.current.language.languageCode?.identifier }
+    /// The device language, which decides whether "O" means east or west. Not the app's: LocSim
+    /// has no Portuguese, so on a Portuguese iPhone the app runs in English while "O" means Oeste.
+    public static var currentLanguage: String? {
+        guard let first = Locale.preferredLanguages.first else { return Locale.current.language.languageCode?.identifier }
+        return Locale.Language(identifier: first).languageCode?.identifier
+    }
 
     /// `language` is an ISO 639 code such as "de" or "fr": "O" is west (Ouest, Oeste, Ovest) in
     /// Romance languages and east (Ost, Oost, Öst) otherwise.
