@@ -71,7 +71,8 @@ struct SimulationLiveActivity: Widget {
                             .padding(.trailing, 4)
                     }
                 }
-                // Name and coordinate start at the same edge, right of the status icon.
+                // The caption is centered on top; name and coordinate start at the same edge,
+                // a little right of the status icon.
                 DynamicIslandExpandedRegion(.center) {
                     VStack(alignment: .leading, spacing: 1) {
                         Text(status.caption)
@@ -79,9 +80,11 @@ struct SimulationLiveActivity: Widget {
                             .foregroundStyle(status.textColor)
                             .lineLimit(1)
                             .minimumScaleFactor(0.8)
+                            .frame(maxWidth: .infinity, alignment: .center)
                         Text(context.state.name)
                             .font(.headline)
                             .lineLimit(1)
+                            .padding(.leading, Metrics.islandIndent)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityElement(children: .combine)
@@ -92,7 +95,7 @@ struct SimulationLiveActivity: Widget {
                         StatusIcon(status: status)
                             .font(.title2)
                             .padding(.leading, 4)
-                            .padding(.trailing, Metrics.islandGap)
+                            .padding(.trailing, Metrics.islandGap + Metrics.islandIndent)
                             .hidden()
                             .accessibilityHidden(true)
                         Text(context.state.coordinate)
@@ -256,4 +259,6 @@ private struct ClearButton: View {
 private enum Metrics {
     /// Space iOS leaves between the leading and the center region of the expanded island.
     static let islandGap: CGFloat = 8
+    /// How far name and coordinate sit right of where the center region starts.
+    static let islandIndent: CGFloat = 6
 }
