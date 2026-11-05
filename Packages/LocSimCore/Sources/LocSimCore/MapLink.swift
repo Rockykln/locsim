@@ -3,43 +3,67 @@ import Foundation
 /// Links shared from Apple Maps and Google Maps, also inside text such as "Name\nhttps://…".
 public enum MapLink {
     public static func url(in text: String) -> URL? {
-        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        // geo: URIs (a label in brackets may contain spaces), full links, and Maps links typed or
-        // copied without the scheme ("maps.apple/p/…", "google.com/maps/@…"), which are taken as https.
-        let pattern = #"(?<![\w])geo:[^\s<>"(]+(?:\([^)<>"]*\))?|https?://[^\s<>"]+"#
-            + #"|(?<![\w./@])(?:maps\.apple(?:\.com)?|(?:www\.)?google\.[a-z.]{2,6}/maps|maps\.google\.[a-z.]{2,6})[/?][^\s<>"]*"#
-        guard let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) else { return nil }
-        var first: URL?
-        for match in regex.matches(in: trimmed, range: NSRange(trimmed.startIndex..., in: trimmed)) {
-            guard let range = Range(match.range, in: trimmed), let url = clean(String(trimmed[range])) else { continue }
-            // A Maps link wins over other links in the same text.
-            if url.scheme?.lowercased() == "geo" || isMap(url) { return url }
-            if first == nil { first = url }
-        }
-        return first
+        let found = links(in: text).map(\.url)
+        let maps = found.filter { $0.scheme?.lowercased() == "geo" || isMap($0) }
+        // A Maps link wins over other links in the same text, one with coordinates over one without.
+        return maps.first(where: hasCoordinates) ?? maps.first ?? found.first
     }
 
-    private static func clean(_ found: String) -> URL? {
+    // geo: URIs (a label in brackets may contain spaces), full links, and Maps links typed or
+    // copied without the scheme ("maps.apple/p/…", "google.com/maps/@…"), which are taken as https.
+    // A space after the comma of "ll=48.85, 2.35" or "geo:48.85, 2.35" continues the link.
+    private static let spacedPair = #"(?:(?<=[=:,][-+]?\d{1,3}(?:\.\d{1,20})?,)\s+[-+]?\d[^\s<>"(]*)?"#
+    private static let linkRegex = try! NSRegularExpression(
+        pattern: #"(?<![\w])geo:[^\s<>"(]+"# + spacedPair + #"(?:\([^)<>"]*\))?|https?://[^\s<>"]+"# + spacedPair
+            + #"|(?<![\w./@])(?:maps\.apple(?:\.com)?|(?:www\.)?google\.[a-z.]{2,6}/maps|maps\.google\.[a-z.]{2,6})[/?][^\s<>"]*"#
+            + spacedPair,
+        options: [.caseInsensitive])
+
+    /// Every link in the text with the part of the text it was read from, in order.
+    static func links(in text: String) -> [(url: URL, range: Range<String.Index>)] {
+        linkRegex.matches(in: text, range: NSRange(text.startIndex..., in: text)).compactMap { match in
+            guard let range = Range(match.range, in: text), let (url, dropped) = clean(String(text[range])) else {
+                return nil
+            }
+            // The trailing punctuation that was dropped stays in the text.
+            return (url, range.lowerBound..<text.index(range.upperBound, offsetBy: -dropped))
+        }
+    }
+
+    /// The URL and how many characters were dropped from the end of the match.
+    private static func clean(_ found: String) -> (URL, Int)? {
         var link = found
         let isGeo = link.lowercased().hasPrefix("geo:")
-        if !isGeo, !link.lowercased().hasPrefix("http") { link = "https://" + link }
         // Chats put links in sentences or brackets: "see https://…)." should not keep ")."
-        while let last = link.last, ".,;:!?]}'\"".contains(last) { link.removeLast() }
         // A closing bracket stays only if it closes one in the link, e.g. a geo: label.
-        while link.last == ")", link.filter({ $0 == ")" }).count > link.filter({ $0 == "(" }).count {
-            link.removeLast()
-            while let last = link.last, ".,;:!?".contains(last) { link.removeLast() }
+        let opening: [Character: Character] = [")": "(", "]": "[", "}": "{"]
+        while let last = link.last {
+            if ".,;:!?'\"".contains(last) {
+                link.removeLast()
+            } else if let open = opening[last], link.filter({ $0 == last }).count > link.filter({ $0 == open }).count {
+                link.removeLast()
+            } else {
+                break
+            }
         }
-        return URL(string: link) ?? URL(string: link.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed) ?? link)
+        let dropped = found.count - link.count
+        if !isGeo, !link.lowercased().hasPrefix("http") { link = "https://" + link }
+        guard let url = URL(string: link)
+            ?? URL(string: link.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed) ?? link)
+        else { return nil }
+        return (url, dropped)
     }
 
     public static func isMap(_ url: URL) -> Bool {
         guard let host = url.host?.lowercased() else { return false }
-        if host == "maps.apple" || host.hasSuffix(".maps.apple") || host == "maps.apple.com" { return true }
+        if host == "maps.apple" || host.hasSuffix(".maps.apple") { return true }
+        if host == "maps.apple.com" || host.hasSuffix(".maps.apple.com") { return true }
         if host == "maps.app.goo.gl" || isGoogleShortLink(url) { return true }
+        let bare = host.hasPrefix("www.") ? String(host.dropFirst(4)) : host
+        if ["openstreetmap.org", "osm.org", "waze.com"].contains(bare) { return true }
+        if bare == "bing.com", url.path.hasPrefix("/maps") { return true }
         // google.com/maps, google.de/maps, maps.google.com, but not docs.google.com.
-        let google = host.hasPrefix("google.") || host.hasPrefix("www.google.")
-        return host.hasPrefix("maps.google.") || (google && url.path.hasPrefix("/maps"))
+        return host.hasPrefix("maps.google.") || (bare.hasPrefix("google.") && url.path.hasPrefix("/maps"))
     }
 
     /// A short Apple Maps link (maps.apple/p/…) carries no coordinates; they are in the page it
