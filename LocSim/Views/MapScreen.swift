@@ -1155,12 +1155,16 @@ struct MapScreen: View {
                 .buttonStyle(.plain)
             }
 
-            // Stacked at large text sizes, or when long translations do not fit side by side.
+            // Side by side; long translations (de, fr) get a smaller font, then no icons. Stacked
+            // only when even that does not fit, and at large text sizes. ViewThatFits ignores
+            // minimumScaleFactor, so each smaller form is a variant of its own.
             if dynamicTypeSize.isAccessibilitySize {
                 actionButtons(stacked: true)
             } else {
                 ViewThatFits(in: .horizontal) {
                     actionButtons(stacked: false)
+                    actionButtons(stacked: false, compact: true)
+                    actionButtons(stacked: false, compact: true, icons: false)
                     actionButtons(stacked: true)
                 }
             }
@@ -1168,7 +1172,7 @@ struct MapScreen: View {
     }
 
     @ViewBuilder
-    private func actionButtons(stacked: Bool) -> some View {
+    private func actionButtons(stacked: Bool, compact: Bool = false, icons: Bool = true) -> some View {
         let layout = stacked ? AnyLayout(VStackLayout(spacing: 10)) : AnyLayout(HStackLayout(spacing: 10))
         layout {
             Button {
@@ -1177,12 +1181,12 @@ struct MapScreen: View {
                 HStack(spacing: 8) {
                     if session.state == .connecting {
                         ProgressView().controlSize(.small)
-                    } else {
+                    } else if icons {
                         Image(systemName: "location.fill")
                     }
                     Text(session.state == .connecting ? String(localized: "Connecting") : String(localized: "Set Location"))
                 }
-                .font(.body.weight(.semibold))
+                .font(compact ? .subheadline.weight(.semibold) : .body.weight(.semibold))
                 .lineLimit(dynamicTypeSize.isAccessibilitySize ? 2 : 1)
                 .minimumScaleFactor(0.8)
                 .frame(maxWidth: .infinity)
@@ -1196,12 +1200,19 @@ struct MapScreen: View {
                 Task { await session.clear() }
             } label: {
                 // While connecting this stops the attempt.
-                Label(session.state == .connecting ? String(localized: "Cancel") : String(localized: "Clear"),
-                      systemImage: "arrow.uturn.backward")
-                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? 2 : 1)
-                    .minimumScaleFactor(0.8)
-                    .frame(maxWidth: stacked ? .infinity : nil)
-                    .padding(.vertical, 6)
+                let title = session.state == .connecting ? String(localized: "Cancel") : String(localized: "Clear")
+                Group {
+                    if icons {
+                        Label(title, systemImage: "arrow.uturn.backward")
+                    } else {
+                        Text(title)
+                    }
+                }
+                .font(compact ? .subheadline : nil)
+                .lineLimit(dynamicTypeSize.isAccessibilitySize ? 2 : 1)
+                .minimumScaleFactor(0.8)
+                .frame(maxWidth: stacked ? .infinity : nil)
+                .padding(.vertical, 6)
             }
             .secondaryButton()
             .disabled(!session.canClear)
