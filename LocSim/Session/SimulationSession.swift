@@ -152,6 +152,8 @@ final class SimulationSession: ObservableObject {
         keepAlive.onDeniedChange = { [weak self] denied in
             Task { @MainActor in self?.backgroundDenied = denied }
         }
+        // A location only lasts as long as this process; a widget still showing one is outdated.
+        WidgetSync.clearActive()
         keepAlive.onFix = { [weak self] fix in
             let coordinate = fix.coordinate
             Task { @MainActor in self?.checkFix(coordinate) }
@@ -502,6 +504,14 @@ final class SimulationSession: ObservableObject {
 
     // Not in the preview, where the location of the device does not change.
     private func syncActivity() {
+        // The widget only shows a real simulation, not the preview or demo mode.
+        if let active, !isSimulated, state == .active || state.isReconnecting {
+            WidgetSync.setActive(
+                name: activeName ?? String(localized: "Dropped pin"), coordinate: CoordinateParser.format(active),
+                since: setAt)
+        } else if active == nil || isSimulated {
+            WidgetSync.clearActive()
+        }
         guard !isSimulated else { return liveActivity.end() }
         if let active {
             guard state == .active || state.isReconnecting else { return }

@@ -18,6 +18,8 @@ struct LocSimApp: App {
                 .environmentObject(session)
                 .environmentObject(favorites)
                 .environmentObject(session.recents)
+                // Favorites tapped in the Home Screen widget.
+                .onOpenURL { url in Task { await WidgetSync.open(url) } }
         }
         .onChange(of: scenePhase, initial: true) { _, phase in
             switch phase {
