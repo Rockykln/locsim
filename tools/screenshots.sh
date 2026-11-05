@@ -73,11 +73,17 @@ ORIG_LANGS=$(xcrun simctl spawn "$UDID" defaults read -g AppleLanguages 2>/dev/n
 ORIG_LOCALE=$(xcrun simctl spawn "$UDID" defaults read -g AppleLocale 2>/dev/null || true)
 ORIG_APPEARANCE=$(xcrun simctl ui "$UDID" appearance 2>/dev/null || true)
 
+# Written into the shut-down Simulator's own file: a value set with defaults inside the running
+# Simulator is not always saved before the shutdown, and it then boots in the old language.
 system_language() {
-    xcrun simctl spawn "$UDID" defaults write -g AppleLanguages -array "$1"
-    xcrun simctl spawn "$UDID" defaults write -g AppleLocale -string "$2"
-    xcrun simctl shutdown "$UDID"
+    xcrun simctl shutdown "$UDID" 2>/dev/null || true
+    prefs="$HOME/Library/Developer/CoreSimulator/Devices/$UDID/data/Library/Preferences/.GlobalPreferences.plist"
+    [ -f "$prefs" ] || plutil -create xml1 "$prefs"
+    plutil -replace AppleLanguages -json "[\"$1\"]" "$prefs"
+    plutil -replace AppleLocale -string "$2" "$prefs"
     boot
+    now=$(xcrun simctl spawn "$UDID" defaults read -g AppleLanguages 2>/dev/null | sed -n 2p | tr -d ' ",')
+    [ "$now" = "$1" ] || { echo "The Simulator did not switch to $1 (it reports \"$now\")." >&2; exit 1; }
 }
 
 xcrun simctl install "$UDID" "$APP"
