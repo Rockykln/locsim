@@ -2,7 +2,8 @@ import CoreLocation
 import Foundation
 
 /// Runs coarse location updates so iOS keeps the app (and the DVT channel) alive
-/// in the background. The fixes themselves are ignored.
+/// in the background. A fix is only compared with the simulated location, never stored:
+/// one far from it means something reset the simulation.
 /// No CLBackgroundActivitySession: its system assertion can outlive the process, which
 /// leaves the blue indicator on screen until the device restarts.
 final class KeepAlive: NSObject, CLLocationManagerDelegate {
@@ -11,12 +12,17 @@ final class KeepAlive: NSObject, CLLocationManagerDelegate {
 
     var onStatus: ((String) -> Void)?
     var onDeniedChange: ((Bool) -> Void)?
+    var onFix: ((CLLocation) -> Void)?
+
+    /// Farther than this from the simulated location counts as reset.
+    static let jump: CLLocationDistance = 200
 
     override init() {
         super.init()
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
-        manager.distanceFilter = CLLocationDistanceMax
+        // Quiet while the simulated location holds; a jump back to the real one reports.
+        manager.distanceFilter = Self.jump
         manager.pausesLocationUpdatesAutomatically = false
         manager.showsBackgroundLocationIndicator = true
         // Stop updates the system may have resumed from a previous run.
@@ -73,7 +79,9 @@ final class KeepAlive: NSObject, CLLocationManagerDelegate {
         }
     }
 
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {}
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let last = locations.last { onFix?(last) }
+    }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {}
 }
