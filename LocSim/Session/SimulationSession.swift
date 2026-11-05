@@ -152,6 +152,10 @@ final class SimulationSession: ObservableObject {
         keepAlive.onDeniedChange = { [weak self] denied in
             Task { @MainActor in self?.backgroundDenied = denied }
         }
+        keepAlive.onFix = { [weak self] fix in
+            let coordinate = fix.coordinate
+            Task { @MainActor in self?.checkFix(coordinate) }
+        }
         if Demo.isOn {
             target = Demo.place.coordinate
             targetName = Demo.place.name
@@ -744,6 +748,20 @@ final class SimulationSession: ObservableObject {
                 await self?.resend()
             }
         }
+    }
+
+    /// iOS can drop the simulation, e.g. when another device of the same Apple Account shares
+    /// its real location. A fix far from the simulated place means that happened: send again
+    /// right away instead of waiting for the next interval.
+    private func checkFix(_ fix: CLLocationCoordinate2D) {
+        guard let active, !isSimulated, state == .active else { return }
+        let distance = CLLocation(latitude: fix.latitude, longitude: fix.longitude)
+            .distance(from: CLLocation(latitude: active.latitude, longitude: active.longitude))
+        guard distance > KeepAlive.jump else { return }
+        // A reset that keeps coming back must not turn into a send loop.
+        if let sentAt, Date().timeIntervalSince(sentAt) < Double(Timing.minResend) { return }
+        write("location reset by iOS, sending again")
+        Task { await resend() }
     }
 
     private func resend() async {
