@@ -7,9 +7,16 @@ document.addEventListener("DOMContentLoaded", function () {
   var ICON_COPY = svg + '<rect x="8.5" y="8.5" width="11" height="11" rx="2.2"/><path d="M15.5 8.5V6.7a2.2 2.2 0 0 0-2.2-2.2H6.7a2.2 2.2 0 0 0-2.2 2.2v6.6a2.2 2.2 0 0 0 2.2 2.2h1.8"/></svg>';
   var ICON_DONE = svg + '<path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
 
-  // The Clipboard API needs HTTPS; the selection fallback also works without it.
+  // The Clipboard API needs HTTPS; the selection fallback also works without it and is
+  // also tried when the browser denies the API.
   function copy(text) {
-    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).catch(function () { return copyBySelection(text); });
+    }
+    return copyBySelection(text);
+  }
+
+  function copyBySelection(text) {
     return new Promise(function (resolve, reject) {
       var area = document.createElement("textarea");
       area.value = text;
