@@ -91,25 +91,25 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verbindet · Standort noch nicht gesetzt"
+            "value" : "Verbindet · Noch nicht gesetzt"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Conectando · Ubicación aún no establecida"
+            "value" : "Conectando · Aún sin establecer"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Connexion · Position pas encore définie"
+            "value" : "Connexion · Pas encore définie"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Connessione · Posizione non ancora impostata"
+            "value" : "Connessione · Non ancora impostata"
           }
         }
       }
@@ -264,25 +264,25 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Öffne LocSim, um den Standort zu prüfen"
+            "value" : "Standort in LocSim prüfen"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abre LocSim para comprobar la ubicación"
+            "value" : "Comprueba la ubicación en LocSim"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ouvrez LocSim pour vérifier la position"
+            "value" : "Vérifiez la position dans LocSim"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apri LocSim per verificare la posizione"
+            "value" : "Verifica la posizione in LocSim"
           }
         }
       }
@@ -466,7 +466,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Simulierter Standort · Verbindet erneut"
+            "value" : "Simuliert · Verbindet erneut"
           }
         },
         "es" : {
