@@ -46,6 +46,8 @@ enum FavoriteUsage {
         // Favorites deleted since are dropped.
         let ids = Set(FavoriteList.shared.items.map(\.id))
         stored = map.filter { ids.contains($0.key) }
+        // The order may have changed.
+        WidgetSync.setFavorites(FavoriteList.shared.items)
     }
 
     /// The most used favorites first; until any counts, the order of the favorites list.
