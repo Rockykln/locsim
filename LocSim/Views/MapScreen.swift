@@ -88,7 +88,10 @@ struct MapScreen: View {
     /// panel and the pin and locate buttons reach under it too, so they get the full width.
     private var extendsIntoSideBar: Bool { !usesSidebar && trailingInset > 0 }
 
-    private var barTop: CGFloat { max(Metrics.barTop, Metrics.minTopGap - topInset) }
+    // On the cover screen the bar starts about where the system's own controls begin.
+    private var barTop: CGFloat {
+        max(Metrics.barTop, (extendsIntoSideBar ? Metrics.coverTopGap : Metrics.minTopGap) - topInset)
+    }
     private var barBottom: CGFloat { barTop + Metrics.control }
 
     private var layers: some View {
@@ -119,6 +122,8 @@ struct MapScreen: View {
             .dynamicTypeSize(...DynamicTypeSize.accessibility2)
             .ignoresSafeArea(.keyboard)
             .ignoresSafeArea(.container, edges: extendsIntoSideBar ? .trailing : [])
+            // The cover screen leaves more room below than the home indicator needs.
+            .padding(.bottom, extendsIntoSideBar ? -Metrics.coverBottomTrim : 0)
         }
         .overlay(alignment: .bottomTrailing) {
             // Beside the column the buttons sit at the map's own edge.
@@ -1257,6 +1262,9 @@ private enum Metrics {
     static let sidebarMinWidth: CGFloat = 800
     static let sidebarWidth: CGFloat = 380
     static let minTopGap: CGFloat = 16
+    // Estimates for the iPhone Duo cover screen until measured on the device.
+    static let coverTopGap: CGFloat = 44
+    static let coverBottomTrim: CGFloat = 16
 }
 
 private let longPressDuration = 0.3
