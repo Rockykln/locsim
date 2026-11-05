@@ -83,9 +83,9 @@ struct MapScreen: View {
 
     private var chromeWidth: CGFloat { usesSidebar ? Metrics.sidebarWidth : 640 }
 
-    /// On the iPhone Duo's cover screen the system bar runs down the side; the pin and locate
-    /// buttons then stand right next to it instead of above the panel.
-    private var usesSideButtons: Bool { !usesSidebar && trailingInset > 0 }
+    /// On the iPhone Duo's cover screen the system bar runs down the side, over the map. The
+    /// panel and the pin and locate buttons reach under it too, so they get the full width.
+    private var extendsIntoSideBar: Bool { !usesSidebar && trailingInset > 0 }
 
     private var barTop: CGFloat { max(Metrics.barTop, Metrics.minTopGap - topInset) }
     private var barBottom: CGFloat { barTop + Metrics.control }
@@ -104,7 +104,7 @@ struct MapScreen: View {
         }
         .overlay(alignment: usesSidebar ? .bottomLeading : .bottom) {
             VStack(spacing: 0) {
-                if !usesSidebar && !usesSideButtons {
+                if !usesSidebar {
                     HStack {
                         Spacer()
                         mapButtons
@@ -117,6 +117,7 @@ struct MapScreen: View {
             .frame(maxWidth: chromeWidth)
             .dynamicTypeSize(...DynamicTypeSize.accessibility2)
             .ignoresSafeArea(.keyboard)
+            .ignoresSafeArea(.container, edges: extendsIntoSideBar ? .trailing : [])
         }
         .overlay(alignment: .bottomTrailing) {
             // Beside the column the buttons sit at the map's own edge.
@@ -124,14 +125,6 @@ struct MapScreen: View {
                 mapButtons
                     .padding(.trailing, Metrics.margin)
                     .padding(.bottom, 4)
-                    .dynamicTypeSize(...DynamicTypeSize.accessibility2)
-                    .ignoresSafeArea(.keyboard)
-            }
-        }
-        .overlay(alignment: .trailing) {
-            if usesSideButtons {
-                mapButtons
-                    .padding(.trailing, Metrics.sideButtonGap)
                     .dynamicTypeSize(...DynamicTypeSize.accessibility2)
                     .ignoresSafeArea(.keyboard)
             }
@@ -1253,7 +1246,6 @@ private enum Metrics {
     static let sidebarMinWidth: CGFloat = 800
     static let sidebarWidth: CGFloat = 380
     static let minTopGap: CGFloat = 16
-    static let sideButtonGap: CGFloat = 4
 }
 
 private let longPressDuration = 0.3
