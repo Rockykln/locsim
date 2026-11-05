@@ -182,14 +182,14 @@ private struct LockScreenView: View {
     }
 }
 
-/// Without a tint, iOS draws a nearly solid white (or black) plate. A faint tint lets the
-/// blurred wallpaper show through, like the system's own glass.
+/// In dark mode iOS draws its own background. In light mode its default is a nearly solid
+/// white plate; a faint white tint instead lets the blurred wallpaper show through like glass.
 private struct GlassBackground: ViewModifier {
     @Environment(\.colorScheme) private var colorScheme
 
     func body(content: Content) -> some View {
         content
-            .activityBackgroundTint(colorScheme == .light ? Color.white.opacity(0.15) : Color.black.opacity(0.25))
+            .activityBackgroundTint(colorScheme == .light ? Color.white.opacity(0.15) : nil)
             .activitySystemActionForegroundColor(colorScheme == .light ? .black : .white)
     }
 }
