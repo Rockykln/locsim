@@ -57,6 +57,8 @@ struct MapScreen: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    // Compact height is an iPhone held sideways.
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
     // Shown while nothing is simulated, once location access is allowed.
     @State private var showsUserLocation = false
     @AppStorage(SettingsKey.mapStyle) private var mapStyle = MapStyleOption.standard.rawValue
@@ -86,13 +88,23 @@ struct MapScreen: View {
     /// On wide screens, such as the unfolded iPhone Duo held sideways, search and panel form a
     /// column at the leading edge and the map gets the rest, instead of a wide panel across it.
     // The full width: a side status bar must not take the sidebar away.
-    private var usesSidebar: Bool { containerWidth + leadingInset + trailingInset >= Metrics.sidebarMinWidth }
+    // Sideways the panel goes to the side on every iPhone: below the map it would cover most of
+    // the little height there is.
+    private var usesSidebar: Bool {
+        verticalSizeClass == .compact || containerWidth + leadingInset + trailingInset >= Metrics.sidebarMinWidth
+    }
+
+    /// The iPhone Duo's status bar runs down one side only. An iPhone held sideways has insets on
+    /// both sides instead (Dynamic Island, home indicator); nothing may go under those.
+    private var sideStatusColumn: Bool { trailingInset > 0 && leadingInset == 0 }
 
     private var chromeWidth: CGFloat { usesSidebar ? Metrics.sidebarWidth : 640 }
 
     /// The sidebar column is far taller than the iPhone SE the fixed cap was made for.
     private var panelMaxHeight: CGFloat {
-        usesSidebar ? max(Metrics.panelMaxHeight, containerHeight - barBottom - 24) : Metrics.panelMaxHeight
+        // Sideways on an iPhone the column is lower than the usual cap; the panel must stay below the bar.
+        if verticalSizeClass == .compact { return max(120, containerHeight - barBottom - 24) }
+        return usesSidebar ? max(Metrics.panelMaxHeight, containerHeight - barBottom - 24) : Metrics.panelMaxHeight
     }
 
     /// Ends above the keyboard: the layers ignore it, and rows behind it could not be reached.
@@ -103,7 +115,7 @@ struct MapScreen: View {
 
     /// On the iPhone Duo's cover screen the system bar runs down the side, over the map. The
     /// panel and the pin and locate buttons reach under it too, so they get the full width.
-    private var extendsIntoSideBar: Bool { !usesSidebar && trailingInset > 0 }
+    private var extendsIntoSideBar: Bool { !usesSidebar && sideStatusColumn }
 
     // On the cover screen the bar starts about where the system's own controls begin.
     private var barTop: CGFloat {
@@ -154,7 +166,7 @@ struct MapScreen: View {
                     .padding(.bottom, 4)
                     .dynamicTypeSize(...DynamicTypeSize.accessibility2)
                     .ignoresSafeArea(.keyboard)
-                    .ignoresSafeArea(.container, edges: .trailing)
+                    .ignoresSafeArea(.container, edges: sideStatusColumn ? .trailing : [])
             }
         }
         .overlay(alignment: usesSidebar ? .topLeading : .top) {
@@ -933,7 +945,8 @@ struct MapScreen: View {
         // At the largest text sizes on small iPhones the panel can grow past the top bar;
         // then it scrolls instead. Its height follows the content, so a short panel stays short.
         Group {
-            if dynamicTypeSize.isAccessibilitySize {
+            // Sideways the column is short, so the panel may scroll at any text size there.
+            if dynamicTypeSize.isAccessibilitySize || verticalSizeClass == .compact {
                 // Sized in the layout pass, not from a measurement: an unmeasured scroll view
                 // would take the whole height for a frame.
                 CappedHeight(maxHeight: panelMaxHeight) {
