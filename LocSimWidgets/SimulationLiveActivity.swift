@@ -182,13 +182,21 @@ private struct LockScreenView: View {
 
 /// In dark mode iOS draws its own background. In light mode its default is a nearly solid
 /// white plate; a faint white tint instead lets the blurred wallpaper show through like glass.
+/// In Always On the wallpaper stays visible, only dimmed, so a light one would swallow the
+/// white text there; a dark tint keeps it readable on any wallpaper.
 private struct GlassBackground: ViewModifier {
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.isLuminanceReduced) private var dimmed
 
     func body(content: Content) -> some View {
         content
-            .activityBackgroundTint(colorScheme == .light ? Color.white.opacity(0.15) : nil)
-            .activitySystemActionForegroundColor(colorScheme == .light ? .black : .white)
+            .activityBackgroundTint(tint)
+            .activitySystemActionForegroundColor(dimmed || colorScheme == .dark ? .white : .black)
+    }
+
+    private var tint: Color? {
+        if dimmed { return Color.black.opacity(0.6) }
+        return colorScheme == .light ? Color.white.opacity(0.15) : nil
     }
 }
 
