@@ -123,7 +123,12 @@ SHOTS="map:1-map:8 search:2-search:8 recents:3-recents:6 favorites:5-favorites:8
 
 # Pass 1 runs without help. The Lock Screen shots come last, grouped by theme, so the
 # wallpaper changes only twice.
+pass1=0
+for shot in $SHOTS; do
+    if wants "${shot%%:*}"; then pass1=1; fi
+done
 for lang in $LANGS; do
+    [ "$pass1" = 1 ] || break
     locale=$(locale_for "$lang")
     system_language "$lang" "$locale"
     restarted=1
@@ -161,6 +166,9 @@ if wants live; then
             system_language "$lang" "$locale"
             xcrun simctl ui "$UDID" appearance "$theme"
             mkdir -p "$OUT/$lang/$theme"
+            # Right after a restart iOS starts no Live Activity yet; the map warms it up.
+            launch map
+            sleep 15
             launch live
             sleep 8
             lock

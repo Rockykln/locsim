@@ -176,7 +176,7 @@ final class SimulationSession: ObservableObject {
                 Task { [weak self] in
                     try? await Task.sleep(nanoseconds: 1_000_000_000)
                     guard let self else { return }
-                    self.liveActivity.showDemo(
+                    await self.liveActivity.showDemo(
                         name: Demo.place.name, coordinate: CoordinateParser.format(Demo.place.coordinate),
                         startedAt: Demo.activityStart)
                 }
