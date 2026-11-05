@@ -31,6 +31,7 @@ struct MapScreen: View {
     @State private var mapFrame: CGRect = .zero
     private var mapBottom: CGFloat { mapFrame.maxY }
     @State private var containerWidth: CGFloat = 0
+    @State private var containerInsets = EdgeInsets()
     // Trailing edge of the search and panel column in sidebar layout.
     @State private var columnTrailing: CGFloat = 0
     @State private var panelTop: CGFloat = .infinity
@@ -80,6 +81,13 @@ struct MapScreen: View {
 
     private var chromeWidth: CGFloat { usesSidebar ? Metrics.sidebarWidth : 640 }
 
+    /// On the iPhone Duo's cover screen the system bar runs down the side; the pin and locate
+    /// buttons then stand right next to it instead of above the panel.
+    private var usesSideButtons: Bool { !usesSidebar && containerInsets.trailing > 0 }
+
+    private var barTop: CGFloat { max(Metrics.barTop, Metrics.minTopGap - containerInsets.top) }
+    private var barBottom: CGFloat { barTop + Metrics.control }
+
     private var layers: some View {
         ZStack(alignment: usesSidebar ? .topLeading : .top) {
             map
@@ -94,7 +102,7 @@ struct MapScreen: View {
         }
         .overlay(alignment: usesSidebar ? .bottomLeading : .bottom) {
             VStack(spacing: 0) {
-                if !usesSidebar {
+                if !usesSidebar && !usesSideButtons {
                     HStack {
                         Spacer()
                         mapButtons
@@ -118,22 +126,31 @@ struct MapScreen: View {
                     .ignoresSafeArea(.keyboard)
             }
         }
+        .overlay(alignment: .trailing) {
+            if usesSideButtons {
+                mapButtons
+                    .padding(.trailing, Metrics.sideButtonGap)
+                    .dynamicTypeSize(...DynamicTypeSize.accessibility2)
+                    .ignoresSafeArea(.keyboard)
+            }
+        }
         .overlay(alignment: .topTrailing) {
             if usesSidebar {
                 MapCompass(scope: mapScope)
                     .frame(width: Metrics.control)
                     .padding(.trailing, Metrics.margin)
-                    .padding(.top, Metrics.barTop)
+                    .padding(.top, barTop)
             }
         }
         .overlay(alignment: usesSidebar ? .topLeading : .top) {
             dropdown
                 .padding(.horizontal, Metrics.margin)
-                .padding(.top, Metrics.barBottom + Metrics.dropdownGap)
+                .padding(.top, barBottom + Metrics.dropdownGap)
                 .frame(maxWidth: chromeWidth)
                 .dynamicTypeSize(...DynamicTypeSize.accessibility2)
         }
         .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { containerWidth = $0 }
+        .onGeometryChange(for: EdgeInsets.self) { $0.safeAreaInsets } action: { containerInsets = $0 }
         .ignoresSafeArea(.keyboard)
         .mapScope(mapScope)
     }
@@ -383,20 +400,22 @@ struct MapScreen: View {
             iconButton("gearshape", label: "Settings") { showSettings = true }
         }
         .padding(.horizontal, Metrics.margin)
-        .padding(.top, Metrics.barTop)
+        // When the status bar sits at the side (iPhone Duo cover screen), iOS leaves almost no
+        // inset at the top; the bar keeps a minimum distance from the edge anyway.
+        .padding(.top, barTop)
         .overlay(alignment: .topTrailing) {
             // In sidebar layout it sits at the map's top corner instead.
             if !usesSidebar {
                 MapCompass(scope: mapScope)
                     .frame(width: Metrics.control)
                     .padding(.trailing, Metrics.margin)
-                    .offset(y: Metrics.barBottom + Metrics.compassGap)
+                    .offset(y: barBottom + Metrics.compassGap)
             }
         }
         .overlay(alignment: .topLeading) {
             MapScaleView(scope: mapScope)
                 .padding(.leading, 16)
-                .offset(y: Metrics.barBottom + Metrics.compassGap + 6)
+                .offset(y: barBottom + Metrics.compassGap + 6)
         }
         .zIndex(1)
         .accessibilitySortPriority(2)
@@ -1230,6 +1249,8 @@ private enum Metrics {
     // leaves room for a column next to a usable map.
     static let sidebarMinWidth: CGFloat = 800
     static let sidebarWidth: CGFloat = 380
+    static let minTopGap: CGFloat = 16
+    static let sideButtonGap: CGFloat = 4
 }
 
 private let longPressDuration = 0.3
