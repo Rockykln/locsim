@@ -344,7 +344,10 @@ final class SimulationSession: ObservableObject {
             fail(DeviceError(.clearLocation, "Clearing the location did not finish"))
         }
         clearing = false
-        await releaseTunnelIfIdle()
+        // Not awaited: the location is already back, and stopping the tunnel can take seconds,
+        // which would keep a Control Center or Live Activity button busy. If iOS suspends LocSim
+        // first, the extension stops the tunnel by itself once the heartbeat is gone.
+        Task { await releaseTunnelIfIdle() }
         if finished { releaseIfIdleInBackground() }
         runPending()
         // iOS may suspend LocSim right after a Clear from a Shortcut.
