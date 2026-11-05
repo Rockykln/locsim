@@ -120,7 +120,7 @@ launch() {
 lock() {
     # After a restart the Live Activity can take a while to appear.
     # Locked, the Simulator dims into Always On; a click wakes the Lock Screen without unlocking.
-    printf '%s: when the Live Activity shows, lock the Simulator (Cmd-L), click the screen once so the Lock Screen is lit, not dimmed, then press Enter. ' "$lang"
+    printf '%s: when the Live Activity shows: Cmd-L, click the screen once (lit, not dimmed), then Enter. ' "$lang"
     read -r _
 }
 
@@ -174,7 +174,9 @@ if wants live; then
     for theme in light dark; do
         # simctl cannot set the wallpaper; the Lock Screen only looks light on a light one.
         # Use a stock wallpaper: these shots end up in committed images.
-        printf '\nLock Screen shots, %s: set a %s stock wallpaper (Settings > Wallpaper in the Simulator), then press Enter; LocSim starts after that. ' "$theme" "$theme"
+        printf '\n=== Lock Screen shots, %s ===\n' "$theme"
+        printf '1. In the Simulator, pick a %s stock wallpaper (Settings > Wallpaper).\n' "$theme"
+        printf '2. Press Enter here to start. Nothing happens until you do. '
         read -r _
         for lang in $LANGS; do
             # The Live Activity follows the system language, and the restart unlocks the Simulator.
