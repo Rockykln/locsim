@@ -4,10 +4,6 @@ import Foundation
 
 /// Setting a location needs the app in the foreground: the first connection may ask for the
 /// VPN configuration, and the background keep-alive can only start from there.
-// A tool Siri AI can call; only with the iOS 27.3 SDK or later (SIRI_AI, see project.yml).
-#if SIRI_AI
-@AppIntent(.tool)
-#endif
 struct SetFavoriteIntent: AppIntent {
     static let title: LocalizedStringResource = "Set Location to Favorite"
     static let description = IntentDescription("Opens LocSim and simulates the location of a saved favorite.")
@@ -31,10 +27,6 @@ struct SetFavoriteIntent: AppIntent {
     }
 }
 
-// A tool Siri AI can call; only with the iOS 27.3 SDK or later (SIRI_AI, see project.yml).
-#if SIRI_AI
-@AppIntent(.tool)
-#endif
 struct SetCoordinatesIntent: AppIntent {
     static let title: LocalizedStringResource = "Set Coordinates"
     static let description = IntentDescription(
@@ -63,10 +55,6 @@ struct SetCoordinatesIntent: AppIntent {
 }
 
 /// Clearing needs no UI, so it runs in the background.
-// A tool Siri AI can call; only with the iOS 27.3 SDK or later (SIRI_AI, see project.yml).
-#if SIRI_AI
-@AppIntent(.tool)
-#endif
 struct ClearLocationIntent: AppIntent {
     static let title: LocalizedStringResource = "Clear Location"
     static let description = IntentDescription("Ends the simulated location and restores the real one.")
@@ -125,10 +113,6 @@ struct LocationIntentError: Error, CustomLocalizedStringResourceConvertible {
 
 /// A place by name or address, found with the same search as the map. Coordinates and map
 /// links work too, so one action covers everything a person might say or paste.
-// A tool Siri AI can call; only with the iOS 27.3 SDK or later (SIRI_AI, see project.yml).
-#if SIRI_AI
-@AppIntent(.tool)
-#endif
 struct SetPlaceIntent: AppIntent {
     static let title: LocalizedStringResource = "Set Location to Place"
     static let description = IntentDescription(
