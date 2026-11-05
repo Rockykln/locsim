@@ -412,7 +412,8 @@ struct MapScreen: View {
     private var map: some View {
         MapReader { proxy in
             Map(position: $camera, scope: mapScope) {
-                if showsUserLocation, session.active == nil, scenePhase == .active {
+                // MapKit draws this one itself, so it is left out while the screen turns.
+                if showsUserLocation, session.active == nil, scenePhase == .active, !markersHidden {
                     UserAnnotation()
                 }
                 if mapReady {
