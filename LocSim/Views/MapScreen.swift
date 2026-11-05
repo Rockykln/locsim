@@ -157,14 +157,6 @@ struct MapScreen: View {
                     .ignoresSafeArea(.container, edges: .trailing)
             }
         }
-        .overlay(alignment: .topTrailing) {
-            if usesSidebar {
-                MapCompass(scope: mapScope)
-                    .frame(width: Metrics.control)
-                    .padding(.trailing, Metrics.margin)
-                    .padding(.top, barTop)
-            }
-        }
         .overlay(alignment: usesSidebar ? .topLeading : .top) {
             dropdown
                 .padding(.horizontal, Metrics.margin)
@@ -199,8 +191,15 @@ struct MapScreen: View {
         .mapScope(mapScope)
     }
 
+    /// On both screens of the iPhone Duo the compass joins the pin and locate buttons.
+    private var compassWithButtons: Bool { usesSidebar || extendsIntoSideBar }
+
     private var mapButtons: some View {
         VStack(spacing: 10) {
+            if compassWithButtons {
+                MapCompass(scope: mapScope)
+                    .frame(width: Metrics.control)
+            }
             pinButton
             locateButton
         }
@@ -450,8 +449,8 @@ struct MapScreen: View {
         // inset at the top; the bar keeps a minimum distance from the edge anyway.
         .padding(.top, barTop)
         .overlay(alignment: .topTrailing) {
-            // In sidebar layout it sits at the map's top corner instead.
-            if !usesSidebar {
+            // On the iPhone Duo it sits above the pin button instead.
+            if !compassWithButtons {
                 MapCompass(scope: mapScope)
                     .frame(width: Metrics.control)
                     .padding(.trailing, Metrics.margin)
