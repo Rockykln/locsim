@@ -88,12 +88,9 @@ struct MapScreen: View {
     /// panel and the pin and locate buttons reach under it too, so they get the full width.
     private var extendsIntoSideBar: Bool { !usesSidebar && trailingInset > 0 }
 
-    /// The iPhone Duo shows the status bar as a column at the side, on both screens.
-    private var hasSideStatusBar: Bool { trailingInset > 0 || leadingInset > 0 }
-
-    // With the status bar at the side, the bar starts about where the system's own controls begin.
+    // On the cover screen the bar starts about where the system's own controls begin.
     private var barTop: CGFloat {
-        max(Metrics.barTop, (hasSideStatusBar ? Metrics.coverTopGap : Metrics.minTopGap) - topInset)
+        max(Metrics.barTop, (extendsIntoSideBar ? Metrics.coverTopGap : Metrics.minTopGap) - topInset)
     }
     private var barBottom: CGFloat { barTop + Metrics.control }
 
@@ -995,8 +992,11 @@ struct MapScreen: View {
             }
 
             // Stacked at large text sizes, or when long translations do not fit side by side.
+            // The sidebar column is wide enough for both once the labels may shrink a little.
             if dynamicTypeSize.isAccessibilitySize {
                 actionButtons(stacked: true)
+            } else if usesSidebar {
+                actionButtons(stacked: false)
             } else {
                 ViewThatFits(in: .horizontal) {
                     actionButtons(stacked: false)
