@@ -222,20 +222,27 @@ private struct StartTime: View {
 }
 
 private struct ClearButton: View {
-    // Blue on the dimmed Always On screen is too dark to read; the button turns white there.
+    // Always On dims colors until they are hard to see; white stays readable.
     @Environment(\.isLuminanceReduced) private var dimmed
 
     var body: some View {
-        Button(intent: StopSimulationIntent()) {
+        let button = Button(intent: StopSimulationIntent()) {
             // Never wrapped: long words like "Zurücksetzen" would break; the place name gives way.
             Label("Clear", systemImage: "arrow.uturn.backward")
                 .font(.subheadline.weight(.semibold))
+                .foregroundStyle(dimmed ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
                 .lineLimit(1)
                 .fixedSize()
                 .frame(minHeight: 30)
         }
-        .buttonStyle(.bordered)
-        .tint(dimmed ? .white : .blue)
         .accessibilityLabel(Text("Clear the simulated location"))
+        // Neutral glass like the system's own buttons; blue is kept for the status.
+        if #available(iOS 26.0, *) {
+            button.buttonStyle(.glass)
+        } else {
+            button
+                .buttonStyle(.bordered)
+                .tint(dimmed ? .white : .primary)
+        }
     }
 }
