@@ -54,9 +54,10 @@
 <ul>
 <li><strong>Fichier de jumelage :</strong> stocké dans l’espace privé de l’app, protégé par la protection des données d’iOS et exclu des sauvegardes. Supprimé dans les réglages ou lorsque vous supprimez l’app.</li>
 <li><strong>Activité en direct :</strong> affiche le lieu simulé sur l’écran verrouillé et dans la Dynamic Island. Elle est créée sur l’appareil ; rien n’est envoyé pour cela.</li>
-<li><strong>Favoris, lieux récents et réglages :</strong> stockés sur l’appareil et inclus dans ses sauvegardes. Les lieux récents peuvent être désactivés et effacés dans l’app.</li>
+<li><strong>Widgets :</strong> le lieu simulé (nom, coordonnées et heure de début) et vos trois favoris les plus utilisés (nom et coordonnées) sont écrits dans un espace de l’appareil que LocSim partage avec ses widgets (App Group), afin que les widgets puissent les afficher, y compris sur l’écran verrouillé. Rien ne quitte l’appareil pour cela.</li>
+<li><strong>Favoris, lieux récents, dernière position et réglages :</strong> stockés sur l’appareil et inclus dans ses sauvegardes. Cela comprend la dernière position et son nom pour « Définir la dernière position », ainsi que le nombre de fois et la durée pendant lesquels chaque favori a été simulé, afin d’afficher d’abord les plus utilisés. Les lieux récents peuvent être désactivés et effacés dans l’app.</li>
 <li><strong>Journal :</strong> conservé uniquement en mémoire et effacé à la fermeture de l’app. Il ne quitte l’appareil que si vous le copiez vous-même.</li>
-<li><strong>Position :</strong> votre position réelle est utilisée sur l’appareil pour maintenir la connexion ouverte en arrière-plan et, une fois l’accès à la position autorisé, pour l’afficher sur la carte. LocSim ne l’envoie nulle part.</li>
+<li><strong>Position :</strong> votre position réelle est utilisée sur l’appareil pour maintenir la connexion ouverte en arrière-plan et, une fois l’accès à la position autorisé, pour l’afficher sur la carte. Pendant que LocSim est ouvert, les relevés de position sont aussi comparés sur l’appareil avec la position simulée, pour remarquer qu’iOS l’a réinitialisée. Ils ne sont pas enregistrés, et LocSim n’envoie votre position nulle part.</li>
 </ul>
 <h2 id="connexions-de-lapp">Connexions établies par l’app</h2>
 <p>Ces connexions vont directement de votre appareil au fournisseur concerné. Nous n’y avons pas accès. Les fournisseurs traitent les données en tant que responsables du traitement distincts, selon leurs propres politiques de confidentialité.</p>
