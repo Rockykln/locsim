@@ -31,8 +31,11 @@ struct MapScreen: View {
     @State private var mapBottom: CGFloat = 0
     @State private var panelTop: CGFloat = .infinity
     @State private var topBarBottom: CGFloat = 0
-    @State private var panelContentHeight: CGFloat = 0
     @State private var locateTask: Task<Void, Never>?
+    // Camera changes before this come from fly(to:), not from the user.
+    @State private var flyingUntil = Date.distantPast
+    // The pin as it was when Set was tapped here; that result needs no camera follow.
+    @State private var setFromApp: CLLocationCoordinate2D?
     // Annotations added before the map has settled stay invisible until the next redraw.
     @State private var mapReady = false
     // Cancelled by any newer choice, so a late result cannot move the pin back.
@@ -110,7 +113,13 @@ struct MapScreen: View {
         .onChange(of: session.setCount) { _, _ in
             AccessibilityNotification.Announcement(String(localized: "Location set")).post()
             // A Shortcut can set a place the map does not show; the map follows it there.
-            if let active = session.active, !isVisible(active) { fly(to: active) }
+            // A Set from this screen does not: the user may have panned away on purpose,
+            // and a fly still running would only restart.
+            let fromApp = setFromApp.map { same($0, session.active) } ?? false
+            setFromApp = nil
+            if let active = session.active, !fromApp, Date() >= flyingUntil, !isVisible(active) {
+                fly(to: active)
+            }
         }
         .sensoryFeedback(trigger: session.state) { old, new in
             guard haptics, old != new, case .failed = new else { return nil }
@@ -119,6 +128,7 @@ struct MapScreen: View {
         .sensoryFeedback(trigger: feedback) { _, _ in haptics ? .impact(weight: .light) : nil }
         .onChange(of: session.state) { old, new in
             announce(old, new)
+            if new.error != nil { setFromApp = nil }
             if let error = new.error, [AppError.ddiConsentCode, AppError.otherVPNCode].contains(error.code) {
                 question = error
             }
@@ -128,6 +138,14 @@ struct MapScreen: View {
             if phase == .active { showRealPositionIfAllowed() }
         }
         .onChange(of: session.state) { _, _ in showRealPositionIfAllowed() }
+        // A renamed favorite renames the pin on it, unless the pin got its name elsewhere.
+        .onChange(of: favorites.items) { old, new in
+            guard let before = old.first(where: { $0.coordinate.distance(to: session.target) < 1 }),
+                  let after = new.first(where: { $0.id == before.id }),
+                  after.name != before.name, session.targetName == before.name else { return }
+            session.targetName = after.name
+            if same(LastCoordinate.load(), session.target) { LastCoordinate.save(session.target, name: after.name) }
+        }
         .onChange(of: session.active == nil) { _, idle in
             if idle {
                 showRealPositionIfAllowed()
@@ -178,9 +196,9 @@ struct MapScreen: View {
             isPresented: Binding(get: { question != nil }, set: { if !$0 { question = nil } }),
             presenting: question
         ) { error in
-            // Setting the location again answers both questions; the session reads the error.
+            // Only this button gives consent; a Set that was waiting in the queue never does.
             Button(error.code == AppError.ddiConsentCode ? String(localized: "Download") : String(localized: "Continue")) {
-                Task { await session.apply() }
+                Task { await session.apply(consent: true) }
             }
             Button("Cancel", role: .cancel) {}
         } message: { error in
@@ -237,9 +255,14 @@ struct MapScreen: View {
             .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).maxY } action: { mapBottom = $0 }
             // Symmetric to keep the camera centered; moves the legal label past the panel corner.
             .safeAreaPadding(.horizontal, 16)
+            // The user moved the map, so a late location fix must not pull it back.
+            .onMapCameraChange(frequency: .continuous) { _ in
+                if Date() >= flyingUntil { locateTask?.cancel() }
+            }
             .onMapCameraChange(frequency: .onEnd) { context in
                 search.bias(to: context.region)
-                mapCenter = context.region.center
+                // The camera centers in the area the panel leaves free; the region covers the whole view.
+                mapCenter = context.camera.centerCoordinate
                 visibleRegion = context.region
                 mapReady = true
             }
@@ -271,6 +294,7 @@ struct MapScreen: View {
         session.target = center
         session.targetName = nil
         droppedPins += 1
+        AccessibilityNotification.Announcement(String(localized: "Pin dropped at map center")).post()
     }
 
     private func dropPin(at point: CGPoint, proxy: MapProxy) {
@@ -326,6 +350,7 @@ struct MapScreen: View {
                 .offset(y: Metrics.barBottom + Metrics.compassGap + 6)
         }
         .zIndex(1)
+        .accessibilitySortPriority(2)
     }
 
     @ViewBuilder
@@ -341,6 +366,7 @@ struct MapScreen: View {
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .accessibilitySortPriority(1)
             .task(id: searchError) {
                 AccessibilityNotification.Announcement(searchError).post()
                 // VoiceOver users need longer: the message is read out, then found again by swiping.
@@ -350,7 +376,9 @@ struct MapScreen: View {
                 self.searchError = nil
             }
         } else if searchFocused || Demo.screen == .search || Demo.screen == .recents, hasSuggestions {
+            // Declared after the panel, but VoiceOver should reach it right after the search field.
             suggestions
+                .accessibilitySortPriority(1)
         }
     }
 
@@ -358,6 +386,7 @@ struct MapScreen: View {
         HStack(spacing: 8) {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(.secondary)
+                .accessibilityHidden(true)
             // Own placeholder so it is never cut off on narrow screens.
             TextField("Search place or coordinates", text: $search.query, prompt: Text(verbatim: ""))
                 .overlay(alignment: .leading) {
@@ -378,7 +407,12 @@ struct MapScreen: View {
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
                 .onSubmit(submitSearch)
-                .onChange(of: search.query) { _, _ in searchError = nil }
+                .onChange(of: search.query) { _, _ in
+                    searchError = nil
+                    // A result for what was there before must not land on what is typed now.
+                    searchTask?.cancel()
+                    resolving = nil
+                }
                 .onChange(of: searchFocused) { _, focused in if !focused { searchError = nil } }
             if resolving != nil, !search.query.isEmpty, search.completions.isEmpty {
                 ProgressView().controlSize(.small)
@@ -394,6 +428,7 @@ struct MapScreen: View {
                 }
                 .padding(.trailing, -12)
                 .accessibilityLabel("Clear search")
+                .accessibilityShowsLargeContentViewer()
             }
         }
         .padding(.horizontal, 14)
@@ -491,7 +526,6 @@ struct MapScreen: View {
                 Button(String(localized: "Paste", comment: "Demo stand-in for the system paste button")) {}
                     .buttonStyle(.borderedProminent)
                     .buttonBorderShape(.capsule)
-                    .controlSize(.small)
             } else {
                 // Links copied from Maps or Safari are often only a URL on the pasteboard, not text.
                 PasteButton(supportedContentTypes: [.plainText, .text, .url]) { providers in
@@ -501,7 +535,6 @@ struct MapScreen: View {
                 }
                 .labelStyle(.titleOnly)
                 .buttonBorderShape(.capsule)
-                .controlSize(.small)
             }
         }
         .padding(.horizontal, 14)
@@ -517,6 +550,7 @@ struct MapScreen: View {
                 Button(String(localized: "Clear List", defaultValue: "Clear", comment: "Removes all recent locations")) {
                     recents.clear()
                     feedback += 1
+                    AccessibilityNotification.Announcement(String(localized: "Recent locations cleared")).post()
                 }
                 .font(.footnote.weight(.semibold))
                 .frame(minHeight: 44)
@@ -544,7 +578,10 @@ struct MapScreen: View {
                     }
                 }
                 // A context menu is hard to reach with VoiceOver.
-                .accessibilityAction(named: "Remove") { recents.remove(item) }
+                .accessibilityAction(named: "Remove") {
+                    recents.remove(item)
+                    AccessibilityNotification.Announcement(String(localized: "Recent location removed")).post()
+                }
             }
         }
     }
@@ -616,7 +653,7 @@ struct MapScreen: View {
                         Text(subtitle)
                             .font(.caption)
                             .foregroundStyle(Color(uiColor: .systemGray))
-                            .lineLimit(1)
+                            .lineLimit(dynamicTypeSize.isAccessibilitySize ? 3 : 1)
                     }
                 }
                 Spacer(minLength: 0)
@@ -658,6 +695,10 @@ struct MapScreen: View {
         .buttonStyle(.plain)
         .glassCircle()
         .accessibilityLabel("Show pin")
+        // The glyph is a shape the viewer cannot show by itself.
+        .accessibilityShowsLargeContentViewer {
+            Label("Show pin", systemImage: "mappin")
+        }
         // The map itself is hard to reach with VoiceOver, so the action is offered here too.
         .accessibilityAction(named: "Drop Pin at Map Center") { dropPinAtCenter() }
     }
@@ -682,6 +723,7 @@ struct MapScreen: View {
         .glassCircle()
         .accessibilityLabel(
             session.active != nil ? String(localized: "Show active location") : String(localized: "Show my location"))
+        .accessibilityShowsLargeContentViewer()
     }
 
     /// Only the part of the map between the top bar and the panel counts as visible.
@@ -690,7 +732,10 @@ struct MapScreen: View {
 
     private func isVisible(_ c: CLLocationCoordinate2D) -> Bool {
         guard let r = visibleRegion, r.span.latitudeDelta > 0, mapBottom > 0 else { return false }
-        guard abs(c.longitude - r.center.longitude) <= r.span.longitudeDelta / 2 else { return false }
+        // Wrapped, so a point just across the antimeridian is not half a world away.
+        var dLon = abs(c.longitude - r.center.longitude).truncatingRemainder(dividingBy: 360)
+        if dLon > 180 { dLon = 360 - dLon }
+        guard dLon <= r.span.longitudeDelta / 2 else { return false }
         // Close enough on the spans a camera move can leave; the map is shown from the top of the screen.
         let y = (r.center.latitude + r.span.latitudeDelta / 2 - c.latitude) / r.span.latitudeDelta * mapBottom
         return y > topBarBottom && y < min(panelTop, mapBottom)
@@ -698,6 +743,7 @@ struct MapScreen: View {
 
     private func fly(to coordinate: CLLocationCoordinate2D, duration: Double = 1.0) {
         let target = MapCameraPosition.camera(MapCamera(centerCoordinate: coordinate, distance: zoom))
+        flyingUntil = Date().addingTimeInterval(reduceMotion ? 0.3 : duration + 0.3)
         if reduceMotion {
             camera = target
         } else {
@@ -745,7 +791,12 @@ struct MapScreen: View {
             try? await Task.sleep(nanoseconds: 8_000_000_000)
             fix.cancel()
         }
-        let coordinate = await fix.value
+        // Cancelling this task does not cancel the unstructured one, which would keep updates running.
+        let coordinate = await withTaskCancellationHandler {
+            await fix.value
+        } onCancel: {
+            fix.cancel()
+        }
         timeout.cancel()
         guard !Task.isCancelled else { return }
         if let coordinate {
@@ -762,14 +813,16 @@ struct MapScreen: View {
         // then it scrolls instead. Its height follows the content, so a short panel stays short.
         Group {
             if dynamicTypeSize.isAccessibilitySize {
-                ScrollView {
-                    // Inside the scroll view, so scrolled text reaches the rounded edge instead of being cut.
-                    panelContent
-                        .padding(18)
-                        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { panelContentHeight = $0 }
+                // Sized in the layout pass, not from a measurement: an unmeasured scroll view
+                // would take the whole height for a frame.
+                CappedHeight(maxHeight: Metrics.panelMaxHeight) {
+                    ScrollView {
+                        // Inside the scroll view, so scrolled text reaches the rounded edge instead of being cut.
+                        panelContent
+                            .padding(18)
+                    }
+                    .scrollBounceBehavior(.basedOnSize)
                 }
-                .scrollBounceBehavior(.basedOnSize)
-                .frame(height: panelContentHeight > 0 ? min(panelContentHeight, Metrics.panelMaxHeight) : nil)
             } else {
                 panelContent
                     .padding(18)
@@ -795,16 +848,12 @@ struct MapScreen: View {
                         // Own menu instead of text selection, which would copy through Universal Clipboard.
                         .contextMenu {
                             Button {
-                                Clipboard.copy(CoordinateParser.format(session.target))
-                                feedback += 1
+                                copyCoordinates()
                             } label: {
                                 Label("Copy Coordinates", systemImage: "doc.on.doc")
                             }
                         }
-                        .accessibilityAction(named: "Copy Coordinates") {
-                            Clipboard.copy(CoordinateParser.format(session.target))
-                            feedback += 1
-                        }
+                        .accessibilityAction(named: "Copy Coordinates") { copyCoordinates() }
                 }
                 Spacer(minLength: 0)
                 favoriteButton
@@ -857,45 +906,56 @@ struct MapScreen: View {
                 .buttonStyle(.plain)
             }
 
-            // Stacked at large text sizes, so neither label is cut off.
-            let layout = dynamicTypeSize.isAccessibilitySize
-                ? AnyLayout(VStackLayout(spacing: 10)) : AnyLayout(HStackLayout(spacing: 10))
-            layout {
-                Button {
-                    setLocation()
-                } label: {
-                    HStack(spacing: 8) {
-                        if session.state == .connecting {
-                            ProgressView().controlSize(.small)
-                        } else {
-                            Image(systemName: "location.fill")
-                        }
-                        Text(session.state == .connecting ? String(localized: "Connecting") : String(localized: "Set Location"))
+            // Stacked at large text sizes, or when long translations do not fit side by side.
+            if dynamicTypeSize.isAccessibilitySize {
+                actionButtons(stacked: true)
+            } else {
+                ViewThatFits(in: .horizontal) {
+                    actionButtons(stacked: false)
+                    actionButtons(stacked: true)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func actionButtons(stacked: Bool) -> some View {
+        let layout = stacked ? AnyLayout(VStackLayout(spacing: 10)) : AnyLayout(HStackLayout(spacing: 10))
+        layout {
+            Button {
+                setLocation()
+            } label: {
+                HStack(spacing: 8) {
+                    if session.state == .connecting {
+                        ProgressView().controlSize(.small)
+                    } else {
+                        Image(systemName: "location.fill")
                     }
-                    .font(.body.weight(.semibold))
+                    Text(session.state == .connecting ? String(localized: "Connecting") : String(localized: "Set Location"))
+                }
+                .font(.body.weight(.semibold))
+                .lineLimit(dynamicTypeSize.isAccessibilitySize ? 2 : 1)
+                .minimumScaleFactor(0.8)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 6)
+            }
+            .primaryButton()
+            .disabled(session.state == .connecting)
+
+            Button {
+                feedback += 1
+                Task { await session.clear() }
+            } label: {
+                // While connecting this stops the attempt.
+                Label(session.state == .connecting ? String(localized: "Cancel") : String(localized: "Clear"),
+                      systemImage: "arrow.uturn.backward")
                     .lineLimit(dynamicTypeSize.isAccessibilitySize ? 2 : 1)
                     .minimumScaleFactor(0.8)
-                    .frame(maxWidth: .infinity)
+                    .frame(maxWidth: stacked ? .infinity : nil)
                     .padding(.vertical, 6)
-                }
-                .primaryButton()
-                .disabled(session.state == .connecting)
-
-                Button {
-                    feedback += 1
-                    Task { await session.clear() }
-                } label: {
-                    // While connecting this stops the attempt.
-                    Label(session.state == .connecting ? String(localized: "Cancel") : String(localized: "Clear"),
-                          systemImage: "arrow.uturn.backward")
-                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? 2 : 1)
-                        .minimumScaleFactor(0.8)
-                        .frame(maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : nil)
-                        .padding(.vertical, 6)
-                }
-                .secondaryButton()
-                .disabled(!session.canClear)
             }
+            .secondaryButton()
+            .disabled(!session.canClear)
         }
     }
 
@@ -924,6 +984,7 @@ struct MapScreen: View {
             if let saved {
                 favorites.items.removeAll { $0.id == saved.id }
                 feedback += 1
+                AccessibilityNotification.Announcement(String(localized: "Favorite removed")).post()
             } else {
                 favoriteName = session.targetName ?? ""
                 naming = true
@@ -938,13 +999,22 @@ struct MapScreen: View {
         .buttonStyle(.plain)
         .glassCircle()
         .accessibilityLabel(saved == nil ? String(localized: "Save favorite") : String(localized: "Remove favorite"))
+        .accessibilityShowsLargeContentViewer()
+    }
+
+    private func copyCoordinates() {
+        Clipboard.copy(CoordinateParser.format(session.target))
+        feedback += 1
+        AccessibilityNotification.Announcement(String(localized: "Coordinates copied")).post()
     }
 
     private func announce(_ old: SimulationSession.State, _ new: SimulationSession.State) {
         guard old != new else { return }
         let text: String
         switch new {
-        case .idle where old == .active: text = String(localized: "Location cleared")
+        case .idle where old == .active || old.isReconnecting: text = String(localized: "Location cleared")
+        case .idle where old == .connecting: text = String(localized: "Connection cancelled")
+        case .active where old.isReconnecting: text = String(localized: "Reconnected")
         case .reconnecting(let error) where !old.isReconnecting:
             text = String(localized: "Reconnecting: \(error.title)", comment: "VoiceOver announcement, then the error title")
         case .failed(let error): text = error.title
@@ -966,7 +1036,11 @@ struct MapScreen: View {
             if let active = session.active, CoordinateParser.format(active) != CoordinateParser.format(session.target) {
                 parts.append(CoordinateParser.format(active))
             }
-        case .reconnecting(let error): parts.append("\(String(localized: "Reconnecting"))  ·  \(error.code)")
+        case .reconnecting(let error):
+            // Without the ellipsis the other "Reconnecting" has, since a separator follows.
+            let title = String(localized: "Reconnecting (status)", defaultValue: "Reconnecting",
+                               comment: "Status line on the map, followed by the error code")
+            parts.append("\(title)  ·  \(error.code)")
         case .failed(let error): parts.append("\(error.title)  ·  \(error.code)")
         }
         if let sent = session.lastSent, session.state == .active {
@@ -1029,7 +1103,15 @@ struct MapScreen: View {
         searchFocused = false
         search.reset()
         fly(to: coordinate, duration: 1.2)
+        // Focus leaves the closed list or sheet; say where the pin went.
+        let pinName = session.targetName ?? CoordinateParser.spoken(coordinate)
+        AccessibilityNotification.Announcement(String(localized: "Pin: \(pinName)")).post()
         if apply { setLocation() }
+    }
+
+    private func same(_ a: CLLocationCoordinate2D, _ b: CLLocationCoordinate2D?) -> Bool {
+        guard let b else { return false }
+        return abs(a.latitude - b.latitude) < 1e-7 && abs(a.longitude - b.longitude) < 1e-7
     }
 
     /// A typed or pasted coordinate that is a favorite or a recent place gets that name.
@@ -1049,6 +1131,7 @@ struct MapScreen: View {
             showWelcome = true
             return
         }
+        setFromApp = session.target
         Task { await session.apply() }
     }
 
@@ -1072,6 +1155,8 @@ struct MapScreen: View {
             name: name.isEmpty ? CoordinateParser.format(c) : name,
             latitude: c.latitude,
             longitude: c.longitude))
+        // The pin carries the name from now on, also into the next Set.
+        if !name.isEmpty { session.targetName = name }
     }
 }
 
@@ -1090,6 +1175,22 @@ private enum Metrics {
 }
 
 private let longPressDuration = 0.3
+
+/// As tall as its content, at most `maxHeight`. A scroll view asked without a height reports its content's.
+private struct CappedHeight: Layout {
+    let maxHeight: CGFloat
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        guard let child = subviews.first else { return .zero }
+        let ideal = child.sizeThatFits(ProposedViewSize(width: proposal.width, height: nil))
+        let limit = min(maxHeight, proposal.height ?? maxHeight)
+        return CGSize(width: proposal.width ?? ideal.width, height: min(ideal.height, limit))
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        subviews.first?.place(at: bounds.origin, proposal: ProposedViewSize(bounds.size))
+    }
+}
 
 private extension View {
     /// Reports where the finger is as soon as the press is long enough, while it is still down.

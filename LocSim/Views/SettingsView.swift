@@ -27,6 +27,9 @@ struct SettingsView: View {
     @State private var importing = false
     // Read in onAppear: an initial value here would touch the disk every time the parent redraws.
     @State private var hasPairing = false
+    // Copied from PairingStore, which is not observed, so the footer redraws when it changes.
+    @State private var rejectedDrop = false
+    @State private var lockdownDrop = false
     @State private var ddiDownloaded = false
     @State private var ddiLoading = false
     @State private var ddiError: String?
@@ -57,11 +60,10 @@ struct SettingsView: View {
             // A file copied in by the setup script replaces the stored one; the old connection must go.
             .onChange(of: scenePhase) { _, phase in
                 guard phase == .active else { return }
-                if PairingStore.adoptNow() { pairingReplaced() }
-                hasPairing = PairingStore.exists
+                refreshPairing()
             }
             .sheet(isPresented: $showWelcome, onDismiss: {
-                hasPairing = PairingStore.exists
+                refreshPairing()
                 pairingMessage = nil
             }) {
                 WelcomeView(fromSettings: true).environmentObject(session)
@@ -71,6 +73,7 @@ struct SettingsView: View {
                 Button("Remove Pairing File", role: .destructive) {
                     PairingStore.remove()
                     hasPairing = false
+                    rejectedDrop = false
                     Task { await session.pairingChanged() }
                 }
             } message: {
@@ -95,9 +98,19 @@ struct SettingsView: View {
                     pairingMessage = AppError(deviceError).summary
                     announce(pairingMessage)
                 }
-                hasPairing = PairingStore.exists
+                refreshPairing()
             }
         }
+    }
+
+    /// Adopts a file the setup script dropped into Documents. While the setup steps are open
+    /// they do this themselves, so a replaced file is handled once.
+    private func refreshPairing() {
+        guard !showWelcome else { return }
+        if PairingStore.adoptNow() { pairingReplaced() }
+        hasPairing = PairingStore.exists
+        rejectedDrop = PairingStore.rejectedDrop
+        lockdownDrop = PairingStore.lockdownDrop
     }
 
     private func pairingReplaced() {
@@ -122,12 +135,12 @@ struct SettingsView: View {
                         Text(detail)
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                            .lineLimit(3)
+                            .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 3)
                     }
                 }
                 .accessibilityElement(children: .combine)
                 Spacer(minLength: 0)
-                if session.isPreview || session.active != nil || session.state == .connecting {
+                if session.isPreview || session.canClear {
                     Button(session.isPreview ? String(localized: "End Preview") : String(localized: "Clear")) {
                         if session.isPreview {
                             session.endPreview()
@@ -136,7 +149,7 @@ struct SettingsView: View {
                         }
                     }
                     .buttonStyle(.bordered)
-                    .controlSize(.small)
+                    .disabled(session.isClearing)
                 }
             }
             .padding(.vertical, 4)
@@ -154,7 +167,8 @@ struct SettingsView: View {
             }
             .foregroundStyle(.primary)
             if hasPairing {
-                PairingCheckRow {
+                // The setup steps on top have their own row; one announcement is enough.
+                PairingCheckRow(announces: !showWelcome) {
                     item("Check Pairing File", "checkmark.shield.fill", .green)
                 }
                 .foregroundStyle(.primary)
@@ -176,8 +190,11 @@ struct SettingsView: View {
         } footer: {
             if let pairingMessage {
                 ErrorFooter(pairingMessage)
-            } else if PairingStore.rejectedDrop {
+            } else if rejectedDrop {
                 ErrorFooter(String(localized: "The pairing file was not valid and has been removed. Run the setup script again."))
+            } else if lockdownDrop, !hasPairing {
+                // Kept: it may be the user's own file for another tool.
+                ErrorFooter(String(localized: "This is a lockdown pairing file. LocSim needs the RPPairing file from the setup script."))
             } else {
                 Text("Created once with the setup script on a computer.")
             }
@@ -236,6 +253,8 @@ struct SettingsView: View {
                 item("Resend Interval", "arrow.clockwise", .green,
                      value: Duration.seconds(resend).formatted(.units(allowed: [.seconds], width: .abbreviated)))
             }
+            // Applies now, not only after the current wait.
+            .onChange(of: resend) { _, _ in session.resendIntervalChanged() }
             Toggle(isOn: $keepAlive) {
                 item("Keep Alive in Background", "moon.fill", .indigo)
             }
@@ -243,7 +262,8 @@ struct SettingsView: View {
         } header: {
             Text("Connection")
         } footer: {
-            if !port.isEmpty, UInt16(port).map({ $0 > 0 }) != true {
+            // Same rule as the session: surrounding spaces are ignored, blank means automatic.
+            if !port.trimmingCharacters(in: .whitespaces).isEmpty, PairingPorts.manual(port) == nil {
                 ErrorFooter(String(localized: "Port must be a number from 1 to 65535. Leave it empty to find it automatically."))
             } else {
                 Text("Connecting needs Wi-Fi, then cellular works too. “Keep Alive in Background” keeps the simulation running in the background.")
@@ -356,7 +376,7 @@ struct SettingsView: View {
     }
 
     private func readFiles() {
-        hasPairing = PairingStore.exists
+        refreshPairing()
         ddiDownloaded = DDIStore.isDownloaded(DDIMethod.current)
     }
 
@@ -409,7 +429,9 @@ struct SettingsView: View {
         }
     }
 
+    // Until the device answers, the state still says active although the location is going.
     private var stateTitle: String {
+        if session.isClearing { return String(localized: "Clearing") }
         switch session.state {
         case .idle: return String(localized: "Not active")
         case .connecting: return String(localized: "Connecting")
@@ -420,6 +442,7 @@ struct SettingsView: View {
     }
 
     private var stateDetail: String? {
+        if session.isClearing { return nil }
         switch session.state {
         case .active:
             var parts: [String] = []
@@ -433,6 +456,7 @@ struct SettingsView: View {
     }
 
     private var stateColor: Color {
+        if session.isClearing { return .orange }
         switch session.state {
         case .active: return .green
         case .failed: return .red
@@ -455,6 +479,8 @@ private struct LogRow<Label: View>: View {
 struct LogView: View {
     @EnvironmentObject private var session: SimulationSession
     @ObservedObject var log: LogStore
+    @AppStorage(SettingsKey.haptics) private var haptics = true
+    @State private var copied = 0
 
     var body: some View {
         ScrollView {
@@ -482,18 +508,24 @@ struct LogView: View {
                 Button {
                     // The log holds coordinates; keep it off the user's other devices.
                     Clipboard.copy(log.text, expiresAfter: 600)
+                    copied += 1
+                    AccessibilityNotification.Announcement(String(localized: "Log copied")).post()
                 } label: {
                     Image(systemName: "doc.on.doc")
                 }
                 .accessibilityLabel("Copy Log")
+                .disabled(log.lines.isEmpty)
                 Button(role: .destructive) {
                     session.clearLog()
+                    AccessibilityNotification.Announcement(String(localized: "Log cleared")).post()
                 } label: {
                     Image(systemName: "trash")
                 }
                 .accessibilityLabel("Clear Log")
+                .disabled(log.lines.isEmpty)
             }
         }
+        .sensoryFeedback(trigger: copied) { _, _ in haptics ? .success : nil }
     }
 }
 

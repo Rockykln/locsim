@@ -74,8 +74,7 @@ struct FavoritesView: View, Equatable {
                 }
                 .contextMenu {
                     Button {
-                        Clipboard.copy(CoordinateParser.format(favorite.coordinate))
-                        copied += 1
+                        copy(favorite)
                     } label: {
                         Label("Copy Coordinates", systemImage: "doc.on.doc")
                     }
@@ -93,8 +92,7 @@ struct FavoritesView: View, Equatable {
                 }
                 // Rename and Delete come with the swipe actions; copying is only in the menu.
                 .accessibilityAction(named: "Copy Coordinates") {
-                    Clipboard.copy(CoordinateParser.format(favorite.coordinate))
-                    copied += 1
+                    copy(favorite)
                 }
             }
             .onDelete { favorites.items.remove(atOffsets: $0) }
@@ -126,6 +124,12 @@ struct FavoritesView: View, Equatable {
         .frame(minHeight: 44)
         .padding(.vertical, 2)
         .contentShape(Rectangle())
+    }
+
+    private func copy(_ favorite: Favorite) {
+        Clipboard.copy(CoordinateParser.format(favorite.coordinate))
+        copied += 1
+        AccessibilityNotification.Announcement(String(localized: "Coordinates copied")).post()
     }
 
     private func rename() {
