@@ -68,12 +68,21 @@ final class LiveActivityController {
 
     #if DEBUG
     /// For the screenshot of the Lock Screen in demo mode.
-    func showDemo(name: String, coordinate: String, startedAt: Date) {
+    /// Retries for a while: right after the Simulator boots, iOS refuses new activities.
+    func showDemo(name: String, coordinate: String, startedAt: Date) async {
         let state = SimulationActivityAttributes.ContentState(
             name: name, coordinate: coordinate, reconnecting: false, startedAt: startedAt)
-        activity = try? Activity.request(
-            attributes: SimulationActivityAttributes(),
-            content: ActivityContent(state: state, staleDate: nil), pushType: nil)
+        for _ in 0..<20 {
+            do {
+                activity = try Activity.request(
+                    attributes: SimulationActivityAttributes(),
+                    content: ActivityContent(state: state, staleDate: nil), pushType: nil)
+                return
+            } catch {
+                print("Demo Live Activity not started yet: \(error)")
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+            }
+        }
     }
     #endif
 
