@@ -22,12 +22,18 @@
       var system = media.indexOf("dark") !== -1 ? "dark" : "light";
       metas[i].setAttribute("content", colors[theme === "auto" ? system : theme]);
     }
+    // Picture sources follow the system; a chosen theme overrides them, so only one variant loads.
+    var sources = document.querySelectorAll("source[data-theme-source]");
+    for (var j = 0; j < sources.length; j++) {
+      sources[j].setAttribute("media", theme === "auto" ? "(prefers-color-scheme: dark)" : theme === "dark" ? "all" : "not all");
+    }
   }
 
   apply(current);
 
-  // Language menu: close on outside click or Escape.
-  document.addEventListener("click", function (event) {
+  // Language menu: close on outside press or Escape. iOS Safari fires no click for taps on
+  // plain text or background, so the press itself is used.
+  document.addEventListener("pointerdown", function (event) {
     var menu = document.querySelector(".lang-menu[open]");
     if (menu && !menu.contains(event.target)) menu.removeAttribute("open");
   });
@@ -60,7 +66,7 @@
     var labels = JSON.parse(button.getAttribute("data-labels"));
 
     function render() {
-      var label = labels.title + ": " + labels[current];
+      var label = labels.title + (root.lang === "fr" ? "\u00a0: " : ": ") + labels[current];
       button.setAttribute("data-state", current);
       button.setAttribute("aria-label", label);
       button.setAttribute("title", label);
