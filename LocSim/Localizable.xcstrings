@@ -661,7 +661,7 @@
       }
     },
     "Clear" : {
-      "comment" : "Button: ends the simulated location, or clears the recent locations",
+      "comment" : "Button: ends the simulated location and restores the real one",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1009,6 +1009,35 @@
         }
       }
     },
+    "Connection cancelled" : {
+      "comment" : "VoiceOver announcement when a connection attempt is cancelled",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbindung abgebrochen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conexión cancelada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connexion annulée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connessione annullata"
+          }
+        }
+      }
+    },
     "Connection failed" : {
       "localizations" : {
         "de" : {
@@ -1146,6 +1175,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Coordinate"
+          }
+        }
+      }
+    },
+    "Coordinates copied" : {
+      "comment" : "VoiceOver announcement after Copy Coordinates",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Koordinaten kopiert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coordenadas copiadas"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coordonnées copiées"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coordinate copiate"
           }
         }
       }
@@ -1554,13 +1612,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Developer Disk Image descargada"
+            "value" : "Developer Disk Image descargado"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Developer Disk Image téléchargée"
+            "value" : "Developer Disk Image téléchargé"
           }
         },
         "it" : {
@@ -2049,6 +2107,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Preferito"
+          }
+        }
+      }
+    },
+    "Favorite removed" : {
+      "comment" : "VoiceOver announcement after removing a favorite with the star",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorit entfernt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorito eliminado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favori supprimé"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preferito rimosso"
           }
         }
       }
@@ -2956,6 +3043,64 @@
         }
       }
     },
+    "Log cleared" : {
+      "comment" : "VoiceOver announcement after Clear Log",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protokoll gelöscht"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registro borrado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Journal effacé"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registro cancellato"
+          }
+        }
+      }
+    },
+    "Log copied" : {
+      "comment" : "VoiceOver announcement after Copy Log",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protokoll kopiert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registro copiado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Journal copié"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registro copiato"
+          }
+        }
+      }
+    },
     "Map" : {
       "localizations" : {
         "de" : {
@@ -3136,7 +3281,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se encontraron coordenadas en “%@”."
+            "value" : "No se han encontrado coordenadas en “%@”."
           }
         },
         "fr" : {
@@ -3745,6 +3890,64 @@
         }
       }
     },
+    "Pin dropped at map center" : {
+      "comment" : "VoiceOver announcement after the Drop Pin at Map Center action",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ort in der Kartenmitte markiert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ubicación marcada en el centro del mapa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lieu marqué au centre de la carte"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Segnaposto inserito al centro della mappa"
+          }
+        }
+      }
+    },
+    "Pin: %@" : {
+      "comment" : "VoiceOver announcement after choosing a place; the place name or spoken coordinates. 'Pin' is the dropped pin (Markierter Ort / Lieu marqué / Ubicación marcada / Segnaposto)",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Markierter Ort: %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ubicación marcada: %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lieu marqué : %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Segnaposto: %@"
+          }
+        }
+      }
+    },
     "Place or coordinates" : {
       "comment" : "Short search placeholder for narrow screens",
       "localizations" : {
@@ -4000,6 +4203,35 @@
         }
       }
     },
+    "Recent location removed" : {
+      "comment" : "VoiceOver announcement after removing one recent location",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzter Ort entfernt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ubicación reciente eliminada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lieu récent supprimé"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posizione recente rimossa"
+          }
+        }
+      }
+    },
     "Recent Locations" : {
       "localizations" : {
         "de" : {
@@ -4024,6 +4256,64 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Posizioni recenti"
+          }
+        }
+      }
+    },
+    "Recent locations cleared" : {
+      "comment" : "VoiceOver announcement after clearing the recent locations list",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzte Orte gelöscht"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ubicaciones recientes borradas"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lieux récents effacés"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posizioni recenti cancellate"
+          }
+        }
+      }
+    },
+    "Reconnected" : {
+      "comment" : "VoiceOver announcement when the connection is back after reconnecting",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wieder verbunden"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conexión restablecida"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connexion rétablie"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connessione ripristinata"
           }
         }
       }
@@ -4053,6 +4343,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Riconnessione…"
+          }
+        }
+      }
+    },
+    "Reconnecting (status)" : {
+      "comment" : "Status line on the map, followed by '  ·  ' and the error code; no ellipsis. English value: Reconnecting",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbindet erneut"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconectando"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconnexion"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Riconnessione"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconnecting"
           }
         }
       }
@@ -5182,7 +5507,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Via"
+            "value" : "Strada"
           }
         }
       }
@@ -5327,30 +5652,31 @@
         }
       }
     },
-    "The device did not provide location simulation. Turn on Mount Automatically under Settings, or restart the device." : {
+    "The device did not provide location simulation. Turn on Mount Automatically in LocSim's settings under Developer Disk Image, or restart the device." : {
+      "comment" : "Error LS-400: what to do when the location service is missing",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Das Gerät stellt keine Standortsimulation bereit. Aktiviere „Automatisch einbinden“ in den Einstellungen oder starte das Gerät neu."
+            "value" : "Das Gerät stellt keine Standortsimulation bereit. Aktiviere „Automatisch einbinden“ in den Einstellungen von LocSim unter „Developer Disk Image“ oder starte das Gerät neu."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El dispositivo no ha proporcionado la simulación de ubicación. Activa “Montar automáticamente” en Ajustes o reinicia el dispositivo."
+            "value" : "El dispositivo no ha proporcionado la simulación de ubicación. Activa “Montar automáticamente” en los ajustes de LocSim, en “Developer Disk Image”, o reinicia el dispositivo."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L’appareil n’a pas fourni la simulation de position. Activez « Monter automatiquement » dans Réglages ou redémarrez l’appareil."
+            "value" : "L’appareil n’a pas fourni la simulation de position. Activez « Monter automatiquement » dans les réglages de LocSim, sous « Developer Disk Image », ou redémarrez l’appareil."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il dispositivo non ha reso disponibile la simulazione della posizione. Attiva “Monta automaticamente” in Impostazioni o riavvia il dispositivo."
+            "value" : "Il dispositivo non ha reso disponibile la simulazione della posizione. Attiva “Monta automaticamente” nelle impostazioni di LocSim, in “Developer Disk Image”, o riavvia il dispositivo."
           }
         }
       }

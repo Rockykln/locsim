@@ -8,7 +8,10 @@ struct WelcomeView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var importing = false
-    @State private var hasPairing = PairingStore.exists
+    // Read in onAppear: an initial value here would touch the disk every time the parent redraws.
+    @State private var hasPairing = false
+    // Copied from PairingStore, which is not observed, so the footer redraws when it changes.
+    @State private var rejectedDrop = false
     @State private var message: String?
     /// Opened from Settings rather than on first launch.
     var fromSettings = false
@@ -56,7 +59,7 @@ struct WelcomeView: View {
                 } footer: {
                     if let message {
                         ErrorFooter(message)
-                    } else if PairingStore.rejectedDrop {
+                    } else if rejectedDrop {
                         ErrorFooter(String(localized: "The pairing file was not valid and has been removed. Run the setup script again."))
                     }
                 }
@@ -98,27 +101,36 @@ struct WelcomeView: View {
                     // Shown below the button, where VoiceOver would not find it on its own.
                     if let message { AccessibilityNotification.Announcement(message).post() }
                 }
-                hasPairing = PairingStore.exists
+                readPairing()
             }
             // The setup script copies the file in over USB while this screen is open.
             .task(id: hasPairing) {
                 while !hasPairing {
                     // A cancelled task stops here; otherwise it would report the same file twice.
                     do { try await Task.sleep(nanoseconds: 2_000_000_000) } catch { return }
-                    guard scenePhase == .active, PairingStore.exists else { continue }
-                    hasPairing = true
-                    pairingReplaced()
+                    guard scenePhase == .active else { continue }
+                    readPairing()
+                    if hasPairing { pairingReplaced() }
                 }
+            }
+            .onAppear {
+                if PairingStore.adoptNow() { pairingReplaced() }
+                readPairing()
             }
             // Picks up a file copied through the Files tab while the app was in the background.
             .onChange(of: scenePhase) { _, phase in
                 guard phase == .active else { return }
                 let replaced = PairingStore.adoptNow()
                 let hadPairing = hasPairing
-                hasPairing = PairingStore.exists
+                readPairing()
                 if replaced || (hasPairing && !hadPairing) { pairingReplaced() }
             }
         }
+    }
+
+    private func readPairing() {
+        hasPairing = PairingStore.exists
+        rejectedDrop = PairingStore.rejectedDrop
     }
 
     private func pairingReplaced() {
@@ -163,6 +175,8 @@ struct WelcomeView: View {
 /// Tries the pairing file against the device and shows the result.
 struct PairingCheckRow<Title: View>: View {
     @EnvironmentObject private var session: SimulationSession
+    /// Off while another row for the same check is on screen.
+    var announces = true
     @ViewBuilder let title: () -> Title
 
     var body: some View {
@@ -183,6 +197,7 @@ struct PairingCheckRow<Title: View>: View {
         }
         .disabled(session.state == .connecting || session.state.isReconnecting)
         .onChange(of: session.pairingCheck) { _, check in
+            guard announces else { return }
             let text: String
             switch check {
             case .valid: text = String(localized: "The pairing file works with this device.")

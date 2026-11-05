@@ -85,6 +85,35 @@
         }
       }
     },
+    "Connecting · Location not set yet" : {
+      "comment" : "Live Activity caption while a Set is still connecting to the device; nothing is simulated yet.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbindet · Standort noch nicht gesetzt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectando · Ubicación aún no establecida"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connexion · Position pas encore définie"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connessione · Posizione non ancora impostata"
+          }
+        }
+      }
+    },
     "Ends the simulated location and restores the real one." : {
       "localizations" : {
         "de" : {

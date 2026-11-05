@@ -5,7 +5,7 @@
 # Usage: tools/fetch-vendor.sh
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(CDPATH= cd -- "$(dirname "$0")/.." >/dev/null && pwd)"
 VENDOR="$ROOT/vendor"
 IDEVICE="v0.1.68"
 XCODEGEN="2.46.0"
@@ -55,7 +55,12 @@ while IFS='|' read -r path sum url; do
   fi
 done <<< "$FILES"
 
-# Checksums for checking a copy elsewhere: (cd vendor && sha256sum -c SHA256SUMS)
+# Checksums for checking a copy elsewhere: (cd vendor && sha256sum -c SHA256SUMS),
+# or shasum -a 256 -c SHA256SUMS. Built with sha(), which also works without coreutils.
 (cd "$VENDOR" && find . -type f ! -name SHA256SUMS ! -name '*.part' -print0 | sort -z |
-  xargs -0 sha256sum 2>/dev/null || true) > "$VENDOR/SHA256SUMS"
+  while IFS= read -r -d '' file; do
+    sum="$(sha "$file")" || exit 1
+    printf '%s  %s\n' "$sum" "$file"
+  done) > "$VENDOR/SHA256SUMS.part"
+mv "$VENDOR/SHA256SUMS.part" "$VENDOR/SHA256SUMS"
 exit "$failed"

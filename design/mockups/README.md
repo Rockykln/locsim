@@ -18,7 +18,8 @@ slides and joins up in the App Store. Title font: Inter (`fonts/`, SIL OFL 1.1).
    the Simulator (Cmd-L). Each language restarts the Simulator in that system language,
    since the Live Activity follows it. The first run may ask whether LocSim may show
    Live Activities: allow it once and run that language again.
-2. Run `design/mockups/render.py` (needs Firefox, ImageMagick 7 and oxipng or optipng).
+2. Run `design/mockups/render.py` (needs Firefox, ImageMagick 7 and oxipng or optipng;
+   set `FIREFOX` if Firefox is not on the PATH or in `/Applications`).
    `--lang de,fr` renders only some languages, `--jobs N` sets how many images are rendered
    at once (default: half the CPU cores, at most 4). Titles are measured and get one size
    per language. A render that fails stops the run with an error instead of keeping an old

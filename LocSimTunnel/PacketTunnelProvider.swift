@@ -34,7 +34,11 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
 
     override func handleAppMessage(_ messageData: Data, completionHandler: ((Data?) -> Void)?) {
         if messageData == TunnelAddress.heartbeat {
-            queue.async { self.lastHeartbeat = ProcessInfo.processInfo.systemUptime }
+            queue.async {
+                self.lastHeartbeat = ProcessInfo.processInfo.systemUptime
+                // Moved on with every beat, so it never fires while LocSim keeps beating.
+                self.watchdog?.schedule(deadline: .now() + TunnelAddress.heartbeatTimeout, leeway: .seconds(10))
+            }
         }
         completionHandler?(nil)
     }
@@ -63,7 +67,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
             guard let self else { return }
             lastHeartbeat = ProcessInfo.processInfo.systemUptime
             let timer = DispatchSource.makeTimerSource(queue: queue)
-            // One shot, moved on when it fires: wakes about every two minutes instead of every 30 s.
+            // One shot, moved on by each heartbeat: it only fires once the beats stop.
             timer.schedule(deadline: .now() + TunnelAddress.heartbeatTimeout, leeway: .seconds(10))
             timer.setEventHandler { [weak self] in self?.checkHeartbeat() }
             timer.resume()
@@ -71,7 +75,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
         }
     }
 
-    // Runs on `queue`.
+    // Runs on `queue`. The deadline already follows the last beat; this check is a safety net.
     private func checkHeartbeat() {
         let left = TunnelAddress.heartbeatTimeout - (ProcessInfo.processInfo.systemUptime - lastHeartbeat)
         if left > 0 {
