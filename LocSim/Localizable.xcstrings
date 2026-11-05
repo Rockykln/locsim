@@ -4377,12 +4377,18 @@
       }
     },
     "Reconnecting (status)" : {
-      "comment" : "Status line on the map, followed by '  ·  ' and the error code; no ellipsis. English value: Reconnecting",
+      "comment" : "Status line on the map, followed by the error code",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Verbindet erneut"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconnecting"
           }
         },
         "es" : {
@@ -4401,12 +4407,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Riconnessione"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reconnecting"
           }
         }
       }
