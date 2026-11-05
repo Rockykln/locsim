@@ -235,6 +235,64 @@
         }
       }
     },
+    "A place name or address, for example Eiffel Tower or Alexanderplatz, Berlin" : {
+      "comment" : "App Intent parameter description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein Ortsname oder eine Adresse, zum Beispiel Eiffelturm oder Alexanderplatz, Berlin"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un nombre de lugar o una dirección, por ejemplo Torre Eiffel o Alexanderplatz, Berlín"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un nom de lieu ou une adresse, par exemple Tour Eiffel ou Alexanderplatz, Berlin"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un nome di luogo o un indirizzo, ad esempio Torre Eiffel o Alexanderplatz, Berlino"
+          }
+        }
+      }
+    },
+    "A place the person saved as a favorite in LocSim" : {
+      "comment" : "App Intent parameter description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein Ort, den die Person in LocSim als Favorit gesichert hat"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un lugar que la persona ha guardado como favorito en LocSim"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un lieu que la personne a enregistré comme favori dans LocSim"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un luogo che la persona ha salvato come preferito in LocSim"
+          }
+        }
+      }
+    },
     "A running simulation stops. You need the setup script to create a new one." : {
       "localizations" : {
         "de" : {
@@ -3721,6 +3779,35 @@
         }
       }
     },
+    "Opens LocSim, finds a place by its name or address and simulates its location. Coordinates and map links work too." : {
+      "comment" : "App Intent description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffnet LocSim, findet einen Ort über seinen Namen oder seine Adresse und simuliert seinen Standort. Koordinaten und Karten-Links funktionieren auch."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre LocSim, encuentra un lugar por su nombre o dirección y simula su ubicación. También funcionan las coordenadas y los enlaces de mapa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvre LocSim, trouve un lieu par son nom ou son adresse et simule sa position. Les coordonnées et les liens de carte fonctionnent aussi."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apre LocSim, trova un luogo dal nome o dall’indirizzo e ne simula la posizione. Funzionano anche coordinate e link di mappa."
+          }
+        }
+      }
+    },
     "Pairing" : {
       "localizations" : {
         "de" : {
@@ -3973,6 +4060,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Segnaposto: %@"
+          }
+        }
+      }
+    },
+    "Place" : {
+      "comment" : "App Intent parameter: a place name or address",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ort"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lugar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lieu"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Luogo"
           }
         }
       }
@@ -5176,6 +5292,35 @@
         }
       }
     },
+    "Set location to ${place}" : {
+      "comment" : "Shortcuts parameter summary",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort auf ${place} setzen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Establecer ubicación en ${place}"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définir la position sur ${place}"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imposta posizione su ${place}"
+          }
+        }
+      }
+    },
     "Set Location to Favorite" : {
       "comment" : "App Intent title",
       "localizations" : {
@@ -5201,6 +5346,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Imposta posizione su preferito"
+          }
+        }
+      }
+    },
+    "Set Location to Place" : {
+      "comment" : "App Intent title",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort auf Ort setzen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Establecer ubicación en un lugar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définir la position sur un lieu"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imposta posizione su un luogo"
           }
         }
       }
