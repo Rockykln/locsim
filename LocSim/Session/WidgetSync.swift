@@ -59,8 +59,9 @@ enum WidgetSync {
         shown.save()
         WidgetCenter.shared.reloadTimelines(ofKind: WidgetSnapshot.kind)
         // The quick actions show the same: Clear while simulating and the most used favorites.
-        // iOS may end LocSim in the background before the scene resigns again.
-        QuickActions.refresh()
+        // iOS may end LocSim in the background before the scene resigns again. Deferred: the
+        // session calls this from its own init, and the quick actions read the session.
+        Task { @MainActor in QuickActions.refresh() }
     }
 
     /// A tap on a favorite in the widget: show it on the map and set it.
