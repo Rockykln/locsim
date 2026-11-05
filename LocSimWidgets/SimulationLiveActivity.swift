@@ -52,8 +52,9 @@ struct SimulationLiveActivity: Widget {
         ActivityConfiguration(for: SimulationActivityAttributes.self) { context in
             LockScreenView(context: context)
                 .padding(14)
-                // White text in light mode too, on the system's own background.
+                // White text in light mode too.
                 .environment(\.colorScheme, .dark)
+                .modifier(GlassBackground())
         } dynamicIsland: { context in
             let status = Status(context)
             return DynamicIsland {
@@ -113,9 +114,7 @@ struct SimulationLiveActivity: Widget {
     }
 }
 
-// No background tint: the system's own material is the translucent glass, and iOS dims it
-// correctly for Always On. The text is drawn in the dark color scheme, so it is white in
-// light mode as well.
+// The text is drawn in the dark color scheme, so it is white in light mode as well.
 private struct LockScreenView: View {
     let context: ActivityViewContext<SimulationActivityAttributes>
     // Always On: the screen is dimmed, colors and gray text lose most of their contrast.
@@ -167,6 +166,18 @@ private struct LockScreenView: View {
                 .padding(.top, 4)
             }
         }
+    }
+}
+
+/// Without a tint, iOS draws a nearly solid white (or black) plate. A faint tint lets the
+/// blurred wallpaper show through, like the system's own glass.
+private struct GlassBackground: ViewModifier {
+    @Environment(\.colorScheme) private var colorScheme
+
+    func body(content: Content) -> some View {
+        content
+            .activityBackgroundTint(colorScheme == .light ? Color.white.opacity(0.15) : Color.black.opacity(0.25))
+            .activitySystemActionForegroundColor(.white)
     }
 }
 
