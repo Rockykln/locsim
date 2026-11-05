@@ -63,6 +63,8 @@ struct MapScreen: View {
                     ?? .camera(MapCamera(centerCoordinate: session.target, distance: zoom))
                 camera = start
                 mapCenter = session.target
+                // Saved before names were kept, or set from a Shortcut with bare coordinates.
+                if session.targetName == nil { session.targetName = knownName(for: session.target) }
                 showRealPositionIfAllowed()
                 if !session.hasPairing { showWelcome = true }
                 showDemo()
@@ -1077,11 +1079,21 @@ struct MapScreen: View {
         searchTask?.cancel()
         locateTask?.cancel()
         session.target = coordinate
-        session.targetName = name
+        session.targetName = name ?? knownName(for: coordinate)
         searchFocused = false
         search.reset()
         fly(to: coordinate, duration: 1.2)
         if apply { setLocation() }
+    }
+
+    /// A typed or pasted coordinate that is a favorite or a recent place gets that name.
+    /// Matched to about a meter, so only the same spot counts, not a pin dropped next to it.
+    private func knownName(for c: CLLocationCoordinate2D) -> String? {
+        func same(_ other: CLLocationCoordinate2D) -> Bool {
+            abs(other.latitude - c.latitude) < 1e-5 && abs(other.longitude - c.longitude) < 1e-5
+        }
+        if let favorite = favorites.items.first(where: { same($0.coordinate) }) { return favorite.name }
+        return recents.items.first { $0.name != nil && same($0.coordinate) }?.name
     }
 
     /// Every Set goes through here; without a pairing file it opens the setup steps instead.

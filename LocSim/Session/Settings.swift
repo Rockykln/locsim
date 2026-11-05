@@ -16,6 +16,7 @@ enum SettingsKey {
     static let haptics = "haptics"
     static let favorites = "favorites"
     static let last = "lastCoordinate"
+    static let lastName = "lastCoordinateName"
     static let ddiDownloadAllowed = "ddiDownloadAllowed"
     static let recents = "recentLocations"
     static let recentsEnabled = "recentsEnabled"
@@ -198,8 +199,14 @@ enum LastCoordinate {
         return .init(latitude: pair[0], longitude: pair[1])
     }
 
-    static func save(_ c: CLLocationCoordinate2D) {
+    /// The place name that went with it, so a restart does not turn it into a dropped pin.
+    static func loadName() -> String? {
+        UserDefaults.standard.string(forKey: SettingsKey.lastName)
+    }
+
+    static func save(_ c: CLLocationCoordinate2D, name: String?) {
         UserDefaults.standard.set([c.latitude, c.longitude], forKey: SettingsKey.last)
+        UserDefaults.standard.set(name, forKey: SettingsKey.lastName)
     }
 }
 

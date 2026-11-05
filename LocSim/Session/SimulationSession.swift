@@ -47,7 +47,7 @@ final class SimulationSession: ObservableObject {
     }
 
     @Published var target: CLLocationCoordinate2D = LastCoordinate.load()
-    @Published var targetName: String?
+    @Published var targetName: String? = LastCoordinate.loadName()
     @Published private(set) var active: CLLocationCoordinate2D? {
         didSet { syncActivity() }
     }
@@ -193,7 +193,7 @@ final class SimulationSession: ObservableObject {
         }
 
         target = coordinate
-        LastCoordinate.save(coordinate)
+        LastCoordinate.save(coordinate, name: name)
         let started = generation
         // When-In-Use updates only start from the foreground, and the user may leave right after tapping.
         if UserDefaults.standard.bool(forKey: SettingsKey.keepAlive) { keepAlive.start() }
