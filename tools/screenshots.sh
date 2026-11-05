@@ -103,7 +103,8 @@ launch() {
 
 lock() {
     # After a restart the Live Activity can take a while to appear.
-    printf '%s: when the Live Activity shows, lock the Simulator (Cmd-L), wait until it is on the Lock Screen, then press Enter. ' "$lang"
+    # Locked, the Simulator dims into Always On; a click wakes the Lock Screen without unlocking.
+    printf '%s: when the Live Activity shows, lock the Simulator (Cmd-L), click the screen once so the Lock Screen is lit, not dimmed, then press Enter. ' "$lang"
     read -r _
 }
 
@@ -163,7 +164,8 @@ if wants live; then
             launch live
             sleep 8
             lock
-            sleep 4
+            # Right away, before the screen dims again.
+            sleep 1
             shoot "$OUT/$lang/$theme/4-live.png"
         done
     done
