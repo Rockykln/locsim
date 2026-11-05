@@ -661,7 +661,7 @@
       }
     },
     "Clear" : {
-      "comment" : "Button: ends the simulated location, or clears the recent locations",
+      "comment" : "Button: ends the simulated location and restores the real one",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1554,13 +1554,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Developer Disk Image descargada"
+            "value" : "Developer Disk Image descargado"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Developer Disk Image téléchargée"
+            "value" : "Developer Disk Image téléchargé"
           }
         },
         "it" : {
@@ -3136,7 +3136,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se encontraron coordenadas en “%@”."
+            "value" : "No se han encontrado coordenadas en “%@”."
           }
         },
         "fr" : {
@@ -5182,7 +5182,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Via"
+            "value" : "Strada"
           }
         }
       }
@@ -5327,30 +5327,31 @@
         }
       }
     },
-    "The device did not provide location simulation. Turn on Mount Automatically under Settings, or restart the device." : {
+    "The device did not provide location simulation. Turn on Mount Automatically in LocSim's settings under Developer Disk Image, or restart the device." : {
+      "comment" : "Error LS-400: what to do when the location service is missing",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Das Gerät stellt keine Standortsimulation bereit. Aktiviere „Automatisch einbinden“ in den Einstellungen oder starte das Gerät neu."
+            "value" : "Das Gerät stellt keine Standortsimulation bereit. Aktiviere „Automatisch einbinden“ in den Einstellungen von LocSim unter „Developer Disk Image“ oder starte das Gerät neu."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El dispositivo no ha proporcionado la simulación de ubicación. Activa “Montar automáticamente” en Ajustes o reinicia el dispositivo."
+            "value" : "El dispositivo no ha proporcionado la simulación de ubicación. Activa “Montar automáticamente” en los ajustes de LocSim, en “Developer Disk Image”, o reinicia el dispositivo."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L’appareil n’a pas fourni la simulation de position. Activez « Monter automatiquement » dans Réglages ou redémarrez l’appareil."
+            "value" : "L’appareil n’a pas fourni la simulation de position. Activez « Monter automatiquement » dans les réglages de LocSim, sous « Developer Disk Image », ou redémarrez l’appareil."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il dispositivo non ha reso disponibile la simulazione della posizione. Attiva “Monta automaticamente” in Impostazioni o riavvia il dispositivo."
+            "value" : "Il dispositivo non ha reso disponibile la simulazione della posizione. Attiva “Monta automaticamente” nelle impostazioni di LocSim, in “Developer Disk Image”, o riavvia il dispositivo."
           }
         }
       }
