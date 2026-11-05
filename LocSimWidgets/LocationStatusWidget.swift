@@ -12,7 +12,7 @@ struct LocationStatusWidget: Widget {
         }
         .configurationDisplayName("Location Status")
         .description("Shows whether a location is simulated. Tap a favorite to set it in LocSim.")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies([.systemSmall, .systemMedium, .accessoryInline, .accessoryRectangular, .accessoryCircular])
     }
 }
 
@@ -41,6 +41,66 @@ private struct LocationStatusView: View {
     @Environment(\.widgetFamily) private var family
 
     var body: some View {
+        switch family {
+        case .accessoryInline: inline
+        case .accessoryRectangular: rectangular
+        case .accessoryCircular: circular
+        default: home
+        }
+    }
+
+    // MARK: Lock Screen
+
+    private var symbol: String { snapshot.active == nil ? "location.slash" : "location.fill" }
+
+    /// One line above the clock.
+    private var inline: some View {
+        if let active = snapshot.active {
+            Label("Simulated · \(active.name)", systemImage: symbol)
+        } else {
+            Label("Real location", systemImage: symbol)
+        }
+    }
+
+    private var rectangular: some View {
+        VStack(alignment: .leading, spacing: 1) {
+            Label {
+                Text(snapshot.active == nil ? "Not simulated" : "Simulated location")
+                    .font(.caption.weight(.semibold))
+            } icon: {
+                Image(systemName: symbol)
+            }
+            if let active = snapshot.active {
+                Text(active.name)
+                    .font(.headline)
+                    .lineLimit(1)
+                Text(active.coordinate)
+                    .font(.caption2.monospacedDigit())
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+            } else {
+                Text("The real location is in use.")
+                    .font(.caption)
+                    .lineLimit(2)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
+    }
+
+    private var circular: some View {
+        ZStack {
+            AccessoryWidgetBackground()
+            Image(systemName: symbol)
+                .font(.title2)
+        }
+        .accessibilityLabel(Text(snapshot.active == nil ? "Not simulated" : "Simulated location"))
+    }
+
+    // MARK: Home Screen
+
+    @ViewBuilder
+    private var home: some View {
         if family == .systemMedium {
             HStack(alignment: .top, spacing: 14) {
                 status

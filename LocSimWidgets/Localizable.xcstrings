@@ -345,6 +345,35 @@
         }
       }
     },
+    "Real location" : {
+      "comment" : "Lock Screen inline widget: nothing is simulated",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Echter Standort"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ubicación real"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Position réelle"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posizione reale"
+          }
+        }
+      }
+    },
     "Set Last Location" : {
       "comment" : "Control Center button and its intent: sets the location simulated last",
       "localizations" : {
@@ -456,6 +485,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Posizione simulata · Riconnessione"
+          }
+        }
+      }
+    },
+    "Simulated · %@" : {
+      "comment" : "Lock Screen inline widget: the simulated place",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simuliert · %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simulada · %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simulée · %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simulata · %@"
           }
         }
       }
