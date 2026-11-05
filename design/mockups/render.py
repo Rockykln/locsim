@@ -29,6 +29,9 @@ SITE = os.path.join(REPO, "site", "public", "img")
 TITLED = os.path.join(OUT, "titled")
 DOCS = os.path.join(REPO, "docs", "images")
 
+# Set by check_tools(); on macOS firefox is usually not on PATH.
+FIREFOX = "firefox"
+
 ALL_LANGS = ["en", "de", "fr", "es", "it"]
 LANGS = list(ALL_LANGS)
 WIDTH, HEIGHT = 1320, 2868          # App Store, 6.9" iPhone
@@ -163,7 +166,7 @@ def firefox(page_html, target, size, work):
         os.remove(target)
     profile = tempfile.mkdtemp(dir=work)
     result = subprocess.run(
-        ["firefox", "--headless", "--no-remote", "--profile", profile,
+        [FIREFOX, "--headless", "--no-remote", "--profile", profile,
          f"--window-size={size[0]},{size[1]}", "--screenshot", target, f"file://{page}"],
         stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True, timeout=180, check=False)
     shutil.rmtree(profile, ignore_errors=True)
@@ -191,7 +194,8 @@ def transparent(on_black, on_white, target, work, width=660):
         os.remove(target)
     subprocess.run(["magick", on_black, on_white, "-alpha", "off", "-compose", "difference", "-composite",
                     "-colorspace", "gray", "-negate", alpha], check=True)
-    subprocess.run(["magick", on_black, "(", alpha, "-colorspace", "sRGB", "-type", "TrueColor", ")",
+    # -respect-parentheses: otherwise -type TrueColor stays set for the second read of alpha.png.
+    subprocess.run(["magick", "-respect-parentheses", on_black, "(", alpha, "-colorspace", "sRGB", "-type", "TrueColor", ")",
                     "-alpha", "off", "-compose", "DivideSrc", "-composite", alpha, "-alpha", "off",
                     "-compose", "CopyOpacity", "-composite", "-trim", "+repage", "-resize", f"{width}x",
                     "-quality", "85", "-define", "webp:method=6", "-define", "webp:alpha-quality=90",
@@ -368,7 +372,8 @@ def render_slide(job, sizes, skies, readme_only, readme_ids, work_root):
 
 
 def lang_list(value):
-    codes = [code.strip() for code in value.split(",") if code.strip()]
+    # Deduplicated: the same job twice would render into the same file at once.
+    codes = list(dict.fromkeys(code.strip() for code in value.split(",") if code.strip()))
     unknown = [code for code in codes if code not in ALL_LANGS]
     if unknown or not codes:
         raise argparse.ArgumentTypeError(
@@ -384,6 +389,22 @@ def job_count(value):
     if n < 1:
         raise argparse.ArgumentTypeError(f"needs a whole number of at least 1, not {value!r}")
     return n
+
+
+def check_tools():
+    """Checks for every tool up front, so a missing one does not show up halfway through."""
+    global FIREFOX
+    mac = "/Applications/Firefox.app/Contents/MacOS/firefox"
+    FIREFOX = os.environ.get("FIREFOX") or shutil.which("firefox") or (mac if os.access(mac, os.X_OK) else None)
+    missing = []
+    if not FIREFOX:
+        missing.append("firefox (or set FIREFOX to its path)")
+    if not shutil.which("magick"):
+        missing.append("magick (ImageMagick 7; ImageMagick 6 only has convert)")
+    if not (shutil.which("oxipng") or shutil.which("optipng")):
+        missing.append("oxipng or optipng")
+    if missing:
+        sys.exit("render.py needs: " + ", ".join(missing))
 
 
 def main():
@@ -402,6 +423,7 @@ def main():
         LANGS = args.lang
     if args.readme_only and "en" not in LANGS:
         parser.error("--readme-only renders the English README image; include en in --lang")
+    check_tools()
     slides = json.load(open(os.path.join(HERE, "slides.json")))
     missing = [f"{s['id']} ({lang})" for s in slides for lang in LANGS if lang not in s]
     if missing:
@@ -439,4 +461,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # Failures outside run_jobs (title measuring, panoramas, README, preview) end with a message too.
+    try:
+        main()
+    except (RuntimeError, OSError, subprocess.SubprocessError) as exc:
+        sys.exit(f"render failed: {exc}")

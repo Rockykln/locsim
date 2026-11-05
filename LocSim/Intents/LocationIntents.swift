@@ -76,6 +76,7 @@ struct ClearLocationIntent: AppIntent {
         guard session.canClear || unfinished else {
             return .result(dialog: "No location is simulated.")
         }
+        // Also waits for the Live Activity to end: iOS may suspend LocSim as soon as this returns.
         await session.clear()
         if let error = session.state.error { throw LocationIntentError(error.summary) }
         return .result(dialog: "The real location is back.")
@@ -90,18 +91,13 @@ enum LocationIntentRunner {
         guard session.hasPairing else {
             throw LocationIntentError(String(localized: "LocSim is not set up yet. Open LocSim and follow the setup steps."))
         }
-        session.target = c
-        session.targetName = name
-        let sets = session.setCount
-        await session.apply()
-        // While another Set or a Clear runs, this one is only queued; Shortcuts should hear how it ended.
-        var waited = 0
-        while session.isWorking, waited < 120 {
-            try? await Task.sleep(nanoseconds: 250_000_000)
-            waited += 1
-        }
-        if let error = session.state.error { throw LocationIntentError(error.summary) }
-        guard session.setCount > sets else {
+        // Waits also while this Set is queued behind another one, so Shortcuts hear how it ended.
+        switch await session.setAndWait(c, name: name) {
+        case .set:
+            return
+        case .failed(let error):
+            throw LocationIntentError(error.summary)
+        case .notSet:
             throw LocationIntentError(String(localized: "The location was not set."))
         }
     }

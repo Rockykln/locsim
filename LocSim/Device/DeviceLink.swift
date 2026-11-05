@@ -78,6 +78,15 @@ final class DeviceLink: @unchecked Sendable {
         _ = try? await run(Timeout.send) { self.closeLocked() }
     }
 
+    /// Closes a replaced link once the call blocking its queue returns, however long that takes.
+    /// No deadline: close() would skip the cleanup if the stuck call outlives its timeout.
+    func release() {
+        queue.async(qos: .utility, flags: .enforceQoS) {
+            self.closeLocked()
+            self.publishState()
+        }
+    }
+
     // idevice calls can block on a dead connection without returning, so each one has a deadline.
     private func run<T>(_ timeout: TimeInterval, _ body: @escaping () throws -> T) async throws -> T {
         try await withCheckedThrowingContinuation { cont in

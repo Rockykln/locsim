@@ -10,16 +10,23 @@ struct LocSimWidgets: WidgetBundle {
     }
 }
 
-/// What the activity says about the simulation; outdated wins over reconnecting.
+/// What the activity says about the simulation; outdated wins over the rest.
 private enum Status {
-    case active, reconnecting, stale
+    case connecting, active, reconnecting, stale
 
     init(_ context: ActivityViewContext<SimulationActivityAttributes>) {
-        self = context.isStale ? .stale : context.state.reconnecting ? .reconnecting : .active
+        if context.isStale {
+            self = .stale
+        } else if context.state.connecting {
+            self = .connecting
+        } else {
+            self = context.state.reconnecting ? .reconnecting : .active
+        }
     }
 
     var symbol: String {
         switch self {
+        case .connecting: return "location"
         case .active: return "location.fill"
         case .reconnecting: return "location.slash.fill"
         case .stale: return "location.slash"
@@ -28,11 +35,17 @@ private enum Status {
 
     var color: Color {
         switch self {
-        case .active: return .blue
+        case .connecting, .active: return .blue
         case .reconnecting: return .orange
         case .stale: return .gray
         }
     }
+
+    /// Nothing is set yet while connecting, and an outdated start time says nothing.
+    var showsTime: Bool { self == .active || self == .reconnecting }
+
+    /// These captions are long in some languages and may take two lines.
+    var captionLines: Int { self == .stale || self == .connecting ? 2 : 1 }
 
     /// Gray text is too faint on the Lock Screen; the outdated hint must stay readable.
     var textColor: Color { self == .stale ? .primary : color }
@@ -40,6 +53,7 @@ private enum Status {
     /// Always says that the location is simulated, so it is never taken for the real one.
     var caption: String {
         switch self {
+        case .connecting: return String(localized: "Connecting · Location not set yet")
         case .active: return String(localized: "Simulated location")
         case .reconnecting: return String(localized: "Simulated location · Reconnecting")
         case .stale: return String(localized: "Open LocSim to check the location")
@@ -65,7 +79,7 @@ struct SimulationLiveActivity: Widget {
                 }
                 // Only seen unlocked, where a running timer updates; the Lock Screen shows the start time.
                 DynamicIslandExpandedRegion(.trailing) {
-                    if status != .stale {
+                    if status.showsTime {
                         ElapsedTime(since: context.state.startedAt)
                             .font(.headline)
                             .padding(.trailing, 4)
@@ -146,11 +160,10 @@ private struct LockScreenView: View {
                         Text(status.caption)
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(dimmed ? AnyShapeStyle(.white) : AnyShapeStyle(status.textColor))
-                            // The outdated hint is long in some languages and may take two lines.
-                            .lineLimit(status == .stale ? 2 : 1)
+                            .lineLimit(status.captionLines)
                             .minimumScaleFactor(0.85)
                         Spacer(minLength: 8)
-                        if status != .stale {
+                        if status.showsTime {
                             StartTime(since: context.state.startedAt)
                                 .font(.caption.weight(.medium))
                                 .foregroundStyle(dimmed ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
@@ -182,14 +195,17 @@ private struct LockScreenView: View {
 
 /// Without a tint iOS draws a nearly solid plate. A clear tint leaves only the blurred
 /// wallpaper, like the system's own glass. In Always On the wallpaper stays visible, only
-/// dimmed, so a light one would swallow the white text there; a dark tint keeps it readable.
+/// dimmed, so a light one would swallow the white text there; a dark fill keeps it readable.
+/// The fill is part of the content: iOS does not reliably re-read a changed tint on wake,
+/// which left the activity dark after leaving Always On.
 private struct GlassBackground: ViewModifier {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.isLuminanceReduced) private var dimmed
 
     func body(content: Content) -> some View {
         content
-            .activityBackgroundTint(dimmed ? Color.black.opacity(0.6) : Color.clear)
+            .background(dimmed ? Color.black.opacity(0.6) : Color.clear)
+            .activityBackgroundTint(Color.clear)
             .activitySystemActionForegroundColor(dimmed || colorScheme == .dark ? .white : .black)
     }
 }

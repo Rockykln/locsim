@@ -11,6 +11,26 @@ struct SimulationActivityAttributes: ActivityAttributes {
         var reconnecting: Bool
         // Part of the state, not of the attributes: a new Set updates the activity in place.
         var startedAt: Date
+        /// The Set is still connecting; nothing is simulated yet.
+        var connecting = false
+
+        enum CodingKeys: String, CodingKey {
+            case name, coordinate, reconnecting, startedAt, connecting
+        }
+    }
+}
+
+// In an extension, so the memberwise init stays.
+extension SimulationActivityAttributes.ContentState {
+    // An activity left by an older build lacks the newer fields; it must still decode, or it
+    // cannot be ended and stays on screen.
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        name = try c.decode(String.self, forKey: .name)
+        coordinate = try c.decode(String.self, forKey: .coordinate)
+        reconnecting = try c.decodeIfPresent(Bool.self, forKey: .reconnecting) ?? false
+        startedAt = try c.decodeIfPresent(Date.self, forKey: .startedAt) ?? Date()
+        connecting = try c.decodeIfPresent(Bool.self, forKey: .connecting) ?? false
     }
 }
 

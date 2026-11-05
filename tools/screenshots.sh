@@ -10,7 +10,7 @@ set -eu
 
 DEVICE=${DEVICE:-"iPhone 17"}
 BUNDLE=com.rockykln.locsim
-ROOT=$(cd "$(dirname "$0")/.." && pwd)
+ROOT=$(CDPATH= cd -- "$(dirname "$0")/.." >/dev/null && pwd)
 OUT="$ROOT/design/screenshots"
 BUILD="$ROOT/build/screenshots"
 LANGS=${*:-"en de fr es it"}
@@ -29,7 +29,7 @@ mkdir -p "$BUILD"
 xcodebuild -project LocSim.xcodeproj -scheme LocSim -configuration Debug \
     -destination "id=$UDID" -derivedDataPath "$BUILD" \
     CODE_SIGNING_ALLOWED=NO build -quiet > "$BUILD/build.log" 2>&1 ||
-    { grep -E "error:" "$BUILD/build.log" >&2; echo "Build failed, see $BUILD/build.log" >&2; exit 1; }
+    { grep -E "error:" "$BUILD/build.log" >&2 || true; echo "Build failed, see $BUILD/build.log" >&2; exit 1; }
 APP="$BUILD/Build/Products/Debug-iphonesimulator/LocSim.app"
 
 boot() {
@@ -41,11 +41,37 @@ boot() {
         --batteryState discharging --batteryLevel 100
 }
 
+# Every step on its own: under set -e the first failure (e.g. a shut-down Simulator)
+# would skip the rest.
+restore() {
+    xcrun simctl status_bar "$UDID" clear 2>/dev/null || true
+    case $ORIG_APPEARANCE in
+        light|dark) xcrun simctl ui "$UDID" appearance "$ORIG_APPEARANCE" 2>/dev/null || true ;;
+    esac
+    if [ -n "$ORIG_LANGS" ]; then
+        # Unquoted on purpose: one argument per language.
+        # shellcheck disable=SC2086
+        if xcrun simctl spawn "$UDID" defaults write -g AppleLanguages -array $ORIG_LANGS 2>/dev/null &&
+            { [ -z "$ORIG_LOCALE" ] || xcrun simctl spawn "$UDID" defaults write -g AppleLocale -string "$ORIG_LOCALE" 2>/dev/null; }; then
+            echo "Simulator language set back to" $ORIG_LANGS"; it applies after the next restart."
+        else
+            echo "Could not set the Simulator language back to" $ORIG_LANGS "(${ORIG_LOCALE:-no locale}); set it in the Simulator's Settings." >&2
+        fi
+    fi
+}
+
+ORIG_LANGS=""
+ORIG_LOCALE=""
+ORIG_APPEARANCE=""
+# Set before the first boot, so a failure from here on still clears the status bar.
+trap restore EXIT
 boot
 # The Live Activity runs in its own process, which follows the Simulator's system language,
 # not the app's launch arguments; each language therefore restarts the Simulator in it.
-ORIG_LANG=$(xcrun simctl spawn "$UDID" defaults read -g AppleLanguages 2>/dev/null | sed -n '2s/[ ",]//gp')
+# The whole list, one language per line without the parentheses and quotes.
+ORIG_LANGS=$(xcrun simctl spawn "$UDID" defaults read -g AppleLanguages 2>/dev/null | sed -e '1d' -e '$d' -e 's/[ ",]//g' || true)
 ORIG_LOCALE=$(xcrun simctl spawn "$UDID" defaults read -g AppleLocale 2>/dev/null || true)
+ORIG_APPEARANCE=$(xcrun simctl ui "$UDID" appearance 2>/dev/null || true)
 
 system_language() {
     xcrun simctl spawn "$UDID" defaults write -g AppleLanguages -array "$1"
@@ -54,18 +80,7 @@ system_language() {
     boot
 }
 
-restore() {
-    xcrun simctl status_bar "$UDID" clear
-    xcrun simctl ui "$UDID" appearance light
-    if [ -n "$ORIG_LANG" ]; then
-        xcrun simctl spawn "$UDID" defaults write -g AppleLanguages -array "$ORIG_LANG"
-        [ -z "$ORIG_LOCALE" ] || xcrun simctl spawn "$UDID" defaults write -g AppleLocale -string "$ORIG_LOCALE"
-        echo "Simulator language set back to $ORIG_LANG; it applies after the next restart."
-    fi
-}
-
 xcrun simctl install "$UDID" "$APP"
-trap restore EXIT
 
 shoot() {
     # simctl may not replace a file another process wrote (e.g. git); it can create a new one.
@@ -110,11 +125,15 @@ for lang in $LANGS; do
         *) locale=en_US ;;
     esac
     system_language "$lang" "$locale"
-    # After a restart the first map takes longer to load its tiles.
-    launch map
-    sleep 15
+    restarted=1
     for theme in light dark; do
         xcrun simctl ui "$UDID" appearance "$theme"
+        if [ "$restarted" = 1 ]; then
+            # After a restart the first map takes longer to load its tiles.
+            launch map
+            sleep 15
+            restarted=0
+        fi
         mkdir -p "$OUT/$lang/$theme"
         for shot in $SHOTS; do
             screen=${shot%%:*}
@@ -134,8 +153,12 @@ for lang in $LANGS; do
         lock "$theme"
         sleep 4
         shoot "$OUT/$lang/$theme/4-live.png"
-        xcrun simctl shutdown "$UDID"
-        boot
+        # Only the next theme needs it; the next language restarts the Simulator anyway.
+        if [ "$theme" = light ]; then
+            xcrun simctl shutdown "$UDID"
+            boot
+            restarted=1
+        fi
     done
 done
 xcrun simctl terminate "$UDID" "$BUNDLE" 2>/dev/null || true
