@@ -102,28 +102,28 @@ launch() {
 }
 
 lock() {
-    # simctl cannot set the wallpaper; the Lock Screen only looks light on a light one.
-    if [ "$1" = light ]; then
-        printf 'Light run: the Lock Screen needs a light wallpaper (Settings > Wallpaper in the Simulator). '
-    else
-        printf 'Dark run: the Lock Screen needs a dark wallpaper. '
-    fi
     # After a restart the Live Activity can take a while to appear.
-    printf 'When the Live Activity shows, lock the Simulator (Cmd-L), wait until it is on the Lock Screen, then press Enter. '
+    printf '%s: when the Live Activity shows, lock the Simulator (Cmd-L), wait until it is on the Lock Screen, then press Enter. ' "$lang"
     read -r _
+}
+
+locale_for() {
+    case $1 in
+        de) echo de_DE ;;
+        fr) echo fr_FR ;;
+        es) echo es_ES ;;
+        it) echo it_IT ;;
+        *) echo en_US ;;
+    esac
 }
 
 # screen:file:seconds to wait for map tiles and search results
 SHOTS="map:1-map:8 search:2-search:8 recents:3-recents:6 favorites:5-favorites:8"
 
+# Pass 1 runs without help. The Lock Screen shots come last, grouped by theme, so the
+# wallpaper changes only twice.
 for lang in $LANGS; do
-    case $lang in
-        de) locale=de_DE ;;
-        fr) locale=fr_FR ;;
-        es) locale=es_ES ;;
-        it) locale=it_IT ;;
-        *) locale=en_US ;;
-    esac
+    locale=$(locale_for "$lang")
     system_language "$lang" "$locale"
     restarted=1
     for theme in light dark; do
@@ -145,20 +145,27 @@ for lang in $LANGS; do
             sleep "$wait"
             shoot "$OUT/$lang/$theme/$name.png"
         done
-
-        wants live || continue
-        # Lock Screen with the Live Activity. A restart unlocks the Simulator again.
-        launch live
-        sleep 8
-        lock "$theme"
-        sleep 4
-        shoot "$OUT/$lang/$theme/4-live.png"
-        # Only the next theme needs it; the next language restarts the Simulator anyway.
-        if [ "$theme" = light ]; then
-            xcrun simctl shutdown "$UDID"
-            boot
-            restarted=1
-        fi
     done
 done
+
+if wants live; then
+    for theme in light dark; do
+        # simctl cannot set the wallpaper; the Lock Screen only looks light on a light one.
+        # Use a stock wallpaper: these shots end up in committed images.
+        printf '\nLock Screen shots, %s: set a %s stock wallpaper (Settings > Wallpaper in the Simulator), then press Enter. ' "$theme" "$theme"
+        read -r _
+        for lang in $LANGS; do
+            # The Live Activity follows the system language, and the restart unlocks the Simulator.
+            locale=$(locale_for "$lang")
+            system_language "$lang" "$locale"
+            xcrun simctl ui "$UDID" appearance "$theme"
+            mkdir -p "$OUT/$lang/$theme"
+            launch live
+            sleep 8
+            lock
+            sleep 4
+            shoot "$OUT/$lang/$theme/4-live.png"
+        done
+    done
+fi
 xcrun simctl terminate "$UDID" "$BUNDLE" 2>/dev/null || true
