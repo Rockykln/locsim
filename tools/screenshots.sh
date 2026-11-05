@@ -20,8 +20,16 @@ wants() { case " $SCREENS " in *" $1 "*) return 0 ;; esac; return 1; }
 cd "$ROOT"
 [ -d LocSim.xcodeproj ] || { echo "Run xcodegen generate first."; exit 1; }
 
-UDID=$(xcrun simctl list devices available | grep -F "    $DEVICE (" | head -1 | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')
+# A booted simulator with that name wins, so the shots happen on the one on screen; UDID=...
+# picks one directly. Several devices can share a name, one per iOS version.
+if [ -z "${UDID:-}" ]; then
+    UDID=$(xcrun simctl list devices booted | grep -F "    $DEVICE (" | head -1 | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')
+fi
+if [ -z "${UDID:-}" ]; then
+    UDID=$(xcrun simctl list devices available | grep -F "    $DEVICE (" | tail -1 | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')
+fi
 [ -n "$UDID" ] || { echo "No simulator named \"$DEVICE\". Add one in Xcode > Window > Devices and Simulators."; exit 1; }
+echo "Using $DEVICE $UDID"
 
 echo "Building for $DEVICE"
 mkdir -p "$BUILD"
@@ -34,6 +42,8 @@ APP="$BUILD/Build/Products/Debug-iphonesimulator/LocSim.app"
 
 boot() {
     xcrun simctl boot "$UDID" 2>/dev/null || true
+    # Shows this device in the Simulator window; Cmd-L only locks the one on screen.
+    open -a Simulator --args -CurrentDeviceUDID "$UDID"
     xcrun simctl bootstatus "$UDID" -b >/dev/null
     xcrun simctl status_bar "$UDID" override --time 9:41 \
         --dataNetwork wifi --wifiMode active --wifiBars 3 \
