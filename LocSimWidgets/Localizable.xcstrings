@@ -171,6 +171,64 @@
         }
       }
     },
+    "Opens LocSim and simulates the last location again." : {
+      "comment" : "Control Center button and intent description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffnet LocSim und simuliert den letzten Standort erneut."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre LocSim y vuelve a simular la última ubicación."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvre LocSim et simule à nouveau la dernière position."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apre LocSim e simula di nuovo l’ultima posizione."
+          }
+        }
+      }
+    },
+    "Set Last Location" : {
+      "comment" : "Control Center button and its intent: sets the location simulated last",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzten Standort setzen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Establecer la última ubicación"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définir la dernière position"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imposta l’ultima posizione"
+          }
+        }
+      }
+    },
     "Simulated location" : {
       "localizations" : {
         "de" : {
