@@ -640,7 +640,7 @@ struct MapScreen: View {
                     AccessibilityNotification.Announcement(String(localized: "Recent locations cleared")).post()
                 }
                 .font(.footnote.weight(.semibold))
-                .frame(minHeight: 44)
+                .frame(minWidth: 44, minHeight: 44)
                 .contentShape(Rectangle())
                 .accessibilityLabel("Clear recent locations")
                 // Lines up with the label inside the paste button above, not with its edge.
