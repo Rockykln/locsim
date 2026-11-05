@@ -992,11 +992,8 @@ struct MapScreen: View {
             }
 
             // Stacked at large text sizes, or when long translations do not fit side by side.
-            // The sidebar column is wide enough for both once the labels may shrink a little.
             if dynamicTypeSize.isAccessibilitySize {
                 actionButtons(stacked: true)
-            } else if usesSidebar {
-                actionButtons(stacked: false)
             } else {
                 ViewThatFits(in: .horizontal) {
                     actionButtons(stacked: false)
@@ -1266,8 +1263,10 @@ private enum Metrics {
     static let sidebarWidth: CGFloat = 380
     static let minTopGap: CGFloat = 16
     // Estimates for the iPhone Duo until measured on the device.
-    static let coverTopGap: CGFloat = 44
-    static let coverBottomTrim: CGFloat = 16
+    // Level with the clock in the status column, below the camera.
+    static let coverTopGap: CGFloat = 60
+    // About 50 pt stayed free below the panel; this leaves a little above the home indicator.
+    static let coverBottomTrim: CGFloat = 36
 }
 
 private let longPressDuration = 0.3
