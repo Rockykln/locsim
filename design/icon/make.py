@@ -102,14 +102,21 @@ def sources():
     lpd, lpb = pin_layer(ground_shadow=False)
     files["layers/pin.svg"] = svg(lpd, f"<g {PLACE}>{lpb}</g>")
     # Standing alone, a soft shadow keeps the pale map apart from a light page.
-    shadow = ('<filter id="lift" x="-10%" y="-10%" width="120%" height="130%">'
-              '<feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#3a2060" flood-opacity="0.28"/></filter>')
-    lifted = f'<g filter="url(#lift)">{mb}{pb}</g>'
-    files["mark.svg"] = svg(md + pd + shadow, lifted, MARK_VIEW)
+    # No SVG filter: Safari draws filtered SVG images at low resolution, which blurs the logo.
+    # A few offset copies of the outline give a soft shadow from plain shapes instead.
+    outline = ('<g stroke-linejoin="round" stroke-width="30">'
+               '<polygon points="196,352 384,296 640,352 828,296 828,752 640,752 384,696 196,752"/></g>'
+               f'<g transform="translate(0 {-PIN_LIFT:.2f})"><path d="{pin_path(512, 330, 150, 600)}" '
+               'stroke-width="22" stroke-linejoin="round"/></g>')
+    shadow = "".join(
+        f'<g transform="translate(0 {dy})" fill="#3a2060" stroke="#3a2060" opacity="{op}">{outline}</g>'
+        for dy, op in ((4, 0.08), (9, 0.07), (15, 0.05)))
+    lifted = shadow + mb + pb
+    files["mark.svg"] = svg(md + pd, lifted, MARK_VIEW)
     # The same, centered in a square, for the favicons.
     x, y, w, h = MARK_VIEW
     side = max(w, h)
-    files["layers/mark-square.svg"] = svg(md + pd + shadow, lifted, (x - (side - w) / 2, y - (side - h) / 2, side, side))
+    files["layers/mark-square.svg"] = svg(md + pd, lifted, (x - (side - w) / 2, y - (side - h) / 2, side, side))
     for name, text in files.items():
         with open(os.path.join(HERE, name), "w") as f:
             f.write(text)
