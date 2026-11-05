@@ -1,11 +1,14 @@
 #!/bin/sh
 # Takes the App Store screenshots in the iOS Simulator with the demo mode (macOS, Xcode).
-# Usage: tools/screenshots.sh [lang ...]   (all languages by default; DEVICE="iPhone 17")
-#        SCREENS="live favorites" tools/screenshots.sh it   retakes only those screens.
+# Usage: tools/screenshots.sh [lang ...]                all languages by default
+#        SCREENS="live" tools/screenshots.sh           only the Lock Screen shots
+#        DEVICE="iPhone 17" or UDID=<id>               which simulator (default: a booted
+#                                                      "iPhone 17", else the first one listed)
 # Output: design/screenshots/<lang>/<theme>/<name>.png, then run design/mockups/render.py.
 #
-# The Lock Screen with the Live Activity needs the Simulator locked; simctl cannot do that,
-# so the script waits until you have locked it.
+# First every other screen is taken without help. The Lock Screen shots with the Live
+# Activity come last, light for all languages and then dark, because simctl can neither
+# lock the Simulator nor set its wallpaper.
 set -eu
 
 DEVICE=${DEVICE:-"iPhone 17"}
@@ -15,23 +18,36 @@ OUT="$ROOT/design/screenshots"
 BUILD="$ROOT/build/screenshots"
 LANGS=${*:-"en de fr es it"}
 SCREENS=${SCREENS:-"map search recents live favorites"}
+# screen:file:seconds to wait for map tiles and search results
+SHOTS="map:1-map:8 search:2-search:8 recents:3-recents:6 favorites:5-favorites:8"
+
 wants() { case " $SCREENS " in *" $1 "*) return 0 ;; esac; return 1; }
+say() { printf '\n%s\n' "$*"; }
+
+for lang in $LANGS; do
+    case $lang in en|de|fr|es|it) ;; *) echo "Unknown language: $lang (en de fr es it)" >&2; exit 1 ;; esac
+done
+for screen in $SCREENS; do
+    case $screen in map|search|recents|live|favorites) ;; *) echo "Unknown screen: $screen (map search recents live favorites)" >&2; exit 1 ;; esac
+done
 
 cd "$ROOT"
 [ -d LocSim.xcodeproj ] || { echo "Run xcodegen generate first."; exit 1; }
 
-# A booted simulator with that name wins, so the shots happen on the one on screen; UDID=...
-# picks one directly. Several devices can share a name, one per iOS version.
+# A booted device with that name first, so the shots happen on the one on screen. Otherwise the
+# first one listed: several devices can share a name, one per installed iOS version.
+udid_of() { sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/'; }
 if [ -z "${UDID:-}" ]; then
-    UDID=$(xcrun simctl list devices booted | grep -F "    $DEVICE (" | head -1 | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')
+    UDID=$(xcrun simctl list devices booted | grep -F "    $DEVICE (" | head -1 | udid_of || true)
 fi
 if [ -z "${UDID:-}" ]; then
-    UDID=$(xcrun simctl list devices available | grep -F "    $DEVICE (" | tail -1 | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')
+    UDID=$(xcrun simctl list devices available | grep -F "    $DEVICE (" | head -1 | udid_of || true)
 fi
-[ -n "$UDID" ] || { echo "No simulator named \"$DEVICE\". Add one in Xcode > Window > Devices and Simulators."; exit 1; }
-echo "Using $DEVICE $UDID"
+[ -n "$UDID" ] || { echo "No simulator named \"$DEVICE\". Add one in Xcode > Window > Devices and Simulators." >&2; exit 1; }
+RUNTIME=$(xcrun simctl list devices | awk -v id="$UDID" '/^-- / { rt = $0 } index($0, id) { print rt; exit }' | tr -d '-' | sed 's/^ *//; s/ *$//')
+echo "Simulator: $DEVICE, $RUNTIME, $UDID"
 
-echo "Building for $DEVICE"
+echo "Building LocSim"
 mkdir -p "$BUILD"
 # The full output, with idevice's harmless simulator linker warnings, goes to a log.
 xcodebuild -project LocSim.xcodeproj -scheme LocSim -configuration Debug \
@@ -42,9 +58,6 @@ APP="$BUILD/Build/Products/Debug-iphonesimulator/LocSim.app"
 
 boot() {
     xcrun simctl boot "$UDID" 2>/dev/null || true
-    # Shows this device in the Simulator window; Cmd-L only locks the one on screen.
-    open "$(xcode-select -p)/Applications/Simulator.app" --args -CurrentDeviceUDID "$UDID" 2>/dev/null ||
-        echo "Could not open the Simulator window; show $DEVICE in it by hand." >&2
     xcrun simctl bootstatus "$UDID" -b >/dev/null
     xcrun simctl status_bar "$UDID" override --time 9:41 \
         --dataNetwork wifi --wifiMode active --wifiBars 3 \
@@ -52,8 +65,7 @@ boot() {
         --batteryState discharging --batteryLevel 100
 }
 
-# Every step on its own: under set -e the first failure (e.g. a shut-down Simulator)
-# would skip the rest.
+# Every step on its own: under set -e the first failure would skip the rest.
 restore() {
     xcrun simctl status_bar "$UDID" clear 2>/dev/null || true
     case $ORIG_APPEARANCE in
@@ -76,54 +88,17 @@ ORIG_LOCALE=""
 ORIG_APPEARANCE=""
 # Set before the first boot, so a failure from here on still clears the status bar.
 trap restore EXIT
+# dash skips the EXIT trap on Ctrl-C unless the signal ends the script through exit.
+trap 'exit 130' INT TERM HUP
+
+echo "Starting the Simulator"
 boot
-# The Live Activity runs in its own process, which follows the Simulator's system language,
-# not the app's launch arguments; each language therefore restarts the Simulator in it.
-# The whole list, one language per line without the parentheses and quotes.
+# Shows the device in the Simulator app; Cmd-L locks the device on screen.
+open -b com.apple.iphonesimulator --args -CurrentDeviceUDID "$UDID" 2>/dev/null || true
 ORIG_LANGS=$(xcrun simctl spawn "$UDID" defaults read -g AppleLanguages 2>/dev/null | sed -e '1d' -e '$d' -e 's/[ ",]//g' || true)
 ORIG_LOCALE=$(xcrun simctl spawn "$UDID" defaults read -g AppleLocale 2>/dev/null || true)
 ORIG_APPEARANCE=$(xcrun simctl ui "$UDID" appearance 2>/dev/null || true)
-
-# Written into the shut-down Simulator's own file: a value set with defaults inside the running
-# Simulator is not always saved before the shutdown, and it then boots in the old language.
-system_language() {
-    xcrun simctl shutdown "$UDID" 2>/dev/null || true
-    prefs="$HOME/Library/Developer/CoreSimulator/Devices/$UDID/data/Library/Preferences/.GlobalPreferences.plist"
-    [ -f "$prefs" ] || plutil -create xml1 "$prefs"
-    plutil -replace AppleLanguages -json "[\"$1\"]" "$prefs"
-    plutil -replace AppleLocale -string "$2" "$prefs"
-    boot
-    now=$(xcrun simctl spawn "$UDID" defaults read -g AppleLanguages 2>/dev/null | sed -n 2p | tr -d ' ",')
-    [ "$now" = "$1" ] || { echo "The Simulator did not switch to $1 (it reports \"$now\")." >&2; exit 1; }
-}
-
 xcrun simctl install "$UDID" "$APP"
-
-shoot() {
-    # simctl may not replace a file another process wrote (e.g. git); it can create a new one.
-    rm -f "$1"
-    # simctl sometimes fails while an animation runs; try again before giving up.
-    tries=0
-    until xcrun simctl io "$UDID" screenshot --type=png "$1" >/dev/null; do
-        tries=$((tries + 1))
-        [ "$tries" -lt 3 ] || { echo "Screenshot failed: $1" >&2; exit 1; }
-        sleep 2
-    done
-    echo "${1#"$OUT"/}"
-}
-
-launch() {
-    xcrun simctl launch --terminate-running-process "$UDID" "$BUNDLE" \
-        -demo "$1" -AppleLanguages "($lang)" -AppleLocale "$locale" >/dev/null ||
-        { echo "Launch failed: $lang $1" >&2; exit 1; }
-}
-
-lock() {
-    # After a restart the Live Activity can take a while to appear.
-    # Locked, the Simulator dims into Always On; a click wakes the Lock Screen without unlocking.
-    printf '%s: when the Live Activity shows: Cmd-L, click the screen once (lit, not dimmed), then Enter. ' "$lang"
-    read -r _
-}
 
 locale_for() {
     case $1 in
@@ -135,63 +110,100 @@ locale_for() {
     esac
 }
 
-# screen:file:seconds to wait for map tiles and search results
-SHOTS="map:1-map:8 search:2-search:8 recents:3-recents:6 favorites:5-favorites:8"
+current_language() {
+    xcrun simctl spawn "$UDID" defaults read -g AppleLanguages 2>/dev/null | sed -n 2p | tr -d ' ",'
+}
 
-# Pass 1 runs without help. The Lock Screen shots come last, grouped by theme, so the
-# wallpaper changes only twice.
+# The Live Activity runs in its own process, which follows the Simulator's system language,
+# not the app's launch arguments; each language therefore restarts the Simulator in it.
+# The restart also unlocks the Simulator again.
+system_language() {
+    echo "$1: restarting the Simulator in this language"
+    tries=0
+    while :; do
+        xcrun simctl spawn "$UDID" defaults write -g AppleLanguages -array "$1"
+        xcrun simctl spawn "$UDID" defaults write -g AppleLocale -string "$(locale_for "$1")"
+        xcrun simctl shutdown "$UDID" 2>/dev/null || true
+        boot
+        [ "$(current_language)" = "$1" ] && return 0
+        tries=$((tries + 1))
+        [ "$tries" -lt 2 ] || { echo "The Simulator did not switch to $1 (it reports \"$(current_language)\")." >&2; exit 1; }
+    done
+}
+
+shoot() {
+    # simctl may not replace a file another process wrote (e.g. git); it can create a new one.
+    rm -f "$1"
+    # simctl sometimes fails while an animation runs; try again before giving up.
+    tries=0
+    until xcrun simctl io "$UDID" screenshot --type=png "$1" >/dev/null 2>&1; do
+        tries=$((tries + 1))
+        [ "$tries" -lt 3 ] || { echo "Screenshot failed: $1" >&2; exit 1; }
+        sleep 2
+    done
+    echo "  saved ${1#"$OUT"/}"
+}
+
+launch() {
+    xcrun simctl launch --terminate-running-process "$UDID" "$BUNDLE" \
+        -demo "$1" -AppleLanguages "($lang)" -AppleLocale "$(locale_for "$lang")" >/dev/null ||
+        { echo "Launch failed: $lang $1" >&2; exit 1; }
+}
+
+# Pass 1: everything but the Lock Screen, no help needed.
 pass1=0
 for shot in $SHOTS; do
     if wants "${shot%%:*}"; then pass1=1; fi
 done
-for lang in $LANGS; do
-    [ "$pass1" = 1 ] || break
-    locale=$(locale_for "$lang")
-    system_language "$lang" "$locale"
-    restarted=1
-    for theme in light dark; do
-        xcrun simctl ui "$UDID" appearance "$theme"
-        if [ "$restarted" = 1 ]; then
-            # After a restart the first map takes longer to load its tiles.
-            launch map
-            sleep 15
-            restarted=0
-        fi
-        mkdir -p "$OUT/$lang/$theme"
-        for shot in $SHOTS; do
-            screen=${shot%%:*}
-            wants "$screen" || continue
-            rest=${shot#*:}
-            name=${rest%%:*}
-            wait=${rest#*:}
-            launch "$screen"
-            sleep "$wait"
-            shoot "$OUT/$lang/$theme/$name.png"
+if [ "$pass1" = 1 ]; then
+    for lang in $LANGS; do
+        system_language "$lang"
+        first=1
+        for theme in light dark; do
+            xcrun simctl ui "$UDID" appearance "$theme"
+            mkdir -p "$OUT/$lang/$theme"
+            if [ "$first" = 1 ]; then
+                # After a restart the first map takes longer to load its tiles.
+                echo "$lang: warming up the map"
+                launch map
+                sleep 15
+                first=0
+            fi
+            for shot in $SHOTS; do
+                screen=${shot%%:*}
+                wants "$screen" || continue
+                rest=${shot#*:}
+                name=${rest%%:*}
+                wait=${rest#*:}
+                echo "$lang $theme: $screen"
+                launch "$screen"
+                sleep "$wait"
+                shoot "$OUT/$lang/$theme/$name.png"
+            done
         done
     done
-done
+fi
 
+# Pass 2: the Lock Screen with the Live Activity.
 if wants live; then
     for theme in light dark; do
-        # simctl cannot set the wallpaper; the Lock Screen only looks light on a light one.
-        # Use a stock wallpaper: these shots end up in committed images.
-        printf '\n=== Lock Screen shots, %s ===\n' "$theme"
-        printf '1. In the Simulator, pick a %s stock wallpaper (Settings > Wallpaper).\n' "$theme"
-        printf '2. Press Enter here to start. Nothing happens until you do. '
+        say "=== Lock Screen shots, $theme ===
+In the Simulator, pick a $theme stock wallpaper (Settings > Wallpaper).
+Then press Enter here. The script waits until you do."
         read -r _
         for lang in $LANGS; do
-            # The Live Activity follows the system language, and the restart unlocks the Simulator.
-            locale=$(locale_for "$lang")
-            system_language "$lang" "$locale"
+            system_language "$lang"
             xcrun simctl ui "$UDID" appearance "$theme"
             mkdir -p "$OUT/$lang/$theme"
             # Right after a restart iOS starts no Live Activity yet; the map warms it up.
-            echo "$lang: starting LocSim, the Live Activity follows in about 25 seconds"
+            echo "$lang $theme: starting LocSim, the Live Activity follows in about 25 seconds"
             launch map
             sleep 15
             launch live
             sleep 8
-            lock
+            # Locked, the Simulator dims into Always On; a click wakes the Lock Screen without unlocking.
+            printf '%s %s: once the Live Activity shows, press Cmd-L in the Simulator, click its screen once so it is lit, then press Enter here. ' "$lang" "$theme"
+            read -r _
             # Right away, before the screen dims again.
             sleep 1
             shoot "$OUT/$lang/$theme/4-live.png"
@@ -199,3 +211,4 @@ if wants live; then
     done
 fi
 xcrun simctl terminate "$UDID" "$BUNDLE" 2>/dev/null || true
+say "Done. Next: design/mockups/render.py"
