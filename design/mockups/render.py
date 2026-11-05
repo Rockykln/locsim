@@ -52,9 +52,9 @@ THEMES = {
     # screenshots read as light at a glance.
     "light": dict(
         title="#1d1030", subtitle="#4b3f63",
-        sky=[(0, "#e9e6fb"), (0.3, "#f0e9fa"), (0.6, "#fbe9f1"), (0.85, "#fff0e6"), (1, "#fff6ec")],
-        glow="#ffffff", glow_opacity=0.85,
-        cloud="#ffffff", cloud_opacity=0.95, shade="#c8b6e6", shade_opacity=0.3,
+        sky=[(0, "#cdc3f3"), (0.3, "#ddcdf3"), (0.6, "#f3cfe2"), (0.85, "#ffd8c7"), (1, "#ffe6d4")],
+        glow="#fff6ea", glow_opacity=0.8,
+        cloud="#ffffff", cloud_opacity=0.9, shade="#b29fdc", shade_opacity=0.38,
         stars=0,
         metal="#e4e1ea, #8d899a 22%, #f1eff5 48%, #7a7688 74%, #d7d4de",
         shadow="0 70px 140px rgba(70, 40, 110, 0.22), 0 24px 48px rgba(70, 40, 110, 0.16)",
