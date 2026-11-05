@@ -126,13 +126,15 @@ struct MapScreen: View {
             .padding(.bottom, extendsIntoSideBar ? -Metrics.coverBottomTrim : 0)
         }
         .overlay(alignment: .bottomTrailing) {
-            // Beside the column the buttons sit at the map's own edge.
+            // Beside the column the buttons sit at the map's own edge, under the side status bar
+            // like on the cover screen.
             if usesSidebar {
                 mapButtons
                     .padding(.trailing, Metrics.margin)
                     .padding(.bottom, 4)
                     .dynamicTypeSize(...DynamicTypeSize.accessibility2)
                     .ignoresSafeArea(.keyboard)
+                    .ignoresSafeArea(.container, edges: .trailing)
             }
         }
         .overlay(alignment: .topTrailing) {
