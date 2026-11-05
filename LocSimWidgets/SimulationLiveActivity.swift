@@ -52,6 +52,8 @@ struct SimulationLiveActivity: Widget {
         ActivityConfiguration(for: SimulationActivityAttributes.self) { context in
             LockScreenView(context: context)
                 .padding(14)
+                // White text in light mode too, on the system's own background.
+                .environment(\.colorScheme, .dark)
         } dynamicIsland: { context in
             let status = Status(context)
             return DynamicIsland {
@@ -111,9 +113,9 @@ struct SimulationLiveActivity: Widget {
     }
 }
 
-// No background tint: the system's own material is the translucent glass in light and dark
-// mode, and iOS dims it correctly for Always On. Text uses the system's hierarchical styles,
-// which iOS adapts there too; custom opacities turn too faint when the screen is dimmed.
+// No background tint: the system's own material is the translucent glass, and iOS dims it
+// correctly for Always On. The text is drawn in the dark color scheme, so it is white in
+// light mode as well.
 private struct LockScreenView: View {
     let context: ActivityViewContext<SimulationActivityAttributes>
     // Always On: the screen is dimmed, colors and gray text lose most of their contrast.
@@ -154,8 +156,9 @@ private struct LockScreenView: View {
                 HStack(alignment: .center) {
                     Text(context.state.coordinate)
                         .font(.footnote.monospacedDigit().weight(.medium))
-                        // Gray is too faint for digits once the screen is dimmed.
-                        .foregroundStyle(dimmed ? AnyShapeStyle(.primary) : AnyShapeStyle(.secondary))
+                        // Slightly dimmer than the name, but white enough for digits; fully white
+                        // once the screen is dimmed, where any transparency fades too much.
+                        .foregroundStyle(dimmed ? AnyShapeStyle(.primary) : AnyShapeStyle(.primary.opacity(0.8)))
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
                     Spacer(minLength: 8)
