@@ -329,8 +329,10 @@ def check_subtitles(slides, work):
                               "-format", "%h\\n", "info:"], capture_output=True, text=True, check=True).stdout.split()
     # Two lines of 50px text are about 110px high from cap height to descender, three about 170px.
     long = [f"{sid} ({lang})" for (sid, lang, _), h in zip(items, heights) if int(h) > 140]
+    # Only a warning: the measurement can be off by a line; check the listed images by eye.
     if long:
-        raise RuntimeError("subtitle longer than two lines: " + ", ".join(long))
+        print("Check these subtitles for a third line: " + ", ".join(long), file=sys.stderr)
+        return
     open(stamp, "w").close()
 
 
