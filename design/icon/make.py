@@ -116,42 +116,79 @@ def sources():
     return files
 
 
+def find_firefox():
+    """On macOS firefox is usually not on PATH; FIREFOX overrides both."""
+    mac = "/Applications/Firefox.app/Contents/MacOS/firefox"
+    return os.environ.get("FIREFOX") or shutil.which("firefox") or (mac if os.access(mac, os.X_OK) else None)
+
+
+def check_tools():
+    """Checked before anything is written, so a missing tool does not stop the run halfway."""
+    missing = []
+    if not find_firefox():
+        missing.append("firefox (or set FIREFOX to its path)")
+    if not shutil.which("magick"):
+        missing.append("magick (ImageMagick 7; ImageMagick 6 only has convert)")
+    if missing:
+        sys.exit("make.py --export needs: " + ", ".join(missing))
+
+
+def firefox(page, target, size, work):
+    profile = tempfile.mkdtemp(dir=work)
+    result = subprocess.run([find_firefox(), "--headless", "--no-remote", "--profile", profile,
+                             f"--window-size={size[0]},{size[1]}", "--screenshot", target, f"file://{page}"],
+                            stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True, check=False, timeout=120)
+    shutil.rmtree(profile, ignore_errors=True)
+    if not os.path.exists(target) or os.path.getsize(target) == 0:
+        sys.exit(f"Firefox did not render {os.path.basename(target)}: {result.stderr.strip()[-400:]}")
+
+
 def shot(svg_file, target, size, work):
     page = os.path.join(work, "page.html")
     with open(page, "w") as f:
         f.write(f"<!doctype html><html><body style='margin:0;background:transparent'>"
                 f"<img src='file://{svg_file}' width='{size[0]}' height='{size[1]}'></body></html>")
-    profile = tempfile.mkdtemp(dir=work)
-    subprocess.run(["firefox", "--headless", "--no-remote", "--profile", profile,
-                    f"--window-size={size[0]},{size[1]}", "--screenshot", target, f"file://{page}"],
-                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False, timeout=120)
-    shutil.rmtree(profile, ignore_errors=True)
-    if not os.path.exists(target):
-        sys.exit(f"Firefox did not render {target}")
+    firefox(page, target, size, work)
 
 
 def magick(*args):
-    subprocess.run(["magick", *args], check=True)
+    try:
+        subprocess.run(["magick", *args], check=True)
+    except subprocess.CalledProcessError as exc:
+        sys.exit(f"magick failed (exit {exc.returncode})")
 
 
 def export():
+    # Everything is rendered into the work folder first and copied only when all of it
+    # succeeded, so a failure does not leave a mix of new and old icons.
     with tempfile.TemporaryDirectory() as work:
+        out = os.path.join(work, "out")
+        os.mkdir(out)
+        outputs = {}
+
+        def target(dest):
+            path = os.path.join(out, str(len(outputs)) + os.path.splitext(dest)[1])
+            outputs[path] = dest
+            return path
+
         for mode, name in (("light", "AppIcon-1024.png"), ("dark", "AppIcon-1024-dark.png"),
                            ("tinted", "AppIcon-1024-tinted.png")):
             png = os.path.join(work, f"{mode}.png")
             shot(os.path.join(HERE, f"AppIcon-{mode}.svg"), png, (1024, 1024), work)
             # App Store icons must have no alpha channel.
-            magick(png, "-crop", "1024x1024+0+0", "+repage", "-alpha", "off", "-strip",
-                   os.path.join(ICONSET, name))
-        light = os.path.join(ICONSET, "AppIcon-1024.png")
-        magick(light, "-resize", "180x180", "-strip", os.path.join(SITE, "apple-touch-icon.png"))
+            icon = target(os.path.join(ICONSET, name))
+            magick(png, "-crop", "1024x1024+0+0", "+repage", "-alpha", "off", "-strip", icon)
+            if mode == "light":
+                magick(icon, "-resize", "180x180", "-strip", target(os.path.join(SITE, "apple-touch-icon.png")))
         # Favicons: the motif alone; Firefox renders it on black and white to recover the alpha.
         mark = os.path.join(work, "mark.png")
         shot_alpha(os.path.join(HERE, "layers", "mark-square.svg"), mark, 512, work)
-        magick(mark, "-resize", "96x96", "-strip", os.path.join(SITE, "favicon-96.png"))
-        magick(mark, "-define", "icon:auto-resize=48,32,16", os.path.join(SITE, "favicon.ico"))
-    for name in ("brand-light.svg", "brand-dark.svg"):
-        shutil.copy(os.path.join(HERE, "mark.svg"), os.path.join(SITE, name))
+        magick(mark, "-resize", "96x96", "-strip", target(os.path.join(SITE, "favicon-96.png")))
+        magick(mark, "-define", "icon:auto-resize=48,32,16", target(os.path.join(SITE, "favicon.ico")))
+        for name in ("brand-light.svg", "brand-dark.svg"):
+            shutil.copy(os.path.join(HERE, "mark.svg"), target(os.path.join(SITE, name)))
+        for path, dest in outputs.items():
+            shutil.copyfile(path, dest)
 
 
 def shot_alpha(svg_file, target, size, work):
@@ -162,11 +199,7 @@ def shot_alpha(svg_file, target, size, work):
             f.write(f"<!doctype html><html><body style='margin:0;background:{bg}'>"
                     f"<img src='file://{svg_file}' width='{size}' height='{size}'></body></html>")
         png = os.path.join(work, f"alpha-{bg[1:]}.png")
-        profile = tempfile.mkdtemp(dir=work)
-        subprocess.run(["firefox", "--headless", "--no-remote", "--profile", profile,
-                        f"--window-size={size},{size}", "--screenshot", png, f"file://{page}"],
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False, timeout=120)
-        shutil.rmtree(profile, ignore_errors=True)
+        firefox(page, png, (size, size), work)
         crop = os.path.join(work, f"crop-{bg[1:]}.png")
         magick(png, "-crop", f"{size}x{size}+0+0", "+repage", crop)
         layers.append(crop)
@@ -179,6 +212,8 @@ def shot_alpha(svg_file, target, size, work):
 
 
 if __name__ == "__main__":
+    if "--export" in sys.argv:
+        check_tools()
     sources()
     if "--export" in sys.argv:
         export()

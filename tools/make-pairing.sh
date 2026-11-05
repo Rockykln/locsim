@@ -3,6 +3,8 @@
 # Usage: tools/make-pairing.sh [-u UDID] [hostname] [output]
 set -euo pipefail
 umask 077
+# idevice-tools is written in Rust; its RUST_LOG output on stderr would count as an error below.
+unset RUST_LOG
 
 VERSION="v0.1.68"
 UDID=""
@@ -101,6 +103,14 @@ elif devices="$("$LIST" 2>/dev/null)"; then
     printf '%s\n' "$usb" | sed 's/^/  /' >&2
     echo "Connect only one, or pick one with: bash $0 --udid <UDID>" >&2
     exit 1
+  elif [[ "$count" -eq 1 ]]; then
+    # Explicit, so a device that usbmuxd only sees over the network is not picked instead.
+    UDID_ARGS=(--udid "$usb")
+  else
+    echo "No iPhone is connected over USB." >&2
+    echo >&2
+    checklist
+    exit 1
   fi
 fi
 
@@ -119,7 +129,7 @@ if ! pair_log="$("$BIN" ${UDID_ARGS[@]+"${UDID_ARGS[@]}"} remotepairing_lockdown
   exit 1
 fi
 chmod 600 "$OUT"
-OUT_ABS="$(cd "$(dirname "$OUT")" && pwd)/$(basename "$OUT")"
+OUT_ABS="$(CDPATH= cd -- "$(dirname "$OUT")" >/dev/null && pwd)/$(basename "$OUT")"
 echo
 echo "Hostname: $HOSTNAME_ARG (must match LocSim > Settings > Hostname)"
 # LocSim picks the file up from its Documents folder and removes it there.
