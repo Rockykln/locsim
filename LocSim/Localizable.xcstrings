@@ -264,6 +264,35 @@
         }
       }
     },
+    "A place the person saved as a favorite in LocSim" : {
+      "comment" : "App Intent parameter description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein Ort, den die Person in LocSim als Favorit gesichert hat"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un lugar que la persona ha guardado como favorito en LocSim"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un lieu que la personne a enregistré comme favori dans LocSim"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un luogo che la persona ha salvato come preferito in LocSim"
+          }
+        }
+      }
+    },
     "A running simulation stops. You need the setup script to create a new one." : {
       "localizations" : {
         "de" : {

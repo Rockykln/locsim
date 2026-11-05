@@ -12,7 +12,7 @@ struct SetFavoriteIntent: AppIntent {
     @available(iOS 26.0, *)
     static var supportedModes: IntentModes { .foreground }
 
-    @Parameter(title: "Favorite")
+    @Parameter(title: "Favorite", description: "A place the person saved as a favorite in LocSim")
     var favorite: FavoriteEntity
 
     static var parameterSummary: some ParameterSummary {
