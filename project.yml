@@ -46,26 +46,6 @@ targets:
         PRODUCT_NAME: LocSim
         # Code shared with the widget extension that only runs in the app.
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: $(inherited) LOCSIM_APP
-        # Siri AI (ToolIntent) exists from the iOS 27.3 SDK on. A build with an older SDK, such as
-        # the current release Xcode, contains none of it, so it can be uploaded as usual.
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphoneos27.3*]": $(inherited) LOCSIM_APP SIRI_AI
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphoneos27.4*]": $(inherited) LOCSIM_APP SIRI_AI
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphoneos27.5*]": $(inherited) LOCSIM_APP SIRI_AI
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphoneos27.6*]": $(inherited) LOCSIM_APP SIRI_AI
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphoneos27.7*]": $(inherited) LOCSIM_APP SIRI_AI
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphoneos27.8*]": $(inherited) LOCSIM_APP SIRI_AI
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphoneos27.9*]": $(inherited) LOCSIM_APP SIRI_AI
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphoneos28*]": $(inherited) LOCSIM_APP SIRI_AI
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphoneos29*]": $(inherited) LOCSIM_APP SIRI_AI
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphonesimulator27.3*]": $(inherited) LOCSIM_APP SIRI_AI
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphonesimulator27.4*]": $(inherited) LOCSIM_APP SIRI_AI
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphonesimulator27.5*]": $(inherited) LOCSIM_APP SIRI_AI
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphonesimulator27.6*]": $(inherited) LOCSIM_APP SIRI_AI
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphonesimulator27.7*]": $(inherited) LOCSIM_APP SIRI_AI
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphonesimulator27.8*]": $(inherited) LOCSIM_APP SIRI_AI
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphonesimulator27.9*]": $(inherited) LOCSIM_APP SIRI_AI
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphonesimulator28*]": $(inherited) LOCSIM_APP SIRI_AI
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphonesimulator29*]": $(inherited) LOCSIM_APP SIRI_AI
         # Mirrors Info.plist so Xcode's Identity section shows the values.
         INFOPLIST_KEY_CFBundleDisplayName: LocSim
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.developer-tools
