@@ -307,4 +307,19 @@ final class CoordinateTextTests: XCTestCase {
         XCTAssertNil(CoordinateText.parse("-48.8566 N, 2.3522 E"))
         XCTAssertNil(CoordinateText.parse("N -48.8566 E 2.3522"))
     }
+
+    func testNumbersJoinedByDashAreNoCoordinates() {
+        for text in ["7-11", "24-7", "2.5-40.5", "10.11-16.11", "7\u{2013}11"] {
+            XCTAssertNil(CoordinateText.parse(text), text)
+        }
+        XCTAssertNil(CoordinateText.parse("https://maps.apple.com/?q=7-11"))
+        XCTAssertEqual(CoordinateText.parse("48.85 -2.35"), Coordinate(latitude: 48.85, longitude: -2.35))
+        XCTAssertEqual(CoordinateText.parse("48.85,-2.35"), Coordinate(latitude: 48.85, longitude: -2.35))
+    }
+
+    func testOpenStreetMapLayer() {
+        XCTAssertEqual(
+            CoordinateText.parse("https://www.openstreetmap.org/#map=15/48.8566/2.3522&layers=C"),
+            Coordinate(latitude: 48.8566, longitude: 2.3522))
+    }
 }

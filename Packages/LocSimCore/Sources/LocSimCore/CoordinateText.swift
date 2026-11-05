@@ -86,6 +86,8 @@ public enum CoordinateText {
     private static let thousands = try! NSRegularExpression(
         pattern: #"^[-+]?\d{1,3}(?:(?:,\d{3})+(?:\.\d+)?|(?:\.\d{3})+(?:,\d{1,2})?)$"#)
     private static let exponent = try! NSRegularExpression(pattern: #"\dE[-+]?\d"#)
+    // "7-11" or "24-7" is a name or a range; a negative second value needs a space or comma before it.
+    private static let joinedByDash = try! NSRegularExpression(pattern: "\\d[-+\u{2013}\u{2212}]\\d")
     private static let latitudeLetter = try! NSRegularExpression(pattern: #"(?<![A-Z])[NS](?![A-Z])"#)
 
     /// Numbers typed into the search field that are not meant as coordinates: "1,5" or "48,8" on the
@@ -94,6 +96,7 @@ public enum CoordinateText {
         let range = NSRange(text.startIndex..., in: text)
         if bareIntegers.firstMatch(in: text, range: range) != nil { return true }
         if thousands.firstMatch(in: text, range: range) != nil { return true }
+        if joinedByDash.firstMatch(in: text, range: range) != nil { return true }
         // "N48.85E2.35" has a letter for the latitude, so its E is a hemisphere, not an exponent.
         return exponent.firstMatch(in: text, range: range) != nil
             && latitudeLetter.firstMatch(in: text, range: range) == nil
@@ -200,7 +203,9 @@ public enum CoordinateText {
         }
         if let fragment = url.fragment, fragment.hasPrefix("map=") {
             let parts = fragment.dropFirst(4).split(separator: "/")
-            if parts.count == 3, let c = pair("\(parts[1]),\(parts[2])") { return c }
+            // OSM appends the chosen layer: #map=15/48.85/2.35&layers=C.
+            let lon = parts.count == 3 ? parts[2].prefix { $0 != "&" } : ""
+            if parts.count == 3, let c = pair("\(parts[1]),\(lon)") { return c }
         }
         // Google's map URL API: /maps/@?api=1&map_action=map&center=48.85,2.35
         if MapLink.value("map_action", in: url) == "map", let center = MapLink.value("center", in: url),
