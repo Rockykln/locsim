@@ -183,10 +183,12 @@ private struct GlassBackground: ViewModifier {
 
 private struct StatusIcon: View {
     let status: Status
+    // Always On dims colors until they are hard to see; white stays readable.
+    @Environment(\.isLuminanceReduced) private var dimmed
 
     var body: some View {
         Image(systemName: status.symbol)
-            .foregroundStyle(status.color)
+            .foregroundStyle(dimmed ? .white : status.color)
             .accessibilityLabel(status.caption)
     }
 }
@@ -220,6 +222,9 @@ private struct StartTime: View {
 }
 
 private struct ClearButton: View {
+    // Blue on the dimmed Always On screen is too dark to read; the button turns white there.
+    @Environment(\.isLuminanceReduced) private var dimmed
+
     var body: some View {
         Button(intent: StopSimulationIntent()) {
             // Never wrapped: long words like "Zurücksetzen" would break; the place name gives way.
@@ -230,7 +235,7 @@ private struct ClearButton: View {
                 .frame(minHeight: 30)
         }
         .buttonStyle(.bordered)
-        .tint(.blue)
+        .tint(dimmed ? .white : .blue)
         .accessibilityLabel(Text("Clear the simulated location"))
     }
 }
