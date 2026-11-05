@@ -40,6 +40,9 @@ struct MapScreen: View {
     @State private var bottomInset: CGFloat = 0
     @State private var trailingInset: CGFloat = 0
     @State private var leadingInset: CGFloat = 0
+    // Which side the Dynamic Island is on while the iPhone is held sideways; nil upright.
+    @State private var islandOnLeading: Bool?
+    @State private var panelLeading: CGFloat = 0
     // Trailing edge of the search and panel column in sidebar layout.
     @State private var columnTrailing: CGFloat = 0
     @State private var panelTop: CGFloat = .infinity
@@ -88,10 +91,19 @@ struct MapScreen: View {
     /// On wide screens, such as the unfolded iPhone Duo held sideways, search and panel form a
     /// column at the leading edge and the map gets the rest, instead of a wide panel across it.
     // The full width: a side status bar must not take the sidebar away.
-    // Sideways the panel goes to the side on every iPhone: below the map it would cover most of
-    // the little height there is.
+    /// The Duo's unfolded screen: a column with search and panel beside the map.
     private var usesSidebar: Bool {
-        verticalSizeClass == .compact || containerWidth + leadingInset + trailingInset >= Metrics.sidebarMinWidth
+        !phoneLandscape && containerWidth + leadingInset + trailingInset >= Metrics.sidebarMinWidth
+    }
+
+    /// An iPhone held sideways: search across the top, the panel at the bottom right and the map
+    /// buttons at the bottom left, so the low screen keeps as much map as possible.
+    private var phoneLandscape: Bool { verticalSizeClass == .compact }
+
+    /// Sideways, only the Dynamic Island's side needs its inset; the other side goes nearer the edge.
+    private var freeSide: Edge.Set {
+        guard phoneLandscape, let islandOnLeading else { return [] }
+        return islandOnLeading ? .trailing : .leading
     }
 
     /// The iPhone Duo's status bar runs down one side only. An iPhone held sideways has insets on
@@ -124,22 +136,23 @@ struct MapScreen: View {
     private var barBottom: CGFloat { barTop + Metrics.control }
 
     private var layers: some View {
-        ZStack(alignment: usesSidebar ? .topLeading : .top) {
+        ZStack(alignment: usesSidebar || phoneLandscape ? .topLeading : .top) {
             map
                 .ignoresSafeArea()
                 // VoiceOver reads search and panel first, then the map.
                 .accessibilitySortPriority(-1)
             topBar
-                .frame(maxWidth: chromeWidth)
+                .frame(maxWidth: phoneLandscape ? .infinity : chromeWidth)
                 .dynamicTypeSize(...DynamicTypeSize.accessibility2)
+                .ignoresSafeArea(.container, edges: freeSide)
                 .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: {
                     topBarBottom = $0.maxY
                     columnTrailing = $0.maxX
                 }
         }
-        .overlay(alignment: usesSidebar ? .bottomLeading : .bottom) {
+        .overlay(alignment: usesSidebar ? .bottomLeading : phoneLandscape ? .bottomTrailing : .bottom) {
             VStack(spacing: 0) {
-                if !usesSidebar {
+                if !usesSidebar && !phoneLandscape {
                     HStack {
                         Spacer()
                         mapButtons
@@ -149,13 +162,25 @@ struct MapScreen: View {
                 }
                 bottomPanel
             }
-            .frame(maxWidth: chromeWidth)
+            .frame(maxWidth: phoneLandscape ? Metrics.landscapePanelWidth : chromeWidth)
             .dynamicTypeSize(...DynamicTypeSize.accessibility2)
             .ignoresSafeArea(.keyboard)
+            .ignoresSafeArea(.container, edges: freeSide)
             .ignoresSafeArea(.container, edges: extendsIntoSideBar ? .trailing : [])
             // The cover screen leaves more room below than the home indicator needs.
             // Never closer than 12 pt to the edge, whatever the device reports below.
             .padding(.bottom, extendsIntoSideBar ? -min(Metrics.coverBottomTrim, max(0, bottomInset - 8)) : 0)
+        }
+        .overlay(alignment: .bottomLeading) {
+            // Sideways the buttons stand at the left, above MapKit's legal link.
+            if phoneLandscape {
+                mapButtons
+                    .padding(.leading, Metrics.margin)
+                    .padding(.bottom, Metrics.legalHeight)
+                    .dynamicTypeSize(...DynamicTypeSize.accessibility2)
+                    .ignoresSafeArea(.keyboard)
+                    .ignoresSafeArea(.container, edges: freeSide.intersection(.leading))
+            }
         }
         .overlay(alignment: .bottomTrailing) {
             // Beside the column the buttons sit at the map's own edge, under the side status bar
@@ -169,14 +194,18 @@ struct MapScreen: View {
                     .ignoresSafeArea(.container, edges: sideStatusColumn ? .trailing : [])
             }
         }
-        .overlay(alignment: usesSidebar ? .topLeading : .top) {
+        .overlay(alignment: usesSidebar || phoneLandscape ? .topLeading : .top) {
             dropdown
                 .padding(.horizontal, Metrics.margin)
                 .padding(.top, barBottom + Metrics.dropdownGap)
-                .frame(maxWidth: chromeWidth)
+                .frame(maxWidth: phoneLandscape ? Metrics.landscapeSearchWidth + Metrics.control + 8 + 2 * Metrics.margin : chromeWidth)
+                .ignoresSafeArea(.container, edges: freeSide.intersection(.leading))
                 .dynamicTypeSize(...DynamicTypeSize.accessibility2)
         }
-        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { containerWidth = $0 }
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: {
+            containerWidth = $0
+            updateIslandSide()
+        }
         .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { containerHeight = $0 }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillChangeFrameNotification)) { note in
             guard let frame = note.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
@@ -204,7 +233,18 @@ struct MapScreen: View {
     }
 
     /// On both screens of the iPhone Duo the compass joins the pin and locate buttons.
-    private var compassWithButtons: Bool { usesSidebar || extendsIntoSideBar }
+    private var compassWithButtons: Bool { usesSidebar || extendsIntoSideBar || phoneLandscape }
+
+    // The interface orientation says where the top of the iPhone, with the Dynamic Island, is.
+    private func updateIslandSide() {
+        let scene = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first
+        switch scene?.effectiveGeometry.interfaceOrientation {
+        // Home indicator on the right, so the top of the device is on the left.
+        case .landscapeRight: islandOnLeading = true
+        case .landscapeLeft: islandOnLeading = false
+        default: islandOnLeading = nil
+        }
+    }
 
     private var mapButtons: some View {
         VStack(spacing: 10) {
@@ -364,14 +404,15 @@ struct MapScreen: View {
             .mapControls {}
             // Measured from the panel, which stays put; safe area insets would include the keyboard.
             // In sidebar layout the panel is beside the map, not on it.
-            .safeAreaPadding(.bottom, usesSidebar ? 0 : max(0, mapBottom - panelTop - 2))
+            .safeAreaPadding(.bottom, usesSidebar || phoneLandscape ? 0 : max(0, mapBottom - panelTop - 2))
             .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { mapFrame = $0 }
             // Symmetric to keep the camera centered; moves the legal label past the panel corner.
             // Beside the column, the camera centers in the part of the map that is not covered.
             // From fixed values, not from the measured column: MapKit animates its insets, and a
             // measured value fed back into them ended in a layout loop that froze the screen.
             .safeAreaPadding(.leading, usesSidebar ? leadingInset + Metrics.sidebarWidth : 16)
-            .safeAreaPadding(.trailing, 16)
+            // Sideways the panel sits at the right; the camera centers left of it. Fixed values, as above.
+            .safeAreaPadding(.trailing, phoneLandscape ? Metrics.landscapePanelWidth + Metrics.margin : 16)
             // The user moved the map, so a late location fix must not pull it back.
             .onMapCameraChange(frequency: .continuous) { _ in
                 if Date() >= flyingUntil { locateTask?.cancel() }
@@ -430,6 +471,11 @@ struct MapScreen: View {
 
     // Area around MapKit's legal link where taps must not move the pin.
     private var legalZone: CGRect {
+        if phoneLandscape {
+            // MapKit puts the link at the bottom left, below the map buttons.
+            let height = Metrics.legalHeight + 12
+            return CGRect(x: 0, y: mapBottom - height, width: Metrics.legalZone.width + 80, height: height)
+        }
         if usesSidebar {
             // At the bottom of the map, next to the column; the home indicator area is included.
             let height = Metrics.legalZone.height * 2
@@ -455,6 +501,9 @@ struct MapScreen: View {
                 webPage = WebPage(url: AppLinks.website)
             }
             searchField
+                // Sideways the bar spans the screen; the field stays a readable width at the left.
+                .frame(maxWidth: phoneLandscape ? Metrics.landscapeSearchWidth : .infinity)
+            if phoneLandscape { Spacer(minLength: 8) }
             iconButton("star", label: "Favorites") { showFavorites = true }
             iconButton("gearshape", label: "Settings") { showSettings = true }
         }
@@ -868,6 +917,11 @@ struct MapScreen: View {
         guard dLon <= r.span.longitudeDelta / 2 else { return false }
         // Close enough on the spans a camera move can leave; the map is shown from the top of the screen.
         let y = (r.center.latitude + r.span.latitudeDelta / 2 - c.latitude) / r.span.latitudeDelta * mapBottom
+        if phoneLandscape {
+            let x = mapFrame.minX
+                + (c.longitude - (r.center.longitude - r.span.longitudeDelta / 2)) / r.span.longitudeDelta * mapFrame.width
+            return x > mapFrame.minX && x < panelLeading && y > topBarBottom && y < mapBottom
+        }
         if usesSidebar {
             let x = mapFrame.minX
                 + (c.longitude - (r.center.longitude - r.span.longitudeDelta / 2)) / r.span.longitudeDelta * mapFrame.width
@@ -967,7 +1021,10 @@ struct MapScreen: View {
         .glassPanel(cornerRadius: Metrics.panelRadius)
         .padding(.horizontal, Metrics.margin)
         .padding(.bottom, 4)
-        .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).minY } action: { panelTop = $0 }
+        .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: {
+            panelTop = $0.minY
+            panelLeading = $0.minX
+        }
     }
 
     private var panelContent: some View {
@@ -1311,6 +1368,10 @@ private enum Metrics {
     // leaves room for a column next to a usable map.
     static let sidebarMinWidth: CGFloat = 800
     static let sidebarWidth: CGFloat = 380
+    static let landscapePanelWidth: CGFloat = 380
+    static let landscapeSearchWidth: CGFloat = 420
+    // Room for MapKit's legal link below the map buttons when sideways.
+    static let legalHeight: CGFloat = 34
     static let minTopGap: CGFloat = 16
     // Estimates for the iPhone Duo until measured on the device.
     // Apple gives no number for the cover screen; 3/4 of the bar's height above the clock
