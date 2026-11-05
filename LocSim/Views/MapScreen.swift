@@ -1263,8 +1263,9 @@ private enum Metrics {
     static let sidebarWidth: CGFloat = 380
     static let minTopGap: CGFloat = 16
     // Estimates for the iPhone Duo until measured on the device.
-    // Level with the clock in the status column, below the camera.
-    static let coverTopGap: CGFloat = 60
+    // Apple gives no number for the cover screen; 3/4 of the bar's height above the clock
+    // in the status column looked right in the Simulator.
+    static let coverTopGap: CGFloat = 60 - control * 3 / 4
     // About 50 pt stayed free below the panel; this leaves a little above the home indicator.
     static let coverBottomTrim: CGFloat = 36
 }
