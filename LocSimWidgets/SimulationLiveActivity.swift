@@ -52,8 +52,6 @@ struct SimulationLiveActivity: Widget {
         ActivityConfiguration(for: SimulationActivityAttributes.self) { context in
             LockScreenView(context: context)
                 .padding(14)
-                // White text in light mode too.
-                .environment(\.colorScheme, .dark)
                 .modifier(GlassBackground())
         } dynamicIsland: { context in
             let status = Status(context)
@@ -114,7 +112,8 @@ struct SimulationLiveActivity: Widget {
     }
 }
 
-// The text is drawn in the dark color scheme, so it is white in light mode as well.
+// Text follows the system: dark on the light glass, white on the dark one. In Always On the
+// glass turns dark in both modes, so all text is white there.
 private struct LockScreenView: View {
     let context: ActivityViewContext<SimulationActivityAttributes>
     // Always On: the screen is dimmed, colors and gray text lose most of their contrast.
@@ -135,7 +134,7 @@ private struct LockScreenView: View {
                     HStack(alignment: .firstTextBaseline) {
                         Text(status.caption)
                             .font(.caption.weight(.semibold))
-                            .foregroundStyle(dimmed ? AnyShapeStyle(.primary) : AnyShapeStyle(status.textColor))
+                            .foregroundStyle(dimmed ? AnyShapeStyle(.white) : AnyShapeStyle(status.textColor))
                             // The outdated hint is long in some languages and may take two lines.
                             .lineLimit(status == .stale ? 2 : 1)
                             .minimumScaleFactor(0.85)
@@ -143,11 +142,12 @@ private struct LockScreenView: View {
                         if status != .stale {
                             StartTime(since: context.state.startedAt)
                                 .font(.caption.weight(.medium))
+                                .foregroundStyle(dimmed ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
                         }
                     }
                     Text(context.state.name)
                         .font(.headline)
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(dimmed ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
                 }
@@ -155,9 +155,9 @@ private struct LockScreenView: View {
                 HStack(alignment: .center) {
                     Text(context.state.coordinate)
                         .font(.footnote.monospacedDigit().weight(.medium))
-                        // Slightly dimmer than the name, but white enough for digits; fully white
-                        // once the screen is dimmed, where any transparency fades too much.
-                        .foregroundStyle(dimmed ? AnyShapeStyle(.primary) : AnyShapeStyle(.primary.opacity(0.8)))
+                        // The system's gray adapts to light and dark; once the screen is dimmed,
+                        // gray fades too much, so the digits turn white.
+                        .foregroundStyle(dimmed ? AnyShapeStyle(.white) : AnyShapeStyle(.secondary))
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
                     Spacer(minLength: 8)
@@ -177,7 +177,7 @@ private struct GlassBackground: ViewModifier {
     func body(content: Content) -> some View {
         content
             .activityBackgroundTint(colorScheme == .light ? Color.white.opacity(0.15) : Color.black.opacity(0.25))
-            .activitySystemActionForegroundColor(.white)
+            .activitySystemActionForegroundColor(colorScheme == .light ? .black : .white)
     }
 }
 
