@@ -158,7 +158,7 @@ if wants live; then
     for theme in light dark; do
         # simctl cannot set the wallpaper; the Lock Screen only looks light on a light one.
         # Use a stock wallpaper: these shots end up in committed images.
-        printf '\nLock Screen shots, %s: set a %s stock wallpaper (Settings > Wallpaper in the Simulator), then press Enter. ' "$theme" "$theme"
+        printf '\nLock Screen shots, %s: set a %s stock wallpaper (Settings > Wallpaper in the Simulator), then press Enter; LocSim starts after that. ' "$theme" "$theme"
         read -r _
         for lang in $LANGS; do
             # The Live Activity follows the system language, and the restart unlocks the Simulator.
@@ -167,6 +167,7 @@ if wants live; then
             xcrun simctl ui "$UDID" appearance "$theme"
             mkdir -p "$OUT/$lang/$theme"
             # Right after a restart iOS starts no Live Activity yet; the map warms it up.
+            echo "$lang: starting LocSim, the Live Activity follows in about 25 seconds"
             launch map
             sleep 15
             launch live
