@@ -48,9 +48,13 @@ document.addEventListener("DOMContentLoaded", function () {
       dialog.querySelectorAll("[data-step]").forEach(function (section) {
         section.hidden = section.getAttribute("data-step") !== step;
       });
-      if (noFocus) return;
+      // The dialog is named after the visible step.
       var title = dialog.querySelector('[data-step="' + step + '"] h2');
-      if (title) title.focus();
+      if (title) {
+        if (!title.id) title.id = dialog.id + "-" + step + "-title";
+        dialog.setAttribute("aria-labelledby", title.id);
+      }
+      if (!noFocus && title) title.focus();
     }
 
     // When the keyboard opens, iOS moves the visible area but leaves fixed elements where they
@@ -95,6 +99,8 @@ document.addEventListener("DOMContentLoaded", function () {
     var trigger = '[data-open="' + dialog.id + '"]' + (dialog.id === "beta" ? ", [data-beta]" : "");
     document.querySelectorAll(trigger).forEach(function (link) {
       link.addEventListener("click", function (event) {
+        // Cmd/Ctrl/Shift-click and middle click follow the link, e.g. into a new tab.
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button) return;
         event.preventDefault();
         open();
       });
@@ -165,7 +171,7 @@ document.addEventListener("DOMContentLoaded", function () {
           lines.push((field.checked ? "[x] " : "[ ] ") + label);
         } else if (field.tagName === "TEXTAREA") {
           // Longer answers start on their own line, so the email stays readable.
-          lines.push("", heading(label), value || "-");
+          lines.push("", heading(label), value || "-", "");
         } else {
           lines.push(heading(label) + " " + (value || "-"));
         }
