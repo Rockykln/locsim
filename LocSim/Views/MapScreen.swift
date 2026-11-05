@@ -31,6 +31,10 @@ struct MapScreen: View {
     @State private var mapFrame: CGRect = .zero
     private var mapBottom: CGFloat { mapFrame.maxY }
     @State private var containerWidth: CGFloat = 0
+    // MapKit turns the map with the screen but moves its markers only afterwards; they are hidden
+    // for that moment, so the pin is never seen in the wrong place.
+    @State private var markersHidden = false
+    @State private var markerTask: Task<Void, Never>?
     @State private var containerHeight: CGFloat = 0
     // Top of the keyboard in global coordinates, 0 while it is hidden.
     @State private var keyboardTop: CGFloat = 0
@@ -206,8 +210,9 @@ struct MapScreen: View {
                 .padding(freeSide.intersection(.leading), Metrics.freeSideGap)
                 .dynamicTypeSize(...DynamicTypeSize.accessibility2)
         }
-        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: {
-            containerWidth = $0
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width in
+            if containerWidth > 0, width != containerWidth { hideMarkersWhileTurning() }
+            containerWidth = width
             updateIslandSide()
         }
         // Turning from one side to the other keeps the width, so the rotation itself is watched too;
@@ -259,6 +264,21 @@ struct MapScreen: View {
         case .landscapeRight: islandOnLeading = false
         // Flat on a table or upside down: keep the side last seen.
         default: break
+        }
+    }
+
+    private func hideMarkersWhileTurning() {
+        markerTask?.cancel()
+        markersHidden = true
+        markerTask = Task { @MainActor in
+            // A little longer than the system's rotation animation.
+            try? await Task.sleep(nanoseconds: 450_000_000)
+            guard !Task.isCancelled else { return }
+            if reduceMotion {
+                markersHidden = false
+            } else {
+                withAnimation(.easeOut(duration: 0.2)) { markersHidden = false }
+            }
         }
     }
 
@@ -401,6 +421,7 @@ struct MapScreen: View {
                         coordinate: session.target, anchor: MapPin.anchor
                     ) {
                         MapPin(showsActiveDot: activeIsAtPin)
+                            .opacity(markersHidden ? 0 : 1)
                             .accessibilityLabel(session.targetName ?? String(localized: "Dropped pin"))
                             .accessibilityValue(CoordinateParser.spoken(session.target))
                     }
@@ -410,6 +431,7 @@ struct MapScreen: View {
                 if mapReady, let active = session.active, !activeIsAtPin {
                     Annotation(String(localized: "Active"), coordinate: active) {
                         ActiveDot()
+                            .opacity(markersHidden ? 0 : 1)
                             .accessibilityLabel("Active location")
                     }
                     // The panel already shows the state.
