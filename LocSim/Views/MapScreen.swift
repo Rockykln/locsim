@@ -34,6 +34,7 @@ struct MapScreen: View {
     // Only the edges the layout uses: the bottom inset changes with every keyboard frame.
     @State private var topInset: CGFloat = 0
     @State private var trailingInset: CGFloat = 0
+    @State private var leadingInset: CGFloat = 0
     // Trailing edge of the search and panel column in sidebar layout.
     @State private var columnTrailing: CGFloat = 0
     @State private var panelTop: CGFloat = .infinity
@@ -147,6 +148,14 @@ struct MapScreen: View {
         .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { containerWidth = $0 }
         .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.top } action: { topInset = $0 }
         .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.trailing } action: { trailingInset = $0 }
+        .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.leading } action: { leadingInset = $0 }
+        #if DEBUG
+        .onGeometryChange(for: String.self) { proxy in
+            let i = proxy.safeAreaInsets
+            let s = proxy.size
+            return "layout \(Int(s.width))x\(Int(s.height)) insets t\(Int(i.top)) l\(Int(i.leading)) b\(Int(i.bottom)) r\(Int(i.trailing))"
+        } action: { session.noteLayout($0) }
+        #endif
         .ignoresSafeArea(.keyboard)
         .mapScope(mapScope)
     }
@@ -307,7 +316,9 @@ struct MapScreen: View {
             .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { mapFrame = $0 }
             // Symmetric to keep the camera centered; moves the legal label past the panel corner.
             // Beside the column, the camera centers in the part of the map that is not covered.
-            .safeAreaPadding(.leading, usesSidebar ? max(16, columnTrailing - mapFrame.minX) : 16)
+            // From fixed values, not from the measured column: MapKit animates its insets, and a
+            // measured value fed back into them ended in a layout loop that froze the screen.
+            .safeAreaPadding(.leading, usesSidebar ? leadingInset + Metrics.sidebarWidth : 16)
             .safeAreaPadding(.trailing, 16)
             // The user moved the map, so a late location fix must not pull it back.
             .onMapCameraChange(frequency: .continuous) { _ in

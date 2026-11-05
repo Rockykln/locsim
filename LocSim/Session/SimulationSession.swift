@@ -486,6 +486,11 @@ final class SimulationSession: ObservableObject {
 
     func clearLog() { log.clear() }
 
+    #if DEBUG
+    /// Layout measurements for devices only available in the Simulator (iPhone Duo).
+    func noteLayout(_ line: String) { write(line) }
+    #endif
+
     /// Applies the Live Activity setting to a running session.
     func liveActivityChanged() { syncActivity() }
 
