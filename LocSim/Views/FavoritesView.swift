@@ -4,6 +4,7 @@ import SwiftUI
 struct FavoritesView: View, Equatable {
     @EnvironmentObject private var favorites: FavoriteList
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var renaming: Favorite?
     @State private var newName = ""
     @State private var copied = 0
@@ -73,8 +74,7 @@ struct FavoritesView: View, Equatable {
                 }
                 .contextMenu {
                     Button {
-                        Clipboard.copy(CoordinateParser.format(favorite.coordinate))
-                        copied += 1
+                        copy(favorite)
                     } label: {
                         Label("Copy Coordinates", systemImage: "doc.on.doc")
                     }
@@ -89,6 +89,10 @@ struct FavoritesView: View, Equatable {
                     } label: {
                         Label("Delete", systemImage: "trash")
                     }
+                }
+                // Rename and Delete come with the swipe actions; copying is only in the menu.
+                .accessibilityAction(named: "Copy Coordinates") {
+                    copy(favorite)
                 }
             }
             .onDelete { favorites.items.remove(atOffsets: $0) }
@@ -105,7 +109,7 @@ struct FavoritesView: View, Equatable {
             VStack(alignment: .leading, spacing: 2) {
                 Text(favorite.name)
                     .foregroundStyle(.primary)
-                    .lineLimit(1)
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? 3 : 1)
                 Text(CoordinateParser.format(favorite.coordinate))
                     .font(.caption.monospacedDigit())
                     .foregroundStyle(.secondary)
@@ -120,6 +124,12 @@ struct FavoritesView: View, Equatable {
         .frame(minHeight: 44)
         .padding(.vertical, 2)
         .contentShape(Rectangle())
+    }
+
+    private func copy(_ favorite: Favorite) {
+        Clipboard.copy(CoordinateParser.format(favorite.coordinate))
+        copied += 1
+        AccessibilityNotification.Announcement(String(localized: "Coordinates copied")).post()
     }
 
     private func rename() {

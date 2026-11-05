@@ -86,7 +86,7 @@ struct AppError: Error, Equatable {
                     String(localized: "Installing the disk image failed. It needs an internet connection; try again."))
         case .locationService:
             return ("LS-400", String(localized: "Location service unavailable"),
-                    String(localized: "The device did not provide location simulation. Turn on Mount Automatically under Settings, or restart the device."))
+                    String(localized: "The device did not provide location simulation. Turn on Mount Automatically in LocSim's settings under Developer Disk Image, or restart the device."))
         case .setLocation:
             return ("LS-401", String(localized: "Location not set"),
                     String(localized: "Sending the location failed. Tap Set Location to try again."))

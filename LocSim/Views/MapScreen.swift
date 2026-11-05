@@ -8,6 +8,7 @@ struct MapScreen: View {
     @EnvironmentObject private var favorites: FavoriteList
     @EnvironmentObject private var recents: RecentList
     @StateObject private var search = PlaceSearch()
+    @ObservedObject private var requests = ExternalRequests.shared
     @State private var camera: MapCameraPosition = .automatic
     @State private var showSettings = false
     @State private var showWelcome = false
@@ -28,9 +29,34 @@ struct MapScreen: View {
     @State private var suggestionsHeight: CGFloat = 0
     @FocusState private var searchFocused: Bool
     @Namespace private var mapScope
-    @State private var mapBottom: CGFloat = 0
+    @State private var mapFrame: CGRect = .zero
+    private var mapBottom: CGFloat { mapFrame.maxY }
+    @State private var containerWidth: CGFloat = 0
+    // MapKit turns the map with the screen but moves its markers only afterwards; they are hidden
+    // for that moment, so the pin is never seen in the wrong place.
+    @State private var markersHidden = false
+    @State private var markerTask: Task<Void, Never>?
+    @State private var containerHeight: CGFloat = 0
+    // Top of the keyboard in global coordinates, 0 while it is hidden.
+    @State private var keyboardTop: CGFloat = 0
+    // Only the edges the layout uses: the bottom inset changes with every keyboard frame.
+    // Large until measured, so the first layout pass keeps the normal top bar offset.
+    @State private var topInset: CGFloat = 100
+    @State private var bottomInset: CGFloat = 0
+    @State private var trailingInset: CGFloat = 0
+    @State private var leadingInset: CGFloat = 0
+    // Which side the Dynamic Island is on while the iPhone is held sideways; nil upright.
+    @State private var islandOnLeading: Bool?
+    @State private var panelLeading: CGFloat = 0
+    // Trailing edge of the search and panel column in sidebar layout.
+    @State private var columnTrailing: CGFloat = 0
     @State private var panelTop: CGFloat = .infinity
+    @State private var topBarBottom: CGFloat = 0
     @State private var locateTask: Task<Void, Never>?
+    // Camera changes before this come from fly(to:), not from the user.
+    @State private var flyingUntil = Date.distantPast
+    // The pin as it was when Set was tapped here; that result needs no camera follow.
+    @State private var setFromApp: CLLocationCoordinate2D?
     // Annotations added before the map has settled stay invisible until the next redraw.
     @State private var mapReady = false
     // Cancelled by any newer choice, so a late result cannot move the pin back.
@@ -39,10 +65,12 @@ struct MapScreen: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    // Compact height is an iPhone held sideways.
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
     // Shown while nothing is simulated, once location access is allowed.
     @State private var showsUserLocation = false
     @AppStorage(SettingsKey.mapStyle) private var mapStyle = MapStyleOption.standard.rawValue
-    @AppStorage(SettingsKey.zoom) private var zoom = ZoomOption.block.rawValue
+    @AppStorage(SettingsKey.zoom) private var zoom = ZoomOption.district.rawValue
     @AppStorage(SettingsKey.autoApply) private var autoApply = false
     @AppStorage(SettingsKey.haptics) private var haptics = true
     @AppStorage(SettingsKey.precision) private var precision = 5
@@ -57,46 +85,216 @@ struct MapScreen: View {
                     ?? .camera(MapCamera(centerCoordinate: session.target, distance: zoom))
                 camera = start
                 mapCenter = session.target
+                // Saved before names were kept, or set from a Shortcut with bare coordinates.
+                if session.targetName == nil { session.targetName = knownName(for: session.target) }
                 showRealPositionIfAllowed()
                 if !session.hasPairing { showWelcome = true }
                 showDemo()
             }
     }
 
+    /// On wide screens, such as the unfolded iPhone Duo held sideways, search and panel form a
+    /// column at the leading edge and the map gets the rest, instead of a wide panel across it.
+    // The full width: a side status bar must not take the sidebar away.
+    /// The Duo's unfolded screen: a column with search and panel beside the map.
+    private var usesSidebar: Bool {
+        !phoneLandscape && containerWidth + leadingInset + trailingInset >= Metrics.sidebarMinWidth
+    }
+
+    /// An iPhone held sideways: search across the top, the panel at the bottom right and the map
+    /// buttons at the bottom left, so the low screen keeps as much map as possible.
+    private var phoneLandscape: Bool { verticalSizeClass == .compact }
+
+    /// Sideways, only the Dynamic Island's side needs its inset; the other side goes nearer the edge.
+    private var freeSide: Edge.Set {
+        // Without side insets (iPhone SE) both sides are already the same distance from the edge.
+        guard phoneLandscape, leadingInset > 0, trailingInset > 0, let islandOnLeading else { return [] }
+        return islandOnLeading ? .trailing : .leading
+    }
+
+    /// The iPhone Duo's status bar runs down one side only. An iPhone held sideways has insets on
+    /// both sides instead (Dynamic Island, home indicator); nothing may go under those.
+    private var sideStatusColumn: Bool { trailingInset > 0 && leadingInset == 0 }
+
+    private var chromeWidth: CGFloat { usesSidebar ? Metrics.sidebarWidth : 640 }
+
+    /// The sidebar column is far taller than the iPhone SE the fixed cap was made for.
+    private var panelMaxHeight: CGFloat {
+        // Sideways on an iPhone the column is lower than the usual cap; the panel must stay below the bar.
+        if verticalSizeClass == .compact { return max(120, containerHeight - barBottom - 24) }
+        return usesSidebar ? max(Metrics.panelMaxHeight, containerHeight - barBottom - 24) : Metrics.panelMaxHeight
+    }
+
+    /// Ends above the keyboard: the layers ignore it, and rows behind it could not be reached.
+    private var dropdownMaxHeight: CGFloat {
+        guard keyboardTop > 0, topBarBottom > 0 else { return Metrics.dropdownMaxHeight }
+        return max(88, min(Metrics.dropdownMaxHeight, keyboardTop - topBarBottom - Metrics.dropdownGap - 8))
+    }
+
+    /// On the iPhone Duo's cover screen the system bar runs down the side, over the map. The
+    /// panel and the pin and locate buttons reach under it too, so they get the full width.
+    private var extendsIntoSideBar: Bool { !usesSidebar && sideStatusColumn }
+
+    // On the cover screen the bar starts about where the system's own controls begin.
+    private var barTop: CGFloat {
+        max(Metrics.barTop, (extendsIntoSideBar ? Metrics.coverTopGap : Metrics.minTopGap) - topInset)
+    }
+    private var barBottom: CGFloat { barTop + Metrics.control }
+
     private var layers: some View {
-        ZStack(alignment: .top) {
+        ZStack(alignment: usesSidebar || phoneLandscape ? .topLeading : .top) {
             map
                 .ignoresSafeArea()
+                // VoiceOver reads search and panel first, then the map.
+                .accessibilitySortPriority(-1)
             topBar
-                .frame(maxWidth: 640)
+                .frame(maxWidth: phoneLandscape ? .infinity : chromeWidth)
                 .dynamicTypeSize(...DynamicTypeSize.accessibility2)
-        }
-        .overlay(alignment: .bottom) {
-            VStack(spacing: 0) {
-                HStack {
-                    Spacer()
-                    VStack(spacing: 10) {
-                        pinButton
-                        locateButton
-                    }
+                .ignoresSafeArea(.container, edges: freeSide)
+                .padding(freeSide, Metrics.freeSideGap)
+                .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: {
+                    topBarBottom = $0.maxY
+                    columnTrailing = $0.maxX
                 }
-                .padding(.horizontal, Metrics.margin)
-                .padding(.bottom, 10)
+        }
+        .overlay(alignment: usesSidebar ? .bottomLeading : phoneLandscape ? .bottomTrailing : .bottom) {
+            VStack(spacing: 0) {
+                if !usesSidebar && !phoneLandscape {
+                    HStack {
+                        Spacer()
+                        mapButtons
+                    }
+                    .padding(.horizontal, Metrics.margin)
+                    .padding(.bottom, 10)
+                }
                 bottomPanel
             }
-            .frame(maxWidth: 640)
+            .frame(maxWidth: phoneLandscape ? Metrics.landscapePanelWidth : chromeWidth)
             .dynamicTypeSize(...DynamicTypeSize.accessibility2)
             .ignoresSafeArea(.keyboard)
+            .ignoresSafeArea(.container, edges: freeSide)
+            .padding(freeSide, Metrics.freeSideGap)
+            .ignoresSafeArea(.container, edges: extendsIntoSideBar ? .trailing : [])
+            // The cover screen leaves more room below than the home indicator needs.
+            // Never closer than 12 pt to the edge, whatever the device reports below.
+            .padding(.bottom, extendsIntoSideBar ? -min(Metrics.coverBottomTrim, max(0, bottomInset - 8)) : 0)
         }
-        .overlay(alignment: .top) {
+        .overlay(alignment: .bottomLeading) {
+            // Sideways the buttons stand at the left, above MapKit's legal link.
+            if phoneLandscape {
+                mapButtons
+                    .padding(.leading, Metrics.margin)
+                    .padding(.bottom, Metrics.legalHeight + Metrics.legalInset)
+                    .dynamicTypeSize(...DynamicTypeSize.accessibility2)
+                    .ignoresSafeArea(.keyboard)
+                    .ignoresSafeArea(.container, edges: freeSide.intersection(.leading))
+                    .padding(freeSide.intersection(.leading), Metrics.freeSideGap)
+            }
+        }
+        .overlay(alignment: .bottomTrailing) {
+            // Beside the column the buttons sit at the map's own edge, under the side status bar
+            // like on the cover screen.
+            if usesSidebar {
+                mapButtons
+                    .padding(.trailing, Metrics.margin)
+                    .padding(.bottom, 4)
+                    .dynamicTypeSize(...DynamicTypeSize.accessibility2)
+                    .ignoresSafeArea(.keyboard)
+                    .ignoresSafeArea(.container, edges: sideStatusColumn ? .trailing : [])
+            }
+        }
+        .overlay(alignment: usesSidebar || phoneLandscape ? .topLeading : .top) {
             dropdown
                 .padding(.horizontal, Metrics.margin)
-                .padding(.top, Metrics.barBottom + Metrics.dropdownGap)
-                .frame(maxWidth: 640)
+                .padding(.top, barBottom + Metrics.dropdownGap)
+                .frame(maxWidth: phoneLandscape ? Metrics.landscapeSearchWidth + Metrics.control + 8 + 2 * Metrics.margin : chromeWidth)
+                .ignoresSafeArea(.container, edges: freeSide.intersection(.leading))
+                .padding(freeSide.intersection(.leading), Metrics.freeSideGap)
                 .dynamicTypeSize(...DynamicTypeSize.accessibility2)
         }
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width in
+            if containerWidth > 0, width != containerWidth { hideMarkersWhileTurning() }
+            containerWidth = width
+            updateIslandSide()
+        }
+        // Turning from one side to the other keeps the width, so the rotation itself is watched too;
+        // the interface orientation is read once the rotation has been applied.
+        .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 300_000_000)
+                updateIslandSide()
+            }
+        }
+        .onAppear { UIDevice.current.beginGeneratingDeviceOrientationNotifications() }
+        .onChange(of: verticalSizeClass) { _, _ in updateIslandSide() }
+        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { containerHeight = $0 }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillChangeFrameNotification)) { note in
+            guard let frame = note.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
+            // Not UIScreen.main: on the iPhone Duo it is unclear which display that is.
+            keyboardTop = frame.height > 0 ? frame.minY : 0
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+            keyboardTop = 0
+        }
+        // The controls are rebuilt in other places when the layout switches; VoiceOver should look again.
+        .onChange(of: usesSidebar) { _, _ in AccessibilityNotification.LayoutChanged().post() }
+        // Turning the phone moves the buttons and the panel too.
+        .onChange(of: phoneLandscape) { _, _ in AccessibilityNotification.LayoutChanged().post() }
+        .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.top } action: { topInset = $0 }
+        .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.trailing } action: { trailingInset = $0 }
+        .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.leading } action: { leadingInset = $0 }
+        .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.bottom } action: { bottomInset = $0 }
+        #if DEBUG
+        .onGeometryChange(for: String.self) { proxy in
+            let i = proxy.safeAreaInsets
+            let s = proxy.size
+            return "layout \(Int(s.width))x\(Int(s.height)) insets t\(Int(i.top)) l\(Int(i.leading)) b\(Int(i.bottom)) r\(Int(i.trailing))"
+        } action: { session.noteLayout($0) }
+        #endif
         .ignoresSafeArea(.keyboard)
         .mapScope(mapScope)
+    }
+
+    /// On both screens of the iPhone Duo the compass joins the pin and locate buttons.
+    private var compassWithButtons: Bool { usesSidebar || extendsIntoSideBar || phoneLandscape }
+
+    // Where the top of the iPhone, with the Dynamic Island, is. The device orientation says it
+    // directly; the scene's interface orientation stayed unknown on iOS 26 and later.
+    private func updateIslandSide() {
+        guard phoneLandscape else { return islandOnLeading = nil }
+        switch UIDevice.current.orientation {
+        // Turned to the left: the top of the device, and the island, is on the left.
+        case .landscapeLeft: islandOnLeading = true
+        case .landscapeRight: islandOnLeading = false
+        // Flat on a table or upside down: keep the side last seen.
+        default: break
+        }
+    }
+
+    private func hideMarkersWhileTurning() {
+        markerTask?.cancel()
+        markersHidden = true
+        markerTask = Task { @MainActor in
+            // A little longer than the system's rotation animation.
+            try? await Task.sleep(nanoseconds: 450_000_000)
+            guard !Task.isCancelled else { return }
+            if reduceMotion {
+                markersHidden = false
+            } else {
+                withAnimation(.easeOut(duration: 0.2)) { markersHidden = false }
+            }
+        }
+    }
+
+    private var mapButtons: some View {
+        VStack(spacing: 10) {
+            if compassWithButtons {
+                MapCompass(scope: mapScope)
+                    .frame(width: Metrics.control)
+            }
+            pinButton
+            locateButton
+        }
     }
 
     private func withFeedback(_ content: some View) -> some View {
@@ -105,15 +303,28 @@ struct MapScreen: View {
         .onChange(of: session.setCount) { _, _ in
             AccessibilityNotification.Announcement(String(localized: "Location set")).post()
             // A Shortcut can set a place the map does not show; the map follows it there.
-            if let active = session.active, !isVisible(active) { fly(to: active) }
+            // A Set from this screen does not: the user may have panned away on purpose,
+            // and a fly still running would only restart.
+            let fromApp = setFromApp.map { same($0, session.active) } ?? false
+            setFromApp = nil
+            if let active = session.active, !fromApp, Date() >= flyingUntil, !isVisible(active) {
+                fly(to: active)
+            }
         }
         .sensoryFeedback(trigger: session.state) { old, new in
             guard haptics, old != new, case .failed = new else { return nil }
             return .error
         }
         .sensoryFeedback(trigger: feedback) { _, _ in haptics ? .impact(weight: .light) : nil }
+        // Quick actions and widget taps; also delivered when they arrived before this screen.
+        .onReceive(requests.$next) { request in
+            guard let request else { return }
+            requests.next = nil
+            handle(request.kind)
+        }
         .onChange(of: session.state) { old, new in
             announce(old, new)
+            if new.error != nil { setFromApp = nil }
             if let error = new.error, [AppError.ddiConsentCode, AppError.otherVPNCode].contains(error.code) {
                 question = error
             }
@@ -123,6 +334,14 @@ struct MapScreen: View {
             if phase == .active { showRealPositionIfAllowed() }
         }
         .onChange(of: session.state) { _, _ in showRealPositionIfAllowed() }
+        // A renamed favorite renames the pin on it, unless the pin got its name elsewhere.
+        .onChange(of: favorites.items) { old, new in
+            guard let before = old.first(where: { $0.coordinate.distance(to: session.target) < 1 }),
+                  let after = new.first(where: { $0.id == before.id }),
+                  after.name != before.name, session.targetName == before.name else { return }
+            session.targetName = after.name
+            if same(LastCoordinate.load(), session.target) { LastCoordinate.save(session.target, name: after.name) }
+        }
         .onChange(of: session.active == nil) { _, idle in
             if idle {
                 showRealPositionIfAllowed()
@@ -173,9 +392,9 @@ struct MapScreen: View {
             isPresented: Binding(get: { question != nil }, set: { if !$0 { question = nil } }),
             presenting: question
         ) { error in
-            // Setting the location again answers both questions; the session reads the error.
+            // Only this button gives consent; a Set that was waiting in the queue never does.
             Button(error.code == AppError.ddiConsentCode ? String(localized: "Download") : String(localized: "Continue")) {
-                Task { await session.apply() }
+                Task { await session.apply(consent: true) }
             }
             Button("Cancel", role: .cancel) {}
         } message: { error in
@@ -201,7 +420,8 @@ struct MapScreen: View {
     private var map: some View {
         MapReader { proxy in
             Map(position: $camera, scope: mapScope) {
-                if showsUserLocation, session.active == nil, scenePhase == .active {
+                // MapKit draws this one itself, so it is left out while the screen turns.
+                if showsUserLocation, session.active == nil, scenePhase == .active, !markersHidden {
                     UserAnnotation()
                 }
                 if mapReady {
@@ -210,6 +430,7 @@ struct MapScreen: View {
                         coordinate: session.target, anchor: MapPin.anchor
                     ) {
                         MapPin(showsActiveDot: activeIsAtPin)
+                            .opacity(markersHidden ? 0 : 1)
                             .accessibilityLabel(session.targetName ?? String(localized: "Dropped pin"))
                             .accessibilityValue(CoordinateParser.spoken(session.target))
                     }
@@ -219,6 +440,7 @@ struct MapScreen: View {
                 if mapReady, let active = session.active, !activeIsAtPin {
                     Annotation(String(localized: "Active"), coordinate: active) {
                         ActiveDot()
+                            .opacity(markersHidden ? 0 : 1)
                             .accessibilityLabel("Active location")
                     }
                     // The panel already shows the state.
@@ -228,13 +450,24 @@ struct MapScreen: View {
             .mapStyle(resolvedMapStyle)
             .mapControls {}
             // Measured from the panel, which stays put; safe area insets would include the keyboard.
-            .safeAreaPadding(.bottom, max(0, mapBottom - panelTop - 2))
-            .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).maxY } action: { mapBottom = $0 }
+            // In sidebar layout the panel is beside the map, not on it.
+            .safeAreaPadding(.bottom, usesSidebar ? 0 : phoneLandscape ? Metrics.legalInset : max(0, mapBottom - panelTop - 2))
+            .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { mapFrame = $0 }
             // Symmetric to keep the camera centered; moves the legal label past the panel corner.
-            .safeAreaPadding(.horizontal, 16)
+            // Beside the column, the camera centers in the part of the map that is not covered.
+            // From fixed values, not from the measured column: MapKit animates its insets, and a
+            // measured value fed back into them ended in a layout loop that froze the screen.
+            .safeAreaPadding(.leading, usesSidebar ? leadingInset + Metrics.sidebarWidth : phoneLandscape ? 16 + Metrics.legalInset : 16)
+            // Sideways the panel sits at the right; the camera centers left of it. Fixed values, as above.
+            .safeAreaPadding(.trailing, phoneLandscape ? Metrics.landscapePanelWidth + Metrics.margin : 16)
+            // The user moved the map, so a late location fix must not pull it back.
+            .onMapCameraChange(frequency: .continuous) { _ in
+                if Date() >= flyingUntil { locateTask?.cancel() }
+            }
             .onMapCameraChange(frequency: .onEnd) { context in
                 search.bias(to: context.region)
-                mapCenter = context.region.center
+                // The camera centers in the area the panel leaves free; the region covers the whole view.
+                mapCenter = context.camera.centerCoordinate
                 visibleRegion = context.region
                 mapReady = true
             }
@@ -266,6 +499,7 @@ struct MapScreen: View {
         session.target = center
         session.targetName = nil
         droppedPins += 1
+        AccessibilityNotification.Announcement(String(localized: "Pin dropped at map center")).post()
     }
 
     private func dropPin(at point: CGPoint, proxy: MapProxy) {
@@ -284,8 +518,18 @@ struct MapScreen: View {
 
     // Area around MapKit's legal link where taps must not move the pin.
     private var legalZone: CGRect {
-        CGRect(x: 0, y: panelTop - Metrics.legalZone.height,
-               width: Metrics.legalZone.width, height: Metrics.legalZone.height)
+        if phoneLandscape {
+            // MapKit puts the link at the bottom left, below the map buttons.
+            let height = Metrics.legalHeight + Metrics.legalInset + 12
+            return CGRect(x: 0, y: mapBottom - height, width: Metrics.legalZone.width + 80, height: height)
+        }
+        if usesSidebar {
+            // At the bottom of the map, next to the column; the home indicator area is included.
+            let height = Metrics.legalZone.height * 2
+            return CGRect(x: columnTrailing, y: mapBottom - height, width: Metrics.legalZone.width, height: height)
+        }
+        return CGRect(x: 0, y: panelTop - Metrics.legalZone.height,
+                      width: Metrics.legalZone.width, height: Metrics.legalZone.height)
     }
 
     private var resolvedMapStyle: MapStyle {
@@ -304,23 +548,34 @@ struct MapScreen: View {
                 webPage = WebPage(url: AppLinks.website)
             }
             searchField
+                // Sideways the bar spans the screen; the field stays a readable width at the left.
+                .frame(maxWidth: phoneLandscape ? Metrics.landscapeSearchWidth : .infinity)
+                // Otherwise the spacer takes half the room and the field ends short of the dropdown.
+                .layoutPriority(1)
+            if phoneLandscape { Spacer(minLength: 8) }
             iconButton("star", label: "Favorites") { showFavorites = true }
             iconButton("gearshape", label: "Settings") { showSettings = true }
         }
         .padding(.horizontal, Metrics.margin)
-        .padding(.top, Metrics.barTop)
+        // When the status bar sits at the side (iPhone Duo cover screen), iOS leaves almost no
+        // inset at the top; the bar keeps a minimum distance from the edge anyway.
+        .padding(.top, barTop)
         .overlay(alignment: .topTrailing) {
-            MapCompass(scope: mapScope)
-                .frame(width: Metrics.control)
-                .padding(.trailing, Metrics.margin)
-                .offset(y: Metrics.barBottom + Metrics.compassGap)
+            // On the iPhone Duo it sits above the pin button instead.
+            if !compassWithButtons {
+                MapCompass(scope: mapScope)
+                    .frame(width: Metrics.control)
+                    .padding(.trailing, Metrics.margin)
+                    .offset(y: barBottom + Metrics.compassGap)
+            }
         }
         .overlay(alignment: .topLeading) {
             MapScaleView(scope: mapScope)
                 .padding(.leading, 16)
-                .offset(y: Metrics.barBottom + Metrics.compassGap + 6)
+                .offset(y: barBottom + Metrics.compassGap + 6)
         }
         .zIndex(1)
+        .accessibilitySortPriority(2)
     }
 
     @ViewBuilder
@@ -336,13 +591,19 @@ struct MapScreen: View {
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .accessibilitySortPriority(1)
             .task(id: searchError) {
-                // Cancelled by a newer error, which must stay for its own 4 seconds.
-                guard (try? await Task.sleep(nanoseconds: 4_000_000_000)) != nil else { return }
+                AccessibilityNotification.Announcement(searchError).post()
+                // VoiceOver users need longer: the message is read out, then found again by swiping.
+                let seconds: UInt64 = UIAccessibility.isVoiceOverRunning ? 12 : 4
+                // Cancelled by a newer error, which must stay for its own time.
+                guard (try? await Task.sleep(nanoseconds: seconds * 1_000_000_000)) != nil else { return }
                 self.searchError = nil
             }
         } else if searchFocused || Demo.screen == .search || Demo.screen == .recents, hasSuggestions {
+            // Declared after the panel, but VoiceOver should reach it right after the search field.
             suggestions
+                .accessibilitySortPriority(1)
         }
     }
 
@@ -350,6 +611,7 @@ struct MapScreen: View {
         HStack(spacing: 8) {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(.secondary)
+                .accessibilityHidden(true)
             // Own placeholder so it is never cut off on narrow screens.
             TextField("Search place or coordinates", text: $search.query, prompt: Text(verbatim: ""))
                 .overlay(alignment: .leading) {
@@ -357,6 +619,9 @@ struct MapScreen: View {
                         ViewThatFits(in: .horizontal) {
                             Text("Search place or coordinates")
                             Text("Place or coordinates")
+                                .minimumScaleFactor(0.75)
+                            // Large text in the narrow sidebar column.
+                            Text("Search")
                                 .minimumScaleFactor(0.75)
                         }
                         .lineLimit(1)
@@ -370,7 +635,12 @@ struct MapScreen: View {
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
                 .onSubmit(submitSearch)
-                .onChange(of: search.query) { _, _ in searchError = nil }
+                .onChange(of: search.query) { _, _ in
+                    searchError = nil
+                    // A result for what was there before must not land on what is typed now.
+                    searchTask?.cancel()
+                    resolving = nil
+                }
                 .onChange(of: searchFocused) { _, focused in if !focused { searchError = nil } }
             if resolving != nil, !search.query.isEmpty, search.completions.isEmpty {
                 ProgressView().controlSize(.small)
@@ -386,6 +656,7 @@ struct MapScreen: View {
                 }
                 .padding(.trailing, -12)
                 .accessibilityLabel("Clear search")
+                .accessibilityShowsLargeContentViewer()
             }
         }
         .padding(.horizontal, 14)
@@ -409,7 +680,7 @@ struct MapScreen: View {
                 .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { suggestionsHeight = $0 }
         }
         .scrollBounceBehavior(.basedOnSize)
-        .frame(height: min(suggestionsHeight, Metrics.dropdownMaxHeight))
+        .frame(height: min(suggestionsHeight, dropdownMaxHeight))
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
         .shadow(color: .black.opacity(0.15), radius: 12, y: 4)
     }
@@ -422,7 +693,7 @@ struct MapScreen: View {
             if search.hasNoMatches {
                 Text("No suggestions. Tap Search to look it up.")
                     .font(.subheadline)
-                    .foregroundStyle(Color(uiColor: .systemGray))
+                    .foregroundStyle(Color.dropdownSecondary)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 9)
             }
@@ -430,7 +701,8 @@ struct MapScreen: View {
                 suggestionRow(
                     icon: "scope",
                     title: CoordinateParser.format(coordinate),
-                    subtitle: String(localized: "Coordinates")
+                    subtitle: String(localized: "Coordinates"),
+                    spokenTitle: CoordinateParser.spoken(coordinate)
                 ) {
                     select(coordinate, name: nil, apply: autoApply)
                 }
@@ -468,11 +740,11 @@ struct MapScreen: View {
         HStack(spacing: 12) {
             Image(systemName: "doc.on.clipboard")
                 .frame(width: 20)
-                .foregroundStyle(Color(uiColor: .systemGray))
+                .foregroundStyle(Color.dropdownSecondary)
                 .accessibilityHidden(true)
             Text("Coordinates or a Maps link")
                 .font(.subheadline)
-                .foregroundStyle(Color(uiColor: .systemGray))
+                .foregroundStyle(Color.dropdownSecondary)
                 .lineLimit(2)
             Spacer(minLength: 8)
             if resolving != nil {
@@ -483,7 +755,6 @@ struct MapScreen: View {
                 Button(String(localized: "Paste", comment: "Demo stand-in for the system paste button")) {}
                     .buttonStyle(.borderedProminent)
                     .buttonBorderShape(.capsule)
-                    .controlSize(.small)
             } else {
                 // Links copied from Maps or Safari are often only a URL on the pasteboard, not text.
                 PasteButton(supportedContentTypes: [.plainText, .text, .url]) { providers in
@@ -493,7 +764,6 @@ struct MapScreen: View {
                 }
                 .labelStyle(.titleOnly)
                 .buttonBorderShape(.capsule)
-                .controlSize(.small)
             }
         }
         .padding(.horizontal, 14)
@@ -503,15 +773,16 @@ struct MapScreen: View {
             HStack {
                 Text("Recent")
                     .font(.footnote.weight(.semibold))
-                    .foregroundStyle(Color(uiColor: .systemGray))
+                    .foregroundStyle(Color.dropdownSecondary)
                     .accessibilityAddTraits(.isHeader)
                 Spacer()
                 Button(String(localized: "Clear List", defaultValue: "Clear", comment: "Removes all recent locations")) {
                     recents.clear()
                     feedback += 1
+                    AccessibilityNotification.Announcement(String(localized: "Recent locations cleared")).post()
                 }
                 .font(.footnote.weight(.semibold))
-                .frame(minHeight: 44)
+                .frame(minWidth: 44, minHeight: 44)
                 .contentShape(Rectangle())
                 .accessibilityLabel("Clear recent locations")
                 // Lines up with the label inside the paste button above, not with its edge.
@@ -524,7 +795,9 @@ struct MapScreen: View {
                 suggestionRow(
                     icon: "clock",
                     title: item.name ?? CoordinateParser.format(item.coordinate),
-                    subtitle: item.name == nil ? "" : CoordinateParser.format(item.coordinate)
+                    subtitle: item.name == nil ? "" : CoordinateParser.format(item.coordinate),
+                    spokenTitle: item.name ?? CoordinateParser.spoken(item.coordinate),
+                    spokenSubtitle: item.name == nil ? nil : CoordinateParser.spoken(item.coordinate)
                 ) {
                     select(item.coordinate, name: item.name, apply: autoApply)
                 }
@@ -534,6 +807,11 @@ struct MapScreen: View {
                     } label: {
                         Label("Remove", systemImage: "trash")
                     }
+                }
+                // A context menu is hard to reach with VoiceOver.
+                .accessibilityAction(named: "Remove") {
+                    recents.remove(item)
+                    AccessibilityNotification.Announcement(String(localized: "Recent location removed")).post()
                 }
             }
         }
@@ -590,23 +868,26 @@ struct MapScreen: View {
     }
 
     private func suggestionRow(
-        icon: String, title: String, subtitle: String, loading: Bool = false, action: @escaping () -> Void
+        icon: String, title: String, subtitle: String, spokenTitle: String? = nil, spokenSubtitle: String? = nil,
+        loading: Bool = false, action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
             HStack(spacing: 12) {
                 Image(systemName: icon)
                     .frame(width: 20)
-                    .foregroundStyle(Color(uiColor: .systemGray))
+                    .foregroundStyle(Color.dropdownSecondary)
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
+                        .accessibilityLabel(spokenTitle ?? title)
                         .foregroundStyle(.primary)
-                        .lineLimit(1)
+                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? 3 : 1)
                     if !subtitle.isEmpty {
                         Text(subtitle)
+                            .accessibilityLabel(spokenSubtitle ?? subtitle)
                             .font(.caption)
-                            .foregroundStyle(Color(uiColor: .systemGray))
-                            .lineLimit(1)
+                            .foregroundStyle(Color.dropdownSecondary)
+                            .lineLimit(dynamicTypeSize.isAccessibilitySize ? 3 : 1)
                     }
                 }
                 Spacer(minLength: 0)
@@ -648,6 +929,10 @@ struct MapScreen: View {
         .buttonStyle(.plain)
         .glassCircle()
         .accessibilityLabel("Show pin")
+        // The glyph is a shape the viewer cannot show by itself.
+        .accessibilityShowsLargeContentViewer {
+            Label("Show pin", systemImage: "mappin")
+        }
         // The map itself is hard to reach with VoiceOver, so the action is offered here too.
         .accessibilityAction(named: "Drop Pin at Map Center") { dropPinAtCenter() }
     }
@@ -672,16 +957,37 @@ struct MapScreen: View {
         .glassCircle()
         .accessibilityLabel(
             session.active != nil ? String(localized: "Show active location") : String(localized: "Show my location"))
+        .accessibilityShowsLargeContentViewer()
     }
 
+    /// Only the part of the map between the top bar and the panel counts as visible.
+    // Only read for its authorization status; one instance instead of a new one per state change.
+    private static let locationManager = CLLocationManager()
+
     private func isVisible(_ c: CLLocationCoordinate2D) -> Bool {
-        guard let r = visibleRegion else { return false }
-        return abs(c.latitude - r.center.latitude) <= r.span.latitudeDelta / 2
-            && abs(c.longitude - r.center.longitude) <= r.span.longitudeDelta / 2
+        guard let r = visibleRegion, r.span.latitudeDelta > 0, mapBottom > 0 else { return false }
+        // Wrapped, so a point just across the antimeridian is not half a world away.
+        var dLon = abs(c.longitude - r.center.longitude).truncatingRemainder(dividingBy: 360)
+        if dLon > 180 { dLon = 360 - dLon }
+        guard dLon <= r.span.longitudeDelta / 2 else { return false }
+        // Close enough on the spans a camera move can leave; the map is shown from the top of the screen.
+        let y = (r.center.latitude + r.span.latitudeDelta / 2 - c.latitude) / r.span.latitudeDelta * mapBottom
+        if phoneLandscape {
+            let x = mapFrame.minX
+                + (c.longitude - (r.center.longitude - r.span.longitudeDelta / 2)) / r.span.longitudeDelta * mapFrame.width
+            return x > mapFrame.minX && x < panelLeading && y > topBarBottom && y < mapBottom
+        }
+        if usesSidebar {
+            let x = mapFrame.minX
+                + (c.longitude - (r.center.longitude - r.span.longitudeDelta / 2)) / r.span.longitudeDelta * mapFrame.width
+            return x > columnTrailing && x < mapFrame.maxX - trailingInset && y > 0 && y < mapBottom
+        }
+        return y > topBarBottom && y < min(panelTop, mapBottom)
     }
 
     private func fly(to coordinate: CLLocationCoordinate2D, duration: Double = 1.0) {
         let target = MapCameraPosition.camera(MapCamera(centerCoordinate: coordinate, distance: zoom))
+        flyingUntil = Date().addingTimeInterval(reduceMotion ? 0.3 : duration + 0.3)
         if reduceMotion {
             camera = target
         } else {
@@ -695,7 +1001,7 @@ struct MapScreen: View {
         guard !Demo.isOn, session.active == nil, session.state.error?.code != AppError.clearFailedCode else {
             return
         }
-        switch CLLocationManager().authorizationStatus {
+        switch Self.locationManager.authorizationStatus {
         case .authorizedAlways, .authorizedWhenInUse: showsUserLocation = true
         default: break
         }
@@ -729,7 +1035,12 @@ struct MapScreen: View {
             try? await Task.sleep(nanoseconds: 8_000_000_000)
             fix.cancel()
         }
-        let coordinate = await fix.value
+        // Cancelling this task does not cancel the unstructured one, which would keep updates running.
+        let coordinate = await withTaskCancellationHandler {
+            await fix.value
+        } onCancel: {
+            fix.cancel()
+        }
         timeout.cancel()
         guard !Task.isCancelled else { return }
         if let coordinate {
@@ -743,24 +1054,33 @@ struct MapScreen: View {
 
     private var bottomPanel: some View {
         // At the largest text sizes on small iPhones the panel can grow past the top bar;
-        // then it scrolls instead.
+        // then it scrolls instead. Its height follows the content, so a short panel stays short.
         Group {
-            if dynamicTypeSize.isAccessibilitySize {
-                ViewThatFits(in: .vertical) {
-                    panelContent
-                    ScrollView { panelContent }
-                        .scrollBounceBehavior(.basedOnSize)
+            // Sideways the column is short, so the panel may scroll at any text size there.
+            if dynamicTypeSize.isAccessibilitySize || verticalSizeClass == .compact {
+                // Sized in the layout pass, not from a measurement: an unmeasured scroll view
+                // would take the whole height for a frame.
+                CappedHeight(maxHeight: panelMaxHeight) {
+                    ScrollView {
+                        // Inside the scroll view, so scrolled text reaches the rounded edge instead of being cut.
+                        panelContent
+                            .padding(18)
+                    }
+                    .scrollBounceBehavior(.basedOnSize)
                 }
-                .frame(maxHeight: Metrics.panelMaxHeight)
             } else {
                 panelContent
+                    .padding(18)
             }
         }
-        .padding(18)
         .glassPanel(cornerRadius: Metrics.panelRadius)
         .padding(.horizontal, Metrics.margin)
-        .padding(.bottom, 4)
-        .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).minY } action: { panelTop = $0 }
+        // Without a home indicator (iPhone SE) the panel keeps the side margin below too.
+        .padding(.bottom, max(4, Metrics.margin - bottomInset))
+        .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: {
+            panelTop = $0.minY
+            panelLeading = $0.minX
+        }
     }
 
     private var panelContent: some View {
@@ -777,12 +1097,12 @@ struct MapScreen: View {
                         // Own menu instead of text selection, which would copy through Universal Clipboard.
                         .contextMenu {
                             Button {
-                                Clipboard.copy(CoordinateParser.format(session.target))
-                                feedback += 1
+                                copyCoordinates()
                             } label: {
                                 Label("Copy Coordinates", systemImage: "doc.on.doc")
                             }
                         }
+                        .accessibilityAction(named: "Copy Coordinates") { copyCoordinates() }
                 }
                 Spacer(minLength: 0)
                 favoriteButton
@@ -835,45 +1155,67 @@ struct MapScreen: View {
                 .buttonStyle(.plain)
             }
 
-            // Stacked at large text sizes, so neither label is cut off.
-            let layout = dynamicTypeSize.isAccessibilitySize
-                ? AnyLayout(VStackLayout(spacing: 10)) : AnyLayout(HStackLayout(spacing: 10))
-            layout {
-                Button {
-                    setLocation()
-                } label: {
-                    HStack(spacing: 8) {
-                        if session.state == .connecting {
-                            ProgressView().controlSize(.small)
-                        } else {
-                            Image(systemName: "location.fill")
-                        }
-                        Text(session.state == .connecting ? String(localized: "Connecting") : String(localized: "Set Location"))
-                    }
-                    .font(.body.weight(.semibold))
-                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? 2 : 1)
-                    .minimumScaleFactor(0.8)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 6)
+            // Side by side; long translations (de, fr) get a smaller font, then no icons. Stacked
+            // only when even that does not fit, and at large text sizes. ViewThatFits ignores
+            // minimumScaleFactor, so each smaller form is a variant of its own.
+            if dynamicTypeSize.isAccessibilitySize {
+                actionButtons(stacked: true)
+            } else {
+                ViewThatFits(in: .horizontal) {
+                    actionButtons(stacked: false)
+                    actionButtons(stacked: false, compact: true)
+                    actionButtons(stacked: false, compact: true, icons: false)
+                    actionButtons(stacked: true)
                 }
-                .primaryButton()
-                .disabled(session.state == .connecting)
-
-                Button {
-                    feedback += 1
-                    Task { await session.clear() }
-                } label: {
-                    // While connecting this stops the attempt.
-                    Label(session.state == .connecting ? String(localized: "Cancel") : String(localized: "Clear"),
-                          systemImage: "arrow.uturn.backward")
-                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? 2 : 1)
-                        .minimumScaleFactor(0.8)
-                        .frame(maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : nil)
-                        .padding(.vertical, 6)
-                }
-                .secondaryButton()
-                .disabled(!session.canClear)
             }
+        }
+    }
+
+    @ViewBuilder
+    private func actionButtons(stacked: Bool, compact: Bool = false, icons: Bool = true) -> some View {
+        let layout = stacked ? AnyLayout(VStackLayout(spacing: 10)) : AnyLayout(HStackLayout(spacing: 10))
+        layout {
+            Button {
+                setLocation()
+            } label: {
+                HStack(spacing: 8) {
+                    if session.state == .connecting {
+                        ProgressView().controlSize(.small)
+                    } else if icons {
+                        Image(systemName: "location.fill")
+                    }
+                    Text(session.state == .connecting ? String(localized: "Connecting") : String(localized: "Set Location"))
+                }
+                .font(compact ? .subheadline.weight(.semibold) : .body.weight(.semibold))
+                .lineLimit(dynamicTypeSize.isAccessibilitySize ? 2 : 1)
+                .minimumScaleFactor(0.8)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 6)
+            }
+            .primaryButton()
+            .disabled(session.state == .connecting)
+
+            Button {
+                feedback += 1
+                Task { await session.clear() }
+            } label: {
+                // While connecting this stops the attempt.
+                let title = session.state == .connecting ? String(localized: "Cancel") : String(localized: "Clear")
+                Group {
+                    if icons {
+                        Label(title, systemImage: "arrow.uturn.backward")
+                    } else {
+                        Text(title)
+                    }
+                }
+                .font(compact ? .subheadline : nil)
+                .lineLimit(dynamicTypeSize.isAccessibilitySize ? 2 : 1)
+                .minimumScaleFactor(0.8)
+                .frame(maxWidth: stacked ? .infinity : nil)
+                .padding(.vertical, 6)
+            }
+            .secondaryButton()
+            .disabled(!session.canClear)
         }
     }
 
@@ -883,7 +1225,8 @@ struct MapScreen: View {
                 .fill(stateColor)
                 .frame(width: 8, height: 8)
                 .accessibilityHidden(true)
-            Text(statusLine)
+            Text(statusLine())
+                .accessibilityLabel(statusLine(spoken: true))
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
@@ -902,6 +1245,7 @@ struct MapScreen: View {
             if let saved {
                 favorites.items.removeAll { $0.id == saved.id }
                 feedback += 1
+                AccessibilityNotification.Announcement(String(localized: "Favorite removed")).post()
             } else {
                 favoriteName = session.targetName ?? ""
                 naming = true
@@ -916,21 +1260,34 @@ struct MapScreen: View {
         .buttonStyle(.plain)
         .glassCircle()
         .accessibilityLabel(saved == nil ? String(localized: "Save favorite") : String(localized: "Remove favorite"))
+        .accessibilityShowsLargeContentViewer()
+    }
+
+    private func copyCoordinates() {
+        Clipboard.copy(CoordinateParser.format(session.target))
+        feedback += 1
+        AccessibilityNotification.Announcement(String(localized: "Coordinates copied")).post()
     }
 
     private func announce(_ old: SimulationSession.State, _ new: SimulationSession.State) {
         guard old != new else { return }
         let text: String
         switch new {
-        case .idle where old == .active: text = String(localized: "Location cleared")
-        case .reconnecting(let error) where !old.isReconnecting: text = "\(String(localized: "Reconnecting")), \(error.title)"
+        case .idle where old == .active || old.isReconnecting: text = String(localized: "Location cleared")
+        case .idle where old == .connecting: text = String(localized: "Connection cancelled")
+        case .active where old.isReconnecting: text = String(localized: "Reconnected")
+        case .reconnecting(let error) where !old.isReconnecting:
+            text = String(localized: "Reconnecting: \(error.title)", comment: "VoiceOver announcement, then the error title")
         case .failed(let error): text = error.title
         default: return
         }
         AccessibilityNotification.Announcement(text).post()
     }
 
-    private var statusLine: String {
+    /// `spoken` reads the coordinate in words for VoiceOver.
+    private func statusLine(spoken: Bool = false) -> String {
+        // Until the device answers, the state still says active although the location is going.
+        if session.isClearing { return String(localized: "Clearing") }
         var parts: [String] = []
         switch session.state {
         case .idle: parts.append(String(localized: "Not active"))
@@ -939,9 +1296,13 @@ struct MapScreen: View {
             parts.append(String(localized: "Active"))
             // The pin shows the active location unless it was moved since.
             if let active = session.active, CoordinateParser.format(active) != CoordinateParser.format(session.target) {
-                parts.append(CoordinateParser.format(active))
+                parts.append(spoken ? CoordinateParser.spoken(active) : CoordinateParser.format(active))
             }
-        case .reconnecting(let error): parts.append("\(String(localized: "Reconnecting"))  ·  \(error.code)")
+        case .reconnecting(let error):
+            // Without the ellipsis the other "Reconnecting" has, since a separator follows.
+            let title = String(localized: "Reconnecting (status)", defaultValue: "Reconnecting",
+                               comment: "Status line on the map, followed by the error code")
+            parts.append("\(title)  ·  \(error.code)")
         case .failed(let error): parts.append("\(error.title)  ·  \(error.code)")
         }
         if let sent = session.lastSent, session.state == .active {
@@ -951,6 +1312,7 @@ struct MapScreen: View {
     }
 
     private var stateColor: Color {
+        if session.isClearing { return .orange }
         switch session.state {
         case .active: return .green
         case .failed: return .red
@@ -999,11 +1361,41 @@ struct MapScreen: View {
         searchTask?.cancel()
         locateTask?.cancel()
         session.target = coordinate
-        session.targetName = name
+        session.targetName = name ?? knownName(for: coordinate)
         searchFocused = false
         search.reset()
         fly(to: coordinate, duration: 1.2)
+        // Focus leaves the closed list or sheet; say where the pin went.
+        let pinName = session.targetName ?? CoordinateParser.spoken(coordinate)
+        AccessibilityNotification.Announcement(String(localized: "Pin: \(pinName)")).post()
         if apply { setLocation() }
+    }
+
+    private func same(_ a: CLLocationCoordinate2D, _ b: CLLocationCoordinate2D?) -> Bool {
+        guard let b else { return false }
+        return abs(a.latitude - b.latitude) < 1e-7 && abs(a.longitude - b.longitude) < 1e-7
+    }
+
+    /// A typed or pasted coordinate that is a favorite or a recent place gets that name.
+    /// Matched to about a meter, so only the same spot counts, not a pin dropped next to it.
+    private func knownName(for c: CLLocationCoordinate2D) -> String? {
+        func same(_ other: CLLocationCoordinate2D) -> Bool {
+            abs(other.latitude - c.latitude) < 1e-5 && abs(other.longitude - c.longitude) < 1e-5
+        }
+        if let favorite = favorites.items.first(where: { same($0.coordinate) }) { return favorite.name }
+        return recents.items.first { $0.name != nil && same($0.coordinate) }?.name
+    }
+
+    private func handle(_ kind: ExternalRequests.Kind) {
+        // Settings and Favorites would hide the map and the search field.
+        showSettings = false
+        showFavorites = false
+        switch kind {
+        case .set(let latitude, let longitude, let name):
+            select(CLLocationCoordinate2D(latitude: latitude, longitude: longitude), name: name, apply: true)
+        case .search:
+            searchFocused = true
+        }
     }
 
     /// Every Set goes through here; without a pairing file it opens the setup steps instead.
@@ -1013,6 +1405,7 @@ struct MapScreen: View {
             showWelcome = true
             return
         }
+        setFromApp = session.target
         Task { await session.apply() }
     }
 
@@ -1036,6 +1429,12 @@ struct MapScreen: View {
             name: name.isEmpty ? CoordinateParser.format(c) : name,
             latitude: c.latitude,
             longitude: c.longitude))
+        // The pin carries the name from now on, also into the next Set.
+        if !name.isEmpty {
+            session.targetName = name
+            // Set Last Location and the next launch show it too.
+            if same(LastCoordinate.load(), c) { LastCoordinate.save(c, name: name) }
+        }
     }
 }
 
@@ -1043,7 +1442,6 @@ private enum Metrics {
     static let margin: CGFloat = 12
     static let control: CGFloat = 46
     static let barTop: CGFloat = 4
-    static let barBottom: CGFloat = barTop + control
     static let compassGap: CGFloat = 7.5
     static let dropdownGap: CGFloat = 8
     static let dropdownMaxHeight: CGFloat = 320
@@ -1051,9 +1449,44 @@ private enum Metrics {
     // Leaves the top bar free on a 667 pt iPhone SE at the largest text sizes.
     static let panelMaxHeight: CGFloat = 420
     static let legalZone = CGSize(width: 170, height: 44)
+    // The unfolded iPhone Duo is about 951 pt wide sideways and 669 pt upright; only sideways
+    // leaves room for a column next to a usable map.
+    static let sidebarMinWidth: CGFloat = 800
+    static let sidebarWidth: CGFloat = 380
+    static let landscapePanelWidth: CGFloat = 380
+    static let landscapeSearchWidth: CGFloat = 420
+    // Room for MapKit's legal link below the map buttons when sideways.
+    static let legalHeight: CGFloat = 34
+    // Sideways MapKit's legal link sat partly at the screen edge; this moves it into view.
+    static let legalInset: CGFloat = 10
+    // On the side without the Dynamic Island, a little room to the edge instead of the full inset.
+    static let freeSideGap: CGFloat = 12
+    static let minTopGap: CGFloat = 16
+    // Estimates for the iPhone Duo until measured on the device.
+    // Apple gives no number for the cover screen; 3/4 of the bar's height above the clock
+    // in the status column looked right in the Simulator.
+    static let coverTopGap: CGFloat = 60 - control * 3 / 4
+    // About 50 pt stayed free below the panel; this leaves a little above the home indicator.
+    static let coverBottomTrim: CGFloat = 36
 }
 
 private let longPressDuration = 0.3
+
+/// As tall as its content, at most `maxHeight`. A scroll view asked without a height reports its content's.
+private struct CappedHeight: Layout {
+    let maxHeight: CGFloat
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        guard let child = subviews.first else { return .zero }
+        let ideal = child.sizeThatFits(ProposedViewSize(width: proposal.width, height: nil))
+        let limit = min(maxHeight, proposal.height ?? maxHeight)
+        return CGSize(width: proposal.width ?? ideal.width, height: min(ideal.height, limit))
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        subviews.first?.place(at: bounds.origin, proposal: ProposedViewSize(bounds.size))
+    }
+}
 
 private extension View {
     /// Reports where the finger is as soon as the press is long enough, while it is still down.
@@ -1099,4 +1532,11 @@ private struct LongPressRecognizer: UIGestureRecognizerRepresentable {
             shouldRecognizeSimultaneouslyWith other: UIGestureRecognizer
         ) -> Bool { true }
     }
+}
+
+private extension Color {
+    /// Secondary text on the suggestions' material: system gray is too faint in light mode.
+    static let dropdownSecondary = Color(uiColor: UIColor { traits in
+        traits.userInterfaceStyle == .dark ? .systemGray : UIColor(red: 0.424, green: 0.424, blue: 0.439, alpha: 1)
+    })
 }

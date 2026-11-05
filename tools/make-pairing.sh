@@ -3,6 +3,8 @@
 # Usage: tools/make-pairing.sh [-u UDID] [hostname] [output]
 set -euo pipefail
 umask 077
+# idevice-tools is written in Rust; its RUST_LOG output on stderr would count as an error below.
+unset RUST_LOG
 
 VERSION="v0.1.68"
 UDID=""
@@ -39,8 +41,10 @@ command -v sha256sum >/dev/null || command -v shasum >/dev/null \
   || { echo "This script needs sha256sum or shasum." >&2; exit 1; }
 if [[ "$ASSET" == linux ]]; then
   # The Linux build of idevice-tools is linked against glibc 2.38.
-  glibc="$(getconf GNU_LIBC_VERSION 2>/dev/null | awk '{print $2}')"
-  if [[ -z "$glibc" ]] || ! printf '2.38\n%s\n' "$glibc" | sort -V -C; then
+  # getconf fails on musl; "|| true" keeps set -e from ending the script without a message.
+  glibc="$(getconf GNU_LIBC_VERSION 2>/dev/null | awk '{print $2}' || true)"
+  # awk instead of sort -V, which BusyBox does not have.
+  if [[ -z "$glibc" ]] || ! awk -v v="$glibc" 'BEGIN { split(v, p, "."); exit !(p[1] + 0 > 2 || (p[1] + 0 == 2 && p[2] + 0 >= 38)) }'; then
     echo "idevice-tools $VERSION needs glibc 2.38 or newer (found: ${glibc:-none, e.g. musl})." >&2
     echo "That is Debian 13, Ubuntu 24.04, Fedora 39 or newer. Or use macOS or Windows." >&2
     exit 1
@@ -99,13 +103,24 @@ elif devices="$("$LIST" 2>/dev/null)"; then
     printf '%s\n' "$usb" | sed 's/^/  /' >&2
     echo "Connect only one, or pick one with: bash $0 --udid <UDID>" >&2
     exit 1
+  elif [[ "$count" -eq 1 ]]; then
+    # Explicit, so a device that usbmuxd only sees over the network is not picked instead.
+    UDID_ARGS=(--udid "$usb")
+  else
+    echo "No iPhone is connected over USB." >&2
+    echo >&2
+    checklist
+    exit 1
   fi
 fi
 
 echo "Make sure the iPhone is connected by USB, unlocked and trusts this computer."
 rm -f "$OUT"
 # A pairing file left behind by a failed or interrupted run must not stay on the disk.
-trap 'rm -f "$OUT"' EXIT INT TERM
+trap 'rm -f "$OUT"' EXIT
+# Without an explicit exit, bash would run the trap and carry on after Ctrl+C.
+trap 'exit 130' INT
+trap 'exit 143' TERM
 if ! pair_log="$("$BIN" ${UDID_ARGS[@]+"${UDID_ARGS[@]}"} remotepairing_lockdown pair "$HOSTNAME_ARG" "$OUT" 2>&1)" || [[ ! -s "$OUT" ]]; then
   echo "Pairing failed:" >&2
   printf '%s\n' "${pair_log:-no output from idevice-tools}" >&2
@@ -114,7 +129,7 @@ if ! pair_log="$("$BIN" ${UDID_ARGS[@]+"${UDID_ARGS[@]}"} remotepairing_lockdown
   exit 1
 fi
 chmod 600 "$OUT"
-OUT_ABS="$(cd "$(dirname "$OUT")" && pwd)/$(basename "$OUT")"
+OUT_ABS="$(CDPATH= cd -- "$(dirname "$OUT")" >/dev/null && pwd)/$(basename "$OUT")"
 echo
 echo "Hostname: $HOSTNAME_ARG (must match LocSim > Settings > Hostname)"
 # LocSim picks the file up from its Documents folder and removes it there.
@@ -123,7 +138,7 @@ if afc_err="$("$BIN" ${UDID_ARGS[@]+"${UDID_ARGS[@]}"} afc --documents com.rocky
   echo "Copied into LocSim and removed here. Open LocSim to finish."
 else
   # The file is kept for a manual import.
-  trap - EXIT INT TERM
+  trap - EXIT
   {
     echo "Could not copy the file into LocSim:"
     printf '%s\n' "${afc_err:-idevice-tools exited with an error}"

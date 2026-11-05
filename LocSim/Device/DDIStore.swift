@@ -27,8 +27,21 @@ enum DDIStore {
         return method.files.allSatisfy { size(of: dir.appendingPathComponent($0.name)) > 0 }
     }
 
+    @MainActor private static var running: [DDIMethod: Task<URL, Error>] = [:]
+
+    /// Concurrent callers (a connect and the Settings button) share one download per method,
+    /// so they never remove or move the same files under each other.
     @MainActor
-    static func prepare(_ method: DDIMethod, log: (String) -> Void) async throws -> URL {
+    static func prepare(_ method: DDIMethod, log: @escaping (String) -> Void) async throws -> URL {
+        if let task = running[method] { return try await task.value }
+        let task = Task { @MainActor in try await download(method, log: log) }
+        running[method] = task
+        defer { running[method] = nil }
+        return try await task.value
+    }
+
+    @MainActor
+    private static func download(_ method: DDIMethod, log: (String) -> Void) async throws -> URL {
         let dir = directory(for: method)
         let fm = FileManager.default
         do {
@@ -58,6 +71,8 @@ enum DDIStore {
             do {
                 try fm.moveItem(at: temp, to: target)
             } catch {
+                try? fm.removeItem(at: temp)
+                if await verify(target, file.sha256) { continue }
                 throw DeviceError(.ddiDownload, "Cannot store \(file.name): \(error.localizedDescription)")
             }
         }

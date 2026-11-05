@@ -1,7 +1,7 @@
 # Releasing to TestFlight
 
-Builds are uploaded either from Xcode on the Mac or by the `testflight` workflow. The
-workflow archives with automatic, cloud-managed signing through the App Store Connect
+Builds are uploaded either from Xcode on the Mac or by the `testflight` workflow, which
+only runs when started by hand. The workflow archives with automatic, cloud-managed signing through the App Store Connect
 API, so no certificates or provisioning profiles are stored in the repository or in
 secrets.
 
@@ -23,10 +23,16 @@ To upload from Xcode, run `xcodegen generate` after raising the numbers, then
    a new iOS app named **LocSim: Location Simulator** with the bundle ID
    `com.rockykln.locsim`. The home screen keeps the short name *LocSim*. Privacy
    policy, support and beta pages: https://locsim.rockykln.com (source in `site/`). Register the bundle IDs
-   `com.rockykln.locsim` and `com.rockykln.locsim.tunnel` under *Certificates,
-   Identifiers & Profiles* first if they are not listed, both with the *Network
-   Extensions* capability, and `com.rockykln.locsim.widgets` (Live Activity) without
-   extra capabilities.
+   under *Certificates, Identifiers & Profiles* first if they are not listed:
+
+   | Bundle ID | Capabilities |
+   | --- | --- |
+   | `com.rockykln.locsim` | *Network Extensions*, *App Groups* (`group.com.rockykln.locsim`) |
+   | `com.rockykln.locsim.tunnel` | *Network Extensions* |
+   | `com.rockykln.locsim.widgets` | *App Groups* (`group.com.rockykln.locsim`) |
+
+   The widgets extension holds the Live Activity, the widgets and the Control Center
+   controls. The app writes what the widgets show into the App Group, so both need it.
 2. **API key.** Under *Users and Access > Integrations > App Store Connect API*,
    create a team key with the *Admin* role (required for cloud-managed signing).
    Download the `.p8` file; it can only be downloaded once.
@@ -48,19 +54,19 @@ To upload from Xcode, run `xcodegen generate` after raising the numbers, then
 6. **Repository settings** (set on 4 November 2026): workflow runs from all outside
    contributors need approval (*Settings > Actions > General*), actions must be pinned
    to a full SHA, the `testflight` environment needs approval and allows only `v*` tags,
-   and rulesets keep `main` and `v*` tags from being deleted or force-pushed by anyone
-   but admins. Secret scanning with push protection and Dependabot alerts are on.
+   and rulesets protect `main` and all `v*` tags: they cannot be deleted or force-pushed,
+   so a tag cannot be moved to another commit. Admins can bypass the rulesets. Secret scanning with push protection and Dependabot alerts are on.
 
 ## Uploading a build
 
 1. Raise `CURRENT_PROJECT_VERSION` in `project.yml` (and `MARKETING_VERSION` for a new
    release) and commit.
 2. Tag the commit with `v`, `MARKETING_VERSION`, a dash and `CURRENT_PROJECT_VERSION`,
-   e.g. for version 1.0 build 4: `git tag -a v1.0-4 -m "Build 4" && git push origin v1.0-4`.
+   e.g. for version 1.0 build 5: `git tag -a v1.0-5 -m "Build 5" && git push origin v1.0-5`.
    Every build gets its tag, also one uploaded from Xcode, so patches can branch off the
    shipped state. Pushing a tag starts nothing.
 3. Upload from Xcode, or run the workflow by hand: *Actions > testflight > Run workflow*,
-   select the tag (e.g. `v1.0-4`) under *Use workflow from*, then approve the run in the
+   select the tag (e.g. `v1.0-5`) under *Use workflow from*, then approve the run in the
    `testflight` environment. The environment only allows `v*` tags, and the tag check
    fails if the tag does not match `project.yml`.
 
@@ -93,9 +99,14 @@ Access requests for Early Access and development builds arrive at locsim@rockykl
   repository and verifies it by SHA-256. Mention this in the review notes.
 - Testers need the same prerequisites as for a source build: Developer Mode and their
   own pairing file.
+- Build 5 and later need Xcode 27.1 or later (iOS 27.1 SDK), also on the CI runner. The
+  Siri AI tools on `feature/siri-ai` need the iOS 27.3 SDK and are not part of build 5.
 - The packet tunnel makes App Review treat LocSim as a possible VPN app (guideline 5.4,
   organization accounts only). The review notes must explain that it only reaches the
   device itself, and China should stay excluded from availability.
+- Background location: the review notes should say that LocSim uses it only to keep
+  running while a location is simulated and to notice when iOS resets that location.
+  Fixes are compared with the simulated location and not stored.
 
 ## Setup guide
 

@@ -85,6 +85,35 @@
         }
       }
     },
+    "Connecting · Location not set yet" : {
+      "comment" : "Live Activity caption while a Set is still connecting to the device; nothing is simulated yet.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbindet · Noch nicht gesetzt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectando · Aún sin establecer"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connexion · Pas encore définie"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connessione · Non ancora impostata"
+          }
+        }
+      }
+    },
     "Ends the simulated location and restores the real one." : {
       "localizations" : {
         "de" : {
@@ -113,31 +142,292 @@
         }
       }
     },
+    "Favorites" : {
+      "comment" : "Widget",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoriten"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoritos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoris"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preferiti"
+          }
+        }
+      }
+    },
+    "Location Status" : {
+      "comment" : "Widget name in the widget gallery",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standortstatus"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estado de la ubicación"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "État de la position"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stato della posizione"
+          }
+        }
+      }
+    },
+    "No Favorites" : {
+      "comment" : "Widget",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Favoriten"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay favoritos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun favori"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nessun preferito"
+          }
+        }
+      }
+    },
+    "Not simulated" : {
+      "comment" : "Widget: no simulated location",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht simuliert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin simular"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non simulée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non simulata"
+          }
+        }
+      }
+    },
     "Open LocSim to check the location" : {
       "comment" : "Live Activity when LocSim was suspended and the simulation may have ended",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Öffne LocSim, um den Standort zu prüfen"
+            "value" : "Standort in LocSim prüfen"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abre LocSim para comprobar la ubicación"
+            "value" : "Comprueba la ubicación en LocSim"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ouvrez LocSim pour vérifier la position"
+            "value" : "Vérifiez la position dans LocSim"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apri LocSim per verificare la posizione"
+            "value" : "Verifica la posizione in LocSim"
+          }
+        }
+      }
+    },
+    "Opens LocSim and sets this location" : {
+      "comment" : "VoiceOver hint for a favorite in the widget",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffnet LocSim und setzt diesen Standort"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre LocSim y establece esta ubicación"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvre LocSim et définit cette position"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apre LocSim e imposta questa posizione"
+          }
+        }
+      }
+    },
+    "Opens LocSim and simulates the last location again." : {
+      "comment" : "Control Center button and intent description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffnet LocSim und simuliert den letzten Standort erneut."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre LocSim y vuelve a simular la última ubicación."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvre LocSim et simule à nouveau la dernière position."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apre LocSim e simula di nuovo l’ultima posizione."
+          }
+        }
+      }
+    },
+    "Real location" : {
+      "comment" : "Lock Screen inline widget: nothing is simulated",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Echter Standort"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ubicación real"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Position réelle"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posizione reale"
+          }
+        }
+      }
+    },
+    "Set Last Location" : {
+      "comment" : "Control Center button and its intent: sets the location simulated last",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzten Standort setzen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Establecer la última ubicación"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définir la dernière position"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imposta l’ultima posizione"
+          }
+        }
+      }
+    },
+    "Shows whether a location is simulated. Tap a favorite to set it in LocSim." : {
+      "comment" : "Widget description in the widget gallery",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeigt, ob ein Standort simuliert wird. Tippe auf einen Favoriten, um ihn in LocSim zu setzen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muestra si se está simulando una ubicación. Toca un favorito para establecerlo en LocSim."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indique si une position est simulée. Touchez un favori pour le définir dans LocSim."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra se è simulata una posizione. Tocca un preferito per impostarlo in LocSim."
           }
         }
       }
@@ -176,7 +466,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Simulierter Standort · Verbindet erneut"
+            "value" : "Simuliert · Verbindet erneut"
           }
         },
         "es" : {
@@ -195,6 +485,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Posizione simulata · Riconnessione"
+          }
+        }
+      }
+    },
+    "Simulated · %@" : {
+      "comment" : "Lock Screen inline widget: the simulated place",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simuliert · %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simulada · %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simulée · %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simulata · %@"
           }
         }
       }
@@ -223,7 +542,36 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dalle %@"
+            "value" : "Dalle ore %@"
+          }
+        }
+      }
+    },
+    "The real location is in use." : {
+      "comment" : "Widget: below Not simulated",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der echte Standort wird verwendet."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se usa la ubicación real."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La position réelle est utilisée."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "È in uso la posizione reale."
           }
         }
       }

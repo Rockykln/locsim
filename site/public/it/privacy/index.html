@@ -54,9 +54,10 @@
 <ul>
 <li><strong>File di abbinamento:</strong> salvato nello spazio privato dell’app, protetto dalla protezione dei dati di iOS ed escluso dai backup. Si rimuove nelle impostazioni o eliminando l’app.</li>
 <li><strong>Attività in tempo reale:</strong> mostra il luogo simulato nella schermata di blocco e nella Dynamic Island. Viene creata sul dispositivo; per questo non viene inviato nulla.</li>
-<li><strong>Preferiti, posizioni recenti e impostazioni:</strong> salvati sul dispositivo e inclusi nei suoi backup. Le posizioni recenti si possono disattivare e cancellare nell’app.</li>
+<li><strong>Widget:</strong> il luogo simulato (nome, coordinate e ora di inizio) e i tuoi tre preferiti più usati (nome e coordinate) vengono scritti in uno spazio del dispositivo che LocSim condivide con i suoi widget (App Group), così che i widget possano mostrarli, anche nella schermata di blocco. Per questo nulla lascia il dispositivo.</li>
+<li><strong>Preferiti, posizioni recenti, ultima posizione e impostazioni:</strong> salvati sul dispositivo e inclusi nei suoi backup. Ne fanno parte l’ultima posizione con il suo nome per “Imposta l’ultima posizione” e quante volte e per quanto tempo è stato simulato ogni preferito, per mostrare prima i più usati. Le posizioni recenti si possono disattivare e cancellare nell’app.</li>
 <li><strong>Registro:</strong> conservato solo in memoria e cancellato alla chiusura dell’app. Lascia il dispositivo solo se lo copi tu.</li>
-<li><strong>Posizione:</strong> la tua posizione reale viene usata sul dispositivo per mantenere aperta la connessione in background e, dopo che hai consentito l’accesso alla posizione, per mostrarla sulla mappa. LocSim non la invia da nessuna parte.</li>
+<li><strong>Posizione:</strong> la tua posizione reale viene usata sul dispositivo per mantenere aperta la connessione in background e, dopo che hai consentito l’accesso alla posizione, per mostrarla sulla mappa. Mentre LocSim è in esecuzione, i rilevamenti di posizione vengono anche confrontati sul dispositivo con la posizione simulata, per accorgersi se iOS la ripristina. Non vengono salvati, e LocSim non invia la tua posizione da nessuna parte.</li>
 </ul>
 <h2 id="connessioni-dellapp">Connessioni effettuate dall’app</h2>
 <p>Queste connessioni vanno direttamente dal tuo dispositivo al rispettivo fornitore. Non vi abbiamo accesso. I fornitori trattano i dati come titolari autonomi secondo le proprie informative sulla privacy.</p>

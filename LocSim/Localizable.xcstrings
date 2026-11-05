@@ -235,6 +235,64 @@
         }
       }
     },
+    "A place name or address, for example Eiffel Tower or Alexanderplatz, Berlin" : {
+      "comment" : "App Intent parameter description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein Ortsname oder eine Adresse, zum Beispiel Eiffelturm oder Alexanderplatz, Berlin"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un nombre de lugar o una dirección, por ejemplo Torre Eiffel o Alexanderplatz, Berlín"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un nom de lieu ou une adresse, par exemple Tour Eiffel ou Alexanderplatz, Berlin"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un nome di luogo o un indirizzo, ad esempio Torre Eiffel o Alexanderplatz, Berlino"
+          }
+        }
+      }
+    },
+    "A place the person saved as a favorite in LocSim" : {
+      "comment" : "App Intent parameter description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein Ort, den die Person in LocSim als Favorit gesichert hat"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un lugar que la persona ha guardado como favorito en LocSim"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un lieu que la personne a enregistré comme favori dans LocSim"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un luogo che la persona ha salvato come preferito in LocSim"
+          }
+        }
+      }
+    },
     "A running simulation stops. You need the setup script to create a new one." : {
       "localizations" : {
         "de" : {
@@ -259,6 +317,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Una simulazione in corso si interrompe. Per crearne uno nuovo serve lo script di configurazione."
+          }
+        }
+      }
+    },
+    "About" : {
+      "comment" : "Settings section header: version, commit, language and links. Must match the support pages.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Info"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Información"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "À propos"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Info"
           }
         }
       }
@@ -632,7 +719,7 @@
       }
     },
     "Clear" : {
-      "comment" : "Button: ends the simulated location, or clears the recent locations",
+      "comment" : "Button: ends the simulated location and restores the real one",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -837,6 +924,35 @@
         }
       }
     },
+    "Clearing" : {
+      "comment" : "Status: waiting for the device to end the simulated location",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wird zurückgesetzt …"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restableciendo…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réinitialisation…"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ripristino…"
+          }
+        }
+      }
+    },
     "Commit" : {
       "comment" : "Git commit of the build",
       "localizations" : {
@@ -895,7 +1011,7 @@
         }
       }
     },
-    "Connecting needs Wi-Fi, then cellular works too. Keep Alive keeps the simulation running in the background." : {
+    "Connecting needs Wi-Fi, then cellular works too. “Keep Alive in Background” keeps the simulation running in the background." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -947,6 +1063,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Connessione"
+          }
+        }
+      }
+    },
+    "Connection cancelled" : {
+      "comment" : "VoiceOver announcement when a connection attempt is cancelled",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbindung abgebrochen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conexión cancelada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connexion annulée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connessione annullata"
           }
         }
       }
@@ -1088,6 +1233,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Coordinate"
+          }
+        }
+      }
+    },
+    "Coordinates copied" : {
+      "comment" : "VoiceOver announcement after Copy Coordinates",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Koordinaten kopiert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coordenadas copiadas"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coordonnées copiées"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coordinate copiate"
           }
         }
       }
@@ -1480,6 +1654,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Developer Disk Image"
+          }
+        }
+      }
+    },
+    "Developer Disk Image downloaded" : {
+      "comment" : "VoiceOver announcement after the download in Settings",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image geladen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image descargado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image téléchargé"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image scaricata"
           }
         }
       }
@@ -1962,6 +2165,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Preferito"
+          }
+        }
+      }
+    },
+    "Favorite removed" : {
+      "comment" : "VoiceOver announcement after removing a favorite with the star",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorit entfernt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorito eliminado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favori supprimé"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preferito rimosso"
           }
         }
       }
@@ -2869,6 +3101,64 @@
         }
       }
     },
+    "Log cleared" : {
+      "comment" : "VoiceOver announcement after Clear Log",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protokoll gelöscht"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registro borrado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Journal effacé"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registro cancellato"
+          }
+        }
+      }
+    },
+    "Log copied" : {
+      "comment" : "VoiceOver announcement after Copy Log",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protokoll kopiert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registro copiado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Journal copié"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registro copiato"
+          }
+        }
+      }
+    },
     "Map" : {
       "localizations" : {
         "de" : {
@@ -3049,7 +3339,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se encontraron coordenadas en “%@”."
+            "value" : "No se han encontrado coordenadas en “%@”."
           }
         },
         "fr" : {
@@ -3178,7 +3468,7 @@
         }
       }
     },
-    "No results for \"%@\"" : {
+    "No results for “%@”" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3432,6 +3722,35 @@
         }
       }
     },
+    "Opens LocSim and simulates the last location again." : {
+      "comment" : "Control Center button and intent description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffnet LocSim und simuliert den letzten Standort erneut."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre LocSim y vuelve a simular la última ubicación."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvre LocSim et simule à nouveau la dernière position."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apre LocSim e simula di nuovo l’ultima posizione."
+          }
+        }
+      }
+    },
     "Opens LocSim and simulates the location of a saved favorite." : {
       "localizations" : {
         "de" : {
@@ -3456,6 +3775,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Apre LocSim e simula la posizione di un preferito salvato."
+          }
+        }
+      }
+    },
+    "Opens LocSim, finds a place by its name or address and simulates its location. Coordinates and map links work too." : {
+      "comment" : "App Intent description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffnet LocSim, findet einen Ort über seinen Namen oder seine Adresse und simuliert seinen Standort. Koordinaten und Karten-Links funktionieren auch."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre LocSim, encuentra un lugar por su nombre o dirección y simula su ubicación. También funcionan las coordenadas y los enlaces de mapa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvre LocSim, trouve un lieu par son nom ou son adresse et simule sa position. Les coordonnées et les liens de carte fonctionnent aussi."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apre LocSim, trova un luogo dal nome o dall’indirizzo e ne simula la posizione. Funzionano anche coordinate e link di mappa."
           }
         }
       }
@@ -3512,6 +3860,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "File di abbinamento"
+          }
+        }
+      }
+    },
+    "Pairing file imported" : {
+      "comment" : "VoiceOver announcement after importing the pairing file",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pairing-Datei importiert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archivo de emparejamiento importado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fichier de jumelage importé"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File di abbinamento importato"
           }
         }
       }
@@ -3625,6 +4002,93 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Incolla"
+          }
+        }
+      }
+    },
+    "Pin dropped at map center" : {
+      "comment" : "VoiceOver announcement after the Drop Pin at Map Center action",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ort in der Kartenmitte markiert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ubicación marcada en el centro del mapa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lieu marqué au centre de la carte"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Segnaposto inserito al centro della mappa"
+          }
+        }
+      }
+    },
+    "Pin: %@" : {
+      "comment" : "VoiceOver announcement after choosing a place; the place name or spoken coordinates. 'Pin' is the dropped pin (Markierter Ort / Lieu marqué / Ubicación marcada / Segnaposto)",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Markierter Ort: %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ubicación marcada: %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lieu marqué : %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Segnaposto: %@"
+          }
+        }
+      }
+    },
+    "Place" : {
+      "comment" : "App Intent parameter: a place name or address",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ort"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lugar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lieu"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Luogo"
           }
         }
       }
@@ -3884,6 +4348,35 @@
         }
       }
     },
+    "Recent location removed" : {
+      "comment" : "VoiceOver announcement after removing one recent location",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzter Ort entfernt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ubicación reciente eliminada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lieu récent supprimé"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posizione recente rimossa"
+          }
+        }
+      }
+    },
     "Recent Locations" : {
       "localizations" : {
         "de" : {
@@ -3908,6 +4401,64 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Posizioni recenti"
+          }
+        }
+      }
+    },
+    "Recent locations cleared" : {
+      "comment" : "VoiceOver announcement after clearing the recent locations list",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzte Orte gelöscht"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ubicaciones recientes borradas"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lieux récents effacés"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posizioni recenti cancellate"
+          }
+        }
+      }
+    },
+    "Reconnected" : {
+      "comment" : "VoiceOver announcement when the connection is back after reconnecting",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wieder verbunden"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conexión restablecida"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connexion rétablie"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connessione ripristinata"
           }
         }
       }
@@ -3937,6 +4488,70 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Riconnessione…"
+          }
+        }
+      }
+    },
+    "Reconnecting (status)" : {
+      "comment" : "Status line on the map, followed by the error code",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbindet erneut"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconnecting"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconectando"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconnexion"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Riconnessione"
+          }
+        }
+      }
+    },
+    "Reconnecting: %@" : {
+      "comment" : "VoiceOver announcement, then the error title",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbindet erneut: %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconectando: %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconnexion : %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Riconnessione: %@"
           }
         }
       }
@@ -4391,6 +5006,35 @@
         }
       }
     },
+    "Search" : {
+      "comment" : "Shortest search placeholder, for large text in the narrow sidebar",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suchen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rechercher"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerca"
+          }
+        }
+      }
+    },
     "Search is unavailable. Check the internet connection." : {
       "localizations" : {
         "de" : {
@@ -4533,6 +5177,35 @@
         }
       }
     },
+    "Set Last Location" : {
+      "comment" : "Control Center button and its intent: sets the location simulated last",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzten Standort setzen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Establecer la última ubicación"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définir la dernière position"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imposta l’ultima posizione"
+          }
+        }
+      }
+    },
     "Set Location" : {
       "localizations" : {
         "de" : {
@@ -4619,6 +5292,35 @@
         }
       }
     },
+    "Set location to ${place}" : {
+      "comment" : "Shortcuts parameter summary",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort auf ${place} setzen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Establecer ubicación en ${place}"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définir la position sur ${place}"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imposta posizione su ${place}"
+          }
+        }
+      }
+    },
     "Set Location to Favorite" : {
       "comment" : "App Intent title",
       "localizations" : {
@@ -4644,6 +5346,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Imposta posizione su preferito"
+          }
+        }
+      }
+    },
+    "Set Location to Place" : {
+      "comment" : "App Intent title",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort auf Ort setzen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Establecer ubicación en un lugar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définir la position sur un lieu"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imposta posizione su un luogo"
           }
         }
       }
@@ -5037,7 +5768,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Via"
+            "value" : "Strada"
           }
         }
       }
@@ -5182,30 +5913,31 @@
         }
       }
     },
-    "The device did not provide location simulation. Turn on Mount Automatically under Settings, or restart the device." : {
+    "The device did not provide location simulation. Turn on Mount Automatically in LocSim's settings under Developer Disk Image, or restart the device." : {
+      "comment" : "Error LS-400: what to do when the location service is missing",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Das Gerät stellt keine Standortsimulation bereit. Aktiviere „Automatisch einbinden“ in den Einstellungen oder starte das Gerät neu."
+            "value" : "Das Gerät stellt keine Standortsimulation bereit. Aktiviere „Automatisch einbinden“ in den Einstellungen von LocSim unter „Developer Disk Image“ oder starte das Gerät neu."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El dispositivo no ha proporcionado la simulación de ubicación. Activa “Montar automáticamente” en Ajustes o reinicia el dispositivo."
+            "value" : "El dispositivo no ha proporcionado la simulación de ubicación. Activa “Montar automáticamente” en los ajustes de LocSim, en “Developer Disk Image”, o reinicia el dispositivo."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L’appareil n’a pas fourni la simulation de position. Activez « Monter automatiquement » dans Réglages ou redémarrez l’appareil."
+            "value" : "L’appareil n’a pas fourni la simulation de position. Activez « Monter automatiquement » dans les réglages de LocSim, sous « Developer Disk Image », ou redémarrez l’appareil."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il dispositivo non ha reso disponibile la simulazione della posizione. Attiva “Monta automaticamente” in Impostazioni o riavvia il dispositivo."
+            "value" : "Il dispositivo non ha reso disponibile la simulazione della posizione. Attiva “Monta automaticamente” nelle impostazioni di LocSim, in “Developer Disk Image”, o riavvia il dispositivo."
           }
         }
       }
@@ -5290,6 +6022,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La posizione di questo iPhone non cambia."
+          }
+        }
+      }
+    },
+    "The location was not set." : {
+      "comment" : "Shortcut error: a queued Set did not run, e.g. because Clear came after it",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Standort wurde nicht gesetzt."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha establecido la ubicación."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La position n’a pas été définie."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La posizione non è stata impostata."
           }
         }
       }
@@ -5402,6 +6163,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lo script di configurazione lo copia in LocSim. Altrimenti copialo con AirDrop o il Finder e importalo qui."
+          }
+        }
+      }
+    },
+    "This iPhone" : {
+      "comment" : "VPN settings: where the tunnel goes",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses iPhone"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este iPhone"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cet iPhone"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questo iPhone"
           }
         }
       }

@@ -1,14 +1,16 @@
-Build 4: zuverlässigere Verbindung, letzte Orte, Koordinaten einfügen, Kurzbefehle, Live-Aktivität und Barrierefreiheit.
+Build 5: Widgets, Kontrollzentrum, Schnellaktionen, Querformat und iPhone Duo, eine neue Kurzbefehl-Aktion und Korrekturen aus einer Review-Runde.
 
 Bitte teste:
-- Verbindung: Standort setzen, App verlassen, Gerät sperren, auf Mobilfunk und zurück wechseln. Der Standort sollte simuliert bleiben, bis du auf „Zurücksetzen“ tippst.
-- Anderes VPN: Ist ein anderes VPN ausgewählt, fragt „Standort setzen“, bevor es ersetzt wird.
-- Letzte Orte: Das Suchfeld zeigt die letzten fünf. „Löschen“ entfernt sie, Einstellungen > Karte > Letzte Orte schaltet sie ab.
-- Einfügen: Koordinaten oder einen Link aus Apple Karten oder Google Maps kopieren, ins Suchfeld tippen, dann „Einsetzen“.
-- Favoriten: Der Stern ist bei einem gespeicherten Ort gefüllt; ein Tipp entfernt ihn.
-- Live-Aktivität: Solange ein Standort aktiv ist, zeigt der Sperrbildschirm ihn mit der Uhrzeit, seit der er gilt, und die aufgeklappte Dynamic Island mit einem laufenden Zähler. „Zurücksetzen“ dort beendet die Simulation. Wurde LocSim im Hintergrund beendet, steht dort „Öffne LocSim, um den Standort zu prüfen“.
-- Kurzbefehle und Siri: „LocSim auf <Favorit> setzen“, „LocSim stoppen“ und die Aktionen „Koordinaten setzen“ und „Standort zurücksetzen“ in der Kurzbefehle-App.
-- Pairing: Die Pairing-Datei mit dem Setup-Skript ersetzen, während ein Standort aktiv ist. LocSim sollte die alte Verbindung schließen und die neue Datei prüfen.
-- VoiceOver und große Schrift: Statuswechsel werden angesagt, Knöpfe werden nicht abgeschnitten.
+- Widget auf dem Home-Bildschirm: das Widget „Standortstatus“ hinzufügen. Es zeigt, ob und wo ein Standort simuliert wird; die mittlere Größe listet zusätzlich die drei meistgenutzten Favoriten. Ein Tipp darauf öffnet LocSim und setzt ihn.
+- Widgets auf dem Sperrbildschirm: einzeilig, rechteckig und rund. Wurde LocSim im Hintergrund womöglich beendet, steht dort „Standort in LocSim prüfen“.
+- Kontrollzentrum (ab iOS 18): „Letzten Standort setzen“ und „Standort zurücksetzen“ hinzufügen. „Letzten Standort setzen“ öffnet LocSim, „Standort zurücksetzen“ klappt, ohne die App zu öffnen.
+- Schnellaktionen: das LocSim-Symbol gedrückt halten. Während ein Standort simuliert wird, gibt es „Standort zurücksetzen“, sonst „Letzten Standort setzen“, danach die zwei meistgenutzten Favoriten und „Suchen“. Meistgenutzt heißt: Läufe ab 30 Minuten, dann Gesamtzeit, nur auf diesem Gerät gezählt.
+- Querformat: das iPhone drehen. Die Suche liegt oben, das Panel unten rechts. Auf dem iPhone Duo das Außendisplay prüfen und aufgeklappt die Seitenleiste neben der Karte.
+- Kurzbefehle: Die neue Aktion „Standort auf Ort setzen“ nimmt einen Namen, eine Adresse, Koordinaten oder einen Kartenlink.
+- Zurückgesetzt von iOS: Springt iOS zum echten Standort zurück, während LocSim läuft, sollte LocSim den simulierten sofort erneut senden. Braucht Zugriff auf den Standort.
+- Neustart: Nach dem Schließen und erneuten Öffnen behält „Letzten Standort setzen“ den Namen des Orts.
+- VoiceOver: Koordinaten werden in Worten vorgelesen, auch in den Widgets und der Live-Aktivität.
+
+Zum Verbinden ist weiterhin WLAN nötig; danach geht es auch über Mobilfunk.
 
 Wenn etwas nicht klappt, tippe auf die Statuszeile, wähle „Details kopieren“ und schick sie mit deinem Feedback.

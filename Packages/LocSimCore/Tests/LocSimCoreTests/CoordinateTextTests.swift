@@ -15,13 +15,14 @@ final class CoordinateTextTests: XCTestCase {
         assertParses("48.8566, 2.3522", 48.8566, 2.3522)
         assertParses("48,8566 2,3522", 48.8566, 2.3522)
         assertParses("52,5 13,4", 52.5, 13.4)
-        assertParses("52, 13", 52, 13)
+        assertParses("52°, 13°", 52, 13)
         assertParses("−33.86, 151.2", -33.86, 151.2)
     }
 
     func testHemispheres() {
         assertParses("N 48.8566 E 2.3522", 48.8566, 2.3522)
-        assertParses("48,85660° N, 2,35220° O", 48.8566, 2.3522)
+        XCTAssertEqual(CoordinateText.parse("48,85660° N, 2,35220° O", language: "de"),
+                       Coordinate(latitude: 48.8566, longitude: 2.3522))
         assertParses("2.3522 E 48.8566 N", 48.8566, 2.3522)
         assertParses("33.8688 S 151.2093 E", -33.8688, 151.2093)
     }
@@ -145,6 +146,37 @@ final class CoordinateTextTests: XCTestCase {
         assertParses("2.3522 E, 48.8566 N", 48.8566, 2.3522)
     }
 
+    func testProbeRegressions() throws {
+        // DMS across lines, with a closing period or a thin space.
+        assertParses("48°51'23.8\"N\n2°21'07.9\"E", 48.856611, 2.352194, accuracy: 1e-5)
+        assertParses("48°51'23.8\"N,\n2°21'07.9\"E", 48.856611, 2.352194, accuracy: 1e-5)
+        assertParses("48°51'23.8\"N\t2°21'07.9\"E", 48.856611, 2.352194, accuracy: 1e-5)
+        assertParses("48°51'23.8\"N 2°21'07.9\"E.", 48.856611, 2.352194, accuracy: 1e-5)
+        assertParses("48°51'23.8\"N\u{2009}2°21'07.9\"E", 48.856611, 2.352194, accuracy: 1e-5)
+        assertParses("\u{2014}33.8688, 151.2093", -33.8688, 151.2093)
+        // Labels and coordinates in Google paths.
+        assertParses("https://www.google.com/maps?q=48.8566,2.3522+(Cafe)", 48.8566, 2.3522)
+        assertParses("https://www.google.com/maps/search/48.8566,+2.3522/@48.80,2.30,14z", 48.8566, 2.3522)
+        assertParses("https://www.google.com/maps/place/48.8566,+2.3522/@48.80,2.30,14z", 48.8566, 2.3522)
+        assertParses("https://www.google.com/maps/place/48.8566,2.3522", 48.8566, 2.3522)
+        XCTAssertNil(CoordinateText.parse("https://www.google.com/maps/dir/48.80,2.30/Eiffel+Tower/@48.8,2.3,12z"))
+        // Keys used by newer link formats, and coordinates written out in q.
+        assertParses("https://maps.apple.com/directions?destination=48.8566,2.3522", 48.8566, 2.3522)
+        assertParses("https://www.google.com/maps/dir/?api=1&destination=48.8566%2C2.3522", 48.8566, 2.3522)
+        assertParses("https://www.google.com/maps/@?api=1&map_action=map&center=48.8566%2C2.3522", 48.8566, 2.3522)
+        assertParses("https://www.google.com/maps?q=48%C2%B051'23.8%22N+2%C2%B021'07.9%22E", 48.856611, 2.352194, accuracy: 1e-5)
+        assertParses("HTTPS://MAPS.GOOGLE.COM/?Q=48.8566,2.3522", 48.8566, 2.3522)
+        // Several links, or coordinates next to another link.
+        assertParses("Meet at https://example.com then https://maps.google.com/?q=48.8566,2.3522", 48.8566, 2.3522)
+        // Words around coordinates mean a place name, also without a link; only the link is removed.
+        assertParses("48.8566, 2.3522 https://example.com/info", 48.8566, 2.3522)
+        // A geo: label with spaces stays whole.
+        let geo = try XCTUnwrap(MapLink.url(in: "geo:0,0?q=48.8566,2.3522(Cafe Central)"))
+        XCTAssertEqual(MapLink.placeName(geo), "Cafe Central")
+        let bracketed = try XCTUnwrap(MapLink.url(in: "(geo:0,0?q=48.8566,2.3522(Cafe))"))
+        XCTAssertEqual(MapLink.placeName(bracketed), "Cafe")
+    }
+
     func testOnlyMapHosts() throws {
         XCTAssertFalse(MapLink.isMap(try XCTUnwrap(URL(string: "https://music.apple.com/?ll=1,2"))))
         XCTAssertFalse(MapLink.isMap(try XCTUnwrap(URL(string: "https://docs.google.com/document/d/1"))))
@@ -153,5 +185,141 @@ final class CoordinateTextTests: XCTestCase {
         XCTAssertNil(CoordinateText.parse("https://maps.apple.com/?q=Pizza&sll=48.85,2.35"))
         XCTAssertEqual(MapLink.placeName(try XCTUnwrap(URL(string: "https://www.google.com/maps/search/?api=1&query=Pizza+Place"))),
                        "Pizza Place")
+    }
+
+    // MARK: - Regressions from the parser review
+
+    private func assertParses(_ text: String, language: String, _ lat: Double, _ lon: Double,
+                              file: StaticString = #filePath, line: UInt = #line) {
+        guard let c = CoordinateText.parse(text, language: language) else {
+            return XCTFail("\(text) did not parse", file: file, line: line)
+        }
+        XCTAssertEqual(c.latitude, lat, accuracy: 1e-5, text, file: file, line: line)
+        XCTAssertEqual(c.longitude, lon, accuracy: 1e-5, text, file: file, line: line)
+    }
+
+    func testOMeansWestInRomanceLanguages() {
+        for language in ["fr", "es", "it", "pt-BR", "ca", "ro", "gl"] {
+            assertParses("40,7128° N, 74,0060° O", language: language, 40.7128, -74.006)
+            assertParses(#"40°42'46.1"N 74°00'21.6"O"#, language: language, 40.712806, -74.006)
+        }
+        for language in ["de", "nl", "sv", "da", "nb", "en"] {
+            assertParses("48,8566° N, 2,3522° O", language: language, 48.8566, 2.3522)
+        }
+        XCTAssertEqual(CoordinateText.parse("https://maps.apple.com/?q=40.7128+N+74.0060+O", language: "es")?.longitude,
+                       -74.006)
+        assertParses("40.7128 Nord, 74.0060 Ouest", language: "de", 40.7128, -74.006)
+        assertParses("48.85 N 2.35 Ost", language: "fr", 48.85, 2.35)
+        assertParses("40.7 N 74.0 Oeste", language: "de", 40.7, -74.0)
+        assertParses("45.4 N 9.2 Est", language: "it", 45.4, 9.2)
+        assertParses("40.7 N 74.0 West", language: "de", 40.7, -74.0)
+    }
+
+    func testGoogleDirectionsOptions() {
+        assertParses("https://www.google.com/maps/dir/40.71,-74.00/48.8566,2.3522/@45,0,5z/am=t/data=!4m2!4m1!3e2",
+                     48.8566, 2.3522)
+        assertParses("https://www.google.com/maps/dir/40.71,-74.00/48.8566,2.3522/am=t", 48.8566, 2.3522)
+    }
+
+    func testPunctuationAroundCoordinates() {
+        for text in ["(48.8566, 2.3522)", "[48.8566, 2.3522]", "\"48.8566, 2.3522\"", "“48.8566, 2.3522”",
+                     "48.8566, 2.3522.", "(48.8566, 2.3522).", "48.85, 2.35 (https://example.com)"] {
+            assertParses(text, text.contains("48.85,") ? 48.85 : 48.8566, text.contains("48.85,") ? 2.35 : 2.3522)
+        }
+        assertParses(#"(48°51'23.8"N 2°21'07.9"E)"#, 48.856611, 2.352194, accuracy: 1e-5)
+        XCTAssertNil(CoordinateText.parse("Meet at 48.85, 2.35"))
+    }
+
+    func testOtherLinkRemovedAsWritten() {
+        for link in ["https://example.com/café", "https://example.com/a|b", "https://example.com/{x}",
+                     "https://example.com/x#a#b"] {
+            assertParses("48.85, 2.35 \(link)", 48.85, 2.35)
+        }
+    }
+
+    func testNumbersThatAreNoCoordinates() {
+        for text in ["1,5", "48,8", "12,50", "3 4", "-33 151", "48, 2", "0, 0", "1,000", "1,000,000", "1.000,50",
+                     "1.000.000", "1,000.50"] {
+            XCTAssertNil(CoordinateText.parse(text), text)
+        }
+        assertParses("48,8566 2,3522", 48.8566, 2.3522)
+        assertParses("48.856,2.352", 48.856, 2.352)
+        assertParses("48 N, 2 E", 48, 2)
+        // Inside a link, plain integers are still coordinates.
+        assertParses("geo:48,2", 48, 2)
+    }
+
+    func testDegreesDecimalMinutesWithoutMark() {
+        assertParses("N 48° 51.397 E 002° 21.132", 48.856617, 2.3522, accuracy: 1e-5)
+        assertParses("N 40° 42.767 W 074° 00.367", 40.712783, -74.006117, accuracy: 1e-5)
+        assertParses("N48 51.397 E002 21.132", 48.856617, 2.3522, accuracy: 1e-5)
+        XCTAssertNil(CoordinateText.parse("N 48° 61.0 E 2° 21.1"))
+    }
+
+    func testMoreMapServices() {
+        assertParses("https://www.openstreetmap.org/#map=15/48.8566/2.3522", 48.8566, 2.3522)
+        assertParses("https://www.openstreetmap.org/?mlat=48.8566&mlon=2.3522#map=15/48.80/2.30", 48.8566, 2.3522)
+        assertParses("https://www.waze.com/ul?ll=48.8566,2.3522&navigate=yes", 48.8566, 2.3522)
+        assertParses("https://www.bing.com/maps?cp=48.8566~2.3522", 48.8566, 2.3522)
+        assertParses("https://beta.maps.apple.com/?ll=48.8566,2.3522", 48.8566, 2.3522)
+        XCTAssertNil(CoordinateText.parse("https://www.bing.com/search?q=48.8566,2.3522"))
+    }
+
+    func testGooglePathTermsWrittenOut() {
+        assertParses("https://www.google.com/maps/place/48%C2%B051'23.8%22N+2%C2%B021'07.9%22E",
+                     48.856611, 2.352194, accuracy: 1e-5)
+        assertParses("https://www.google.com/maps/search/48.8566+N,+2.3522+E", 48.8566, 2.3522)
+    }
+
+    func testExponentRejected() {
+        XCTAssertNil(CoordinateText.parse("4.88566e1, 2.3522"))
+        XCTAssertNil(CoordinateText.parse("https://maps.apple.com/?ll=4.88566e1,2.3522"))
+        assertParses("N48.8566E2.3522", 48.8566, 2.3522)
+    }
+
+    func testUnicodeVariants() {
+        assertParses("48˚51'23.8\"N 2˚21'07.9\"E", 48.856611, 2.352194, accuracy: 1e-5)
+        assertParses("48.8566˚, 2.3522˚", 48.8566, 2.3522)
+        assertParses("48.8566∘, 2.3522∘", 48.8566, 2.3522)
+        assertParses("\u{FEFF}48.8566, 2.3522", 48.8566, 2.3522)
+        assertParses("48.8566，2.3522", 48.8566, 2.3522)
+        assertParses("４８.8566, 2.3522", 48.8566, 2.3522)
+        assertParses("48.8566،2.3522", 48.8566, 2.3522)
+        assertParses("48º51'23.8\"N 2º21'07.9\"E", 48.856611, 2.352194, accuracy: 1e-5)
+    }
+
+    func testSpaceAfterCommaInLinks() {
+        assertParses("https://maps.apple.com/?ll=48.8566, 2.3522", 48.8566, 2.3522)
+        assertParses("geo:0,0?q=48.85, 2.35(Cafe)", 48.85, 2.35)
+        assertParses("geo:48.8566, 2.3522", 48.8566, 2.3522)
+        assertParses("see https://maps.apple.com/?ll=48.85, 2.35.", 48.85, 2.35)
+    }
+
+    func testLaterMapLinkWithCoordinatesWins() throws {
+        assertParses("https://maps.apple.com/?auid=1 https://maps.google.com/?q=48.8566,2.3522", 48.8566, 2.3522)
+        let url = try XCTUnwrap(MapLink.url(in: "https://maps.apple.com/?auid=1 https://maps.google.com/?q=1.5,2.5"))
+        XCTAssertEqual(url.host, "maps.google.com")
+        XCTAssertNil(CoordinateText.parse("https://maps.apple.com/?auid=1 48.85, 2.35"))
+    }
+
+    func testSuspectValues() {
+        XCTAssertNil(CoordinateText.parse(#"48°51.5'23"N 2°21'07"E"#))
+        XCTAssertNil(CoordinateText.parse("-48.8566 N, 2.3522 E"))
+        XCTAssertNil(CoordinateText.parse("N -48.8566 E 2.3522"))
+    }
+
+    func testNumbersJoinedByDashAreNoCoordinates() {
+        for text in ["7-11", "24-7", "2.5-40.5", "10.11-16.11", "7\u{2013}11"] {
+            XCTAssertNil(CoordinateText.parse(text), text)
+        }
+        XCTAssertNil(CoordinateText.parse("https://maps.apple.com/?q=7-11"))
+        XCTAssertEqual(CoordinateText.parse("48.85 -2.35"), Coordinate(latitude: 48.85, longitude: -2.35))
+        XCTAssertEqual(CoordinateText.parse("48.85,-2.35"), Coordinate(latitude: 48.85, longitude: -2.35))
+    }
+
+    func testOpenStreetMapLayer() {
+        XCTAssertEqual(
+            CoordinateText.parse("https://www.openstreetmap.org/#map=15/48.8566/2.3522&layers=C"),
+            Coordinate(latitude: 48.8566, longitude: 2.3522))
     }
 }

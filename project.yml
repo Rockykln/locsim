@@ -20,7 +20,7 @@ settings:
     CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED: YES
     ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: YES
     MARKETING_VERSION: "1.0"
-    CURRENT_PROJECT_VERSION: "4"
+    CURRENT_PROJECT_VERSION: "5"
 targets:
   LocSim:
     type: application
@@ -29,6 +29,10 @@ targets:
       - LocSim
       - LiveActivity
       - path: THIRD_PARTY_LICENSES.md
+        buildPhase: resources
+      # Icon Composer file: iOS 26 draws it with Liquid Glass. Older iOS versions use the
+      # PNGs of the same name in the asset catalog.
+      - path: design/icon/AppIcon.icon
         buildPhase: resources
     dependencies:
       - framework: Frameworks/IDevice.xcframework
@@ -94,6 +98,8 @@ targets:
         SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
         SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD: NO
         INFOPLIST_FILE: LocSimWidgets/Info.plist
+        # The app group the app writes the widget's data into.
+        CODE_SIGN_ENTITLEMENTS: LocSimWidgets/LocSimWidgets.entitlements
         GENERATE_INFOPLIST_FILE: NO
         DEAD_CODE_STRIPPING: YES
         ENABLE_BITCODE: NO

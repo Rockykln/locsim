@@ -1,0 +1,18 @@
+{
+  "en": {
+    "kicker": "Public beta on TestFlight",
+    "title": "Location Simulator",
+    "body": "Set any GPS location right on your iPhone, for testing location-based apps.",
+    "features": ["Live Activity", "Shortcuts & Siri", "Open source"],
+    "phones": ["1-map", "4-live"],
+    "targets": {"site/public/og.jpg": [1200, 630], "design/social/github-social-preview.png": [1280, 640]}
+  },
+  "de": {
+    "kicker": "Öffentliche Beta auf TestFlight",
+    "title": "Standort-Simulator",
+    "body": "Jeden GPS-Standort direkt auf dem iPhone setzen, zum Testen standortbasierter Apps.",
+    "features": ["Live-Aktivität", "Kurzbefehle & Siri", "Open Source"],
+    "phones": ["1-map", "4-live"],
+    "targets": {"site/public/og-de.jpg": [1200, 630]}
+  }
+}

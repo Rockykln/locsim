@@ -26,7 +26,8 @@ if ($Arch -eq "ARM64" -and [Environment]::OSVersion.Version.Build -lt 22000) {
 }
 
 # -LiteralPath everywhere: folders like "Projects [old]" would otherwise be read as wildcards.
-$Verified = (Test-Path -LiteralPath $Marker) -and ((Get-Content -LiteralPath $Marker -Raw).Trim() -eq "$Version $Sha256")
+# An empty marker reads as $null; the [string] cast keeps .Trim() from throwing.
+$Verified = (Test-Path -LiteralPath $Marker) -and (([string](Get-Content -LiteralPath $Marker -Raw)).Trim() -eq "$Version $Sha256")
 if (-not ($Verified -and (Test-Path -LiteralPath $Bin) -and (Test-Path -LiteralPath $List))) {
     if (Test-Path -LiteralPath $Dir) { Remove-Item -LiteralPath $Dir -Recurse -Force }
     New-Item -ItemType Directory -Force -Path $Dir | Out-Null
@@ -84,12 +85,24 @@ if ($Udid) {
             Write-Host "  powershell -ExecutionPolicy Bypass -File make-pairing.ps1 -Udid <UDID>"
             exit 1
         }
+        if ($Usb.Count -eq 1) {
+            # Explicit, so a device that usbmuxd only sees over the network is not picked instead.
+            $UdidArgs = @("--udid", $Usb[0])
+        } else {
+            Write-Host "No iPhone is connected over USB."
+            Write-Host ""
+            Write-Checklist
+            exit 1
+        }
     }
 }
 
 Write-Host "Make sure the iPhone is connected by USB, unlocked and trusts this computer."
 if (Test-Path -LiteralPath $Out) { Remove-Item -LiteralPath $Out -Force }
 $Kept = $false
+# idevice-tools is written in Rust; its RUST_LOG output on stderr would count as an error below.
+$OldRustLog = $env:RUST_LOG
+$env:RUST_LOG = $null
 try {
     $PairLog = & $Bin @UdidArgs remotepairing_lockdown pair $Hostname $Out 2>&1 | ForEach-Object { "$_" }
     $Written = (Test-Path -LiteralPath $Out) -and ((Get-Item -LiteralPath $Out).Length -gt 0)
@@ -129,6 +142,7 @@ try {
         exit 3
     }
 } finally {
+    $env:RUST_LOG = $OldRustLog
     # A pairing file from a failed or interrupted run must not stay on the disk.
     if (-not $Kept -and (Test-Path -LiteralPath $Out)) { Remove-Item -LiteralPath $Out -Force }
 }

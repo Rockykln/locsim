@@ -54,9 +54,10 @@
 <ul>
 <li><strong>Archivo de emparejamiento:</strong> se guarda en el almacenamiento privado de la app, protegido por la protección de datos de iOS y excluido de las copias de seguridad. Se elimina en los ajustes o al eliminar la app.</li>
 <li><strong>Actividad en directo:</strong> muestra el lugar simulado en la pantalla de bloqueo y en la Dynamic Island. Se crea en el dispositivo; no se envía nada para ello.</li>
-<li><strong>Favoritos, ubicaciones recientes y ajustes:</strong> se guardan en el dispositivo y se incluyen en sus copias de seguridad. Las ubicaciones recientes se pueden desactivar y borrar en la app.</li>
+<li><strong>Widgets:</strong> el lugar simulado (nombre, coordenadas y hora de inicio) y tus tres favoritos más usados (nombre y coordenadas) se escriben en un espacio del dispositivo que LocSim comparte con sus widgets (App Group), para que los widgets puedan mostrarlos, también en la pantalla de bloqueo. Nada sale del dispositivo para ello.</li>
+<li><strong>Favoritos, ubicaciones recientes, última ubicación y ajustes:</strong> se guardan en el dispositivo y se incluyen en sus copias de seguridad. Esto incluye la última ubicación con su nombre para “Establecer la última ubicación” y cuántas veces y durante cuánto tiempo se simuló cada favorito, para mostrar primero los más usados. Las ubicaciones recientes se pueden desactivar y borrar en la app.</li>
 <li><strong>Registro:</strong> solo se guarda en memoria y se borra al cerrar la app. Solo sale del dispositivo si lo copias tú.</li>
-<li><strong>Ubicación:</strong> tu ubicación real se usa en el dispositivo para mantener la conexión abierta en segundo plano y, cuando permites el acceso a la ubicación, para mostrarla en el mapa. LocSim no la envía a ningún sitio.</li>
+<li><strong>Ubicación:</strong> tu ubicación real se usa en el dispositivo para mantener la conexión abierta en segundo plano y, cuando permites el acceso a la ubicación, para mostrarla en el mapa. Mientras LocSim se ejecuta, las posiciones obtenidas también se comparan en el dispositivo con la ubicación simulada para detectar si iOS la restablece. No se guardan, y LocSim no envía tu ubicación a ningún sitio.</li>
 </ul>
 <h2 id="conexiones-de-la-app">Conexiones que realiza la app</h2>
 <p>Estas conexiones van directamente de tu dispositivo al proveedor correspondiente. No tenemos acceso a ellas. Los proveedores tratan los datos como responsables independientes conforme a sus propias políticas de privacidad.</p>

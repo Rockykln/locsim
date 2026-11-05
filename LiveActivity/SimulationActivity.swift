@@ -9,9 +9,32 @@ struct SimulationActivityAttributes: ActivityAttributes {
         var name: String
         var coordinate: String
         var reconnecting: Bool
-    }
+        // Part of the state, not of the attributes: a new Set updates the activity in place.
+        var startedAt: Date
+        /// The Set is still connecting; nothing is simulated yet.
+        var connecting = false
+        /// For VoiceOver, which reads degree symbols poorly.
+        var spokenCoordinate: String?
 
-    var startedAt: Date
+        enum CodingKeys: String, CodingKey {
+            case name, coordinate, reconnecting, startedAt, connecting, spokenCoordinate
+        }
+    }
+}
+
+// In an extension, so the memberwise init stays.
+extension SimulationActivityAttributes.ContentState {
+    // An activity left by an older build lacks the newer fields; it must still decode, or it
+    // cannot be ended and stays on screen.
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        name = try c.decode(String.self, forKey: .name)
+        coordinate = try c.decode(String.self, forKey: .coordinate)
+        reconnecting = try c.decodeIfPresent(Bool.self, forKey: .reconnecting) ?? false
+        startedAt = try c.decodeIfPresent(Date.self, forKey: .startedAt) ?? Date()
+        connecting = try c.decodeIfPresent(Bool.self, forKey: .connecting) ?? false
+        spokenCoordinate = try c.decodeIfPresent(String.self, forKey: .spokenCoordinate)
+    }
 }
 
 /// The Stop button of the Live Activity. The system runs it in the app's process,
@@ -25,8 +48,11 @@ struct StopSimulationIntent: LiveActivityIntent {
     @MainActor
     func perform() async throws -> some IntentResult {
         #if LOCSIM_APP
-        await SimulationSession.shared.clear()
+        let session = SimulationSession.shared
+        await session.clear()
         // iOS may suspend LocSim as soon as this returns; the activity must be gone by then.
+        // Kept when the Clear failed or a new Set started meanwhile: the location may still be simulated.
+        guard session.state.error == nil, session.active == nil, session.state != .connecting else { return .result() }
         for activity in Activity<SimulationActivityAttributes>.activities {
             await activity.end(nil, dismissalPolicy: .immediate)
         }

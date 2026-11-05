@@ -16,6 +16,7 @@ enum SettingsKey {
     static let haptics = "haptics"
     static let favorites = "favorites"
     static let last = "lastCoordinate"
+    static let lastName = "lastCoordinateName"
     static let ddiDownloadAllowed = "ddiDownloadAllowed"
     static let recents = "recentLocations"
     static let recentsEnabled = "recentsEnabled"
@@ -25,7 +26,8 @@ enum SettingsKey {
 enum Defaults {
     static let hostname = "locsim"
     // The location stays while the connection is open; resending is a safeguard, so it can be rare.
-    static let resend = 30
+    // 60 s plus tolerance stays well inside the tunnel's heartbeat timeout of 120 s.
+    static let resend = 60
     static let coordinate = CLLocationCoordinate2D(latitude: 48.85660, longitude: 2.35220)
 
     static func register() {
@@ -38,7 +40,7 @@ enum Defaults {
             SettingsKey.mapStyle: MapStyleOption.standard.rawValue,
             SettingsKey.precision: 5,
             SettingsKey.coordinateFormat: CoordinateFormat.decimal.rawValue,
-            SettingsKey.zoom: 900.0,
+            SettingsKey.zoom: ZoomOption.district.rawValue,
             SettingsKey.autoApply: false,
             SettingsKey.haptics: true,
             SettingsKey.recentsEnabled: true,
@@ -121,6 +123,7 @@ final class FavoriteList: ObservableObject {
             StoredList.save(items, SettingsKey.favorites)
             // So Siri knows the favorite names in "Set LocSim to …".
             LocSimShortcuts.updateAppShortcutParameters()
+            WidgetSync.setFavorites(items)
         }
     }
 
@@ -132,6 +135,9 @@ final class FavoriteList: ObservableObject {
         let loaded: [Favorite]? = StoredList.load(SettingsKey.favorites)
         items = loaded ?? []
         unreadable = loaded == nil
+        // didSet does not run in init; the widget may still list favorites from an older version.
+        let current = items
+        Task { @MainActor in WidgetSync.setFavorites(current) }
     }
 
     /// The favorite at this spot, within a meter, so the star shows it is already saved.
@@ -197,8 +203,17 @@ enum LastCoordinate {
         return .init(latitude: pair[0], longitude: pair[1])
     }
 
-    static func save(_ c: CLLocationCoordinate2D) {
+    /// Whether a location was ever set; until then `load()` returns the default place.
+    static var isSaved: Bool { UserDefaults.standard.array(forKey: SettingsKey.last) != nil }
+
+    /// The place name that went with it, so a restart does not turn it into a dropped pin.
+    static func loadName() -> String? {
+        UserDefaults.standard.string(forKey: SettingsKey.lastName)
+    }
+
+    static func save(_ c: CLLocationCoordinate2D, name: String?) {
         UserDefaults.standard.set([c.latitude, c.longitude], forKey: SettingsKey.last)
+        UserDefaults.standard.set(name, forKey: SettingsKey.lastName)
     }
 }
 

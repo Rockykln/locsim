@@ -7,6 +7,8 @@ struct LocSimApp: App {
     @StateObject private var session = SimulationSession.shared
     @StateObject private var favorites = FavoriteList.shared
     @Environment(\.scenePhase) private var scenePhase
+    // Receives the Home Screen quick actions, which SwiftUI has no hook for.
+    @UIApplicationDelegateAdaptor(QuickActionAppDelegate.self) private var appDelegate
 
     init() {
         LocSimShortcuts.updateAppShortcutParameters()
@@ -18,6 +20,8 @@ struct LocSimApp: App {
                 .environmentObject(session)
                 .environmentObject(favorites)
                 .environmentObject(session.recents)
+                // Favorites tapped in the Home Screen widget.
+                .onOpenURL { url in WidgetSync.open(url) }
         }
         .onChange(of: scenePhase, initial: true) { _, phase in
             switch phase {

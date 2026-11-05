@@ -1,14 +1,16 @@
-Build 4: conexión más fiable, ubicaciones recientes, pegar coordenadas, atajos, actividad en directo y accesibilidad.
+Build 5: widgets, centro de control, acciones rápidas, horizontal e iPhone Duo, una nueva acción de Atajos y correcciones de una revisión.
 
 Prueba lo siguiente:
-- Conexión: establece una ubicación, sal de la app, bloquea el dispositivo, cambia a datos móviles y vuelve. La ubicación debe seguir simulada hasta que toques “Restablecer”.
-- Otra VPN: si hay otra VPN seleccionada, “Establecer ubicación” pregunta antes de sustituirla.
-- Ubicaciones recientes: el campo de búsqueda muestra las cinco últimas. “Borrar” las elimina; Ajustes > Mapa > Ubicaciones recientes las desactiva.
-- Pegar: copia coordenadas o un enlace de Mapas o Google Maps, toca el campo de búsqueda y después “Pegar”.
-- Favoritos: la estrella está rellena en un lugar guardado; al tocarla se elimina.
-- Actividad en directo: mientras haya una ubicación activa, la pantalla bloqueada la muestra con la hora en que se estableció, y la Dynamic Island ampliada con un contador. “Restablecer” termina la simulación. Si LocSim se detuvo en segundo plano, indica “Abre LocSim para comprobar la ubicación”.
-- Atajos y Siri: “Establecer LocSim en <favorito>”, “Detener LocSim” y las acciones “Establecer coordenadas” y “Restablecer ubicación” en la app Atajos.
-- Emparejamiento: sustituye el archivo de emparejamiento con el script de configuración mientras haya una ubicación activa. LocSim debe cerrar la conexión anterior y comprobar el archivo nuevo.
-- VoiceOver y texto grande: los cambios de estado se anuncian y los botones no se cortan.
+- Widget de la pantalla de inicio: añade el widget “Estado de la ubicación”. Muestra si hay una ubicación simulada y cuál; el tamaño mediano también lista los tres favoritos más usados. Al tocar uno se abre LocSim y lo establece.
+- Widgets de la pantalla bloqueada: en línea, rectangular y circular. Si LocSim puede haberse cerrado en segundo plano, indican “Comprueba la ubicación en LocSim”.
+- Centro de control (iOS 18 o posterior): añade “Establecer la última ubicación” y “Restablecer ubicación”. La primera abre LocSim; la segunda funciona sin abrirla.
+- Acciones rápidas: mantén pulsado el icono de LocSim. Mientras hay una ubicación simulada ofrece “Restablecer ubicación”, si no, “Establecer la última ubicación”, y después los dos favoritos más usados y “Buscar”. Más usados: sesiones de 30 minutos o más y luego el tiempo total, contados solo en este dispositivo.
+- Horizontal: gira el iPhone. La búsqueda va arriba y el panel abajo a la derecha. En el iPhone Duo, revisa la pantalla exterior y, desplegado, la barra lateral junto al mapa.
+- Atajos: la nueva acción “Establecer ubicación en un lugar” acepta un nombre, una dirección, coordenadas o un enlace de mapa.
+- Restablecida por iOS: si iOS vuelve a la ubicación real mientras LocSim está en marcha, LocSim debe volver a enviar la simulada enseguida. Requiere acceso a la ubicación.
+- Reinicio: tras cerrar y volver a abrir LocSim, “Establecer la última ubicación” conserva el nombre del lugar.
+- VoiceOver: las coordenadas se leen en palabras, también en los widgets y en la actividad en directo.
+
+Para conectar sigue haciendo falta Wi-Fi; una vez conectado, funciona con datos móviles.
 
 Si algo falla, toca la línea de estado, elige “Copiar detalles” y envíalos con tus comentarios.

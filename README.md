@@ -37,13 +37,28 @@ computer.
   (`48.8566, 2.3522`, `48,8566 2,3522`, `48°51'23.8"N 2°21'07.9"E`)
 - Paste coordinates, Apple Maps or Google Maps links
 - Favorites and the last five locations
+- From outside the app: the Home Screen widget (medium size: the three most used
+  favorites, a tap opens LocSim and sets one), quick actions on the app icon (Set Last
+  Location, the two most used favorites, Search) and, on iOS 18 and later, a Control
+  Center control for the last location
+- Most used: most runs of 30 minutes or more, then the longest total time; counted
+  only on the device
 
 **While a location is simulated**
 
-- Live Activity on the Lock Screen (since when) and in the Dynamic Island (timer), with a
-  Clear button; can be turned off in Settings
+- Live Activity on the Lock Screen (since when, with a Clear button) and in the Dynamic
+  Island (status icon; expanded, a running timer and the Clear button); can be turned off
+  in Settings
+- Home Screen and Lock Screen widgets (inline, rectangular, circular) show the place;
+  when LocSim may have ended, they say to open LocSim and check
+- Clear Location from Control Center (iOS 18 and later) or as a quick action on the app
+  icon
 - Keeps the location while LocSim is in the background, also on cellular
-- Shortcuts and Siri: set a favorite or coordinates, clear the location
+- Sends the location again right away when iOS resets it while LocSim runs (needs
+  location access)
+- Siri phrases: set a favorite, clear the location. Shortcuts actions: Set Location
+  to Favorite, Set Coordinates, Set Location to Place (name, address, coordinates or
+  map link), Clear Location
 - Clear, or closing LocSim, restores the real location
 
 **Under the hood**
@@ -52,8 +67,11 @@ computer.
 - Installs the Developer Disk Image when iOS has not mounted it, after asking before the
   download (about 16 MB); it can also be downloaded in advance in Settings
 - Reconnects on its own after network changes
+- Portrait and landscape on iPhone; on the iPhone Duo a layout for the cover screen and,
+  unfolded, search and panel in a sidebar next to the map
 - English, German, French, Spanish and Italian; the language follows
-  *Settings > Apps > LocSim > Language*
+  *Settings > Apps > LocSim > Language* (iOS 18 and later) or *Settings > LocSim >
+  Language* (iOS 17)
 
 ## Requirements
 
@@ -90,8 +108,8 @@ app over USB and deletes it from the computer.
 1. Join any Wi-Fi network.
 2. Open LocSim, allow the VPN configuration when iOS asks (once) and allow Local
    Network access, which is needed to find the pairing port. Location access is
-   optional and only used for the background keep-alive and for showing your real
-   position.
+   optional and only used for the background keep-alive, for noticing when iOS resets
+   the simulated location and for showing your real position.
 3. Long-press the map, search for a place or enter coordinates, then
    *Set Location*.
 4. *Clear* restores the real location and closes the connection.
@@ -128,7 +146,9 @@ LocSim ──TCP──▶ 10.7.0.1:<port> ──LocSimTunnel──▶ remotepair
 4. If the Developer Disk Image is missing it is installed (cryptex on iOS 26.4+,
    personalized image before).
 5. The location is sent over DVT and resent periodically. iOS resets it as soon
-   as the connection closes.
+   as the connection closes. While LocSim runs, the coarse location updates of the
+   background keep-alive are compared with the simulated location; a fix clearly more
+   than 200 m away means iOS reset it, and LocSim sends it again.
 
 </details>
 
@@ -141,14 +161,17 @@ All codes and what to do are on the [support page](https://locsim.rockykln.com/s
 ## Privacy
 
 No account, no analytics, no ads. The pairing file, favorites and recent locations stay
-on the device, and the local tunnel sends nothing off it. LocSim only talks to Apple
-Maps for map tiles and search, to GitHub when the Developer Disk Image has to be
-downloaded, and to Apple's signing server when it is installed. Details:
+on the device, and the local tunnel sends nothing off it. Location fixes are only
+compared with the simulated location and never stored. For the widgets, the app writes
+the simulated place and up to three favorites into its App Group container on the
+device. How often each favorite was used is counted on the device only. LocSim only
+talks to Apple Maps for map tiles and search, to GitHub when the Developer Disk Image
+has to be downloaded, and to Apple's signing server when it is installed. Details:
 [privacy policy](https://locsim.rockykln.com/privacy/).
 
 ## Building
 
-Requires Xcode and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
+Requires Xcode 27.1 or later (its iOS 27.1 SDK lets LocSim use the whole inner screen of the iPhone Duo) and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
 ```
 curl -fLO https://github.com/jkcoxson/idevice/releases/download/v0.1.68/idevice-xcframework-v0.1.68.zip
@@ -166,8 +189,8 @@ The team ID is the 10-character value after `OU=` in
 pulling changes. The build commit is stamped into the app by a scheme pre-action
 and shown under *Settings > About*.
 
-GitHub Actions checks that every push and pull request builds. TestFlight
-uploads are described in [docs/RELEASING.md](docs/RELEASING.md).
+GitHub Actions builds every push to `main` and every pull request. The TestFlight
+workflow only runs when started by hand; see [docs/RELEASING.md](docs/RELEASING.md).
 
 ## Tests
 
@@ -185,20 +208,23 @@ CI runs these tests on Linux; the iOS build only starts when they pass.
 ```
 LocSim/
   App/        App entry and lifecycle
-  Intents/    Shortcuts and Siri
+  Intents/    Shortcuts actions and Siri phrases
   Device/     idevice bridge, port discovery, pairing and DDI storage
-  Session/    Simulation state, keep-alive, search, settings
+  Session/    Simulation state, keep-alive, search, settings, widget sync,
+              quick actions, favorite use counts
   Views/      SwiftUI screens
 LocSimTunnel/ Packet tunnel extension
-LocSimWidgets/ Live Activity extension
-LiveActivity/ Live Activity types shared by the app and the extension
+LocSimWidgets/ Live Activity, widgets and Control Center controls (extension)
+LiveActivity/ Code shared by the app and the extension: activity attributes,
+              intents, widget snapshot
 Packages/     LocSimCore: parser, tunnel packets, ports, error codes, with unit tests
 Config/       Shared xcconfig, local overrides are git-ignored
 docs/         Release process, roadmap, TestFlight notes, README images
 design/       App icon, mockups, screenshots, social images
 site/         Website locsim.rockykln.com (Cloudflare Worker, static files in public/)
 tools/        Pairing file creation (macOS, Linux, Windows), screenshots,
-              fetch-vendor.sh to mirror all pinned downloads into vendor/
+              fetch-vendor.sh to mirror all pinned downloads into vendor/,
+              pin-setup.sh to point the setup guide at a build's commit
 ```
 
 ## Disclaimer

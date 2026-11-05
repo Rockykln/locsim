@@ -18,15 +18,19 @@ struct SettingsView: View {
     @AppStorage(SettingsKey.mapStyle) private var mapStyle = MapStyleOption.standard.rawValue
     @AppStorage(SettingsKey.precision) private var precision = 5
     @AppStorage(SettingsKey.coordinateFormat) private var coordinateFormat = CoordinateFormat.decimal.rawValue
-    @AppStorage(SettingsKey.zoom) private var zoom = ZoomOption.block.rawValue
+    @AppStorage(SettingsKey.zoom) private var zoom = ZoomOption.district.rawValue
     @AppStorage(SettingsKey.autoApply) private var autoApply = false
     @AppStorage(SettingsKey.haptics) private var haptics = true
     @AppStorage(SettingsKey.recentsEnabled) private var recentsEnabled = true
     @AppStorage(SettingsKey.liveActivity) private var liveActivity = true
 
     @State private var importing = false
-    @State private var hasPairing = PairingStore.exists
-    @State private var ddiDownloaded = DDIStore.isDownloaded(DDIMethod.current)
+    // Read in onAppear: an initial value here would touch the disk every time the parent redraws.
+    @State private var hasPairing = false
+    // Copied from PairingStore, which is not observed, so the footer redraws when it changes.
+    @State private var rejectedDrop = false
+    @State private var lockdownDrop = false
+    @State private var ddiDownloaded = false
     @State private var ddiLoading = false
     @State private var ddiError: String?
     @State private var pairingMessage: String?
@@ -44,25 +48,22 @@ struct SettingsView: View {
                 ddiSection
                 Section {
                     NavigationLink {
-                        LogView().environmentObject(session)
+                        LogView(log: session.log).environmentObject(session)
                     } label: {
-                        item("Log", "text.alignleft", .gray, value: "\(session.log.count)")
+                        LogRow(log: session.log, label: item)
                     }
                 }
                 aboutSection
             }
-            .onChange(of: session.state) { _, _ in
-                hasPairing = PairingStore.exists
-                ddiDownloaded = DDIStore.isDownloaded(DDIMethod.current)
-            }
+            .onAppear(perform: readFiles)
+            .onChange(of: session.state) { _, _ in readFiles() }
             // A file copied in by the setup script replaces the stored one; the old connection must go.
             .onChange(of: scenePhase) { _, phase in
                 guard phase == .active else { return }
-                if PairingStore.adoptNow() { pairingReplaced() }
-                hasPairing = PairingStore.exists
+                refreshPairing()
             }
             .sheet(isPresented: $showWelcome, onDismiss: {
-                hasPairing = PairingStore.exists
+                refreshPairing()
                 pairingMessage = nil
             }) {
                 WelcomeView(fromSettings: true).environmentObject(session)
@@ -72,6 +73,7 @@ struct SettingsView: View {
                 Button("Remove Pairing File", role: .destructive) {
                     PairingStore.remove()
                     hasPairing = false
+                    rejectedDrop = false
                     Task { await session.pairingChanged() }
                 }
             } message: {
@@ -90,20 +92,32 @@ struct SettingsView: View {
                     try PairingStore.importFile(at: result.get())
                     pairingMessage = nil
                     pairingReplaced()
+                    announce(String(localized: "Pairing file imported"))
                 } catch {
                     let deviceError = error as? DeviceError ?? DeviceError(.pairingInvalid, error.localizedDescription)
                     pairingMessage = AppError(deviceError).summary
+                    announce(pairingMessage)
                 }
-                hasPairing = PairingStore.exists
+                refreshPairing()
             }
         }
+    }
+
+    /// Adopts a file the setup script dropped into Documents. While the setup steps are open
+    /// they do this themselves, so a replaced file is handled once.
+    private func refreshPairing() {
+        guard !showWelcome else { return }
+        if PairingStore.adoptNow() { pairingReplaced() }
+        hasPairing = PairingStore.exists
+        rejectedDrop = PairingStore.rejectedDrop
+        lockdownDrop = PairingStore.lockdownDrop
     }
 
     private func pairingReplaced() {
         Task {
             if session.isPreview { session.endPreview() }
             await session.pairingChanged()
-            await session.checkPairing()
+            await session.checkNewPairing()
         }
     }
 
@@ -117,16 +131,17 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(stateTitle)
                         .font(.headline)
-                    if let detail = stateDetail {
+                    if let detail = stateDetail() {
                         Text(detail)
+                            .accessibilityLabel(stateDetail(spoken: true) ?? detail)
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                            .lineLimit(3)
+                            .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 3)
                     }
                 }
                 .accessibilityElement(children: .combine)
                 Spacer(minLength: 0)
-                if session.isPreview || session.active != nil || session.state == .connecting {
+                if session.isPreview || session.canClear {
                     Button(session.isPreview ? String(localized: "End Preview") : String(localized: "Clear")) {
                         if session.isPreview {
                             session.endPreview()
@@ -135,7 +150,7 @@ struct SettingsView: View {
                         }
                     }
                     .buttonStyle(.bordered)
-                    .controlSize(.small)
+                    .disabled(session.isClearing)
                 }
             }
             .padding(.vertical, 4)
@@ -153,7 +168,8 @@ struct SettingsView: View {
             }
             .foregroundStyle(.primary)
             if hasPairing {
-                PairingCheckRow {
+                // The setup steps on top have their own row; one announcement is enough.
+                PairingCheckRow(announces: !showWelcome) {
                     item("Check Pairing File", "checkmark.shield.fill", .green)
                 }
                 .foregroundStyle(.primary)
@@ -175,8 +191,11 @@ struct SettingsView: View {
         } footer: {
             if let pairingMessage {
                 ErrorFooter(pairingMessage)
-            } else if PairingStore.rejectedDrop {
+            } else if rejectedDrop {
                 ErrorFooter(String(localized: "The pairing file was not valid and has been removed. Run the setup script again."))
+            } else if lockdownDrop, !hasPairing {
+                // Kept: it may be the user's own file for another tool.
+                ErrorFooter(String(localized: "This is a lockdown pairing file. LocSim needs the RPPairing file from the setup script."))
             } else {
                 Text("Created once with the setup script on a computer.")
             }
@@ -200,10 +219,12 @@ struct SettingsView: View {
             } label: {
                 item("Coordinate Format", "globe.europe.africa", .teal)
             }
+            .onChange(of: coordinateFormat) { _, _ in session.coordinateFormatChanged() }
             if coordinateFormat == CoordinateFormat.decimal.rawValue {
                 Stepper(value: $precision, in: 3...7) {
                     item("Decimal Places", "number", .teal, value: "\(precision)")
                 }
+                .onChange(of: precision) { _, _ in session.coordinateFormatChanged() }
             }
             Toggle(isOn: $autoApply) {
                 item("Set on Selection", "location.fill", .red)
@@ -231,10 +252,15 @@ struct SettingsView: View {
             field("Port", "number", .blue, text: $port, placeholder: String(localized: "Auto"))
             field("Hostname", "desktopcomputer", .blue, text: $hostname,
                   placeholder: Defaults.hostname, keyboard: .asciiCapable)
+                // A check result was for the old values.
+                .onChange(of: hostname) { _, _ in session.resetPairingCheck() }
+                .onChange(of: port) { _, _ in session.resetPairingCheck() }
             Stepper(value: $resend, in: 3...60) {
                 item("Resend Interval", "arrow.clockwise", .green,
                      value: Duration.seconds(resend).formatted(.units(allowed: [.seconds], width: .abbreviated)))
             }
+            // Applies now, not only after the current wait.
+            .onChange(of: resend) { _, _ in session.resendIntervalChanged() }
             Toggle(isOn: $keepAlive) {
                 item("Keep Alive in Background", "moon.fill", .indigo)
             }
@@ -242,10 +268,11 @@ struct SettingsView: View {
         } header: {
             Text("Connection")
         } footer: {
-            if !port.isEmpty, UInt16(port).map({ $0 > 0 }) != true {
+            // Same rule as the session: surrounding spaces are ignored, blank means automatic.
+            if !port.trimmingCharacters(in: .whitespaces).isEmpty, PairingPorts.manual(port) == nil {
                 ErrorFooter(String(localized: "Port must be a number from 1 to 65535. Leave it empty to find it automatically."))
             } else {
-                Text("Connecting needs Wi-Fi, then cellular works too. Keep Alive keeps the simulation running in the background.")
+                Text("Connecting needs Wi-Fi, then cellular works too. “Keep Alive in Background” keeps the simulation running in the background.")
             }
         }
     }
@@ -293,11 +320,19 @@ struct SettingsView: View {
             defer { ddiLoading = false }
             do {
                 try await session.downloadDDI()
+                announce(String(localized: "Developer Disk Image downloaded"))
             } catch {
                 ddiError = AppError(error).summary
+                announce(ddiError)
             }
             ddiDownloaded = DDIStore.isDownloaded(DDIMethod.current)
         }
+    }
+
+    // The result appears in a footer VoiceOver would not reach on its own.
+    private func announce(_ text: String?) {
+        guard let text else { return }
+        AccessibilityNotification.Announcement(text).post()
     }
 
     private var aboutSection: some View {
@@ -325,6 +360,9 @@ struct SettingsView: View {
             externalLink("Support", "questionmark.circle.fill", .blue, AppLinks.support)
             externalLink("Website", "safari.fill", .blue, AppLinks.website)
             externalLink("Repository", "chevron.left.forwardslash.chevron.right", .indigo, AppLinks.repository)
+        } header: {
+            // The support page and the problem report point here for version and commit.
+            Text("About")
         }
     }
 
@@ -341,6 +379,11 @@ struct SettingsView: View {
             }
         }
         .foregroundStyle(.primary)
+    }
+
+    private func readFiles() {
+        refreshPairing()
+        ddiDownloaded = DDIStore.isDownloaded(DDIMethod.current)
     }
 
     private func item(
@@ -387,10 +430,14 @@ struct SettingsView: View {
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
                 .keyboardType(keyboard)
+                // Without it VoiceOver reads only the placeholder, e.g. "Auto".
+                .accessibilityLabel(Text(title))
         }
     }
 
+    // Until the device answers, the state still says active although the location is going.
     private var stateTitle: String {
+        if session.isClearing { return String(localized: "Clearing") }
         switch session.state {
         case .idle: return String(localized: "Not active")
         case .connecting: return String(localized: "Connecting")
@@ -400,11 +447,15 @@ struct SettingsView: View {
         }
     }
 
-    private var stateDetail: String? {
+    /// `spoken` reads the coordinate in words for VoiceOver.
+    private func stateDetail(spoken: Bool = false) -> String? {
+        if session.isClearing { return nil }
         switch session.state {
         case .active:
             var parts: [String] = []
-            if let active = session.active { parts.append(CoordinateParser.format(active)) }
+            if let active = session.active {
+                parts.append(spoken ? CoordinateParser.spoken(active) : CoordinateParser.format(active))
+            }
             if let port = session.port { parts.append(String(localized: "Port \(Int(port))")) }
             if session.isPreview { parts.append(String(localized: "The location of this iPhone does not change.")) }
             return parts.joined(separator: " · ")
@@ -414,6 +465,7 @@ struct SettingsView: View {
     }
 
     private var stateColor: Color {
+        if session.isClearing { return .orange }
         switch session.state {
         case .active: return .green
         case .failed: return .red
@@ -423,20 +475,38 @@ struct SettingsView: View {
     }
 }
 
+/// Observes the log on its own, so Settings is not redrawn for every new line.
+private struct LogRow<Label: View>: View {
+    @ObservedObject var log: LogStore
+    let label: (LocalizedStringKey, String, Color, String?) -> Label
+
+    var body: some View {
+        label("Log", "text.alignleft", .gray, "\(log.lines.count)")
+    }
+}
+
 struct LogView: View {
     @EnvironmentObject private var session: SimulationSession
+    @ObservedObject var log: LogStore
+    @AppStorage(SettingsKey.haptics) private var haptics = true
+    @State private var copied = 0
 
     var body: some View {
         ScrollView {
-            if session.log.isEmpty {
+            if log.lines.isEmpty {
                 ContentUnavailableView("No Entries", systemImage: "text.alignleft")
                     .padding(.top, 80)
             } else {
+                // One text per line: VoiceOver can step through them, and only new lines are laid out.
                 // No text selection: the system copy would go through Universal Clipboard.
-                Text(session.log.joined(separator: "\n"))
-                    .font(.system(.caption, design: .monospaced))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding()
+                LazyVStack(alignment: .leading, spacing: 2) {
+                    ForEach(log.lines) { line in
+                        Text(line.text)
+                    }
+                }
+                .font(.system(.caption, design: .monospaced))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
             }
         }
         .defaultScrollAnchor(.bottom)
@@ -446,19 +516,25 @@ struct LogView: View {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Button {
                     // The log holds coordinates; keep it off the user's other devices.
-                    Clipboard.copy(session.log.joined(separator: "\n"), expiresAfter: 600)
+                    Clipboard.copy(log.text, expiresAfter: 600)
+                    copied += 1
+                    AccessibilityNotification.Announcement(String(localized: "Log copied")).post()
                 } label: {
                     Image(systemName: "doc.on.doc")
                 }
                 .accessibilityLabel("Copy Log")
+                .disabled(log.lines.isEmpty)
                 Button(role: .destructive) {
                     session.clearLog()
+                    AccessibilityNotification.Announcement(String(localized: "Log cleared")).post()
                 } label: {
                     Image(systemName: "trash")
                 }
                 .accessibilityLabel("Clear Log")
+                .disabled(log.lines.isEmpty)
             }
         }
+        .sensoryFeedback(trigger: copied) { _, _ in haptics ? .success : nil }
     }
 }
 

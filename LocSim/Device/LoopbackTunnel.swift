@@ -10,7 +10,6 @@ final class LoopbackTunnel {
     private var wanted = false
     private var heartbeat: Task<Void, Never>?
     private var session: NETunnelProviderSession?
-    private var lastBeat = Date.distantPast
     private var observer: NSObjectProtocol?
     // Concurrent first starts would otherwise each save a configuration.
     private var loading: Task<NETunnelProviderManager, Error>?
@@ -25,13 +24,23 @@ final class LoopbackTunnel {
     func start() async throws {
         wanted = true
         startCount += 1
+        let token = startCount
+        let previous = session
         // A late status change from the previous run must not count as a drop of this one.
         stopWatching()
         let connection: NEVPNConnection
         do {
             // Agreement to replace another VPN is for this attempt only.
             defer { allowTakeover = false }
-            connection = try await enabledManager().connection
+            do {
+                connection = try await enabledManager().connection
+            } catch {
+                // The previous tunnel may still be up; without its heartbeat the extension ends itself.
+                if let previous, previous.status == .connected, wanted, startCount == token, session == nil {
+                    watch(previous)
+                }
+                throw error
+            }
             _ = await wait(seconds: 5) { connection.status != .disconnecting }
             switch connection.status {
             case .connected:
@@ -84,23 +93,7 @@ final class LoopbackTunnel {
     private func watch(_ connection: NEVPNConnection) {
         stopWatching()
         session = connection as? NETunnelProviderSession
-        beat()
-        // Only sends when no resend did it recently; the tolerance lets iOS combine the wakeups.
-        heartbeat = Task { [weak self] in
-            while !Task.isCancelled, let self, self.wanted {
-                // Wakes when the next beat is due; resends that beat in between push it back.
-                let due = TunnelAddress.heartbeatInterval - Date().timeIntervalSince(self.lastBeat)
-                if due > 1 {
-                    do {
-                        try await Task.sleep(for: .seconds(due), tolerance: .seconds(10))
-                    } catch {
-                        return
-                    }
-                    continue
-                }
-                self.beat()
-            }
-        }
+        sendBeat()
         observer = NotificationCenter.default.addObserver(
             forName: .NEVPNStatusDidChange, object: connection, queue: .main
         ) { [weak self] note in
@@ -116,17 +109,49 @@ final class LoopbackTunnel {
 
     /// Tells the extension LocSim still needs it. Called with every resend, so one wakeup does both.
     func beat() {
+        // A recent beat is enough. The pending timer is anchored to that beat, so the gap the
+        // extension sees stays at most heartbeatInterval + tolerance (90 s of the 120 s timeout).
+        if let lastBeat, heartbeat != nil, ContinuousClock.now - lastBeat < Self.beatSkipWindow { return }
+        sendBeat()
+    }
+
+    private static let beatSkipWindow: Duration = .seconds(30)
+    private var lastBeat: ContinuousClock.Instant?
+
+    private func sendBeat() {
         guard let session, wanted else { return }
-        lastBeat = Date()
-        try? session.sendProviderMessage(TunnelAddress.heartbeat) { _ in }
+        do {
+            try session.sendProviderMessage(TunnelAddress.heartbeat) { _ in }
+            lastBeat = .now
+        } catch {
+            lastBeat = nil
+        }
+        // Starts over with every sent beat, so a resend that beat in between saves the wakeup.
+        heartbeat?.cancel()
+        heartbeat = Task { [weak self] in
+            do {
+                try await Task.sleep(
+                    for: .seconds(TunnelAddress.heartbeatInterval),
+                    tolerance: .seconds(TunnelAddress.heartbeatTolerance))
+            } catch {
+                return
+            }
+            self?.sendBeat()
+        }
     }
 
     private func stopWatching() {
         heartbeat?.cancel()
         heartbeat = nil
+        lastBeat = nil
         session = nil
         if let observer { NotificationCenter.default.removeObserver(observer) }
         observer = nil
+    }
+
+    /// Whether iOS already has LocSim's VPN configuration, so starting asks nothing.
+    func hasConfiguration() async -> Bool {
+        await existingManager() != nil
     }
 
     private func existingManager() async -> NETunnelProviderManager? {
@@ -164,7 +189,8 @@ final class LoopbackTunnel {
         if existing == nil {
             let configuration = NETunnelProviderProtocol()
             configuration.providerBundleIdentifier = Self.providerID
-            configuration.serverAddress = "This iPhone"
+            // Shown in Settings > VPN; set once, in the language of that moment.
+            configuration.serverAddress = String(localized: "This iPhone", comment: "VPN settings: where the tunnel goes")
             manager.protocolConfiguration = configuration
             manager.localizedDescription = "LocSim"
         }
