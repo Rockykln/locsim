@@ -63,7 +63,8 @@ APP="$BUILD/Build/Products/Debug-iphonesimulator/LocSim.app"
 boot() {
     xcrun simctl boot "$UDID" 2>/dev/null || true
     xcrun simctl bootstatus "$UDID" -b >/dev/null
-    xcrun simctl status_bar "$UDID" override --time 9:41 \
+    # A blank carrier: the lit Lock Screen would show "Carrier".
+    xcrun simctl status_bar "$UDID" override --time 9:41 --operatorName " " \
         --dataNetwork wifi --wifiMode active --wifiBars 3 \
         --cellularMode active --cellularBars 4 \
         --batteryState discharging --batteryLevel 100
@@ -242,7 +243,8 @@ lock_screen() {
 }
 
 # Waits until the Live Activity is lit and finished drawing. After waking, iOS sometimes keeps
-# the Always On version; another press of the space bar helps then.
+# the Always On version; another press of the space bar helps then. "Swipe up to open" fades
+# after a few seconds; if it stays, the shot is taken with it.
 wait_lit() {
     [ "${LOCK:-auto}" = manual ] && { sleep 3.5; return 0; }
     level=
@@ -255,6 +257,7 @@ wait_lit() {
         echo "  ${i}s: ${state% *}"
         case "$state" in
             lit*) echo "  Live Activity lit after ${i}s"; return 0 ;;
+            hint*) [ "$i" -ge 15 ] && { echo "  Live Activity lit, \"Swipe up to open\" still shown"; return 0; } ;;
             dim*) case "$i" in 6 | 12 | 18) echo "  still Always On, pressing the space bar again"; press_key wake || true ;; esac ;;
         esac
     done

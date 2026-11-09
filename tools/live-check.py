@@ -3,7 +3,7 @@
 
 Usage: live-check.py <shot.bmp> [previous level]
 Prints "<state> <level>": state is "none" (no activity on the screen yet), "dim" (Always On),
-"moving" or "lit"; level is the activity's mean brightness, to pass to the next call.
+"moving", "hint" (lit, but iOS still shows "Swipe up to open" below) or "lit"; level is the activity's mean brightness, to pass to the next call.
 
 The activity's text gives many sharp edges, the blurred wallpaper almost none.
 
@@ -18,6 +18,7 @@ import sys
 GLASS = (0.06, 0.09, 0.77, 0.82)       # left edge inside the activity, under the icon
 WALLPAPER = (0.06, 0.09, 0.88, 0.92)   # the same column below the activity
 ACTIVITY = (0.08, 0.92, 0.72, 0.83)    # the whole activity, text included
+HINT = (0.25, 0.75, 0.90, 0.955)       # "Swipe up to open" above the home indicator
 TEXT = 15       # sharp edges per 1000 pixels from which the activity counts as shown
 LIT = 10        # glass this much brighter than the wallpaper next to it
 STILL = 0.5     # largest change in level between two shots that counts as finished
@@ -75,10 +76,12 @@ def main():
         state = "none"
     elif mean(GLASS) - mean(WALLPAPER) < LIT:
         state = "dim"
-    elif len(sys.argv) > 2 and abs(level - float(sys.argv[2])) <= STILL:
-        state = "lit"
-    else:
+    elif len(sys.argv) <= 2 or abs(level - float(sys.argv[2])) > STILL:
         state = "moving"
+    elif edges(HINT) >= TEXT:
+        state = "hint"
+    else:
+        state = "lit"
     print("%s %.2f" % (state, level))
 
 
