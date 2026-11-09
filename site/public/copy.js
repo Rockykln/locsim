@@ -61,7 +61,13 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 2000);
       }, function () {});
     });
+    // The button sits on a wrapper, not in the pre: the pre scrolls sideways on narrow
+    // screens and would take the button along.
+    var wrap = document.createElement("div");
+    wrap.className = "copy-wrap";
+    pre.parentNode.insertBefore(wrap, pre);
+    wrap.appendChild(pre);
     pre.classList.add("has-copy");
-    pre.appendChild(button);
+    wrap.appendChild(button);
   });
 });

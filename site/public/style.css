@@ -477,7 +477,8 @@ button.button { font: inherit; font-size: 0.98rem; font-weight: 600; cursor: poi
 .skip { position: absolute; top: 0.5rem; left: 0.5rem; z-index: 100; padding: 0.5rem 0.9rem; color: var(--button-text); background: var(--button); border-radius: 999px; font-weight: 600; text-decoration: none; transform: translateY(-200%); }
 .skip:focus { transform: none; }
 
-pre.has-copy { position: relative; padding-right: 3.25rem; }
+.copy-wrap { position: relative; }
+pre.has-copy { padding-right: 3.25rem; }
 .copy-code { position: absolute; top: 0.45rem; right: 0.45rem; display: grid; place-items: center; width: 32px; height: 32px; padding: 0; color: var(--muted); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
 .copy-code svg { width: 16px; height: 16px; }
 .copy-code.done { color: #1f9d55; }
