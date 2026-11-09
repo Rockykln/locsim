@@ -8,7 +8,7 @@ cd site
 npx wrangler@4 deploy
 ```
 
-Pages are plain HTML in `public/` (English at `/`, German, French, Spanish and Italian at `/de/`, `/fr/`, `/es/` and `/it/`). Security
+Pages are plain HTML in `public/` (English at `/`, German, French, Spanish, Italian, Brazilian Portuguese and Dutch at `/de/`, `/fr/`, `/es/`, `/it/`, `/pt/` and `/nl/`). Security
 headers are set in `public/_headers`; the site loads no external resources. The
 theme switch (auto, light, dark) is `public/theme.js` and stores the choice in the
 browser only. The sky and phone images in `public/img/` come from

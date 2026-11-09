@@ -1,16 +1,9 @@
-Build 5: widget, Centro di Controllo, azioni rapide, orizzontale e iPhone Duo, una nuova azione per Comandi Rapidi e correzioni da una revisione.
+Build 6: portoghese (Brasile) e olandese, preferiti a scelta nel widget della schermata Home e script di configurazione aggiornati sul sito.
 
 Da testare:
-- Widget nella schermata Home: aggiungi il widget “Stato della posizione”. Mostra se una posizione è simulata e quale; la dimensione media elenca anche i tre preferiti più usati. Toccandone uno si apre LocSim e lo imposta.
-- Widget nella schermata di blocco: in linea, rettangolare e circolare. Se LocSim potrebbe essersi chiuso in background, mostrano “Verifica la posizione in LocSim”.
-- Centro di Controllo (iOS 18 o successivo): aggiungi “Imposta l’ultima posizione” e “Ripristina posizione”. Il primo apre LocSim, il secondo funziona senza aprirlo.
-- Azioni rapide: tieni premuta l’icona di LocSim. Durante una simulazione offre “Ripristina posizione”, altrimenti “Imposta l’ultima posizione”, poi i due preferiti più usati e “Cerca”. Più usati: sessioni di almeno 30 minuti, poi il tempo totale, contati solo su questo dispositivo.
-- Orizzontale: ruota l’iPhone. La ricerca sta in alto, il pannello in basso a destra. Sull’iPhone Duo controlla lo schermo esterno e, da aperto, la barra laterale accanto alla mappa.
-- Comandi Rapidi: la nuova azione “Imposta posizione su un luogo” accetta un nome, un indirizzo, delle coordinate o un link di una mappa.
-- Ripristino da parte di iOS: se iOS torna alla posizione reale mentre LocSim è in esecuzione, LocSim deve inviare subito di nuovo quella simulata. Serve l’accesso alla posizione.
-- Riavvio: dopo aver chiuso e riaperto LocSim, “Imposta l’ultima posizione” mantiene il nome del luogo.
-- VoiceOver: le coordinate vengono lette a parole, anche nei widget e nell’attività in tempo reale.
-
-Per connettersi serve ancora il Wi-Fi; una volta connessi funziona anche con la rete cellulare.
+- Lingue: LocSim, i suoi widget e il sito ora sono anche in portoghese (Brasile) e olandese. Se parli una di queste lingue, controlla i testi nell’app, nei widget, nel Centro di Controllo, nelle azioni rapide e in Comandi Rapidi.
+- Preferiti nel widget: aggiungi il widget “Stato della posizione” in dimensione media, oppure tieni premuto un widget esistente e scegli “Modifica widget”. “Mostra i più usati” è attivo di default ed elenca i tre preferiti più usati. Disattivalo e scegli fino a tre preferiti; il widget li elenca in quell’ordine. Toccandone uno si apre LocSim e lo imposta.
+- Rinomina ed eliminazione: un preferito scelto che rinomini in LocSim appare nel widget con il nuovo nome; uno eliminato sparisce. Se non ne resta nessuno, il widget torna a mostrare i più usati.
+- Script di configurazione: se configuri di nuovo LocSim (dopo un aggiornamento di iOS o su un altro computer), usa gli script di locsim.rockykln.com/it/setup. Il file di abbinamento ora resta in una cartella privata e finisce accanto allo script solo se la copia in LocSim non riesce. I messaggi di errore sono più chiari e il comando per Windows funziona anche con versioni meno recenti di PowerShell.
 
 Se qualcosa non funziona, tocca la riga di stato, scegli “Copia dettagli” e inviali con il tuo feedback.

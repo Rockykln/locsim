@@ -1,16 +1,9 @@
-Build 5: widgets, Control Center, quick actions, landscape and iPhone Duo, a new Shortcuts action and fixes from a review round.
+Build 6: Portuguese (Brazil) and Dutch, favorites you choose for the Home Screen widget and updated setup scripts on the website.
 
 Please test:
-- Home Screen widget: add the Location Status widget. It shows whether a location is simulated and where; the medium size also lists the three most used favorites. Tapping one opens LocSim and sets it.
-- Lock Screen widgets: inline, rectangular and circular. When LocSim may have ended in the background, they say "Open LocSim to check the location".
-- Control Center (iOS 18 or later): add Set Last Location and Clear Location. Set Last Location opens LocSim, Clear Location works without opening it.
-- Quick actions: hold the LocSim icon. While a location is simulated it offers Clear Location, otherwise Set Last Location, then the two most used favorites and Search. Most used means runs of 30 minutes or more, then total time, counted on this device only.
-- Landscape: turn the iPhone. Search runs across the top, the panel sits at the bottom right. On the iPhone Duo, check the cover screen and, unfolded, the sidebar next to the map.
-- Shortcuts: the new action Set Location to Place takes a name, an address, coordinates or a map link.
-- Reset by iOS: if iOS goes back to the real location while LocSim runs, LocSim should send the simulated one again right away. Needs location access.
-- Restart: after closing and reopening LocSim, Set Last Location keeps the place name.
-- VoiceOver: coordinates are read in words, also in the widgets and the Live Activity.
-
-Connecting still needs Wi-Fi; once connected, cellular works.
+- Languages: LocSim, its widgets and the website are now also in Portuguese (Brazil) and Dutch. If you speak one of them, check the texts in the app, the widgets, Control Center, the quick actions and Shortcuts.
+- Widget favorites: add the Location Status widget in the medium size, or hold an existing one and choose Edit Widget. Show Most Used is on by default and lists the three most used favorites. Turn it off and choose up to three favorites; the widget lists them in that order. Tapping one opens LocSim and sets it.
+- Rename and delete: a chosen favorite you rename in LocSim shows the new name in the widget; a deleted one drops out. When none is left, the widget lists the most used ones again.
+- Setup scripts: if you set up LocSim again (after an iOS update or on another computer), use the scripts from locsim.rockykln.com/setup. The pairing file is now kept in a private folder and only lands next to the script when copying it into LocSim fails. Error messages are clearer, and the Windows command also works with older PowerShell.
 
 If something fails, tap the status line, choose Copy Details and send it with your feedback.
