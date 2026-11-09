@@ -23,6 +23,10 @@ struct SettingsView: View {
     @AppStorage(SettingsKey.haptics) private var haptics = true
     @AppStorage(SettingsKey.recentsEnabled) private var recentsEnabled = true
     @AppStorage(SettingsKey.liveActivity) private var liveActivity = true
+    #if DEBUG
+    @AppStorage(SettingsKey.liveActivitySystemLook) private var liveActivitySystemLook = false
+    private static let systemLookTitle = "Live Activity: System Look (Debug)"
+    #endif
 
     @State private var importing = false
     // Read in onAppear: an initial value here would touch the disk every time the parent redraws.
@@ -240,6 +244,14 @@ struct SettingsView: View {
                 item("Live Activity", "platter.filled.bottom.iphone", .blue)
             }
             .onChange(of: liveActivity) { _, _ in session.liveActivityChanged() }
+            #if DEBUG
+            // Not translated: debug builds only, to compare the two looks on a device.
+            Toggle(isOn: $liveActivitySystemLook) {
+                // A variable, not a literal, so Xcode does not add it to the string catalog.
+                item(LocalizedStringKey(Self.systemLookTitle), "paintbrush", .gray)
+            }
+            .onChange(of: liveActivitySystemLook) { _, _ in session.liveActivityChanged() }
+            #endif
         } header: {
             Text("Map")
         } footer: {
