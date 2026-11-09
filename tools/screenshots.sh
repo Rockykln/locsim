@@ -95,8 +95,17 @@ trap 'exit 130' INT TERM HUP
 
 echo "Starting the Simulator"
 boot
-# Shows the device in the Simulator app; Cmd-L locks the device on screen.
-open -b com.apple.iphonesimulator --args -CurrentDeviceUDID "$UDID" 2>/dev/null || true
+# The app that shows the simulators: DeviceHub since Xcode 27, Simulator before.
+if pgrep -xq DeviceHub; then
+    SIM_APP=com.apple.dt.Devices
+elif pgrep -xq Simulator; then
+    SIM_APP=com.apple.iphonesimulator
+elif [ -d "$(xcode-select -p)/../Applications/DeviceHub.app" ]; then
+    SIM_APP=com.apple.dt.Devices
+else
+    SIM_APP=com.apple.iphonesimulator
+fi
+open -b "$SIM_APP" --args -CurrentDeviceUDID "$UDID" 2>/dev/null || true
 ORIG_LANGS=$(xcrun simctl spawn "$UDID" defaults read -g AppleLanguages 2>/dev/null | sed -e '1d' -e '$d' -e 's/[ ",]//g' || true)
 ORIG_LOCALE=$(xcrun simctl spawn "$UDID" defaults read -g AppleLocale 2>/dev/null || true)
 ORIG_APPEARANCE=$(xcrun simctl ui "$UDID" appearance 2>/dev/null || true)
@@ -153,51 +162,53 @@ launch() {
 }
 
 # Locks the Simulator and wakes the Lock Screen, which a locked Simulator dims into Always On.
-# simctl cannot do either, so it goes through the Simulator app: its menu item with the Cmd-L
-# shortcut (found by the shortcut, so the menu language does not matter) locks, a click in the
-# middle of the screen wakes it without unlocking. Needs Accessibility access for the terminal
-# app (System Settings > Privacy & Security > Accessibility), and on the first run macOS asks
-# whether the terminal may control System Events.
+# simctl cannot do either, so it goes through the app that shows the simulators ($SIM_APP):
+# its menu item with the Cmd-L shortcut is the side button. Found by the shortcut, so the menu
+# language does not matter. Pressed once it locks, pressed again it wakes the Lock Screen
+# without unlocking, as on an iPhone. Needs Accessibility access for the terminal app (System
+# Settings > Privacy & Security > Accessibility); on the first run macOS also asks whether the
+# terminal may control System Events.
 lock_screen() {
     if [ "${LOCK:-auto}" = manual ]; then
         printf '%s: press Cmd-L in the Simulator, click its screen once so it is lit, then press Enter here. ' "$lang"
         read -r _
         return
     fi
-    if result=$(osascript 2>"$BUILD/lock.log" <<'APPLESCRIPT'
-tell application id "com.apple.iphonesimulator" to activate
-delay 1
-tell application "System Events"
-    tell (first process whose bundle identifier is "com.apple.iphonesimulator")
-        set frontmost to true
-        delay 0.5
-        set lockItem to missing value
-        repeat with barItem in menu bar items of menu bar 1
-            try
-                repeat with anItem in menu items of menu 1 of barItem
-                    try
-                        if (value of attribute "AXMenuItemCmdChar" of anItem) is "L" and (value of attribute "AXMenuItemCmdModifiers" of anItem) is 0 then
-                            set lockItem to anItem
-                            exit repeat
-                        end if
-                    end try
-                end repeat
-            end try
-            if lockItem is not missing value then exit repeat
-        end repeat
-        if lockItem is missing value then error "the Simulator has no menu item with Cmd-L"
-        set itemName to name of lockItem
-        click lockItem
-        delay 3
-        set {x, y} to position of front window
-        set {w, h} to size of front window
-        click at {x + w div 2, y + h div 2}
-        return itemName
+    if result=$(osascript - "$SIM_APP" 2>"$BUILD/lock.log" <<'APPLESCRIPT'
+on run argv
+    set appID to item 1 of argv
+    tell application id appID to activate
+    delay 1
+    tell application "System Events"
+        tell (first process whose bundle identifier is appID)
+            set frontmost to true
+            delay 0.5
+            set lockItem to missing value
+            repeat with barItem in menu bar items of menu bar 1
+                try
+                    repeat with anItem in menu items of menu 1 of barItem
+                        try
+                            if (value of attribute "AXMenuItemCmdChar" of anItem) is "L" and (value of attribute "AXMenuItemCmdModifiers" of anItem) is 0 then
+                                set lockItem to anItem
+                                exit repeat
+                            end if
+                        end try
+                    end repeat
+                end try
+                if lockItem is not missing value then exit repeat
+            end repeat
+            if lockItem is missing value then error "no menu item with Cmd-L in " & appID
+            set itemName to name of lockItem
+            click lockItem
+            delay 3
+            click lockItem
+            return itemName
+        end tell
     end tell
-end tell
+end run
 APPLESCRIPT
     ); then
-        echo "  locked with the Simulator's menu item \"$result\""
+        echo "  locked and woken with the menu item \"$result\""
     else
         echo "Could not lock the Simulator automatically: $(head -1 "$BUILD/lock.log")" >&2
         echo "Allow the terminal app under System Settings > Privacy & Security > Accessibility" >&2
