@@ -28,7 +28,7 @@ public enum CoordinateFormat: String, CaseIterable, Identifiable, Sendable {
 /// Decimal output always uses a period, so it can be pasted anywhere.
 public enum CoordinateText {
     /// The device language, which decides whether "O" means east or west. Not the app's: LocSim
-    /// has no Portuguese, so on a Portuguese iPhone the app runs in English while "O" means Oeste.
+    /// has no Catalan, so on a Catalan iPhone the app runs in English while "O" means Oest.
     public static var currentLanguage: String? {
         guard let first = Locale.preferredLanguages.first else { return Locale.current.language.languageCode?.identifier }
         return Locale.Language(identifier: first).languageCode?.identifier
@@ -286,9 +286,9 @@ public enum CoordinateText {
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .uppercased()
             .replacingOccurrences(of: #"(?<!\p{L})(?:OUEST|OESTE|OVEST|WEST)(?!\p{L})"#, with: "W", options: .regularExpression)
-            .replacingOccurrences(of: #"(?<!\p{L})(?:OST|ESTE|EST|EAST)(?!\p{L})"#, with: "E", options: .regularExpression)
-            .replacingOccurrences(of: #"(?<!\p{L})(?:NORD|NORTE|NORTH)(?!\p{L})"#, with: "N", options: .regularExpression)
-            .replacingOccurrences(of: #"(?<!\p{L})(?:SÜD|SUD|SUR|SOUTH)(?!\p{L})"#, with: "S", options: .regularExpression)
+            .replacingOccurrences(of: #"(?<!\p{L})(?:OOST|OST|LESTE|ESTE|EST|EAST)(?!\p{L})"#, with: "E", options: .regularExpression)
+            .replacingOccurrences(of: #"(?<!\p{L})(?:NOORD|NORD|NORTE|NORTH)(?!\p{L})"#, with: "N", options: .regularExpression)
+            .replacingOccurrences(of: #"(?<!\p{L})(?:ZUID|SÜD|SUD|SUL|SUR|SOUTH)(?!\p{L})"#, with: "S", options: .regularExpression)
             .replacingOccurrences(of: #"(?<![A-Z])O(?![A-Z])"#, with: oIsWest ? "W" : "E", options: .regularExpression)
     }
 

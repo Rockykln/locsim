@@ -75,8 +75,8 @@ then appears for the internal group.
 
 ## What to Test
 
-The notes for each build live in `docs/testflight/what-to-test.<lang>.txt` (max.
-4000 characters). Update them with the release and paste them into *TestFlight >
+The notes for each build live in `docs/testflight/what-to-test.<lang>.txt` (en, de, fr, es,
+it, pt-BR, nl; max. 4000 characters). Update them with the release and paste them into *TestFlight >
 Build > Test Details* after processing. Add the build to `CHANGELOG.md` once testers
 have it, in plain words without technical detail.
 

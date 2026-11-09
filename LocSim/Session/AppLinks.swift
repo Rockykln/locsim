@@ -3,12 +3,14 @@ import Foundation
 enum AppLinks {
     static let repository = URL(string: "https://github.com/Rockykln/locsim")!
 
-    /// Languages the website has besides English, which lives at the root.
-    private static let siteLanguages = ["de", "fr", "es", "it"]
+    /// Website paths by app localization, besides English, which lives at the root.
+    private static let sitePaths = [
+        "de": "de", "fr": "fr", "es": "es", "it": "it", "nl": "nl", "pt-BR": "pt", "pt": "pt",
+    ]
 
     private static var sitePrefix: String {
         let code = Bundle.main.preferredLocalizations.first ?? "en"
-        return siteLanguages.contains(code) ? "\(code)/" : ""
+        return sitePaths[code].map { "\($0)/" } ?? ""
     }
 
     /// Separate host that redirects to the site, so its opens show up on their own in Cloudflare's metrics.

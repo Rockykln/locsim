@@ -59,6 +59,18 @@
             "state" : "translated",
             "value" : "Trova il servizio Remote Pairing di questo dispositivo."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoekt de Remote Pairing-dienst van dit apparaat."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encontra o serviço Remote Pairing deste dispositivo."
+          }
         }
       }
     },
@@ -93,6 +105,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mostra la tua posizione sulla mappa. Mentre simula una posizione, LocSim usa la localizzazione in background per mantenere aperta la connessione a questo iPhone."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toont je positie op de kaart. Terwijl een locatie wordt gesimuleerd, gebruikt LocSim de locatie op de achtergrond om de verbinding met deze iPhone open te houden."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra a sua posição no mapa. Enquanto uma localização é simulada, o LocSim usa a localização em segundo plano para manter aberta a conexão com este iPhone."
           }
         }
       }
