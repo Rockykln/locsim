@@ -1,0 +1,9 @@
+Build 6: português (Brasil) e holandês, favoritos à sua escolha no widget da Tela de Início e scripts de configuração atualizados no site.
+
+Teste por favor:
+- Idiomas: o LocSim, os widgets e o site agora também estão em português (Brasil) e holandês. Confira os textos no app, nos widgets, na Central de Controle, nas ações rápidas e nos Atalhos.
+- Favoritos no widget: adicione o widget “Estado da Localização” no tamanho médio, ou mantenha pressionado um widget existente e escolha “Editar Widget”. “Mostrar os Mais Usados” vem ativado e lista os três favoritos mais usados. Desative a opção e escolha até três favoritos; o widget mostra os favoritos nessa ordem. Tocar em um deles abre o LocSim e o define.
+- Renomear e apagar: um favorito escolhido que você renomeia no LocSim aparece no widget com o novo nome; um favorito apagado sai da lista. Se não sobrar nenhum, o widget volta a mostrar os mais usados.
+- Scripts de configuração: se você configurar o LocSim de novo (depois de uma atualização do iOS ou em outro computador), use os scripts de locsim.rockykln.com/pt/setup. O arquivo de emparelhamento agora fica em uma pasta privada e só vai para a pasta do script se a cópia para o LocSim falhar. As mensagens de erro estão mais claras, e o comando do Windows também funciona em versões antigas do PowerShell.
+
+Se algo falhar, toque na linha de status, escolha “Copiar Detalhes” e envie junto com seu feedback.
