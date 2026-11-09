@@ -40,8 +40,10 @@ FIREFOX = "firefox"
 FIREFOX_VERSION = ""
 PROFILE = None  # warmed-up profile, copied for every render (about 1 s faster per start)
 
-ALL_LANGS = ["en", "de", "fr", "es", "it"]
+ALL_LANGS = ["en", "de", "fr", "es", "it", "pt-BR", "nl"]
 LANGS = list(ALL_LANGS)
+# Website image names follow the site's folders (/pt/), not the app's language codes.
+WEB_CODES = {"pt-BR": "pt"}
 WIDTH, HEIGHT = 1320, 2868          # App Store, 6.9" iPhone: the reference layout
 TITLE_WIDTH = 1060
 TITLE_MAX = 124
@@ -502,7 +504,7 @@ def web_phone(theme, slide, lang, work_root, target=None, width=900):
         shot = os.path.join(work, f"phone-{bg[1:]}.png")
         firefox(slide_page(0, slide, lang, theme, 100, "", work, bg, bare=True), shot, (WIDTH, HEIGHT), work)
         shots.append(shot)
-    name = f"phone-{slide['id']}-{lang}-{theme}"
+    name = f"phone-{slide['id']}-{WEB_CODES.get(lang, lang)}-{theme}"
     transparent(*shots, target or os.path.join(SITE, f"{name}.webp"), work, width=width)
     shutil.rmtree(work, ignore_errors=True)
     return name

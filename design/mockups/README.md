@@ -1,8 +1,8 @@
 # Mockups
 
 `render.py` builds the App Store images and the README image from the screenshots in
-`design/screenshots/`, with the texts from `slides.json`, in English, German, French, Spanish and
-Italian, light and dark. `render.py --web-assets` builds the website images.
+`design/screenshots/`, with the texts from `slides.json`, in English, German, French, Spanish,
+Italian, Portuguese (Brazil) and Dutch, light and dark. `render.py --web-assets` builds the website images.
 
 The sky, clouds, stars and phone frame are generated, so there are no stock
 photos or device artwork to license. The background is one panorama across all
@@ -31,11 +31,11 @@ slides and joins up in the App Store. Title font: Inter (`fonts/`, SIL OFL 1.1).
    `--readme-only` renders only what they need.
 4. For the website, run `render.py --web-assets`. It writes the sky and, for the slides
    marked `"site": true`, the phones without text or shadow to `site/public/img/` as
-   `phone-<slide id>-<lang>-<theme>.webp`. `--lang` and `--jobs` work here too. The texts
-   are HTML in the pages.
+   `phone-<slide id>-<lang>-<theme>.webp`, with `pt` for `pt-BR` to match the site's `/pt/`.
+   `--lang` and `--jobs` work here too. The texts are HTML in the pages.
 
 `preview.webp` shows all App Store images at a glance (one row per language and theme)
-and is updated whenever all five languages are rendered. The README images use the slides
+and is updated whenever all seven languages are rendered. The README images use the slides
 marked `"readme": true`, or all slides if none is marked.
 
 ![All App Store images](preview.webp)

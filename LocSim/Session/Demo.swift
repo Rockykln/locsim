@@ -27,19 +27,26 @@ enum Demo {
     // Typical test locations instead of landmarks; public places only.
     private static let places: [(names: [String: String], latitude: Double, longitude: Double)] = [
         (["en": "Office, Amsterdam", "de": "Büro, Amsterdam", "fr": "Bureau, Amsterdam",
-          "es": "Oficina, Ámsterdam", "it": "Ufficio, Amsterdam"], 52.37020, 4.88620),
+          "es": "Oficina, Ámsterdam", "it": "Ufficio, Amsterdam", "nl": "Kantoor, Amsterdam",
+          "pt-BR": "Escritório, Amsterdã"], 52.37020, 4.88620),
         (["en": "Client, Munich", "de": "Kunde, München", "fr": "Client, Munich",
-          "es": "Cliente, Múnich", "it": "Cliente, Monaco di Baviera"], 48.13230, 11.60310),
+          "es": "Cliente, Múnich", "it": "Cliente, Monaco di Baviera", "nl": "Klant, München",
+          "pt-BR": "Cliente, Munique"], 48.13230, 11.60310),
         (["en": "Airport, Frankfurt", "de": "Flughafen, Frankfurt", "fr": "Aéroport, Francfort",
-          "es": "Aeropuerto, Fráncfort", "it": "Aeroporto, Francoforte"], 50.05110, 8.57060),
+          "es": "Aeropuerto, Fráncfort", "it": "Aeroporto, Francoforte", "nl": "Luchthaven, Frankfurt",
+          "pt-BR": "Aeroporto, Frankfurt"], 50.05110, 8.57060),
         (["en": "Train station, Zurich", "de": "Bahnhof, Zürich", "fr": "Gare, Zurich",
-          "es": "Estación, Zúrich", "it": "Stazione, Zurigo"], 47.37820, 8.54020),
+          "es": "Estación, Zúrich", "it": "Stazione, Zurigo", "nl": "Station, Zürich",
+          "pt-BR": "Estação, Zurique"], 47.37820, 8.54020),
         (["en": "Hotel, Lisbon", "de": "Hotel, Lissabon", "fr": "Hôtel, Lisbonne",
-          "es": "Hotel, Lisboa", "it": "Hotel, Lisbona"], 38.71100, -9.13700),
+          "es": "Hotel, Lisboa", "it": "Hotel, Lisbona", "nl": "Hotel, Lissabon",
+          "pt-BR": "Hotel, Lisboa"], 38.71100, -9.13700),
         (["en": "Conference, San Francisco", "de": "Konferenz, San Francisco", "fr": "Conférence, San Francisco",
-          "es": "Congreso, San Francisco", "it": "Conferenza, San Francisco"], 37.78410, -122.40130),
+          "es": "Congreso, San Francisco", "it": "Conferenza, San Francisco", "nl": "Congres, San Francisco",
+          "pt-BR": "Conferência, São Francisco"], 37.78410, -122.40130),
         (["en": "Test drive, Berlin", "de": "Teststrecke, Berlin", "fr": "Essai routier, Berlin",
-          "es": "Prueba de ruta, Berlín", "it": "Percorso di prova, Berlino"], 52.47330, 13.40150),
+          "es": "Prueba de ruta, Berlín", "it": "Percorso di prova, Berlino", "nl": "Testrit, Berlijn",
+          "pt-BR": "Percurso de teste, Berlim"], 52.47330, 13.40150),
     ]
 
     static var favorites: [Favorite] {
@@ -59,6 +66,7 @@ enum Demo {
     static var query: String {
         UserDefaults.standard.string(forKey: "demoQuery") ?? text([
             "en": "Central Station", "de": "Hauptbahnhof", "fr": "Gare", "es": "Estación", "it": "Stazione",
+            "nl": "Centraal", "pt-BR": "Estação",
         ])
     }
 
@@ -105,6 +113,22 @@ enum Demo {
                 ("Stazione di Napoli Centrale", "Piazza Giuseppe Garibaldi, Napoli, Italia", 40.85270, 14.27270),
                 ("Stazione di Firenze Santa Maria Novella", "Piazza della Stazione, Firenze, Italia", 43.77630, 11.24770),
                 ("Stazione di Torino Porta Nuova", "Corso Vittorio Emanuele II, Torino, Italia", 45.06200, 7.67880),
+            ]
+        case "nl":
+            rows = [
+                ("Amsterdam Centraal", "Stationsplein, Amsterdam, Nederland", 52.37890, 4.90060),
+                ("Rotterdam Centraal", "Stationsplein, Rotterdam, Nederland", 51.92490, 4.46890),
+                ("Utrecht Centraal", "Stationsplein, Utrecht, Nederland", 52.08940, 5.10960),
+                ("Den Haag Centraal", "Koningin Julianaplein, Den Haag, Nederland", 52.08080, 4.32450),
+                ("Eindhoven Centraal", "Stationsplein, Eindhoven, Nederland", 51.44300, 5.47950),
+            ]
+        case "pt-BR":
+            rows = [
+                ("Estação da Luz", "Praça da Luz, São Paulo, Brasil", -23.53510, -46.63540),
+                ("Estação Júlio Prestes", "Praça Júlio Prestes, São Paulo, Brasil", -23.53320, -46.64060),
+                ("Estação Central do Brasil", "Praça Cristiano Ottoni, Rio de Janeiro, Brasil", -22.90350, -43.19140),
+                ("Estação Palmeiras-Barra Funda", "Rua Jornalista Aloysio Biondi, São Paulo, Brasil", -23.52550, -46.66750),
+                ("Estação Brás", "Rua Doutor Almeida Lima, São Paulo, Brasil", -23.54530, -46.61640),
             ]
         default:
             rows = [

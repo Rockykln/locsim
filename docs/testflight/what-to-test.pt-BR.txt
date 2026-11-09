@@ -1,0 +1,16 @@
+Build 5: widgets, Central de Controle, ações rápidas, modo paisagem e iPhone Duo, uma nova ação de Atalhos e correções de uma rodada de revisão.
+
+Teste por favor:
+- Widget na Tela de Início: adicione o widget “Estado da Localização”. Ele mostra se uma localização está sendo simulada e onde; o tamanho médio também lista os três favoritos mais usados. Tocar em um deles abre o LocSim e o define.
+- Widgets na Tela de Bloqueio: em linha, retangular e circular. Quando o LocSim pode ter sido encerrado em segundo plano, eles mostram “Verifique a localização no LocSim”.
+- Central de Controle (iOS 18 ou posterior): adicione “Definir Última Localização” e “Redefinir Localização”. “Definir Última Localização” abre o LocSim, “Redefinir Localização” funciona sem abrir o app.
+- Ações rápidas: mantenha pressionado o ícone do LocSim. Enquanto uma localização é simulada, aparece “Redefinir Localização”, senão “Definir Última Localização”, depois os dois favoritos mais usados e “Buscar”. Mais usados quer dizer: sessões de 30 minutos ou mais, depois o tempo total, contados só neste dispositivo.
+- Modo paisagem: gire o iPhone. A busca fica no topo, o painel no canto inferior direito. No iPhone Duo, verifique a tela externa e, aberto, a barra lateral ao lado do mapa.
+- Atalhos: a nova ação “Definir Localização como Lugar” aceita um nome, um endereço, coordenadas ou um link de mapa.
+- Redefinido pelo iOS: se o iOS voltar à localização real enquanto o LocSim está rodando, o LocSim deve enviar a simulada de novo na hora. Requer acesso à localização.
+- Reinício: depois de fechar e abrir o LocSim de novo, “Definir Última Localização” mantém o nome do lugar.
+- VoiceOver: as coordenadas são lidas por extenso, também nos widgets e na Atividade ao Vivo.
+
+Para conectar ainda é preciso Wi-Fi; depois de conectado, a rede celular funciona.
+
+Se algo falhar, toque na linha de status, escolha “Copiar Detalhes” e envie junto com seu feedback.

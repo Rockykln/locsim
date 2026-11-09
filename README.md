@@ -69,7 +69,7 @@ computer.
 - Reconnects on its own after network changes
 - Portrait and landscape on iPhone; on the iPhone Duo a layout for the cover screen and,
   unfolded, search and panel in a sidebar next to the map
-- English, German, French, Spanish and Italian; the language follows
+- English, German, French, Spanish, Italian, Portuguese (Brazil) and Dutch; the language follows
   *Settings > Apps > LocSim > Language* (iOS 18 and later) or *Settings > LocSim >
   Language* (iOS 17)
 

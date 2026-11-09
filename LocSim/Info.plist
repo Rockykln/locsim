@@ -19,6 +19,8 @@
 		<string>fr</string>
 		<string>es</string>
 		<string>it</string>
+		<string>nl</string>
+		<string>pt-BR</string>
 	</array>
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>

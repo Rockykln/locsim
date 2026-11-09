@@ -8,6 +8,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/"/>
   </url>
   <url>
@@ -18,6 +20,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/"/>
   </url>
   <url>
@@ -28,6 +32,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/"/>
   </url>
   <url>
@@ -38,6 +44,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/"/>
   </url>
   <url>
@@ -48,6 +56,32 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/"/>
+  </url>
+  <url>
+    <loc>https://locsim.rockykln.com/pt/</loc>
+    <lastmod>2026-11-09</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locsim.rockykln.com/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://locsim.rockykln.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/"/>
+  </url>
+  <url>
+    <loc>https://locsim.rockykln.com/nl/</loc>
+    <lastmod>2026-11-09</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locsim.rockykln.com/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://locsim.rockykln.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/"/>
   </url>
   <url>
@@ -58,6 +92,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/support/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/support/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/support/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/support/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/support/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/support/"/>
   </url>
   <url>
@@ -68,6 +104,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/support/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/support/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/support/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/support/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/support/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/support/"/>
   </url>
   <url>
@@ -78,6 +116,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/support/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/support/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/support/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/support/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/support/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/support/"/>
   </url>
   <url>
@@ -88,6 +128,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/support/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/support/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/support/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/support/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/support/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/support/"/>
   </url>
   <url>
@@ -98,6 +140,32 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/support/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/support/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/support/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/support/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/support/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/support/"/>
+  </url>
+  <url>
+    <loc>https://locsim.rockykln.com/pt/support/</loc>
+    <lastmod>2026-11-09</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locsim.rockykln.com/support/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://locsim.rockykln.com/de/support/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/support/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/support/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/support/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/support/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/support/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/support/"/>
+  </url>
+  <url>
+    <loc>https://locsim.rockykln.com/nl/support/</loc>
+    <lastmod>2026-11-09</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locsim.rockykln.com/support/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://locsim.rockykln.com/de/support/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/support/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/support/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/support/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/support/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/support/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/support/"/>
   </url>
   <url>
@@ -108,6 +176,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/privacy/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/privacy/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/privacy/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/privacy/"/>
   </url>
   <url>
@@ -118,6 +188,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/privacy/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/privacy/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/privacy/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/privacy/"/>
   </url>
   <url>
@@ -128,6 +200,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/privacy/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/privacy/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/privacy/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/privacy/"/>
   </url>
   <url>
@@ -138,6 +212,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/privacy/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/privacy/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/privacy/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/privacy/"/>
   </url>
   <url>
@@ -148,6 +224,32 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/privacy/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/privacy/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/privacy/"/>
+  </url>
+  <url>
+    <loc>https://locsim.rockykln.com/pt/privacy/</loc>
+    <lastmod>2026-11-09</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locsim.rockykln.com/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://locsim.rockykln.com/de/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/privacy/"/>
+  </url>
+  <url>
+    <loc>https://locsim.rockykln.com/nl/privacy/</loc>
+    <lastmod>2026-11-09</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locsim.rockykln.com/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://locsim.rockykln.com/de/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/privacy/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/privacy/"/>
   </url>
   <url>
@@ -158,6 +260,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/imprint/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/imprint/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/imprint/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/imprint/"/>
   </url>
   <url>
@@ -168,6 +272,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/imprint/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/imprint/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/imprint/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/imprint/"/>
   </url>
   <url>
@@ -178,6 +284,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/imprint/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/imprint/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/imprint/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/imprint/"/>
   </url>
   <url>
@@ -188,6 +296,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/imprint/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/imprint/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/imprint/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/imprint/"/>
   </url>
   <url>
@@ -198,6 +308,32 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/imprint/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/imprint/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/imprint/"/>
+  </url>
+  <url>
+    <loc>https://locsim.rockykln.com/pt/imprint/</loc>
+    <lastmod>2026-11-09</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locsim.rockykln.com/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://locsim.rockykln.com/de/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/imprint/"/>
+  </url>
+  <url>
+    <loc>https://locsim.rockykln.com/nl/imprint/</loc>
+    <lastmod>2026-11-09</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locsim.rockykln.com/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://locsim.rockykln.com/de/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/imprint/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/imprint/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/imprint/"/>
   </url>
   <url>
@@ -208,6 +344,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/setup/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/setup/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/setup/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/setup/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/setup/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/setup/"/>
   </url>
   <url>
@@ -218,6 +356,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/setup/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/setup/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/setup/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/setup/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/setup/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/setup/"/>
   </url>
   <url>
@@ -228,6 +368,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/setup/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/setup/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/setup/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/setup/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/setup/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/setup/"/>
   </url>
   <url>
@@ -238,6 +380,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/setup/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/setup/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/setup/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/setup/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/setup/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/setup/"/>
   </url>
   <url>
@@ -248,6 +392,32 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/setup/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/setup/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/setup/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/setup/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/setup/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/setup/"/>
+  </url>
+  <url>
+    <loc>https://locsim.rockykln.com/pt/setup/</loc>
+    <lastmod>2026-11-09</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locsim.rockykln.com/setup/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://locsim.rockykln.com/de/setup/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/setup/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/setup/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/setup/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/setup/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/setup/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/setup/"/>
+  </url>
+  <url>
+    <loc>https://locsim.rockykln.com/nl/setup/</loc>
+    <lastmod>2026-11-09</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locsim.rockykln.com/setup/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://locsim.rockykln.com/de/setup/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/setup/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/setup/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/setup/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/setup/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/setup/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/setup/"/>
   </url>
   <url>
@@ -258,6 +428,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/faq/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/faq/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/faq/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/faq/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/faq/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/faq/"/>
   </url>
   <url>
@@ -268,6 +440,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/faq/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/faq/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/faq/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/faq/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/faq/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/faq/"/>
   </url>
   <url>
@@ -278,6 +452,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/faq/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/faq/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/faq/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/faq/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/faq/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/faq/"/>
   </url>
   <url>
@@ -288,6 +464,8 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/faq/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/faq/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/faq/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/faq/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/faq/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/faq/"/>
   </url>
   <url>
@@ -298,6 +476,32 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/faq/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/faq/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/faq/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/faq/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/faq/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/faq/"/>
+  </url>
+  <url>
+    <loc>https://locsim.rockykln.com/pt/faq/</loc>
+    <lastmod>2026-11-09</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locsim.rockykln.com/faq/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://locsim.rockykln.com/de/faq/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/faq/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/faq/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/faq/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/faq/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/faq/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/faq/"/>
+  </url>
+  <url>
+    <loc>https://locsim.rockykln.com/nl/faq/</loc>
+    <lastmod>2026-11-09</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locsim.rockykln.com/faq/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://locsim.rockykln.com/de/faq/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://locsim.rockykln.com/fr/faq/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://locsim.rockykln.com/es/faq/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://locsim.rockykln.com/it/faq/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://locsim.rockykln.com/pt/faq/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://locsim.rockykln.com/nl/faq/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locsim.rockykln.com/faq/"/>
   </url>
 </urlset>

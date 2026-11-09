@@ -215,6 +215,15 @@ final class CoordinateTextTests: XCTestCase {
         assertParses("40.7 N 74.0 West", language: "de", 40.7, -74.0)
     }
 
+    func testPortugueseAndDutchWords() {
+        assertParses("23.5505 Sul, 46.6333 Oeste", language: "pt-BR", -23.5505, -46.6333)
+        assertParses("8.05 Sul 34.9 Leste", language: "pt-BR", -8.05, 34.9)
+        assertParses("52.37 Noord 4.89 Oost", language: "nl", 52.37, 4.89)
+        assertParses("33.9 Zuid 18.4 Oost", language: "nl", -33.9, 18.4)
+        assertParses("52,37° N, 4,89° O", language: "nl", 52.37, 4.89)
+        assertParses("23,55° S, 46,63° O", language: "pt-BR", -23.55, -46.63)
+    }
+
     func testGoogleDirectionsOptions() {
         assertParses("https://www.google.com/maps/dir/40.71,-74.00/48.8566,2.3522/@45,0,5z/am=t/data=!4m2!4m1!3e2",
                      48.8566, 2.3522)

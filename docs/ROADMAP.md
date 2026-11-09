@@ -80,5 +80,5 @@ landscape. App Store submissions built with the iOS 27.1 SDK need them from Apri
 
 ### 15. More languages
 
-Only languages whose translation can be verified. English, German, French, Spanish and
-Italian are done.
+Only languages whose translation can be verified. English, German, French, Spanish,
+Italian, Portuguese (Brazil) and Dutch are done.
