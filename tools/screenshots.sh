@@ -199,6 +199,29 @@ live_state() {
         python3 "$ROOT/tools/live-check.py" "$BUILD/live.bmp" ${1:+"$1"} 2>"$BUILD/live.log"
 }
 
+# Prints 1 when the Simulator is locked, 0 when not, nothing when it cannot tell.
+lock_state() {
+    xcrun simctl spawn "$UDID" notifyutil -g com.apple.springboard.lockstate 2>/dev/null |
+        awk '{print $NF}' || true
+}
+
+# Takes the Lock Screen shot and checks the saved image itself: "Swipe up to open" can fade
+# in between the last check and the shot. Needs sips (macOS) to read the PNG.
+shoot_live() {
+    n=0
+    while :; do
+        shoot "$1"
+        command -v sips >/dev/null || return 0
+        sips -s format bmp "$1" --out "$BUILD/final.bmp" >/dev/null 2>&1 || return 0
+        state=$(python3 "$ROOT/tools/live-check.py" "$BUILD/final.bmp" final) || return 0
+        case "$state" in lit*) return 0 ;; esac
+        n=$((n + 1))
+        [ "$n" -lt 8 ] || { echo "  the saved shot still shows: ${state% *}" >&2; return 1; }
+        echo "  saved shot shows: ${state% *}, taking it again"
+        sleep 0.75
+    done
+}
+
 lock_screen() {
     if [ "${LOCK:-auto}" = manual ]; then
         printf '%s: press Cmd-L in the Simulator, click its screen once so it is lit, then press Enter here. ' "$lang"
@@ -212,6 +235,14 @@ lock_screen() {
         LOCK=manual
         lock_screen
         return
+    fi
+    # Cmd-L sometimes does not reach the Simulator; SpringBoard tells whether it is locked.
+    sleep 2
+    if [ "$(lock_state)" = 0 ]; then
+        echo "  not locked, pressing Cmd-L again"
+        press_key lock || true
+        sleep 2
+        [ "$(lock_state)" = 0 ] && echo "  still not locked; check $lang/4-live.png" >&2
     fi
     # Wake only once the Live Activity has been on the Lock Screen for over a second and the
     # screen has dimmed into Always On: woken earlier, iOS keeps an unfinished activity.
@@ -307,15 +338,17 @@ for lang in $LANGS; do
         # The demo starts the Live Activity after a second, and iOS takes a while to draw it.
         sleep 23
         lock_screen
-        wait_lit || dim="$dim $lang"
-        shoot "$OUT/$lang/4-live.png"
+        ok=1
+        wait_lit || ok=0
+        shoot_live "$OUT/$lang/4-live.png" || ok=0
+        [ "$ok" = 1 ] || dim="$dim $lang"
         # Older per-theme shots would win over this one in render.py.
         rm -f "$OUT/$lang/light/4-live.png" "$OUT/$lang/dark/4-live.png"
     fi
 done
 xcrun simctl terminate "$UDID" "$BUNDLE" 2>/dev/null || true
 if [ -n "$dim" ]; then
-    say "The Live Activity stayed in Always On for:$dim. Take these again with
+    say "The Lock Screen shot is not right for:$dim. Take these again with
   SCREENS=live WALLPAPER=ok tools/screenshots.sh$dim"
     exit 1
 fi
