@@ -192,9 +192,10 @@ APPLESCRIPT
 
 # Screenshot of the Lock Screen, judged by tools/live-check.py: prints "<state> <level>".
 # $1: the level from the previous call, to tell whether the activity is still changing.
+# Fails, with the reason in $BUILD/live.log, when either step does not work.
 live_state() {
-    xcrun simctl io "$UDID" screenshot --type=bmp "$BUILD/live.bmp" >/dev/null 2>&1 &&
-        python3 "$ROOT/tools/live-check.py" "$BUILD/live.bmp" ${1:+"$1"}
+    xcrun simctl io "$UDID" screenshot --type=bmp "$BUILD/live.bmp" >"$BUILD/live.log" 2>&1 &&
+        python3 "$ROOT/tools/live-check.py" "$BUILD/live.bmp" ${1:+"$1"} 2>"$BUILD/live.log"
 }
 
 lock_screen() {
@@ -218,7 +219,13 @@ lock_screen() {
     while [ "$i" -lt 40 ]; do
         sleep 1
         i=$((i + 1))
-        state=$(live_state) || continue
+        if ! state=$(live_state); then
+            # Without a working check, fall back to waiting WAKE_DELAY seconds.
+            echo "  Lock Screen check failed: $(tail -1 "$BUILD/live.log")" >&2
+            sleep $((${WAKE_DELAY:-12} - i > 0 ? ${WAKE_DELAY:-12} - i : 0))
+            break
+        fi
+        echo "  ${i}s: ${state% *}"
         case "$state" in
             none*) shown=0 dimmed=0 ;;
             dim*) shown=$((shown + 1)) dimmed=$((dimmed + 1)) ;;
@@ -241,8 +248,9 @@ wait_lit() {
     while [ "$i" -lt 25 ]; do
         sleep 1
         i=$((i + 1))
-        state=$(live_state "$level") || continue
+        state=$(live_state "$level") || { echo "  Lock Screen check failed: $(tail -1 "$BUILD/live.log")" >&2; sleep 3.5; return 1; }
         level=${state#* }
+        echo "  ${i}s: ${state% *}"
         case "$state" in
             lit*) echo "  Live Activity lit after ${i}s"; return 0 ;;
             dim*) case "$i" in 6 | 12 | 18) echo "  still Always On, pressing the space bar again"; press_key wake || true ;; esac ;;
