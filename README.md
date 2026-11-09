@@ -220,6 +220,7 @@ LiveActivity/ Code shared by the app and the extension: activity attributes,
 Packages/     LocSimCore: parser, tunnel packets, ports, error codes, with unit tests
 Config/       Shared xcconfig, local overrides are git-ignored
 docs/         Release process, roadmap, TestFlight notes, README images
+CHANGELOG.md  What changed in each TestFlight build
 design/       App icon, mockups, screenshots, social images
 site/         Website locsim.rockykln.com (Cloudflare Worker, static files in public/)
 tools/        Pairing file creation (macOS, Linux, Windows), screenshots,
