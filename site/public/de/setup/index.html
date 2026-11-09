@@ -63,14 +63,14 @@
 <li><strong>Linux:</strong> <code>pymobiledevice3 lockdown wifi-connections on</code></li>
 </ul>
 <h2>3. Pairing-Datei erstellen</h2>
-<p>Das Skript lädt <code>idevice-tools</code>, prüft die Prüfsumme und schreibt <code>rppairing.plist</code>. Du kannst <a href="https://github.com/Rockykln/locsim/tree/main/tools">die Skripte</a> vorher lesen.</p>
+<p>Das Skript lädt <code>idevice-tools</code>, prüft die Prüfsumme und schreibt <code>rppairing.plist</code>. Du kannst <a href="https://github.com/Rockykln/locsim/tree/0ecb6bfc5f9c4978fa2b9d6b29bb725a9f9517f6/tools">die Skripte</a> vorher lesen.</p>
 <h3>Mac und Linux</h3>
-<pre><code>curl -fLO https://raw.githubusercontent.com/Rockykln/locsim/00b3b69e4860b184f634867ffe71f2bb13fc2b66/tools/make-pairing.sh
+<pre><code>curl -fLO https://raw.githubusercontent.com/Rockykln/locsim/0ecb6bfc5f9c4978fa2b9d6b29bb725a9f9517f6/tools/make-pairing.sh
 bash make-pairing.sh</code></pre>
 <p>Linux braucht zusätzlich <code>usbmuxd</code> und glibc 2.38 oder neuer: Debian 13, Ubuntu 24.04, Fedora 39 oder später.</p>
 <h3>Windows</h3>
 <p>Braucht die App „Apple-Geräte“ oder iTunes. In der PowerShell:</p>
-<pre><code>curl.exe -fLO https://raw.githubusercontent.com/Rockykln/locsim/00b3b69e4860b184f634867ffe71f2bb13fc2b66/tools/make-pairing.ps1
+<pre><code>curl.exe -fLO https://raw.githubusercontent.com/Rockykln/locsim/0ecb6bfc5f9c4978fa2b9d6b29bb725a9f9517f6/tools/make-pairing.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File make-pairing.ps1</code></pre>
 <h2>4. Datei in LocSim importieren</h2>
 <ol>
