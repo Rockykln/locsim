@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@" : {
+      "shouldTranslate" : false
+    },
     "Choose Favorites" : {
       "comment" : "Widget settings: title",
       "localizations" : {
