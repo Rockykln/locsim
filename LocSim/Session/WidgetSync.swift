@@ -45,13 +45,16 @@ enum WidgetSync {
 
     /// The widget lists the most used favorites first, like the Home Screen quick actions.
     static func setFavorites(_ favorites: [Favorite]) {
-        let places = FavoriteUsage.ranked(favorites).prefix(3).map {
+        func place(_ favorite: Favorite) -> WidgetSnapshot.Place {
             WidgetSnapshot.Place(
-                id: $0.id, name: $0.name, coordinate: CoordinateParser.format($0.coordinate),
-                spoken: CoordinateParser.spoken($0.coordinate))
+                id: favorite.id, name: favorite.name, coordinate: CoordinateParser.format(favorite.coordinate),
+                spoken: CoordinateParser.spoken(favorite.coordinate))
         }
-        guard places != shown.favorites else { return }
-        shown.favorites = places
+        let ranked = FavoriteUsage.ranked(favorites).prefix(3).map(place)
+        let catalog = favorites.map(place)
+        guard ranked != shown.favorites || catalog != shown.catalog else { return }
+        shown.favorites = ranked
+        shown.catalog = catalog
         publish()
     }
 

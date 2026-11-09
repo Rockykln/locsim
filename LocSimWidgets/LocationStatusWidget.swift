@@ -1,3 +1,4 @@
+import AppIntents
 import SwiftUI
 import WidgetKit
 
@@ -6,8 +7,9 @@ import WidgetKit
 /// every action goes through the app.
 struct LocationStatusWidget: Widget {
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: WidgetSnapshot.kind, provider: SnapshotProvider()) { entry in
-            LocationStatusView(snapshot: entry.snapshot, stale: entry.stale)
+        // The same kind as the earlier static widget, so widgets already placed keep working.
+        AppIntentConfiguration(kind: WidgetSnapshot.kind, intent: ChooseFavoritesIntent.self, provider: SnapshotProvider()) { entry in
+            LocationStatusView(snapshot: entry.snapshot, stale: entry.stale, favorites: entry.favorites)
                 .containerBackground(.fill.tertiary, for: .widget)
         }
         .configurationDisplayName("Location Status")
@@ -20,36 +22,88 @@ struct SnapshotEntry: TimelineEntry {
     let date: Date
     let snapshot: WidgetSnapshot
     var stale = false
+    var favorites: [WidgetSnapshot.Place] = []
 }
 
 /// The app reloads the widget when something changes. A second entry turns it outdated in
 /// case LocSim ends without saying so, like the Live Activity.
-struct SnapshotProvider: TimelineProvider {
+struct SnapshotProvider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> SnapshotEntry {
         SnapshotEntry(date: Date(), snapshot: .empty)
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (SnapshotEntry) -> Void) {
-        completion(entries(WidgetSnapshot.load())[0])
+    func snapshot(for configuration: ChooseFavoritesIntent, in context: Context) async -> SnapshotEntry {
+        entries(WidgetSnapshot.load(), configuration)[0]
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<SnapshotEntry>) -> Void) {
-        completion(Timeline(entries: entries(WidgetSnapshot.load()), policy: .never))
+    func timeline(for configuration: ChooseFavoritesIntent, in context: Context) async -> Timeline<SnapshotEntry> {
+        Timeline(entries: entries(WidgetSnapshot.load(), configuration), policy: .never)
     }
 
-    private func entries(_ snapshot: WidgetSnapshot) -> [SnapshotEntry] {
+    private func entries(_ snapshot: WidgetSnapshot, _ configuration: ChooseFavoritesIntent) -> [SnapshotEntry] {
         let now = Date()
-        guard snapshot.active != nil, let until = snapshot.freshUntil else {
-            return [SnapshotEntry(date: now, snapshot: snapshot)]
+        let favorites = Self.favorites(snapshot, chosen: configuration.favorites)
+        func entry(_ date: Date, stale: Bool = false) -> SnapshotEntry {
+            SnapshotEntry(date: date, snapshot: snapshot, stale: stale, favorites: favorites)
         }
-        if until <= now { return [SnapshotEntry(date: now, snapshot: snapshot, stale: true)] }
-        return [SnapshotEntry(date: now, snapshot: snapshot), SnapshotEntry(date: until, snapshot: snapshot, stale: true)]
+        guard snapshot.active != nil, let until = snapshot.freshUntil else { return [entry(now)] }
+        if until <= now { return [entry(now, stale: true)] }
+        return [entry(now), entry(until, stale: true)]
+    }
+
+    /// The chosen favorites with their current names, in the chosen order; deleted ones drop out.
+    /// Without a choice, or when none is left, the most used ones.
+    private static func favorites(_ snapshot: WidgetSnapshot, chosen: [WidgetFavorite]?) -> [WidgetSnapshot.Place] {
+        let catalog = snapshot.catalog ?? snapshot.favorites
+        let picked = (chosen ?? []).compactMap { choice in catalog.first { $0.id == choice.id } }
+        return picked.isEmpty ? snapshot.favorites : picked
+    }
+}
+
+/// Which favorites the medium widget lists, chosen in its settings.
+struct ChooseFavoritesIntent: WidgetConfigurationIntent {
+    static let title: LocalizedStringResource = "Choose Favorites"
+    static let description = IntentDescription("Pick the favorites the widget lists. Without a choice it lists the most used ones.")
+
+    @Parameter(title: "Favorites", size: 3)
+    var favorites: [WidgetFavorite]?
+}
+
+/// A favorite as the widget knows it, from the list the app shares with the widget.
+struct WidgetFavorite: AppEntity {
+    static let typeDisplayRepresentation = TypeDisplayRepresentation(name: "Favorite")
+    static let defaultQuery = WidgetFavoriteQuery()
+
+    let id: UUID
+    let name: String
+    let coordinate: String
+
+    var displayRepresentation: DisplayRepresentation {
+        DisplayRepresentation(title: "\(name)", subtitle: "\(coordinate)")
+    }
+}
+
+struct WidgetFavoriteQuery: EntityQuery {
+    func entities(for identifiers: [UUID]) async throws -> [WidgetFavorite] {
+        all().filter { identifiers.contains($0.id) }
+    }
+
+    func suggestedEntities() async throws -> [WidgetFavorite] {
+        all()
+    }
+
+    private func all() -> [WidgetFavorite] {
+        let snapshot = WidgetSnapshot.load()
+        return (snapshot.catalog ?? snapshot.favorites).map {
+            WidgetFavorite(id: $0.id, name: $0.name, coordinate: $0.coordinate)
+        }
     }
 }
 
 private struct LocationStatusView: View {
     let snapshot: WidgetSnapshot
     let stale: Bool
+    let favorites: [WidgetSnapshot.Place]
     @Environment(\.widgetFamily) private var family
 
     var body: some View {
@@ -126,7 +180,7 @@ private struct LocationStatusView: View {
             HStack(alignment: .top, spacing: 14) {
                 status
                     .frame(maxWidth: .infinity, alignment: .leading)
-                favorites
+                favoriteList
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
         } else {
@@ -169,18 +223,18 @@ private struct LocationStatusView: View {
     }
 
     @ViewBuilder
-    private var favorites: some View {
+    private var favoriteList: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text("Favorites")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .accessibilityAddTraits(.isHeader)
-            if snapshot.favorites.isEmpty {
+            if favorites.isEmpty {
                 Text("No Favorites")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             } else {
-                ForEach(snapshot.favorites.prefix(3)) { favorite in
+                ForEach(favorites.prefix(3)) { favorite in
                     Link(destination: WidgetSnapshot.url(forFavorite: favorite.id)) {
                         Label {
                             Text(favorite.name)
