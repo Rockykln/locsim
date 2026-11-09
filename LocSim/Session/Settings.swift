@@ -21,6 +21,8 @@ enum SettingsKey {
     static let recents = "recentLocations"
     static let recentsEnabled = "recentsEnabled"
     static let liveActivity = "liveActivity"
+    /// Debug builds only: the Live Activity with the system's own look, to compare.
+    static let liveActivitySystemLook = "debugLiveActivitySystemLook"
 }
 
 enum Defaults {
