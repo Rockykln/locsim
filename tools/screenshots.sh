@@ -107,39 +107,6 @@ else
 fi
 open -b "$SIM_APP" --args -CurrentDeviceUDID "$UDID" 2>/dev/null || true
 
-# A tiny tool for a real mouse click, which wakes the locked Simulator (see lock_screen). It is
-# rebuilt whenever its source here changes.
-CLICK="$BUILD/click"
-if wants live && [ "${LOCK:-auto}" != manual ]; then
-    cat > "$BUILD/click.swift.new" <<'SWIFT'
-import CoreGraphics
-import Foundation
-
-// Like a hand: the pointer moves onto the screen first, DeviceHub only turns a click into a touch
-// once the pointer is over the device.
-let args = CommandLine.arguments
-guard args.count == 3, let x = Double(args[1]), let y = Double(args[2]) else { exit(2) }
-let point = CGPoint(x: x, y: y)
-func post(_ type: CGEventType) {
-    guard let event = CGEvent(mouseEventSource: CGEventSource(stateID: .hidSystemState), mouseType: type,
-                              mouseCursorPosition: point, mouseButton: .left) else { exit(1) }
-    event.post(tap: .cghidEventTap)
-}
-post(.mouseMoved)
-usleep(300_000)
-post(.leftMouseDown)
-usleep(150_000)
-post(.leftMouseUp)
-usleep(100_000)
-SWIFT
-    if [ ! -x "$CLICK" ] || ! cmp -s "$BUILD/click.swift.new" "$BUILD/click.swift"; then
-        mv "$BUILD/click.swift.new" "$BUILD/click.swift"
-        xcrun swiftc -O -o "$CLICK" "$BUILD/click.swift" 2>"$BUILD/click.log" ||
-            { echo "Could not build the click tool, see $BUILD/click.log; locking by hand." >&2; LOCK=manual; }
-    else
-        rm -f "$BUILD/click.swift.new"
-    fi
-fi
 ORIG_LANGS=$(xcrun simctl spawn "$UDID" defaults read -g AppleLanguages 2>/dev/null | sed -e '1d' -e '$d' -e 's/[ ",]//g' || true)
 ORIG_LOCALE=$(xcrun simctl spawn "$UDID" defaults read -g AppleLocale 2>/dev/null || true)
 ORIG_APPEARANCE=$(xcrun simctl ui "$UDID" appearance 2>/dev/null || true)
@@ -198,8 +165,9 @@ launch() {
 # Locks the Simulator and wakes the Lock Screen, which a locked Simulator dims into Always On.
 # simctl cannot do either, so it goes through the app that shows the simulators ($SIM_APP):
 # its menu item with the Cmd-L shortcut is the side button (found by the shortcut, so the menu
-# language does not matter) and locks; a click in the middle of the window wakes the Lock
-# Screen without unlocking. Needs Accessibility access for the terminal app (System
+# language does not matter). Waking it is up to the demo: DeviceHub ignores synthetic clicks
+# and a second press unlocks, so the demo lights the Lock Screen with an alert on the Live
+# Activity once LocSim is in the background. Needs Accessibility access for the terminal app (System
 # Settings > Privacy & Security > Accessibility); on the first run macOS also asks whether the
 # terminal may control System Events.
 lock_screen() {
@@ -234,28 +202,16 @@ on run argv
             if lockItem is missing value then error "no menu item with Cmd-L in " & appID
             set itemName to name of lockItem
             click lockItem
-            set {x, y} to position of front window
-            set {w, h} to size of front window
-            return itemName & tab & ((x + w div 2) as text) & tab & ((y + h div 2) as text)
+            return itemName
         end tell
     end tell
 end run
 APPLESCRIPT
     ); then
-        name=$(printf '%s' "$result" | cut -f1)
-        cx=$(printf '%s' "$result" | cut -f2)
-        cy=$(printf '%s' "$result" | cut -f3)
-        sleep 3
-        # A real click: DeviceHub ignores the click that System Events sends, and a second press
-        # of the side button unlocks there instead of waking.
-        if "$CLICK" "$cx" "$cy"; then
-            echo "  locked with the menu item \"$name\", woken with a click at $cx,$cy"
-            return
-        fi
-        echo "Could not click the Simulator to wake it." >&2
-    else
-        echo "Could not lock the Simulator automatically: $(head -1 "$BUILD/lock.log")" >&2
+        echo "  locked with the menu item \"$result\""
+        return
     fi
+    echo "Could not lock the Simulator automatically: $(head -1 "$BUILD/lock.log")" >&2
     echo "Allow the terminal app under System Settings > Privacy & Security > Accessibility" >&2
     echo "and under Automation for System Events, or run with LOCK=manual." >&2
     LOCK=manual
@@ -305,8 +261,8 @@ for lang in $LANGS; do
         # The demo starts the Live Activity after a second, and iOS takes a while to draw it.
         sleep 18
         lock_screen
-        # The Lock Screen needs a moment after waking until the Live Activity is drawn on it.
-        sleep 3.5
+        # The demo wakes the Lock Screen 2 s after locking; then it needs a moment to draw.
+        [ "${LOCK:-auto}" = manual ] && sleep 1 || sleep 6
         shoot "$OUT/$lang/4-live.png"
         # Older per-theme shots would win over this one in render.py.
         rm -f "$OUT/$lang/light/4-live.png" "$OUT/$lang/dark/4-live.png"
