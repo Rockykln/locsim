@@ -47,6 +47,9 @@ WEB_CODES = {"pt-BR": "pt"}
 WIDTH, HEIGHT = 1320, 2868          # App Store, 6.9" iPhone: the reference layout
 TITLE_WIDTH = 1060
 TITLE_MAX = 124
+# Rows per measuring page: Firefox draws taller pages wrong (the rows drift apart), which made
+# French titles overflow once there were seven languages.
+MEASURE_ROWS = 20
 
 # App Store sizes. "shots" is the screenshot folder under <lang>/<theme>/ ("" = the iPhone
 # screenshots), "aspect" the screen's width/height, "derive" smaller sizes scaled from it.
@@ -284,6 +287,39 @@ def transparent(on_black, on_white, target, work, width=660):
     keep_if_same(new, target)
 
 
+# Measuring pages stay blank until the fonts are loaded: under load Firefox sometimes took the
+# shot with a fallback font, which measured narrower and made titles overflow. A blank row
+# means the shot came too early, so it is taken again.
+FONTS_READY = ("<script>Promise.all([document.fonts.load('italic 900 100px Mock'), "
+               "document.fonts.load('500 50px Mock')]).then(() => document.body.style.visibility = 'visible')"
+               "</script>")
+
+
+def measure_rows(css, body, size, row, what, work):
+    """Renders rows of text and returns the trimmed width or height of each row ("%w"/"%h")."""
+    # Preloaded fonts hold back the load event, on which Firefox takes the shot.
+    preload = "".join(f'<link rel="preload" as="font" type="font/ttf" crossorigin href="{pathlib.Path(FONTS, f).as_uri()}">'
+                      for f in ("Inter.ttf", "Inter-Italic.ttf"))
+    page = (f"<!doctype html><html><head><meta charset='utf-8'>{preload}<style>{FONT_CSS}"
+            f"body{{margin:0;background:#fff;color:#000;visibility:hidden}}{css}</style></head>"
+            f"<body>{body}{FONTS_READY}</body></html>")
+    # Own folder: titles and subtitles are measured at the same time, and firefox() writes
+    # page.html into the folder it gets.
+    work = tempfile.mkdtemp(dir=work)
+    shot = os.path.join(work, "measure.png")
+    for _ in range(5):
+        firefox(page, shot, size, work)
+        # One magick call: -crop WxH without offset tiles the image into one frame per row.
+        # A blank row makes magick fail.
+        result = subprocess.run(["magick", shot, "-crop", f"{size[0]}x{row}", "+repage", "-fuzz", "10%", "-trim",
+                                 "-format", what + "\\n", "info:"], capture_output=True, text=True)
+        os.remove(shot)
+        out = result.stdout.split()
+        if result.returncode == 0 and all(int(v) > 1 for v in out):
+            return out
+    raise RuntimeError("the measuring page stayed blank; the fonts did not load")
+
+
 def title_sizes(slides, work):
     """Measures every title line at 100px and returns one font size per language.
     Cached: only a change of text, font or this script measures again."""
@@ -292,15 +328,13 @@ def title_sizes(slides, work):
     if os.path.exists(cached):
         return json.load(open(cached))
     row = 180
-    body = "".join(f'<div class="title" lang="{lang}" style="height:{row}px;font-size:100px;padding-left:20px">'
-                   f"{html.escape(line)}</div>" for lang, line in lines)
-    page = f"<!doctype html><html><head><meta charset='utf-8'><style>{FONT_CSS}" \
-           f"body{{margin:0;background:#fff;color:#000}}</style></head><body>{body}</body></html>"
-    shot = os.path.join(work, "measure.png")
-    firefox(page, shot, (3200, row * len(lines)), work)
-    # One magick call: -crop WxH without offset tiles the image into one frame per row.
-    out = subprocess.run(["magick", shot, "-crop", f"3200x{row}", "+repage", "-fuzz", "10%", "-trim",
-                          "-format", "%w\\n", "info:"], capture_output=True, text=True, check=True).stdout.split()
+    out = []
+    for start in range(0, len(lines), MEASURE_ROWS):
+        chunk = lines[start:start + MEASURE_ROWS]
+        # Fixed positions: in the normal flow the rows drifted apart on long pages.
+        body = "".join(f'<div class="title" lang="{lang}" style="position:absolute;left:20px;top:{i * row + 40}px;'
+                       f'font-size:100px">{html.escape(line)}</div>' for i, (lang, line) in enumerate(chunk))
+        out += measure_rows("", body, (3200, row * len(chunk)), row, "%w", work)
     if len(out) != len(lines):
         raise RuntimeError(f"measured {len(out)} title lines, expected {len(lines)}")
     widest = {}
@@ -319,16 +353,14 @@ def check_subtitles(slides, work):
     if os.path.exists(stamp):
         return
     row = 240
-    body = "".join(f'<div lang="{lang}" style="height:{row}px"><div class="subtitle">{html.escape(text)}</div></div>'
-                   for _, lang, text in items)
-    page = (f"<!doctype html><html><head><meta charset='utf-8'><style>{FONT_CSS}"
-            "body{margin:0;background:#fff;color:#000} .subtitle{width:1200px;text-align:center;font-family:'Mock';"
-            "font-weight:500;font-size:50px;line-height:1.25;text-wrap:balance}</style></head>"
-            f"<body>{body}</body></html>")
-    shot = os.path.join(work, "subtitles.png")
-    firefox(page, shot, (1200, row * len(items)), work)
-    heights = subprocess.run(["magick", shot, "-crop", f"1200x{row}", "+repage", "-fuzz", "10%", "-trim",
-                              "-format", "%h\\n", "info:"], capture_output=True, text=True, check=True).stdout.split()
+    heights = []
+    for start in range(0, len(items), MEASURE_ROWS):
+        chunk = items[start:start + MEASURE_ROWS]
+        body = "".join(f'<div class="subtitle" lang="{lang}" style="top:{i * row + 30}px">{html.escape(text)}</div>'
+                       for i, (_, lang, text) in enumerate(chunk))
+        heights += measure_rows(".subtitle{position:absolute;left:0;width:1200px;text-align:center;font-family:'Mock';"
+                                "font-weight:500;font-size:50px;line-height:1.25;text-wrap:balance}",
+                                body, (1200, row * len(chunk)), row, "%h", work)
     # Two lines of 50px text are about 110px high from cap height to descender, three about 170px.
     long = [f"{sid} ({lang})" for (sid, lang, _), h in zip(items, heights) if int(h) > 140]
     # Only a warning: the measurement can be off by a line; check the listed images by eye.
