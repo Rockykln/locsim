@@ -2,8 +2,10 @@
 """Tells whether a Lock Screen shot shows the Live Activity lit, for tools/screenshots.sh.
 
 Usage: live-check.py <shot.bmp> [previous level]
-Prints "<state> <level>": state is "lit", "dim" or "moving", level is the activity's mean
-brightness, to pass to the next call.
+Prints "<state> <level>": state is "none" (no activity on the screen yet), "dim" (Always On),
+"moving" or "lit"; level is the activity's mean brightness, to pass to the next call.
+
+The activity's text gives many sharp edges, the blurred wallpaper almost none.
 
 In Always On the activity has a dark fill and blends into the wallpaper next to it; lit, the
 glass is clearly brighter. After waking, iOS sometimes keeps drawing the Always On version for
@@ -16,6 +18,7 @@ import sys
 GLASS = (0.06, 0.09, 0.77, 0.82)       # left edge inside the activity, under the icon
 WALLPAPER = (0.06, 0.09, 0.88, 0.92)   # the same column below the activity
 ACTIVITY = (0.08, 0.92, 0.72, 0.83)    # the whole activity, text included
+TEXT = 15       # sharp edges per 1000 pixels from which the activity counts as shown
 LIT = 10        # glass this much brighter than the wallpaper next to it
 STILL = 0.5     # largest change in level between two shots that counts as finished
 
@@ -46,13 +49,31 @@ def load(path):
                 count += 3
         return total / count
 
-    return mean
+    def edges(box):
+        x0, x1 = int(box[0] * width), int(box[1] * width)
+        y0, y1 = int(box[2] * height), int(box[3] * height)
+        sharp = count = 0
+        for y in range(y0, y1, 2):
+            line = offset + (y if top_down else height - 1 - y) * row
+            last = None
+            for x in range(x0, x1, 2):
+                p = line + x * step
+                value = data[p] + data[p + 1] + data[p + 2]
+                if last is not None:
+                    sharp += abs(value - last) > 90
+                    count += 1
+                last = value
+        return 1000 * sharp / count
+
+    return mean, edges
 
 
 def main():
-    mean = load(sys.argv[1])
+    mean, edges = load(sys.argv[1])
     level = mean(ACTIVITY)
-    if mean(GLASS) - mean(WALLPAPER) < LIT:
+    if edges(ACTIVITY) < TEXT:
+        state = "none"
+    elif mean(GLASS) - mean(WALLPAPER) < LIT:
         state = "dim"
     elif len(sys.argv) > 2 and abs(level - float(sys.argv[2])) <= STILL:
         state = "lit"
