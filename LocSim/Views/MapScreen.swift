@@ -10,11 +10,6 @@ struct MapScreen: View {
     @StateObject private var search = PlaceSearch()
     @ObservedObject private var requests = ExternalRequests.shared
     @State private var camera: MapCameraPosition = .automatic
-    // The map holds most of LocSim's memory. In the background it is taken out, so iOS is less
-    // likely to end LocSim while it keeps a location; the last camera brings it back unchanged.
-    @State private var mapUnloaded = false
-    @State private var lastCamera: MapCamera?
-    @State private var unloadTask: Task<Void, Never>?
     @State private var showSettings = false
     @State private var showWelcome = false
     @State private var showFavorites = false
@@ -148,13 +143,7 @@ struct MapScreen: View {
 
     private var layers: some View {
         ZStack(alignment: usesSidebar || phoneLandscape ? .topLeading : .top) {
-            Group {
-                if mapUnloaded {
-                    Color(.systemBackground)
-                } else {
-                    map
-                }
-            }
+            map
                 .ignoresSafeArea()
                 // VoiceOver reads search and panel first, then the map.
                 .accessibilitySortPriority(-1)
@@ -343,7 +332,6 @@ struct MapScreen: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .background { showsUserLocation = false }
             if phase == .active { showRealPositionIfAllowed() }
-            updateMapLoading(phase)
         }
         .onChange(of: session.state) { _, _ in showRealPositionIfAllowed() }
         // A renamed favorite renames the pin on it, unless the pin got its name elsewhere.
@@ -429,24 +417,6 @@ struct MapScreen: View {
 
     // MARK: - Map
 
-    /// Unloads the map a few seconds after LocSim went to the background: iOS takes the app
-    /// switcher snapshot right away, and that should still show the map.
-    private func updateMapLoading(_ phase: ScenePhase) {
-        unloadTask?.cancel()
-        guard phase == .background else {
-            mapUnloaded = false
-            return
-        }
-        unloadTask = Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 5_000_000_000)
-            // Not scenePhase: the task keeps the value it was started with.
-            guard !Task.isCancelled, UIApplication.shared.applicationState == .background else { return }
-            // A camera the user moved has no readable position; the last reported one does.
-            if camera.positionedByUser, let lastCamera { camera = .camera(lastCamera) }
-            mapUnloaded = true
-        }
-    }
-
     private var map: some View {
         MapReader { proxy in
             Map(position: $camera, scope: mapScope) {
@@ -499,7 +469,6 @@ struct MapScreen: View {
                 // The camera centers in the area the panel leaves free; the region covers the whole view.
                 mapCenter = context.camera.centerCoordinate
                 visibleRegion = context.region
-                lastCamera = context.camera
                 mapReady = true
             }
             // In case the camera reports no change after the first layout.
