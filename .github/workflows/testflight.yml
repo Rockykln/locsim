@@ -89,10 +89,17 @@ jobs:
           has_ios || { echo "::error::the selected Xcode lists no iOS SDK (xcodebuild -showsdks)"; exit 1; }
           xcodebuild -version
 
+      # Signed in through the API: anonymous release downloads time out when GitHub is busy.
       - name: Fetch IDevice.xcframework
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          curl -fsSL --proto '=https' --proto-redir '=https' --retry 5 --retry-delay 10 --retry-all-errors -o idevice.zip \
-            "https://github.com/jkcoxson/idevice/releases/download/$IDEVICE_VERSION/idevice-xcframework-$IDEVICE_VERSION.zip"
+          for try in 1 2 3 4 5; do
+            gh release download "$IDEVICE_VERSION" -R jkcoxson/idevice --clobber \
+              -p "idevice-xcframework-$IDEVICE_VERSION.zip" -O idevice.zip && break
+            [ "$try" -lt 5 ] || exit 1
+            sleep 10
+          done
           echo "$IDEVICE_SHA256  idevice.zip" | shasum -a 256 -c -
           unzip -q idevice.zip -d idevice
           mkdir -p Frameworks
@@ -102,9 +109,13 @@ jobs:
         env:
           XCODEGEN_VERSION: "2.46.0"
           XCODEGEN_SHA256: 4d9e34b62172d645eed6457cac13fc222569974098ef4ee9c3368bedf0196806
+          GH_TOKEN: ${{ github.token }}
         run: |
-          curl -fsSL --proto '=https' --proto-redir '=https' --retry 5 --retry-delay 10 --retry-all-errors -o xcodegen.zip \
-            "https://github.com/yonaskolb/XcodeGen/releases/download/$XCODEGEN_VERSION/xcodegen.zip"
+          for try in 1 2 3 4 5; do
+            gh release download "$XCODEGEN_VERSION" -R yonaskolb/XcodeGen --clobber -p xcodegen.zip -O xcodegen.zip && break
+            [ "$try" -lt 5 ] || exit 1
+            sleep 10
+          done
           echo "$XCODEGEN_SHA256  xcodegen.zip" | shasum -a 256 -c -
           unzip -q xcodegen.zip -d "$RUNNER_TEMP"
           "$RUNNER_TEMP/xcodegen/bin/xcodegen" generate
