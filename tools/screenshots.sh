@@ -208,6 +208,28 @@ lock_screen() {
     lock_screen
 }
 
+# Waits until the Lock Screen shows the Live Activity lit and finished drawing (tools/live-check.py).
+# After waking, iOS sometimes keeps the Always On version; another space bar press helps then.
+wait_lit() {
+    [ "${LOCK:-auto}" = manual ] && { sleep 3.5; return 0; }
+    level=
+    i=0
+    while [ "$i" -lt 25 ]; do
+        sleep 1
+        i=$((i + 1))
+        xcrun simctl io "$UDID" screenshot --type=bmp "$BUILD/live.bmp" >/dev/null 2>&1 || continue
+        set -- $(python3 "$ROOT/tools/live-check.py" "$BUILD/live.bmp" $level)
+        level=$2
+        case "$1" in
+            lit) echo "  Live Activity lit after ${i}s"; return 0 ;;
+            dim) case "$i" in 6 | 12 | 18) echo "  still Always On, pressing the space bar again"; press_key wake || true ;; esac ;;
+        esac
+    done
+    echo "  The Live Activity did not light up; check $lang/4-live.png." >&2
+    return 1
+}
+
+dim=
 if wants live && [ "${WALLPAPER:-ask}" != ok ]; then
     say "The Lock Screen shots need a light stock wallpaper (Settings > Wallpaper in the Simulator).
 It stays set; skip this question next time with WALLPAPER=ok. Press Enter to start."
@@ -251,12 +273,16 @@ for lang in $LANGS; do
         # The demo starts the Live Activity after a second, and iOS takes a while to draw it.
         sleep 18
         lock_screen
-        # The Lock Screen needs a moment after waking until the Live Activity is drawn on it.
-        sleep 3.5
+        wait_lit || dim="$dim $lang"
         shoot "$OUT/$lang/4-live.png"
         # Older per-theme shots would win over this one in render.py.
         rm -f "$OUT/$lang/light/4-live.png" "$OUT/$lang/dark/4-live.png"
     fi
 done
 xcrun simctl terminate "$UDID" "$BUNDLE" 2>/dev/null || true
+if [ -n "$dim" ]; then
+    say "The Live Activity stayed in Always On for:$dim. Take these again with
+  SCREENS=live WALLPAPER=ok tools/screenshots.sh$dim"
+    exit 1
+fi
 say "Done. Next: design/mockups/render.py"
