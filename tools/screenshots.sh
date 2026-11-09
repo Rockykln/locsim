@@ -6,9 +6,11 @@
 #                                                      "iPhone 17", else the first one listed)
 # Output: design/screenshots/<lang>/<theme>/<name>.png, then run design/mockups/render.py.
 #
-# First every other screen is taken without help, light and dark. The Lock Screen shots with
-# the Live Activity come last, one per language, because simctl can neither lock the
-# Simulator nor set its wallpaper.
+# Each language gets one Simulator restart and all its screens, light and dark, plus one light
+# Lock Screen shot with the Live Activity. Locking goes through the Simulator app (see
+# lock_screen); the wallpaper has to be set by hand once, simctl cannot set it.
+#        LOCK=manual          lock and wake the Simulator by hand
+#        WALLPAPER=ok         skip the wallpaper question
 set -eu
 
 DEVICE=${DEVICE:-"iPhone 17"}
@@ -150,66 +152,86 @@ launch() {
         { echo "Launch failed: $lang $1" >&2; exit 1; }
 }
 
-# Pass 1: everything but the Lock Screen, no help needed.
-pass1=0
-for shot in $SHOTS; do
-    if wants "${shot%%:*}"; then pass1=1; fi
-done
-if [ "$pass1" = 1 ]; then
-    for lang in $LANGS; do
-        system_language "$lang"
-        first=1
-        for theme in light dark; do
-            xcrun simctl ui "$UDID" appearance "$theme"
-            mkdir -p "$OUT/$lang/$theme"
-            if [ "$first" = 1 ]; then
-                # After a restart the first map takes longer to load its tiles.
-                echo "$lang: warming up the map"
-                launch map
-                sleep 15
-                first=0
-            fi
-            for shot in $SHOTS; do
-                screen=${shot%%:*}
-                wants "$screen" || continue
-                rest=${shot#*:}
-                name=${rest%%:*}
-                wait=${rest#*:}
-                echo "$lang $theme: $screen"
-                launch "$screen"
-                sleep "$wait"
-                shoot "$OUT/$lang/$theme/$name.png"
-            done
-        done
-    done
+# Locks the Simulator and wakes the Lock Screen, which a locked Simulator dims into Always On.
+# simctl cannot do either, so it goes through the Simulator app: Cmd-L locks, a click in the
+# middle of the screen wakes it without unlocking. Needs Accessibility access for the
+# terminal app (System Settings > Privacy & Security > Accessibility) once.
+lock_screen() {
+    if [ "${LOCK:-auto}" = manual ]; then
+        printf '%s: press Cmd-L in the Simulator, click its screen once so it is lit, then press Enter here. ' "$lang"
+        read -r _
+        return
+    fi
+    if ! osascript >/dev/null 2>"$BUILD/lock.log" <<'APPLESCRIPT'
+tell application id "com.apple.iphonesimulator" to activate
+delay 1
+tell application "System Events"
+    keystroke "l" using command down
+    delay 3
+    tell (first process whose bundle identifier is "com.apple.iphonesimulator")
+        set {x, y} to position of front window
+        set {w, h} to size of front window
+        click at {x + w div 2, y + h div 2}
+    end tell
+end tell
+APPLESCRIPT
+    then
+        echo "Could not lock the Simulator automatically: $(head -1 "$BUILD/lock.log")" >&2
+        echo "Allow the terminal app under System Settings > Privacy & Security > Accessibility," >&2
+        echo "or run with LOCK=manual." >&2
+        LOCK=manual
+        lock_screen
+    fi
+}
+
+if wants live && [ "${WALLPAPER:-ask}" != ok ]; then
+    say "The Lock Screen shots need a light stock wallpaper (Settings > Wallpaper in the Simulator).
+It stays set; skip this question next time with WALLPAPER=ok. Press Enter to start."
+    read -r _
 fi
 
-# Pass 2: the Lock Screen with the Live Activity, one shot per language in light mode. It is
-# saved as <lang>/4-live.png, which render.py uses for the light and the dark images alike.
-if wants live; then
-    say "=== Lock Screen shots ===
-In the Simulator, pick a light stock wallpaper (Settings > Wallpaper).
-Then press Enter here. The script waits until you do."
-    read -r _
-    for lang in $LANGS; do
-        system_language "$lang"
+# One restart per language for all its screens: the Lock Screen's date and the Live Activity
+# follow the system language, not the app's.
+for lang in $LANGS; do
+    system_language "$lang"
+    first=1
+    for theme in light dark; do
+        xcrun simctl ui "$UDID" appearance "$theme"
+        mkdir -p "$OUT/$lang/$theme"
+        if [ "$first" = 1 ]; then
+            # After a restart the first map takes longer to load its tiles, and iOS starts no
+            # Live Activity yet.
+            echo "$lang: warming up the map"
+            launch map
+            sleep 15
+            first=0
+        fi
+        for shot in $SHOTS; do
+            screen=${shot%%:*}
+            wants "$screen" || continue
+            rest=${shot#*:}
+            name=${rest%%:*}
+            wait=${rest#*:}
+            echo "$lang $theme: $screen"
+            launch "$screen"
+            sleep "$wait"
+            shoot "$OUT/$lang/$theme/$name.png"
+        done
+    done
+    if wants live; then
+        # One light shot, saved as <lang>/4-live.png; render.py uses it for both themes.
+        # The restart for the next language unlocks the Simulator again.
         xcrun simctl ui "$UDID" appearance light
-        mkdir -p "$OUT/$lang"
-        # Right after a restart iOS starts no Live Activity yet; the map warms it up.
-        echo "$lang: starting LocSim, the Live Activity follows in about 25 seconds"
-        launch map
-        sleep 15
+        echo "$lang: Lock Screen with the Live Activity"
         launch live
-        sleep 8
-        # Locked, the Simulator dims into Always On; a click wakes the Lock Screen without unlocking.
-        printf '%s: once the Live Activity shows, press Cmd-L in the Simulator, click its screen once so it is lit, then press Enter here. ' "$lang"
-        read -r _
+        sleep 10
+        lock_screen
         # Right away, before the screen dims again.
         sleep 1
         shoot "$OUT/$lang/4-live.png"
         # Older per-theme shots would win over this one in render.py.
         rm -f "$OUT/$lang/light/4-live.png" "$OUT/$lang/dark/4-live.png"
-    done
-fi
+    fi
+done
 xcrun simctl terminate "$UDID" "$BUNDLE" 2>/dev/null || true
 say "Done. Next: design/mockups/render.py"
