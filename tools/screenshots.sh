@@ -11,6 +11,7 @@
 # lock_screen); the wallpaper has to be set by hand once, simctl cannot set it.
 #        LOCK=manual          lock and wake the Simulator by hand
 #        WALLPAPER=ok         skip the wallpaper question
+#        WAKE_DELAY=12        seconds between locking and the wake click
 set -eu
 
 DEVICE=${DEVICE:-"iPhone 17"}
@@ -245,7 +246,9 @@ APPLESCRIPT
         name=$(printf '%s' "$result" | cut -f1)
         cx=$(printf '%s' "$result" | cut -f2)
         cy=$(printf '%s' "$result" | cut -f3)
-        sleep 3
+        # The locked Simulator stays lit for a few seconds before it dims into Always On; a click
+        # before that does nothing. WAKE_DELAY changes the wait.
+        sleep "${WAKE_DELAY:-12}"
         # A real click: DeviceHub ignores the click that System Events sends, and a second press
         # of the side button unlocks there instead of waking.
         if "$CLICK" "$cx" "$cy"; then
