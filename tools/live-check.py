@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Tells whether a Lock Screen shot shows the Live Activity lit, for tools/screenshots.sh.
 
-Usage: live-check.py <shot.bmp> [previous level]
+Usage: live-check.py <shot.bmp> [previous level | final]
+"final" checks a finished shot: "lit" without comparing with an earlier one.
 Prints "<state> <level>": state is "none" (no activity on the screen yet), "dim" (Always On),
 "moving", "hint" (lit, but iOS still shows "Swipe up to open" below) or "lit"; level is the activity's mean brightness, to pass to the next call.
 
@@ -76,7 +77,7 @@ def main():
         state = "none"
     elif mean(GLASS) - mean(WALLPAPER) < LIT:
         state = "dim"
-    elif len(sys.argv) <= 2 or abs(level - float(sys.argv[2])) > STILL:
+    elif len(sys.argv) <= 2 or (sys.argv[2] != "final" and abs(level - float(sys.argv[2])) > STILL):
         state = "moving"
     elif edges(HINT) >= TEXT:
         state = "hint"
