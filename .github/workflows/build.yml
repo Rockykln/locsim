@@ -34,7 +34,17 @@ jobs:
       # The setup scripts are not built anywhere else, so a syntax error would only show up on a user's computer.
       - name: Check setup scripts
         run: |
-          for script in tools/*.sh; do bash -n "$script"; done
+          # Each script with the shell named in its first line: bash -n alone misses bashisms in sh scripts.
+          for script in tools/*.sh; do
+            case $(head -1 "$script") in
+              *bash*) bash -n "$script" ;;
+              *) sh -n "$script" ;;
+            esac
+          done
+          # Windows PowerShell 5.1 reads a file without BOM as ANSI; non-ASCII text would break it.
+          if LC_ALL=C grep -n '[^[:print:][:space:]]' tools/make-pairing.ps1; then
+            echo "::error file=tools/make-pairing.ps1::non-ASCII characters"; exit 1
+          fi
           pwsh -NoProfile -Command '
             $tokens = $null; $errors = $null
             $path = Join-Path $PWD "tools/make-pairing.ps1"
@@ -127,7 +137,7 @@ jobs:
           test "$point" = "com.apple.networkextension.packet-tunnel"
           widgets="$app/PlugIns/LocSimWidgets.appex"
           test "$(plutil -extract NSExtension.NSExtensionPointIdentifier raw "$widgets/Info.plist")" = "com.apple.widgetkit-extension"
-          test -f "$app/PrivacyInfo.xcprivacy" && test -f "$appex/PrivacyInfo.xcprivacy"
+          test -f "$app/PrivacyInfo.xcprivacy" && test -f "$appex/PrivacyInfo.xcprivacy" && test -f "$widgets/PrivacyInfo.xcprivacy"
           for lang in de fr es it; do
             test -f "$app/$lang.lproj/Localizable.strings" || { echo "missing $lang.lproj/Localizable.strings"; exit 1; }
           done
