@@ -1,0 +1,16 @@
+Build 5: widgets, Bedieningspaneel, snelle taken, liggende stand en iPhone Duo, een nieuwe Opdrachten-actie en verbeteringen uit een reviewronde.
+
+Test graag:
+- Widget op het beginscherm: voeg de widget „Locatiestatus” toe. Die laat zien of en waar een locatie wordt gesimuleerd; het middelgrote formaat toont ook de drie meestgebruikte favorieten. Tik op een ervan om LocSim te openen en hem in te stellen.
+- Widgets op het toegangsscherm: inline, rechthoekig en rond. Als LocSim mogelijk op de achtergrond is gestopt, staat er „Controleer de locatie in LocSim”.
+- Bedieningspaneel (iOS 18 of nieuwer): voeg „Stel laatste locatie in” en „Herstel locatie” toe. „Stel laatste locatie in” opent LocSim, „Herstel locatie” werkt zonder de app te openen.
+- Snelle taken: houd het LocSim-symbool ingedrukt. Terwijl er een locatie wordt gesimuleerd, staat er „Herstel locatie”, anders „Stel laatste locatie in”, daarna de twee meestgebruikte favorieten en „Zoek”. Meestgebruikt betekent: sessies van 30 minuten of langer, dan de totale tijd, alleen op dit apparaat geteld.
+- Liggende stand: draai de iPhone. De zoekbalk staat bovenaan, het paneel rechtsonder. Controleer op de iPhone Duo het buitenscherm en, opengeklapt, de navigatiekolom naast de kaart.
+- Opdrachten: de nieuwe actie „Stel locatie in op plaats” accepteert een naam, een adres, coördinaten of een kaartlink.
+- Teruggezet door iOS: als iOS terugspringt naar de echte locatie terwijl LocSim draait, moet LocSim de gesimuleerde meteen opnieuw sturen. Vereist toegang tot je locatie.
+- Herstart: na het sluiten en opnieuw openen van LocSim behoudt „Stel laatste locatie in” de naam van de plaats.
+- VoiceOver: coördinaten worden in woorden voorgelezen, ook in de widgets en de Live Activity.
+
+Verbinden kan nog steeds alleen via wifi; daarna werkt het ook via mobiel netwerk.
+
+Als er iets misgaat, tik op de statusregel, kies „Kopieer details” en stuur die mee met je feedback.

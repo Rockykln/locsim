@@ -19,7 +19,7 @@ BUNDLE=com.rockykln.locsim
 ROOT=$(CDPATH= cd -- "$(dirname "$0")/.." >/dev/null && pwd)
 OUT="$ROOT/design/screenshots"
 BUILD="$ROOT/build/screenshots"
-LANGS=${*:-"en de fr es it"}
+LANGS=${*:-"en de fr es it pt-BR nl"}
 SCREENS=${SCREENS:-"map search recents live favorites"}
 # screen:file:seconds to wait for map tiles and search results
 SHOTS="map:1-map:8 search:2-search:8 recents:3-recents:6 favorites:5-favorites:8"
@@ -28,7 +28,7 @@ wants() { case " $SCREENS " in *" $1 "*) return 0 ;; esac; return 1; }
 say() { printf '\n%s\n' "$*"; }
 
 for lang in $LANGS; do
-    case $lang in en|de|fr|es|it) ;; *) echo "Unknown language: $lang (en de fr es it)" >&2; exit 1 ;; esac
+    case $lang in en|de|fr|es|it|pt-BR|nl) ;; *) echo "Unknown language: $lang (en de fr es it pt-BR nl)" >&2; exit 1 ;; esac
 done
 for screen in $SCREENS; do
     case $screen in map|search|recents|live|favorites) ;; *) echo "Unknown screen: $screen (map search recents live favorites)" >&2; exit 1 ;; esac
@@ -119,6 +119,8 @@ locale_for() {
         fr) echo fr_FR ;;
         es) echo es_ES ;;
         it) echo it_IT ;;
+        pt-BR) echo pt_BR ;;
+        nl) echo nl_NL ;;
         *) echo en_US ;;
     esac
 }
