@@ -234,7 +234,13 @@ on run argv
             end repeat
             if lockItem is missing value then error "no menu item with Cmd-L in " & appID
             set itemName to name of lockItem
-            click lockItem
+        end tell
+        -- Typed like by hand, which works with the wake click; after a click on the menu item the
+        -- wake click had no effect. Escape closes any menu still open.
+        keystroke "l" using command down
+        delay 0.5
+        key code 53
+        tell (first process whose bundle identifier is appID)
             set {x, y} to position of front window
             set {w, h} to size of front window
             return itemName & tab & ((x + w div 2) as text) & tab & ((y + h div 2) as text)
@@ -251,7 +257,9 @@ APPLESCRIPT
         sleep "${WAKE_DELAY:-12}"
         # A real click: DeviceHub ignores the click that System Events sends, and a second press
         # of the side button unlocks there instead of waking.
-        if "$CLICK" "$cx" "$cy"; then
+        # Twice: the first click may only make the window active. A click on the lit Lock Screen
+        # does nothing.
+        if "$CLICK" "$cx" "$cy" && sleep 1 && "$CLICK" "$cx" "$cy"; then
             echo "  locked with the menu item \"$name\", woken with a click at $cx,$cy"
             return
         fi
