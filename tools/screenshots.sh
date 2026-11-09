@@ -163,9 +163,9 @@ launch() {
 
 # Locks the Simulator and wakes the Lock Screen, which a locked Simulator dims into Always On.
 # simctl cannot do either, so it goes through the app that shows the simulators ($SIM_APP):
-# its menu item with the Cmd-L shortcut is the side button. Found by the shortcut, so the menu
-# language does not matter. Pressed once it locks, pressed again it wakes the Lock Screen
-# without unlocking, as on an iPhone. Needs Accessibility access for the terminal app (System
+# its menu item with the Cmd-L shortcut is the side button (found by the shortcut, so the menu
+# language does not matter) and locks; a click in the middle of the window wakes the Lock
+# Screen without unlocking. Needs Accessibility access for the terminal app (System
 # Settings > Privacy & Security > Accessibility); on the first run macOS also asks whether the
 # terminal may control System Events.
 lock_screen() {
@@ -201,14 +201,17 @@ on run argv
             set itemName to name of lockItem
             click lockItem
             delay 3
-            click lockItem
+            -- A second press unlocks in DeviceHub, unlike on an iPhone; a tap on the screen wakes it.
+            set {x, y} to position of front window
+            set {w, h} to size of front window
+            click at {x + w div 2, y + h div 2}
             return itemName
         end tell
     end tell
 end run
 APPLESCRIPT
     ); then
-        echo "  locked and woken with the menu item \"$result\""
+        echo "  locked with the menu item \"$result\" and woken with a click"
     else
         echo "Could not lock the Simulator automatically: $(head -1 "$BUILD/lock.log")" >&2
         echo "Allow the terminal app under System Settings > Privacy & Security > Accessibility" >&2
@@ -260,8 +263,8 @@ for lang in $LANGS; do
         launch live
         sleep 10
         lock_screen
-        # Right away, before the screen dims again.
-        sleep 1
+        # After the wake animation, before the screen dims again.
+        sleep 2
         shoot "$OUT/$lang/4-live.png"
         # Older per-theme shots would win over this one in render.py.
         rm -f "$OUT/$lang/light/4-live.png" "$OUT/$lang/dark/4-live.png"
