@@ -42,10 +42,6 @@ branch `feature/siri-ai` until that SDK is final.
 The same favorites on every device of the Apple Account, through the user's private iCloud
 database (CloudKit). The data stays in the user's iCloud; LocSim runs no server.
 
-### 25. Widget with chosen favorites
-
-Pick in the widget's settings which favorites it shows, instead of only the most used ones.
-
 ### 26. Shortcuts actions to read the state
 
 An action that returns the simulated place (coordinate and name) and a condition whether a

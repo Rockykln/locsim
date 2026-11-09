@@ -3,7 +3,7 @@
 [![Build](https://github.com/Rockykln/locsim/actions/workflows/build.yml/badge.svg)](https://github.com/Rockykln/locsim/actions/workflows/build.yml)
 ![iOS](https://img.shields.io/badge/iOS-17.4%2B-lightgrey)
 [![TestFlight](https://img.shields.io/badge/TestFlight-public%20beta-0a84ff)](#testflight)
-![Languages](https://img.shields.io/badge/languages-en%20%7C%20de%20%7C%20fr%20%7C%20es%20%7C%20it-lightgrey)
+![Languages](https://img.shields.io/badge/languages-en%20%7C%20de%20%7C%20fr%20%7C%20es%20%7C%20it%20%7C%20pt--BR%20%7C%20nl-lightgrey)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 Simulate the location of an iPhone on the iPhone itself, without a computer attached.
@@ -37,10 +37,10 @@ computer.
   (`48.8566, 2.3522`, `48,8566 2,3522`, `48°51'23.8"N 2°21'07.9"E`)
 - Paste coordinates, Apple Maps or Google Maps links
 - Favorites and the last five locations
-- From outside the app: the Home Screen widget (medium size: the three most used
-  favorites, a tap opens LocSim and sets one), quick actions on the app icon (Set Last
-  Location, the two most used favorites, Search) and, on iOS 18 and later, a Control
-  Center control for the last location
+- From outside the app: the Home Screen widget (medium size: three favorites, the most
+  used or the ones chosen under Edit Widget; a tap opens LocSim and sets one), quick
+  actions on the app icon (Set Last Location, the two most used favorites, Search) and,
+  on iOS 18 and later, a Control Center control for the last location
 - Most used: most runs of 30 minutes or more, then the longest total time; counted
   only on the device
 
@@ -163,10 +163,11 @@ All codes and what to do are on the [support page](https://locsim.rockykln.com/s
 No account, no analytics, no ads. The pairing file, favorites and recent locations stay
 on the device, and the local tunnel sends nothing off it. Location fixes are only
 compared with the simulated location and never stored. For the widgets, the app writes
-the simulated place and up to three favorites into its App Group container on the
-device. How often each favorite was used is counted on the device only. LocSim only
-talks to Apple Maps for map tiles and search, to GitHub when the Developer Disk Image
-has to be downloaded, and to Apple's signing server when it is installed. Details:
+the simulated place and the favorites (name and coordinate) into its App Group container
+on the device, so a widget can list the most used ones or the ones chosen for it. How
+often each favorite was used is counted on the device only. LocSim only talks to Apple
+Maps for map tiles and search, to GitHub when the Developer Disk Image has to be
+downloaded, and to Apple's signing server when it is installed. Details:
 [privacy policy](https://locsim.rockykln.com/privacy/).
 
 ## Building
