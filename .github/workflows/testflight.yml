@@ -91,7 +91,7 @@ jobs:
 
       - name: Fetch IDevice.xcframework
         run: |
-          curl -fsSL --proto '=https' --proto-redir '=https' --retry 5 --retry-delay 10 -o idevice.zip \
+          curl -fsSL --proto '=https' --proto-redir '=https' --retry 5 --retry-delay 10 --retry-all-errors -o idevice.zip \
             "https://github.com/jkcoxson/idevice/releases/download/$IDEVICE_VERSION/idevice-xcframework-$IDEVICE_VERSION.zip"
           echo "$IDEVICE_SHA256  idevice.zip" | shasum -a 256 -c -
           unzip -q idevice.zip -d idevice
@@ -103,7 +103,7 @@ jobs:
           XCODEGEN_VERSION: "2.46.0"
           XCODEGEN_SHA256: 4d9e34b62172d645eed6457cac13fc222569974098ef4ee9c3368bedf0196806
         run: |
-          curl -fsSL --proto '=https' --proto-redir '=https' --retry 5 --retry-delay 10 -o xcodegen.zip \
+          curl -fsSL --proto '=https' --proto-redir '=https' --retry 5 --retry-delay 10 --retry-all-errors -o xcodegen.zip \
             "https://github.com/yonaskolb/XcodeGen/releases/download/$XCODEGEN_VERSION/xcodegen.zip"
           echo "$XCODEGEN_SHA256  xcodegen.zip" | shasum -a 256 -c -
           unzip -q xcodegen.zip -d "$RUNNER_TEMP"
