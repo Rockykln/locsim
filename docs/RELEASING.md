@@ -112,6 +112,11 @@ Access requests for Early Access and development builds arrive at locsim@rockykl
 
 The setup guide links the scripts at a fixed commit, not at `main`, so a later change
 cannot reach users before it is part of a build. After uploading a build, point the
-links at the commit the build was made from and commit the pages:
+links at the commit the build was made from. That commit must be on `origin/main`
+(other branches may be deleted, which would break the links); the script refuses
+anything else. Check the diff first, then write, commit and push:
 
+    tools/pin-setup.sh -n <commit>
     tools/pin-setup.sh <commit>
+
+The site goes live with the push to `main`.

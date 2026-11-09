@@ -70,8 +70,8 @@ bash make-pairing.sh</code></pre>
 <p>En Linux también hacen falta <code>usbmuxd</code> y glibc 2.38 o posterior: Debian 13, Ubuntu 24.04, Fedora 39 o posterior.</p>
 <h3>Windows</h3>
 <p>Necesita la app Dispositivos Apple o iTunes. En PowerShell:</p>
-<pre><code>Invoke-WebRequest -UseBasicParsing -OutFile make-pairing.ps1 https://raw.githubusercontent.com/Rockykln/locsim/00b3b69e4860b184f634867ffe71f2bb13fc2b66/tools/make-pairing.ps1
-powershell -ExecutionPolicy Bypass -File make-pairing.ps1</code></pre>
+<pre><code>curl.exe -fLO https://raw.githubusercontent.com/Rockykln/locsim/00b3b69e4860b184f634867ffe71f2bb13fc2b66/tools/make-pairing.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File make-pairing.ps1</code></pre>
 <h2>4. Importar el archivo en LocSim</h2>
 <ol>
 <li>Si LocSim está instalado, el script copia el archivo en la app y lo elimina del ordenador. Abre LocSim y la pantalla de configuración mostrará el archivo como importado.</li>
