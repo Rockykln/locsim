@@ -302,10 +302,11 @@ for lang in $LANGS; do
         xcrun simctl ui "$UDID" appearance light
         echo "$lang: Lock Screen with the Live Activity"
         launch live
-        sleep 10
+        # The demo starts the Live Activity after a second, and iOS takes a while to draw it.
+        sleep 18
         lock_screen
-        # After the wake animation, before the screen dims again.
-        sleep 2
+        # The Lock Screen needs a moment after waking until the Live Activity is drawn on it.
+        sleep 3.5
         shoot "$OUT/$lang/4-live.png"
         # Older per-theme shots would win over this one in render.py.
         rm -f "$OUT/$lang/light/4-live.png" "$OUT/$lang/dark/4-live.png"
