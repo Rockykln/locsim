@@ -107,24 +107,38 @@ else
 fi
 open -b "$SIM_APP" --args -CurrentDeviceUDID "$UDID" 2>/dev/null || true
 
-# A tiny tool for a real mouse click, which wakes the locked Simulator (see lock_screen).
+# A tiny tool for a real mouse click, which wakes the locked Simulator (see lock_screen). It is
+# rebuilt whenever its source here changes.
 CLICK="$BUILD/click"
-if wants live && [ "${LOCK:-auto}" != manual ] && [ ! -x "$CLICK" ]; then
-    cat > "$BUILD/click.swift" <<'SWIFT'
+if wants live && [ "${LOCK:-auto}" != manual ]; then
+    cat > "$BUILD/click.swift.new" <<'SWIFT'
 import CoreGraphics
 import Foundation
 
+// Like a hand: the pointer moves onto the screen first, DeviceHub only turns a click into a touch
+// once the pointer is over the device.
 let args = CommandLine.arguments
 guard args.count == 3, let x = Double(args[1]), let y = Double(args[2]) else { exit(2) }
-for type in [CGEventType.leftMouseDown, .leftMouseUp] {
-    guard let event = CGEvent(mouseEventSource: nil, mouseType: type,
-                              mouseCursorPosition: CGPoint(x: x, y: y), mouseButton: .left) else { exit(1) }
+let point = CGPoint(x: x, y: y)
+func post(_ type: CGEventType) {
+    guard let event = CGEvent(mouseEventSource: CGEventSource(stateID: .hidSystemState), mouseType: type,
+                              mouseCursorPosition: point, mouseButton: .left) else { exit(1) }
     event.post(tap: .cghidEventTap)
-    usleep(80_000)
 }
+post(.mouseMoved)
+usleep(300_000)
+post(.leftMouseDown)
+usleep(150_000)
+post(.leftMouseUp)
+usleep(100_000)
 SWIFT
-    xcrun swiftc -O -o "$CLICK" "$BUILD/click.swift" 2>"$BUILD/click.log" ||
-        { echo "Could not build the click tool, see $BUILD/click.log; locking by hand." >&2; LOCK=manual; }
+    if [ ! -x "$CLICK" ] || ! cmp -s "$BUILD/click.swift.new" "$BUILD/click.swift"; then
+        mv "$BUILD/click.swift.new" "$BUILD/click.swift"
+        xcrun swiftc -O -o "$CLICK" "$BUILD/click.swift" 2>"$BUILD/click.log" ||
+            { echo "Could not build the click tool, see $BUILD/click.log; locking by hand." >&2; LOCK=manual; }
+    else
+        rm -f "$BUILD/click.swift.new"
+    fi
 fi
 ORIG_LANGS=$(xcrun simctl spawn "$UDID" defaults read -g AppleLanguages 2>/dev/null | sed -e '1d' -e '$d' -e 's/[ ",]//g' || true)
 ORIG_LOCALE=$(xcrun simctl spawn "$UDID" defaults read -g AppleLocale 2>/dev/null || true)
