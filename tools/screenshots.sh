@@ -11,7 +11,8 @@
 # lock_screen); the wallpaper has to be set by hand once, simctl cannot set it.
 #        LOCK=manual          lock and wake the Simulator by hand
 #        WALLPAPER=ok         skip the wallpaper question
-#        WAKE_DELAY=12        seconds between locking and waking with the space bar
+#        WAKE_DELAY=12        minimum seconds between locking and waking, if the dimmed
+#                             Live Activity is not recognized
 set -eu
 
 DEVICE=${DEVICE:-"iPhone 17"}
@@ -189,27 +190,50 @@ end run
 APPLESCRIPT
 }
 
+# Screenshot of the Lock Screen, judged by tools/live-check.py: prints "<state> <level>".
+# $1: the level from the previous call, to tell whether the activity is still changing.
+live_state() {
+    xcrun simctl io "$UDID" screenshot --type=bmp "$BUILD/live.bmp" >/dev/null 2>&1 &&
+        python3 "$ROOT/tools/live-check.py" "$BUILD/live.bmp" ${1:+"$1"}
+}
+
 lock_screen() {
     if [ "${LOCK:-auto}" = manual ]; then
         printf '%s: press Cmd-L in the Simulator, click its screen once so it is lit, then press Enter here. ' "$lang"
         read -r _
         return
     fi
-    # The locked Simulator stays lit for a few seconds before it dims; a key before that does
-    # nothing. WAKE_DELAY changes the wait.
-    if press_key lock && sleep "${WAKE_DELAY:-12}" && press_key wake; then
-        echo "  locked with Cmd-L, woken with the space bar"
+    if ! press_key lock; then
+        echo "Could not lock the Simulator automatically: $(head -1 "$BUILD/lock.log")" >&2
+        echo "Allow the terminal app under System Settings > Privacy & Security > Accessibility" >&2
+        echo "and under Automation for System Events, or run with LOCK=manual." >&2
+        LOCK=manual
+        lock_screen
         return
     fi
-    echo "Could not lock the Simulator automatically: $(head -1 "$BUILD/lock.log")" >&2
-    echo "Allow the terminal app under System Settings > Privacy & Security > Accessibility" >&2
-    echo "and under Automation for System Events, or run with LOCK=manual." >&2
-    LOCK=manual
-    lock_screen
+    # Wake only once the Live Activity has been on the Lock Screen for over a second and the
+    # screen has dimmed into Always On: woken earlier, iOS keeps an unfinished activity.
+    # If the dimmed activity is not recognized, WAKE_DELAY seconds with the activity shown do.
+    shown=0 dimmed=0 i=0
+    while [ "$i" -lt 40 ]; do
+        sleep 1
+        i=$((i + 1))
+        state=$(live_state) || continue
+        case "$state" in
+            none*) shown=0 dimmed=0 ;;
+            dim*) shown=$((shown + 1)) dimmed=$((dimmed + 1)) ;;
+            *) shown=$((shown + 1)) dimmed=0 ;;
+        esac
+        [ "$dimmed" -ge 2 ] && break
+        [ "$shown" -ge 2 ] && [ "$i" -ge "${WAKE_DELAY:-12}" ] && break
+    done
+    [ "$shown" -ge 2 ] || echo "  no Live Activity on the Lock Screen after ${i}s" >&2
+    press_key wake || true
+    echo "  locked with Cmd-L, woken with the space bar after ${i}s"
 }
 
-# Waits until the Lock Screen shows the Live Activity lit and finished drawing (tools/live-check.py).
-# After waking, iOS sometimes keeps the Always On version; another space bar press helps then.
+# Waits until the Live Activity is lit and finished drawing. After waking, iOS sometimes keeps
+# the Always On version; another press of the space bar helps then.
 wait_lit() {
     [ "${LOCK:-auto}" = manual ] && { sleep 3.5; return 0; }
     level=
@@ -217,12 +241,11 @@ wait_lit() {
     while [ "$i" -lt 25 ]; do
         sleep 1
         i=$((i + 1))
-        xcrun simctl io "$UDID" screenshot --type=bmp "$BUILD/live.bmp" >/dev/null 2>&1 || continue
-        set -- $(python3 "$ROOT/tools/live-check.py" "$BUILD/live.bmp" $level)
-        level=$2
-        case "$1" in
-            lit) echo "  Live Activity lit after ${i}s"; return 0 ;;
-            dim) case "$i" in 6 | 12 | 18) echo "  still Always On, pressing the space bar again"; press_key wake || true ;; esac ;;
+        state=$(live_state "$level") || continue
+        level=${state#* }
+        case "$state" in
+            lit*) echo "  Live Activity lit after ${i}s"; return 0 ;;
+            dim*) case "$i" in 6 | 12 | 18) echo "  still Always On, pressing the space bar again"; press_key wake || true ;; esac ;;
         esac
     done
     echo "  The Live Activity did not light up; check $lang/4-live.png." >&2
@@ -271,7 +294,7 @@ for lang in $LANGS; do
         echo "$lang: Lock Screen with the Live Activity"
         launch live
         # The demo starts the Live Activity after a second, and iOS takes a while to draw it.
-        sleep 18
+        sleep 23
         lock_screen
         wait_lit || dim="$dim $lang"
         shoot "$OUT/$lang/4-live.png"
