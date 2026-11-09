@@ -13,6 +13,10 @@ Effort: S = up to a day, M = a few days, L = a week or more.
 | 15 | More languages | S each | Approved |
 | 18 | iPhone Duo screenshots | S | Approved |
 | 23 | Siri AI tools | M | On branch, waiting for the SDK |
+| 24 | Favorites synced through iCloud | M | Approved |
+| 25 | Widget with chosen favorites | S | Approved |
+| 26 | Shortcuts actions to read the state | S | Approved |
+| 27 | Warning when the time zone follows the simulated place | M | Approved |
 
 ## Features
 
@@ -32,6 +36,32 @@ Import waypoints and tracks as favorites or routes; export favorites to share th
 
 Tool intents and a skill for Siri. They need the iOS 27.3 SDK, so they are kept on the
 branch `feature/siri-ai` until that SDK is final.
+
+### 24. Favorites synced through iCloud
+
+The same favorites on every device of the Apple Account, through the user's private iCloud
+database (CloudKit). The data stays in the user's iCloud; LocSim runs no server.
+
+### 25. Widget with chosen favorites
+
+Pick in the widget's settings which favorites it shows, instead of only the most used ones.
+
+### 26. Shortcuts actions to read the state
+
+An action that returns the simulated place (coordinate and name) and a condition whether a
+location is simulated, so test automations can check it.
+
+### 27. Warning when the time zone follows the simulated place
+
+When a device sets its time zone from its location, a simulated place in another time zone
+moves the clock too, most noticeably when the device is offline. Only Settings > Privacy &
+Security > Location Services > System Services > Setting Time Zone prevents it.
+
+LocSim notes the real time zone when a location is set. If the device's time zone changes
+while a location is simulated, it shows a notice in the app and sends a notification that
+names that setting. Apps may only open their own page in Settings, not a system page, so the
+notification spells out the path and its button opens Settings. Sending notifications needs
+the user's permission, asked for when it first matters.
 
 ## Layout
 
