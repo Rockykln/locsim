@@ -689,6 +689,47 @@
         }
       }
     },
+    "Choose Favorites" : {
+      "comment" : "Widget settings: title",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoriten wählen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elegir favoritos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisir des favoris"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scegli i preferiti"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kies favorieten"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolher Favoritos"
+          }
+        }
+      }
+    },
     "City" : {
       "comment" : "Zoom level",
       "localizations" : {
@@ -4002,6 +4043,47 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Incolla"
+          }
+        }
+      }
+    },
+    "Pick the favorites the widget lists. Without a choice it lists the most used ones." : {
+      "comment" : "Widget settings: description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle die Favoriten, die das Widget anzeigt. Ohne Auswahl zeigt es die meistgenutzten."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elige los favoritos que muestra el widget. Si no eliges ninguno, muestra los más usados."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez les favoris affichés par le widget. Sans choix, il affiche les plus utilisés."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scegli i preferiti mostrati dal widget. Senza una scelta mostra i più usati."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kies de favorieten die de widget toont. Zonder keuze toont hij de meestgebruikte."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolha os favoritos que o widget mostra. Sem escolha, ele mostra os mais usados."
           }
         }
       }
