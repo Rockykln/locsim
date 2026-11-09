@@ -11,7 +11,7 @@
 # lock_screen); the wallpaper has to be set by hand once, simctl cannot set it.
 #        LOCK=manual          lock and wake the Simulator by hand
 #        WALLPAPER=ok         skip the wallpaper question
-#        WAKE_DELAY=12        seconds between locking and the wake click
+#        WAKE_DELAY=12        seconds between locking and waking with the space bar
 set -eu
 
 DEVICE=${DEVICE:-"iPhone 17"}
@@ -108,39 +108,6 @@ else
 fi
 open -b "$SIM_APP" --args -CurrentDeviceUDID "$UDID" 2>/dev/null || true
 
-# A tiny tool for a real mouse click, which wakes the locked Simulator (see lock_screen). It is
-# rebuilt whenever its source here changes.
-CLICK="$BUILD/click"
-if wants live && [ "${LOCK:-auto}" != manual ]; then
-    cat > "$BUILD/click.swift.new" <<'SWIFT'
-import CoreGraphics
-import Foundation
-
-// Like a hand: the pointer moves onto the screen first, DeviceHub only turns a click into a touch
-// once the pointer is over the device.
-let args = CommandLine.arguments
-guard args.count == 3, let x = Double(args[1]), let y = Double(args[2]) else { exit(2) }
-let point = CGPoint(x: x, y: y)
-func post(_ type: CGEventType) {
-    guard let event = CGEvent(mouseEventSource: CGEventSource(stateID: .hidSystemState), mouseType: type,
-                              mouseCursorPosition: point, mouseButton: .left) else { exit(1) }
-    event.post(tap: .cghidEventTap)
-}
-post(.mouseMoved)
-usleep(300_000)
-post(.leftMouseDown)
-usleep(150_000)
-post(.leftMouseUp)
-usleep(100_000)
-SWIFT
-    if [ ! -x "$CLICK" ] || ! cmp -s "$BUILD/click.swift.new" "$BUILD/click.swift"; then
-        mv "$BUILD/click.swift.new" "$BUILD/click.swift"
-        xcrun swiftc -O -o "$CLICK" "$BUILD/click.swift" 2>"$BUILD/click.log" ||
-            { echo "Could not build the click tool, see $BUILD/click.log; locking by hand." >&2; LOCK=manual; }
-    else
-        rm -f "$BUILD/click.swift.new"
-    fi
-fi
 ORIG_LANGS=$(xcrun simctl spawn "$UDID" defaults read -g AppleLanguages 2>/dev/null | sed -e '1d' -e '$d' -e 's/[ ",]//g' || true)
 ORIG_LOCALE=$(xcrun simctl spawn "$UDID" defaults read -g AppleLocale 2>/dev/null || true)
 ORIG_APPEARANCE=$(xcrun simctl ui "$UDID" appearance 2>/dev/null || true)
@@ -197,76 +164,44 @@ launch() {
 }
 
 # Locks the Simulator and wakes the Lock Screen, which a locked Simulator dims into Always On.
-# simctl cannot do either, so it goes through the app that shows the simulators ($SIM_APP):
-# its menu item with the Cmd-L shortcut is the side button (found by the shortcut, so the menu
-# language does not matter) and locks; a click in the middle of the window wakes the Lock
-# Screen without unlocking. Needs Accessibility access for the terminal app (System
-# Settings > Privacy & Security > Accessibility); on the first run macOS also asks whether the
-# terminal may control System Events.
+# simctl cannot do either, so it goes through the app that shows the simulators ($SIM_APP) like
+# by hand: Cmd-L locks, and once it has dimmed the space bar wakes the Lock Screen without
+# unlocking (DeviceHub ignores synthetic clicks, a second Cmd-L unlocks). Needs Accessibility
+# access for the terminal app (System Settings > Privacy & Security > Accessibility); on the first
+# run macOS also asks whether the terminal may control System Events.
+press_key() {
+    # $1: AppleScript keystroke command, run with $SIM_APP in front
+    osascript - "$SIM_APP" "$1" 2>"$BUILD/lock.log" <<'APPLESCRIPT'
+on run argv
+    set appID to item 1 of argv
+    tell application id appID to activate
+    delay 1
+    tell application "System Events"
+        set frontmost of (first process whose bundle identifier is appID) to true
+        delay 0.3
+        if item 2 of argv is "lock" then
+            keystroke "l" using command down
+        else
+            keystroke space
+        end if
+    end tell
+end run
+APPLESCRIPT
+}
+
 lock_screen() {
     if [ "${LOCK:-auto}" = manual ]; then
         printf '%s: press Cmd-L in the Simulator, click its screen once so it is lit, then press Enter here. ' "$lang"
         read -r _
         return
     fi
-    if result=$(osascript - "$SIM_APP" 2>"$BUILD/lock.log" <<'APPLESCRIPT'
-on run argv
-    set appID to item 1 of argv
-    tell application id appID to activate
-    delay 1
-    tell application "System Events"
-        tell (first process whose bundle identifier is appID)
-            set frontmost to true
-            delay 0.5
-            set lockItem to missing value
-            repeat with barItem in menu bar items of menu bar 1
-                try
-                    repeat with anItem in menu items of menu 1 of barItem
-                        try
-                            if (value of attribute "AXMenuItemCmdChar" of anItem) is "L" and (value of attribute "AXMenuItemCmdModifiers" of anItem) is 0 then
-                                set lockItem to anItem
-                                exit repeat
-                            end if
-                        end try
-                    end repeat
-                end try
-                if lockItem is not missing value then exit repeat
-            end repeat
-            if lockItem is missing value then error "no menu item with Cmd-L in " & appID
-            set itemName to name of lockItem
-        end tell
-        -- Typed like by hand, which works with the wake click; after a click on the menu item the
-        -- wake click had no effect. Escape closes any menu still open.
-        keystroke "l" using command down
-        delay 0.5
-        key code 53
-        tell (first process whose bundle identifier is appID)
-            set {x, y} to position of front window
-            set {w, h} to size of front window
-            return itemName & tab & ((x + w div 2) as text) & tab & ((y + h div 2) as text)
-        end tell
-    end tell
-end run
-APPLESCRIPT
-    ); then
-        name=$(printf '%s' "$result" | cut -f1)
-        cx=$(printf '%s' "$result" | cut -f2)
-        cy=$(printf '%s' "$result" | cut -f3)
-        # The locked Simulator stays lit for a few seconds before it dims into Always On; a click
-        # before that does nothing. WAKE_DELAY changes the wait.
-        sleep "${WAKE_DELAY:-12}"
-        # A real click: DeviceHub ignores the click that System Events sends, and a second press
-        # of the side button unlocks there instead of waking.
-        # Twice: the first click may only make the window active. A click on the lit Lock Screen
-        # does nothing.
-        if "$CLICK" "$cx" "$cy" && sleep 1 && "$CLICK" "$cx" "$cy"; then
-            echo "  locked with the menu item \"$name\", woken with a click at $cx,$cy"
-            return
-        fi
-        echo "Could not click the Simulator to wake it." >&2
-    else
-        echo "Could not lock the Simulator automatically: $(head -1 "$BUILD/lock.log")" >&2
+    # The locked Simulator stays lit for a few seconds before it dims; a key before that does
+    # nothing. WAKE_DELAY changes the wait.
+    if press_key lock && sleep "${WAKE_DELAY:-12}" && press_key wake; then
+        echo "  locked with Cmd-L, woken with the space bar"
+        return
     fi
+    echo "Could not lock the Simulator automatically: $(head -1 "$BUILD/lock.log")" >&2
     echo "Allow the terminal app under System Settings > Privacy & Security > Accessibility" >&2
     echo "and under Automation for System Events, or run with LOCK=manual." >&2
     LOCK=manual
