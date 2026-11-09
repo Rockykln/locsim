@@ -31,36 +31,69 @@ ddi/Xcode_iOS_DDI_Personalized/Image.dmg|05fd807da5e19f030fa4941f24800c965c6c779
 ddi/Xcode_iOS_DDI_Personalized/Image.dmg.trustcache|36af60889ff5a737874a26daeb8e1a0139ebfebec6ec2e4d8f6a3c1bf1dce35c|$DDI_URL/Xcode_iOS_DDI_Personalized/Image.dmg.trustcache
 "
 
-sha() {
-  if command -v sha256sum >/dev/null; then sha256sum "$1" | cut -d' ' -f1
-  else shasum -a 256 "$1" | cut -d' ' -f1; fi
-}
+if command -v sha256sum >/dev/null 2>&1; then
+  sha() { sha256sum "$1" | cut -d' ' -f1; }
+elif command -v shasum >/dev/null 2>&1; then
+  sha() { shasum -a 256 "$1" | cut -d' ' -f1; }
+else
+  echo "error: need sha256sum or shasum" >&2
+  exit 1
+fi
+if ! command -v curl >/dev/null 2>&1; then
+  echo "error: need curl" >&2
+  exit 1
+fi
+
+tmp=""
+trap 'rm -f "$tmp"' EXIT
+trap 'exit 130' INT TERM
 
 failed=0
 while IFS='|' read -r path sum url; do
   [ -n "$path" ] || continue
   target="$VENDOR/$path"
-  if [ -f "$target" ] && [ "$(sha "$target")" = "$sum" ]; then
-    echo "ok        $path"
-    continue
+  if [ -f "$target" ]; then
+    actual="$(sha "$target")"
+    if [ "$actual" = "$sum" ]; then
+      echo "ok        $path"
+      continue
+    fi
+    # Remove it first so a failed download cannot leave the bad file behind.
+    echo "mismatch  $path (expected $sum, got $actual), fetching again" >&2
+    rm -f "$target"
   fi
   mkdir -p "$(dirname "$target")"
-  if curl -fsSL -o "$target.part" "$url" && [ "$(sha "$target.part")" = "$sum" ]; then
-    mv "$target.part" "$target"
-    echo "fetched   $path"
-  else
-    rm -f "$target.part"
-    echo "FAILED    $path (download failed or checksum mismatch)" >&2
+  tmp="$(mktemp "$(dirname "$target")/.fetch.XXXXXX")"
+  if ! curl -fsSL --proto '=https' --proto-redir '=https' --retry 3 --retry-connrefused \
+      -o "$tmp" "$url"; then
+    echo "FAILED    $path (download failed: $url)" >&2
     failed=1
+  else
+    actual="$(sha "$tmp")"
+    if [ "$actual" = "$sum" ]; then
+      # mktemp creates the file as 0600.
+      chmod 644 "$tmp"
+      mv "$tmp" "$target"
+      echo "fetched   $path"
+    else
+      echo "FAILED    $path (checksum mismatch: expected $sum, got $actual)" >&2
+      failed=1
+    fi
   fi
+  rm -f "$tmp"
+  tmp=""
 done <<< "$FILES"
 
-# Checksums for checking a copy elsewhere: (cd vendor && sha256sum -c SHA256SUMS),
-# or shasum -a 256 -c SHA256SUMS. Built with sha(), which also works without coreutils.
-(cd "$VENDOR" && find . -type f ! -name SHA256SUMS ! -name '*.part' -print0 | sort -z |
-  while IFS= read -r -d '' file; do
-    sum="$(sha "$file")" || exit 1
-    printf '%s  %s\n' "$sum" "$file"
-  done) > "$VENDOR/SHA256SUMS.part"
-mv "$VENDOR/SHA256SUMS.part" "$VENDOR/SHA256SUMS"
+# For checking a copy elsewhere: (cd vendor && sha256sum -c SHA256SUMS), or
+# shasum -a 256 -c SHA256SUMS. Written from the pins, not from what is on disk,
+# so a missing or wrong file fails the check.
+mkdir -p "$VENDOR"
+tmp="$(mktemp "$VENDOR/.SHA256SUMS.XXXXXX")"
+while IFS='|' read -r path sum url; do
+  [ -n "$path" ] || continue
+  printf '%s  ./%s\n' "$sum" "$path"
+done <<< "$FILES" > "$tmp"
+chmod 644 "$tmp"
+mv "$tmp" "$VENDOR/SHA256SUMS"
+tmp=""
 exit "$failed"
