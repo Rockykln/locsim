@@ -106,6 +106,26 @@ else
     SIM_APP=com.apple.iphonesimulator
 fi
 open -b "$SIM_APP" --args -CurrentDeviceUDID "$UDID" 2>/dev/null || true
+
+# A tiny tool for a real mouse click, which wakes the locked Simulator (see lock_screen).
+CLICK="$BUILD/click"
+if wants live && [ "${LOCK:-auto}" != manual ] && [ ! -x "$CLICK" ]; then
+    cat > "$BUILD/click.swift" <<'SWIFT'
+import CoreGraphics
+import Foundation
+
+let args = CommandLine.arguments
+guard args.count == 3, let x = Double(args[1]), let y = Double(args[2]) else { exit(2) }
+for type in [CGEventType.leftMouseDown, .leftMouseUp] {
+    guard let event = CGEvent(mouseEventSource: nil, mouseType: type,
+                              mouseCursorPosition: CGPoint(x: x, y: y), mouseButton: .left) else { exit(1) }
+    event.post(tap: .cghidEventTap)
+    usleep(80_000)
+}
+SWIFT
+    xcrun swiftc -O -o "$CLICK" "$BUILD/click.swift" 2>"$BUILD/click.log" ||
+        { echo "Could not build the click tool, see $BUILD/click.log; locking by hand." >&2; LOCK=manual; }
+fi
 ORIG_LANGS=$(xcrun simctl spawn "$UDID" defaults read -g AppleLanguages 2>/dev/null | sed -e '1d' -e '$d' -e 's/[ ",]//g' || true)
 ORIG_LOCALE=$(xcrun simctl spawn "$UDID" defaults read -g AppleLocale 2>/dev/null || true)
 ORIG_APPEARANCE=$(xcrun simctl ui "$UDID" appearance 2>/dev/null || true)
@@ -200,25 +220,32 @@ on run argv
             if lockItem is missing value then error "no menu item with Cmd-L in " & appID
             set itemName to name of lockItem
             click lockItem
-            delay 3
-            -- A second press unlocks in DeviceHub, unlike on an iPhone; a tap on the screen wakes it.
             set {x, y} to position of front window
             set {w, h} to size of front window
-            click at {x + w div 2, y + h div 2}
-            return itemName
+            return itemName & tab & ((x + w div 2) as text) & tab & ((y + h div 2) as text)
         end tell
     end tell
 end run
 APPLESCRIPT
     ); then
-        echo "  locked with the menu item \"$result\" and woken with a click"
+        name=$(printf '%s' "$result" | cut -f1)
+        cx=$(printf '%s' "$result" | cut -f2)
+        cy=$(printf '%s' "$result" | cut -f3)
+        sleep 3
+        # A real click: DeviceHub ignores the click that System Events sends, and a second press
+        # of the side button unlocks there instead of waking.
+        if "$CLICK" "$cx" "$cy"; then
+            echo "  locked with the menu item \"$name\", woken with a click at $cx,$cy"
+            return
+        fi
+        echo "Could not click the Simulator to wake it." >&2
     else
         echo "Could not lock the Simulator automatically: $(head -1 "$BUILD/lock.log")" >&2
-        echo "Allow the terminal app under System Settings > Privacy & Security > Accessibility" >&2
-        echo "and under Automation for System Events, or run with LOCK=manual." >&2
-        LOCK=manual
-        lock_screen
     fi
+    echo "Allow the terminal app under System Settings > Privacy & Security > Accessibility" >&2
+    echo "and under Automation for System Events, or run with LOCK=manual." >&2
+    LOCK=manual
+    lock_screen
 }
 
 if wants live && [ "${WALLPAPER:-ask}" != ok ]; then
