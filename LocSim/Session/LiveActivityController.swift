@@ -78,36 +78,10 @@ final class LiveActivityController {
                 activity = try Activity.request(
                     attributes: SimulationActivityAttributes(),
                     content: ActivityContent(state: state, staleDate: nil), pushType: nil)
-                wakeLockScreenWhenLocked()
                 return
             } catch {
                 print("Demo Live Activity not started yet: \(error)")
                 try? await Task.sleep(nanoseconds: 1_000_000_000)
-            }
-        }
-    }
-
-    /// The screenshot script locks the Simulator, which then dims into Always On, and it cannot
-    /// wake it. An update with an alert lights the Lock Screen like a notification does.
-    // Built from a variable, so Xcode does not add it to the string catalog; never shown in a release.
-    private static let demoAlert = LocalizedStringResource(stringLiteral: String("LocSim"))
-
-    private func wakeLockScreenWhenLocked() {
-        _ = NotificationCenter.default.addObserver(
-            forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main
-        ) { [weak self] _ in
-            MainActor.assumeIsolated {
-                let task = UIApplication.shared.beginBackgroundTask()
-                Task { @MainActor in
-                    try? await Task.sleep(nanoseconds: 2_000_000_000)
-                    if let activity = self?.activity {
-                        await activity.update(
-                            activity.content,
-                            alertConfiguration: AlertConfiguration(
-                                title: Self.demoAlert, body: Self.demoAlert, sound: .default))
-                    }
-                    UIApplication.shared.endBackgroundTask(task)
-                }
             }
         }
     }
