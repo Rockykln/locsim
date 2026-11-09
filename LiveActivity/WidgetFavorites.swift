@@ -8,8 +8,25 @@ struct ChooseFavoritesIntent: WidgetConfigurationIntent {
     static let title: LocalizedStringResource = "Choose Favorites"
     static let description = IntentDescription("Pick the favorites the widget lists. Without a choice it lists the most used ones.")
 
+    // A switch, because iOS offers no way to empty the list once favorites are chosen.
+    @Parameter(title: "Show Most Used", default: true)
+    var mostUsed: Bool
+
     @Parameter(title: "Favorites", size: 3)
     var favorites: [WidgetFavorite]?
+
+    static var parameterSummary: some ParameterSummary {
+        When(\.$mostUsed, .equalTo, true) {
+            Summary {
+                \.$mostUsed
+            }
+        } otherwise: {
+            Summary {
+                \.$mostUsed
+                \.$favorites
+            }
+        }
+    }
 }
 
 /// A favorite as the widget knows it, from the list the app shares with the widget.

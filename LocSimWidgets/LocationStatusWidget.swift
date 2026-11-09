@@ -42,7 +42,7 @@ struct SnapshotProvider: AppIntentTimelineProvider {
 
     private func entries(_ snapshot: WidgetSnapshot, _ configuration: ChooseFavoritesIntent) -> [SnapshotEntry] {
         let now = Date()
-        let favorites = Self.favorites(snapshot, chosen: configuration.favorites)
+        let favorites = Self.favorites(snapshot, chosen: configuration.mostUsed ? nil : configuration.favorites)
         func entry(_ date: Date, stale: Bool = false) -> SnapshotEntry {
             SnapshotEntry(date: date, snapshot: snapshot, stale: stale, favorites: favorites)
         }
