@@ -1,9 +1,12 @@
-Build 6: portoghese (Brasile) e olandese, preferiti a scelta nel widget della schermata Home e script di configurazione aggiornati sul sito.
+Build 6: portoghese (Brasile) e olandese, preferiti a scelta nel widget, preferiti tramite iCloud, un avviso quando il fuso orario segue il luogo simulato, due comandi rapidi per leggere lo stato e script di configurazione aggiornati sul sito.
 
 Da testare:
 - Lingue: LocSim, i suoi widget e il sito ora sono anche in portoghese (Brasile) e olandese. Se parli una di queste lingue, controlla i testi nell’app, nei widget, nel Centro di Controllo, nelle azioni rapide e in Comandi Rapidi.
 - Preferiti nel widget: aggiungi il widget “Stato della posizione” in dimensione media, oppure tieni premuto un widget esistente e scegli “Modifica widget”. “Mostra i più usati” è attivo di default ed elenca i tre preferiti più usati. Disattivalo e scegli fino a tre preferiti; il widget li elenca in quell’ordine. Toccandone uno si apre LocSim e lo imposta.
 - Rinomina ed eliminazione: un preferito scelto che rinomini in LocSim appare nel widget con il nuovo nome; uno eliminato sparisce. Se non ne resta nessuno, il widget torna a mostrare i più usati.
 - Script di configurazione: se configuri di nuovo LocSim (dopo un aggiornamento di iOS o su un altro computer), usa gli script di locsim.rockykln.com/it/setup. Il file di abbinamento ora resta in una cartella privata e finisce accanto allo script solo se la copia in LocSim non riesce. I messaggi di errore sono più chiari e il comando per Windows funziona anche con versioni meno recenti di PowerShell.
+- iCloud: attiva Impostazioni > Preferiti > Sincronizzazione iCloud su due dispositivi con lo stesso Account Apple. I preferiti aggiunti, rinominati, riordinati o eliminati su uno dovrebbero comparire sull’altro entro circa un minuto. Attivandola si conservano i preferiti di entrambi. È disattivata per impostazione predefinita.
+- Fuso orario: con Impostazioni > Privacy e sicurezza > Localizzazione > Servizi di sistema > Impostazione fuso orario attiva, simula un luogo in un altro fuso orario (meglio offline). LocSim dovrebbe mostrare un avviso sulla mappa, e una notifica in background, che nomina questa impostazione. Consenti le notifiche quando richiesto.
+- Comandi Rapidi: “Posizione simulata?” restituisce vero o falso; “Ottieni posizione simulata” restituisce il luogo con nome e coordinate, o non riesce se nulla è simulato. Entrambi funzionano senza aprire LocSim.
 
 Se qualcosa non funziona, tocca la riga di stato, scegli “Copia dettagli” e inviali con il tuo feedback.

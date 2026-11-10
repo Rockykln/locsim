@@ -1,9 +1,12 @@
-Build 6: portugués (Brasil) y neerlandés, favoritos a elegir en el widget de la pantalla de inicio y scripts de configuración actualizados en la web.
+Build 6: portugués (Brasil) y neerlandés, favoritos a elegir en el widget, favoritos a través de iCloud, un aviso cuando la zona horaria sigue al lugar simulado, dos atajos para leer el estado y scripts de configuración actualizados en la web.
 
 Prueba lo siguiente:
 - Idiomas: LocSim, sus widgets y la web están ahora también en portugués (Brasil) y neerlandés. Si hablas alguno de ellos, revisa los textos de la app, los widgets, el centro de control, las acciones rápidas y Atajos.
 - Favoritos del widget: añade el widget “Estado de la ubicación” en tamaño mediano, o mantén pulsado uno existente y elige “Editar widget”. “Mostrar los más usados” está activado por defecto y lista los tres favoritos más usados. Desactívalo y elige hasta tres favoritos; el widget los muestra en ese orden. Al tocar uno se abre LocSim y lo establece.
 - Renombrar y eliminar: si renombras en LocSim un favorito elegido, el widget muestra el nombre nuevo; uno eliminado desaparece. Si no queda ninguno, el widget vuelve a mostrar los más usados.
 - Scripts de configuración: si vuelves a configurar LocSim (tras una actualización de iOS o en otro ordenador), usa los scripts de locsim.rockykln.com/es/setup. El archivo de emparejamiento se guarda ahora en una carpeta privada y solo queda junto al script si falla la copia a LocSim. Los mensajes de error son más claros y el comando de Windows funciona también con versiones antiguas de PowerShell.
+- iCloud: activa Ajustes > Favoritos > Sincronización con iCloud en dos dispositivos con la misma cuenta de Apple. Los favoritos que añadas, renombres, reordenes o elimines en uno deberían aparecer en el otro en un minuto más o menos. Al activarlo se conservan los favoritos de ambos lados. Está desactivado por defecto.
+- Zona horaria: con Ajustes > Privacidad y seguridad > Localización > Servicios del sistema > Ajuste de zona horaria activado, simula un lugar en otra zona horaria (mejor sin conexión). LocSim debería mostrar un aviso en el mapa, y una notificación en segundo plano, que nombra ese ajuste. Permite las notificaciones cuando se te pida.
+- Atajos: “¿Se simula la ubicación?” devuelve verdadero o falso; “Obtener la ubicación simulada” devuelve el lugar con su nombre y coordenadas, o falla si no se simula nada. Ambos funcionan sin abrir LocSim.
 
 Si algo falla, toca la línea de estado, elige “Copiar detalles” y envíalos con tus comentarios.
