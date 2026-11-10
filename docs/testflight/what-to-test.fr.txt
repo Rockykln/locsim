@@ -1,9 +1,12 @@
-Build 6 : portugais (Brésil) et néerlandais, favoris au choix dans le widget de l’écran d’accueil et scripts de configuration mis à jour sur le site.
+Build 6 : portugais (Brésil) et néerlandais, favoris au choix dans le widget, favoris via iCloud, un avis quand le fuseau horaire suit le lieu simulé, deux raccourcis pour lire l’état et scripts de configuration mis à jour sur le site.
 
 À tester :
 - Langues : LocSim, ses widgets et le site existent maintenant aussi en portugais (Brésil) et en néerlandais. Si vous parlez l’une de ces langues, vérifiez les textes de l’app, des widgets, du centre de contrôle, des actions rapides et des Raccourcis.
 - Favoris du widget : ajoutez le widget « État de la position » en taille moyenne, ou maintenez un widget existant et choisissez « Modifier le widget ». « Afficher les plus utilisés » est activé par défaut et liste les trois favoris les plus utilisés. Désactivez-le et choisissez jusqu’à trois favoris ; le widget les liste dans cet ordre. En toucher un ouvre LocSim et le définit.
 - Renommer et supprimer : un favori choisi que vous renommez dans LocSim apparaît sous son nouveau nom dans le widget ; un favori supprimé disparaît. S’il n’en reste aucun, le widget affiche de nouveau les plus utilisés.
 - Scripts de configuration : si vous configurez LocSim à nouveau (après une mise à jour d’iOS ou sur un autre ordinateur), utilisez les scripts de locsim.rockykln.com/fr/setup. Le fichier de jumelage est désormais conservé dans un dossier privé et n’est placé à côté du script que si la copie dans LocSim échoue. Les messages d’erreur sont plus clairs et la commande Windows fonctionne aussi avec les anciennes versions de PowerShell.
+- iCloud : activez Réglages > Favoris > Synchronisation iCloud sur deux appareils du même compte Apple. Les favoris ajoutés, renommés, réordonnés ou supprimés sur l’un devraient apparaître sur l’autre en une minute environ. L’activation conserve les favoris des deux côtés. C’est désactivé par défaut.
+- Fuseau horaire : avec Réglages > Confidentialité et sécurité > Service de localisation > Services système > Réglage du fuseau horaire activé, simulez un lieu dans un autre fuseau horaire (de préférence hors ligne). LocSim devrait afficher un avis sur la carte, et une notification en arrière-plan, qui nomme ce réglage. Autorisez les notifications si on vous le demande.
+- Raccourcis : « Position simulée ? » renvoie vrai ou faux ; « Obtenir la position simulée » renvoie le lieu avec son nom et ses coordonnées, ou échoue si rien n’est simulé. Les deux fonctionnent sans ouvrir LocSim.
 
 En cas de problème, touchez la ligne d’état, choisissez « Copier les détails » et envoyez-les avec vos commentaires.
