@@ -151,7 +151,17 @@ checklist() {
 UDID_ARGS=()
 if [[ -n "$UDID" ]]; then
   UDID_ARGS=(--udid "$UDID")
-elif devices="$("$LIST" 2>/dev/null)"; then
+else
+  # Without the list the tool would pick a device itself, a guess when several are connected.
+  if ! devices="$("$LIST" 2>/dev/null)"; then
+    # Run again for the message only: stderr in the list could be read as a device.
+    list_err="$("$LIST" 2>&1 >/dev/null || true)"
+    echo "Could not list the connected devices:" >&2
+    printf '%s\n' "${list_err:-no output from idevice_id}" | sed 's/^/  /' >&2
+    echo >&2
+    checklist
+    exit 1
+  fi
   usb="$(printf '%s\n' "$devices" | awk '
     /connection_type:/ { usb = ($0 ~ /connection_type: Usb,/) }
     /udid:/ && usb { gsub(/[ ",]/, ""); sub(/^udid:/, ""); print }' | sort -u)"
