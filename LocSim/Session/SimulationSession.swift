@@ -682,6 +682,8 @@ final class SimulationSession: ObservableObject {
         if manual == nil, !portText.isEmpty { write("ignoring invalid port \"\(portText)\"") }
         var lastError: Error = DeviceError(.tunnel, "No port to try")
         var tried: UInt16?
+        var resetPorts: Set<UInt16> = []
+        var localPorts: Set<UInt16> = []
 
         func attempt(_ candidate: UInt16) async throws -> Bool {
             do {
@@ -694,6 +696,7 @@ final class SimulationSession: ObservableObject {
                 throw CancellationError()
             } catch {
                 write(error.localizedDescription)
+                if TunnelFailure.isReset(error.localizedDescription) { resetPorts.insert(candidate) }
                 renewLinkIfStuck()
                 if tried == nil || Self.rank(error) >= Self.rank(lastError) { lastError = error }
                 return false
@@ -721,6 +724,7 @@ final class SimulationSession: ObservableObject {
             let services = await resolver.browse()
             try ensureCurrent(started)
             refused = resolver.searchRefused
+            localPorts = Set(services.filter(\.isLocal).map(\.port))
             // Names and addresses of other devices on the network stay out of the log.
             for s in services { write("bonjour port \(s.port) \(s.isLocal ? "local" : "remote")") }
             if refused {
@@ -742,6 +746,11 @@ final class SimulationSession: ObservableObject {
         }
         if refused, Self.rank(lastError) < 3 {
             throw DeviceError(.localNetwork, "Bonjour search refused; last error: \(lastError.localizedDescription)")
+        }
+        if Self.rank(lastError) < 3, TunnelFailure.refusedSilently(localPorts: localPorts, resetPorts: resetPorts) {
+            write("pairing service of this device reset the connection: pairing refused")
+            throw DeviceError(.pairingRefused,
+                              "The device's pairing service reset the connection; last error: \(lastError.localizedDescription)")
         }
         throw lastError
     }

@@ -79,6 +79,19 @@ final class TunnelFailureTests: XCTestCase {
         XCTAssertEqual(TunnelFailure.classify(code: nil, subCode: nil, message: "Xpc(disconnect: peer closed)"), .other)
         XCTAssertEqual(TunnelFailure.classify(code: 103, subCode: nil, message: "RemotePairing"), .other)
     }
+
+    func testSilentRefusal() {
+        let reset = "Socket(Os { code: 54, kind: ConnectionReset, message: \"Connection reset by peer\" })"
+        XCTAssertTrue(TunnelFailure.isReset(reset))
+        XCTAssertTrue(TunnelFailure.isReset("connection reset by peer"))
+        XCTAssertFalse(TunnelFailure.isReset("connect: Connection refused"))
+        XCTAssertTrue(TunnelFailure.refusedSilently(localPorts: [49152], resetPorts: [49152]))
+        XCTAssertTrue(TunnelFailure.refusedSilently(localPorts: [49152], resetPorts: [49152, 50000]))
+        // No service of its own found, or one of its ports failed differently: not a refusal.
+        XCTAssertFalse(TunnelFailure.refusedSilently(localPorts: [], resetPorts: [49152]))
+        XCTAssertFalse(TunnelFailure.refusedSilently(localPorts: [49152, 50000], resetPorts: [49152]))
+        XCTAssertFalse(TunnelFailure.refusedSilently(localPorts: [50000], resetPorts: [49152]))
+    }
 }
 
 final class PairingFileCheckTests: XCTestCase {

@@ -24,4 +24,17 @@ public enum TunnelFailure: Equatable, Sendable {
         }
         return .other
     }
+
+    /// A device that does not accept the keys often gives no answer but resets the connection.
+    public static func isReset(_ message: String) -> Bool {
+        let text = message.lowercased()
+        return text.contains("connectionreset") || text.contains("connection reset")
+    }
+
+    /// The device's own pairing service was found, and every port it offers reset the connection:
+    /// the network is fine, the device refuses the pairing. A port that was not tried, or failed in
+    /// another way, keeps the usual message.
+    public static func refusedSilently(localPorts: Set<UInt16>, resetPorts: Set<UInt16>) -> Bool {
+        !localPorts.isEmpty && localPorts.isSubset(of: resetPorts)
+    }
 }
