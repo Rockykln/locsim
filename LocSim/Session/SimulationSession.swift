@@ -55,6 +55,10 @@ final class SimulationSession: ObservableObject {
                 // The preview changes nothing on the device, so it counts as no use.
                 FavoriteUsage.activeChanged(to: isSimulated ? nil : active)
             }
+            // The preview does not move the device, so its time zone stays.
+            if (active == nil) != (oldValue == nil), !isSimulated {
+                if active == nil { TimeZoneWatch.shared.stopped() } else { TimeZoneWatch.shared.started() }
+            }
         }
     }
     @Published private(set) var state: State = .idle {
@@ -489,6 +493,7 @@ final class SimulationSession: ObservableObject {
     /// Sends right away after returning to the app instead of waiting for the next interval.
     func becameActive() async {
         lastSent = sentAt
+        TimeZoneWatch.shared.check()
         if active != nil {
             liveActivity.markStale(after: Timing.freshWhileKeptAlive)
             WidgetSync.markStale(after: WidgetSync.freshFor)
