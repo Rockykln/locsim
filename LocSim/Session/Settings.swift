@@ -23,6 +23,8 @@ enum SettingsKey {
     static let liveActivity = "liveActivity"
     /// Off unless turned on: favorites shared through the person's iCloud.
     static let iCloudFavorites = "iCloudFavorites"
+    /// Whether this device has merged with the list in iCloud since it was turned on.
+    static let iCloudFavoritesJoined = "iCloudFavoritesJoined"
 }
 
 enum Defaults {
