@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import UserNotifications
+@preconcurrency import UserNotifications
 
 /// iOS can take its time zone from the location, so a simulated place in another time zone moves
 /// the clock too, most noticeably offline. Only Settings > Privacy & Security > Location Services
@@ -27,7 +27,7 @@ final class TimeZoneWatch: ObservableObject {
     /// A location is simulated now; the time zone at this moment is the real one.
     func started() {
         guard real == nil else { return }
-        TimeZone.resetSystemTimeZone()
+        NSTimeZone.resetSystemTimeZone()
         real = TimeZone.current
         changedTo = nil
         dismissed = false
@@ -56,7 +56,7 @@ final class TimeZoneWatch: ObservableObject {
     /// Also run when the app comes to the foreground, in case the change came while suspended.
     func check() {
         guard let real else { return }
-        TimeZone.resetSystemTimeZone()
+        NSTimeZone.resetSystemTimeZone()
         let now = TimeZone.current
         guard now.identifier != real.identifier else {
             changedTo = nil
@@ -75,12 +75,11 @@ final class TimeZoneWatch: ObservableObject {
 
     /// Asks for banners once the person has seen the notice in the app, when it is clear why.
     func askForNotifications() {
-        let center = UNUserNotificationCenter.current()
-        center.getNotificationSettings { settings in
-            guard settings.authorizationStatus == .notDetermined || settings.authorizationStatus == .provisional else {
-                return
-            }
-            center.requestAuthorization(options: [.alert, .sound]) { _, _ in }
+        Task {
+            let center = UNUserNotificationCenter.current()
+            let status = await center.notificationSettings().authorizationStatus
+            guard status == .notDetermined || status == .provisional else { return }
+            _ = try? await center.requestAuthorization(options: [.alert, .sound])
         }
     }
 
