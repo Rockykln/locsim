@@ -291,6 +291,47 @@
         }
       }
     },
+    "A location is simulated." : {
+      "comment" : "Shortcuts result",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es wird ein Standort simuliert."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se está simulando una ubicación."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une position est simulée."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "È simulata una posizione."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Er wordt een locatie gesimuleerd."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uma localização está sendo simulada."
+          }
+        }
+      }
+    },
     "A one-time setup with a computer and a USB cable. After that, LocSim works without a computer." : {
       "localizations" : {
         "de" : {
@@ -973,6 +1014,47 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Verificar Arquivo de Emparelhamento"
+          }
+        }
+      }
+    },
+    "Check whether a location is simulated" : {
+      "comment" : "Shortcuts action summary",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prüfen, ob ein Standort simuliert wird"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comprobar si se simula una ubicación"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifier si une position est simulée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verifica se una posizione è simulata"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controleer of een locatie wordt gesimuleerd"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verificar se uma localização está sendo simulada"
           }
         }
       }
@@ -3325,6 +3407,47 @@
         }
       }
     },
+    "Get Simulated Location" : {
+      "comment" : "Shortcuts action title",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simulierten Standort abrufen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obtener la ubicación simulada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obtenir la position simulée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ottieni posizione simulata"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haal gesimuleerde locatie op"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obter Localização Simulada"
+          }
+        }
+      }
+    },
     "Get Started" : {
       "localizations" : {
         "de" : {
@@ -3361,6 +3484,47 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Começar"
+          }
+        }
+      }
+    },
+    "Get the simulated location" : {
+      "comment" : "Shortcuts action summary",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simulierten Standort abrufen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obtener la ubicación simulada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obtenir la position simulée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ottieni la posizione simulata"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haal de gesimuleerde locatie op"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obter a localização simulada"
           }
         }
       }
@@ -3683,6 +3847,47 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "O iOS não a forneceu. O LocSim pode baixá-la do GitHub, cerca de 16 MB."
+          }
+        }
+      }
+    },
+    "Is Location Simulated" : {
+      "comment" : "Shortcuts action title",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wird Standort simuliert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Se simula la ubicación?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Position simulée ?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posizione simulata?"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wordt locatie gesimuleerd"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Localização Simulada?"
           }
         }
       }
@@ -6916,6 +7121,88 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Intervalo de Reenvio"
+          }
+        }
+      }
+    },
+    "Returns the place LocSim simulates, with its name and coordinates. Fails when no location is simulated." : {
+      "comment" : "Shortcuts action description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gibt den Ort zurück, den LocSim simuliert, mit Name und Koordinaten. Schlägt fehl, wenn kein Standort simuliert wird."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Devuelve el lugar que simula LocSim, con su nombre y coordenadas. Falla si no se simula ninguna ubicación."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renvoie le lieu que LocSim simule, avec son nom et ses coordonnées. Échoue si aucune position n’est simulée."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restituisce il luogo simulato da LocSim, con nome e coordinate. Non riesce se nessuna posizione è simulata."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geeft de plaats terug die LocSim simuleert, met naam en coördinaten. Mislukt als er geen locatie wordt gesimuleerd."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retorna o local que o LocSim simula, com nome e coordenadas. Falha se nenhuma localização estiver sendo simulada."
+          }
+        }
+      }
+    },
+    "Returns true while LocSim simulates a location, otherwise false." : {
+      "comment" : "Shortcuts action description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gibt „wahr“ zurück, solange LocSim einen Standort simuliert, sonst „falsch“."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Devuelve verdadero mientras LocSim simula una ubicación y falso en caso contrario."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renvoie vrai tant que LocSim simule une position, sinon faux."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restituisce vero mentre LocSim simula una posizione, altrimenti falso."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geeft waar terug zolang LocSim een locatie simuleert, anders onwaar."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retorna verdadeiro enquanto o LocSim simula uma localização; caso contrário, falso."
           }
         }
       }
