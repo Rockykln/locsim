@@ -2677,6 +2677,47 @@
         }
       }
     },
+    "Don’t Show Again" : {
+      "comment" : "Alert button: hide the time zone notice until the next simulation",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht mehr anzeigen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No volver a mostrar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ne plus afficher"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non mostrare più"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niet meer tonen"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não Mostrar Novamente"
+          }
+        }
+      }
+    },
     "Download" : {
       "comment" : "Alert button: download the Developer Disk Image",
       "localizations" : {
@@ -8894,6 +8935,88 @@
         }
       }
     },
+    "The time zone changed to %@ with the simulated place. Tap for details." : {
+      "comment" : "Notice on the map; %@ is a time zone name such as Central European Time",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Zeitzone hat mit dem simulierten Ort zu %@ gewechselt. Für Details tippen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La zona horaria ha cambiado a %@ con el lugar simulado. Toca para ver detalles."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le fuseau horaire est passé à %@ avec le lieu simulé. Touchez pour en savoir plus."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il fuso orario è passato a %@ con il luogo simulato. Tocca per i dettagli."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De tijdzone is met de gesimuleerde plaats gewijzigd naar %@. Tik voor details."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O fuso horário mudou para %@ com o local simulado. Toque para ver detalhes."
+          }
+        }
+      }
+    },
+    "The time zone follows the simulated place and is now %@. To keep the real time zone, turn off Settings > Privacy & Security > Location Services > System Services > Setting Time Zone." : {
+      "comment" : "Notification text and alert message; %@ is a time zone name. The path names the iOS Settings screens in the user's language.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Zeitzone folgt dem simulierten Ort und ist jetzt %@. Um die echte Zeitzone zu behalten, schalte Einstellungen > Datenschutz & Sicherheit > Ortungsdienste > Systemdienste > Zeitzone einstellen aus."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La zona horaria sigue al lugar simulado y ahora es %@. Para mantener la zona horaria real, desactiva Ajustes > Privacidad y seguridad > Localización > Servicios del sistema > Ajuste de zona horaria."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le fuseau horaire suit le lieu simulé et est désormais %@. Pour garder le vrai fuseau horaire, désactivez Réglages > Confidentialité et sécurité > Service de localisation > Services système > Réglage du fuseau horaire."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il fuso orario segue il luogo simulato ed è ora %@. Per mantenere il fuso orario reale, disattiva Impostazioni > Privacy e sicurezza > Localizzazione > Servizi di sistema > Impostazione fuso orario."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De tijdzone volgt de gesimuleerde plaats en is nu %@. Om de echte tijdzone te houden, zet je Instellingen > Privacy en beveiliging > Locatievoorzieningen > Systeemvoorzieningen > Stel tijdzone in uit."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O fuso horário segue o local simulado e agora é %@. Para manter o fuso horário real, desative Ajustes > Privacidade e Segurança > Serviços de Localização > Serviços do Sistema > Ajuste do Fuso Horário."
+          }
+        }
+      }
+    },
     "This iPhone" : {
       "comment" : "VPN settings: where the tunnel goes",
       "localizations" : {
@@ -8971,6 +9094,47 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Este é um arquivo de emparelhamento lockdown. O LocSim precisa do arquivo RPPairing criado pelo script de configuração."
+          }
+        }
+      }
+    },
+    "Time Zone Changed" : {
+      "comment" : "Notification and alert title: the device's time zone moved with the simulated place",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeitzone geändert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zona horaria cambiada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fuseau horaire modifié"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fuso orario cambiato"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tijdzone gewijzigd"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fuso Horário Alterado"
           }
         }
       }
