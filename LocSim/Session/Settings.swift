@@ -23,8 +23,6 @@ enum SettingsKey {
     static let liveActivity = "liveActivity"
     /// Off unless turned on: favorites shared through the person's iCloud.
     static let iCloudFavorites = "iCloudFavorites"
-    /// Debug builds only: the Live Activity with the system's own look, to compare.
-    static let liveActivitySystemLook = "debugLiveActivitySystemLook"
 }
 
 enum Defaults {

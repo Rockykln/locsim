@@ -71,8 +71,7 @@ struct SimulationLiveActivity: Widget {
         ActivityConfiguration(for: SimulationActivityAttributes.self) { context in
             LockScreenView(context: context)
                 .padding(14)
-                .modifier(GlassBackground(systemLook: context.state.systemLook))
-                .environment(\.systemLook, context.state.systemLook)
+                .modifier(GlassBackground())
         } dynamicIsland: { context in
             let status = Status(context)
             return DynamicIsland {
@@ -150,13 +149,6 @@ private struct LockScreenView: View {
     let context: ActivityViewContext<SimulationActivityAttributes>
     // Always On: the screen is dimmed, colors and gray text lose most of their contrast.
     @Environment(\.isLuminanceReduced) private var dimmed
-    @Environment(\.systemLook) private var systemLook
-
-    /// With the system look iOS adapts the colors itself, also in Always On.
-    private func style(_ own: some ShapeStyle, system: some ShapeStyle) -> AnyShapeStyle {
-        if systemLook { return AnyShapeStyle(system) }
-        return dimmed ? AnyShapeStyle(.white) : AnyShapeStyle(own)
-    }
 
     var body: some View {
         let status = Status(context)
@@ -173,19 +165,19 @@ private struct LockScreenView: View {
                     HStack(alignment: .firstTextBaseline) {
                         Text(status.caption)
                             .font(.caption.weight(.semibold))
-                            .foregroundStyle(style(status.textColor, system: HierarchicalShapeStyle.secondary))
+                            .foregroundStyle(dimmed ? AnyShapeStyle(.white) : AnyShapeStyle(status.textColor))
                             .lineLimit(status.captionLines)
                             .minimumScaleFactor(0.85)
                         Spacer(minLength: 8)
                         if status.showsTime {
                             StartTime(since: context.state.startedAt)
                                 .font(.caption.weight(.medium))
-                                .foregroundStyle(style(HierarchicalShapeStyle.primary, system: HierarchicalShapeStyle.secondary))
+                                .foregroundStyle(dimmed ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
                         }
                     }
                     Text(context.state.name)
                         .font(.headline)
-                        .foregroundStyle(style(HierarchicalShapeStyle.primary, system: HierarchicalShapeStyle.primary))
+                        .foregroundStyle(dimmed ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
                 }
@@ -196,7 +188,7 @@ private struct LockScreenView: View {
                         .font(.footnote.monospacedDigit().weight(.medium))
                         // Not gray: on the clear glass over a dark wallpaper gray digits vanish,
                         // and in Always On gray fades too much.
-                        .foregroundStyle(style(HierarchicalShapeStyle.primary, system: HierarchicalShapeStyle.secondary))
+                        .foregroundStyle(dimmed ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
                     Spacer(minLength: 8)
@@ -214,21 +206,14 @@ private struct LockScreenView: View {
 /// The fill is part of the content: iOS does not reliably re-read a changed tint on wake,
 /// which left the activity dark after leaving Always On.
 private struct GlassBackground: ViewModifier {
-    /// Leaves background and colors to iOS, like most apps.
-    let systemLook: Bool
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.isLuminanceReduced) private var dimmed
 
-    @ViewBuilder
     func body(content: Content) -> some View {
-        if systemLook {
-            content
-        } else {
-            content
-                .background(dimmed ? Color.black.opacity(0.6) : Color.clear)
-                .activityBackgroundTint(Self.tint)
-                .activitySystemActionForegroundColor(dimmed || colorScheme == .dark ? .white : .black)
-        }
+        content
+            .background(dimmed ? Color.black.opacity(0.6) : Color.clear)
+            .activityBackgroundTint(Self.tint)
+            .activitySystemActionForegroundColor(dimmed || colorScheme == .dark ? .white : .black)
     }
 
     // Before iOS 26 a clear tint has no blur behind it, so text would stand on the bare wallpaper.
@@ -242,11 +227,10 @@ private struct StatusIcon: View {
     let status: Status
     // Always On dims colors until they are hard to see; white stays readable.
     @Environment(\.isLuminanceReduced) private var dimmed
-    @Environment(\.systemLook) private var systemLook
 
     var body: some View {
         Image(systemName: status.symbol)
-            .foregroundStyle(dimmed && !systemLook ? .white : status.color)
+            .foregroundStyle(dimmed ? .white : status.color)
             .accessibilityLabel(status.caption)
     }
 }
@@ -282,45 +266,22 @@ private struct StartTime: View {
 private struct ClearButton: View {
     // Always On dims colors until they are hard to see; white stays readable.
     @Environment(\.isLuminanceReduced) private var dimmed
-    @Environment(\.systemLook) private var systemLook
 
     var body: some View {
-        if systemLook {
-            // The system's bordered button in the accent color, as most apps have it.
-            Button(intent: StopSimulationIntent()) { label }
-                .buttonStyle(.bordered)
-                .accessibilityLabel(Text("Clear the simulated location"))
-        } else {
-            Button(intent: StopSimulationIntent()) {
-                label.foregroundStyle(dimmed ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
-            }
-            // A neutral translucent fill: blue is kept for the status. The glass button style is
-            // not drawn in Live Activities (tested on iOS 27), the button disappears with it.
-            .buttonStyle(.bordered)
-            .tint(dimmed ? .white : .primary)
-            .accessibilityLabel(Text("Clear the simulated location"))
+        Button(intent: StopSimulationIntent()) {
+            // Never wrapped: long words like "Zurücksetzen" would break; the place name gives way.
+            Label("Clear", systemImage: "arrow.uturn.backward")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(dimmed ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
+                .lineLimit(1)
+                .fixedSize()
+                .frame(minHeight: 30)
         }
-    }
-
-    // Never wrapped: long words like "Zurücksetzen" would break; the place name gives way.
-    private var label: some View {
-        Label("Clear", systemImage: "arrow.uturn.backward")
-            .font(.subheadline.weight(.semibold))
-            .lineLimit(1)
-            .fixedSize()
-            .frame(minHeight: 30)
-    }
-}
-
-private struct SystemLookKey: EnvironmentKey {
-    static let defaultValue = false
-}
-
-extension EnvironmentValues {
-    /// The Live Activity's comparison look, see `ContentState.systemLook`.
-    var systemLook: Bool {
-        get { self[SystemLookKey.self] }
-        set { self[SystemLookKey.self] = newValue }
+        // A neutral translucent fill: blue is kept for the status. The glass button style is
+        // not drawn in Live Activities (tested on iOS 27), the button disappears with it.
+        .buttonStyle(.bordered)
+        .tint(dimmed ? .white : .primary)
+        .accessibilityLabel(Text("Clear the simulated location"))
     }
 }
 

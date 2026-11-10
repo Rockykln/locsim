@@ -70,9 +70,8 @@ final class LiveActivityController {
     /// For the screenshot of the Lock Screen in demo mode.
     /// Retries for a while: right after the Simulator boots, iOS refuses new activities.
     func showDemo(name: String, coordinate: String, startedAt: Date) async {
-        var state = SimulationActivityAttributes.ContentState(
+        let state = SimulationActivityAttributes.ContentState(
             name: name, coordinate: coordinate, reconnecting: false, startedAt: startedAt)
-        state.systemLook = Self.systemLook
         for _ in 0..<20 {
             do {
                 activity = try Activity.request(
@@ -86,14 +85,6 @@ final class LiveActivityController {
         }
     }
     #endif
-
-    private static var systemLook: Bool {
-        #if DEBUG
-        UserDefaults.standard.bool(forKey: SettingsKey.liveActivitySystemLook)
-        #else
-        false
-        #endif
-    }
 
     private var isRunning: Bool {
         guard let state = activity?.activityState else { return false }
@@ -112,7 +103,7 @@ final class LiveActivityController {
         let state = SimulationActivityAttributes.ContentState(
             name: String(name.prefix(Self.nameLimit)), coordinate: CoordinateParser.format(c),
             reconnecting: reconnecting, startedAt: startedAt, connecting: connecting,
-            spokenCoordinate: CoordinateParser.spoken(c), systemLook: Self.systemLook)
+            spokenCoordinate: CoordinateParser.spoken(c))
         guard state != shown || !isRunning else { return }
         shown = state
         shownSet = set

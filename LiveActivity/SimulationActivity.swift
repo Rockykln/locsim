@@ -15,11 +15,9 @@ struct SimulationActivityAttributes: ActivityAttributes {
         var connecting = false
         /// For VoiceOver, which reads degree symbols poorly.
         var spokenCoordinate: String?
-        /// Debug builds only, to compare: the system's own background and text colors.
-        var systemLook = false
 
         enum CodingKeys: String, CodingKey {
-            case name, coordinate, reconnecting, startedAt, connecting, spokenCoordinate, systemLook
+            case name, coordinate, reconnecting, startedAt, connecting, spokenCoordinate
         }
     }
 }
@@ -36,7 +34,6 @@ extension SimulationActivityAttributes.ContentState {
         startedAt = try c.decodeIfPresent(Date.self, forKey: .startedAt) ?? Date()
         connecting = try c.decodeIfPresent(Bool.self, forKey: .connecting) ?? false
         spokenCoordinate = try c.decodeIfPresent(String.self, forKey: .spokenCoordinate)
-        systemLook = try c.decodeIfPresent(Bool.self, forKey: .systemLook) ?? false
     }
 }
 
