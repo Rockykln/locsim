@@ -194,6 +194,12 @@ final class SimulationSession: ObservableObject {
     }
 
     private var isSimulated: Bool { Demo.isOn || isPreview }
+    /// The place the device simulates now, for Shortcuts: not the preview, not while connecting
+    /// or clearing. While reconnecting the device still keeps the last location it got.
+    var simulatedPlace: (coordinate: CLLocationCoordinate2D, name: String?)? {
+        guard !isSimulated, !clearing, let active, state == .active || state.isReconnecting else { return nil }
+        return (active, activeName)
+    }
     var hasPairing: Bool { isSimulated || PairingStore.exists }
     func requestLocationPermission() { keepAlive.requestPermission() }
     var canClear: Bool { active != nil || state == .connecting || linkOpen }
