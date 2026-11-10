@@ -3445,6 +3445,47 @@
         }
       }
     },
+    "iCloud Sync" : {
+      "comment" : "Settings switch: share favorites through iCloud",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud-Synchronisierung"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronización con iCloud"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronisation iCloud"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronizzazione iCloud"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud-synchronisatie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronização do iCloud"
+          }
+        }
+      }
+    },
     "Import Pairing File" : {
       "localizations" : {
         "de" : {
@@ -3762,6 +3803,47 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Manter Ativo em Segundo Plano"
+          }
+        }
+      }
+    },
+    "Keeps your favorites the same on all devices with your Apple Account, through your iCloud. How often each favorite is used stays on this device." : {
+      "comment" : "Settings footer under iCloud Sync",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hält deine Favoriten auf allen Geräten mit deinem Apple Account gleich, über dein iCloud. Wie oft du einen Favoriten nutzt, bleibt auf diesem Gerät."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantiene tus favoritos iguales en todos los dispositivos con tu cuenta de Apple, a través de tu iCloud. La frecuencia de uso de cada favorito se queda en este dispositivo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Garde vos favoris identiques sur tous les appareils de votre compte Apple, via votre iCloud. La fréquence d’utilisation de chaque favori reste sur cet appareil."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantiene uguali i tuoi preferiti su tutti i dispositivi con il tuo Account Apple, tramite il tuo iCloud. La frequenza d’uso di ogni preferito resta su questo dispositivo."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Houdt je favorieten gelijk op alle apparaten met je Apple Account, via je iCloud. Hoe vaak je elke favoriet gebruikt, blijft op dit apparaat."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantém seus favoritos iguais em todos os dispositivos com sua Conta Apple, pelo seu iCloud. A frequência de uso de cada favorito fica neste dispositivo."
           }
         }
       }

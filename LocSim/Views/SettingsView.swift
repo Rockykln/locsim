@@ -23,6 +23,7 @@ struct SettingsView: View {
     @AppStorage(SettingsKey.haptics) private var haptics = true
     @AppStorage(SettingsKey.recentsEnabled) private var recentsEnabled = true
     @AppStorage(SettingsKey.liveActivity) private var liveActivity = true
+    @AppStorage(SettingsKey.iCloudFavorites) private var iCloudFavorites = false
     #if DEBUG
     @AppStorage(SettingsKey.liveActivitySystemLook) private var liveActivitySystemLook = false
     private static let systemLookTitle = "Live Activity: System Look (Debug)"
@@ -48,6 +49,7 @@ struct SettingsView: View {
                 statusSection
                 pairingSection
                 mapSection
+                favoritesSection
                 connectionSection
                 ddiSection
                 Section {
@@ -256,6 +258,21 @@ struct SettingsView: View {
             Text("Map")
         } footer: {
             Text("Set on Selection sends a choice right away. Recent Locations keeps the last five.")
+        }
+    }
+
+    private var favoritesSection: some View {
+        Section {
+            Toggle(isOn: $iCloudFavorites) {
+                item("iCloud Sync", "icloud.fill", .blue)
+            }
+            .onChange(of: iCloudFavorites) { _, on in
+                if on { FavoriteSync.turnedOn(FavoriteList.shared) } else { FavoriteSync.turnedOff() }
+            }
+        } header: {
+            Text("Favorites")
+        } footer: {
+            Text("Keeps your favorites the same on all devices with your Apple Account, through your iCloud. How often each favorite is used stays on this device.")
         }
     }
 
