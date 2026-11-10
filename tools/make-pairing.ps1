@@ -42,10 +42,10 @@ if ($Out) {
 
 function Write-Checklist {
     Write-Host "Check:"
-    Write-Host "  - the iPhone is unlocked and connected by USB"
-    Write-Host "  - `"Trust This Computer`" was accepted on the iPhone"
+    Write-Host "  - the iPhone or iPad is unlocked and connected by USB"
+    Write-Host "  - `"Trust This Computer`" was accepted on the device"
     Write-Host "  - Developer Mode is on (Settings > Privacy & Security)"
-    Write-Host "  - only one iPhone is connected, or pass -Udid"
+    Write-Host "  - only one device is connected, or pass -Udid"
     Write-Host "  - the Apple Devices app (Microsoft Store) or iTunes is installed"
 }
 
@@ -80,7 +80,7 @@ try {
     if (-not $env:USBMUXD_SOCKET_ADDRESS -and -not (Test-Usbmuxd)) {
         Write-Host "The Apple USB service (usbmuxd) does not answer on 127.0.0.1:27015."
         Write-Host "Install the Apple Devices app from the Microsoft Store, or iTunes, then run this script again."
-        Write-Host "If one of them is installed, connect the iPhone and open the app once, or restart the computer."
+        Write-Host "If one of them is installed, connect the device and open the app once, or restart the computer."
         exit 1
     }
 
@@ -164,14 +164,14 @@ try {
         }
         $Usb = @($Usb | Sort-Object -Unique)
         if ($Usb.Count -gt 1) {
-            Write-Host "More than one iPhone is connected over USB:"
+            Write-Host "More than one iPhone or iPad is connected over USB:"
             $Usb | ForEach-Object { Write-Host "  $_" }
             Write-Host "Connect only one, or pick one with:"
             Write-Host "  powershell -NoProfile -ExecutionPolicy Bypass -File make-pairing.ps1 -Udid <UDID>"
             exit 1
         }
         if ($Usb.Count -eq 0) {
-            Write-Host "No iPhone is connected over USB."
+            Write-Host "No iPhone or iPad is connected over USB."
             Write-Host ""
             Write-Checklist
             exit 1
@@ -192,7 +192,7 @@ try {
     $Started = $true
     if (Test-Path -LiteralPath $Out) { Remove-Item -LiteralPath $Out -Force }
 
-    Write-Host "Unlock the iPhone. If it asks, tap Trust and enter the passcode."
+    Write-Host "Unlock the iPhone or iPad. If it asks, tap Trust and enter the passcode."
     $PairLog = & $Bin @UdidArgs remotepairing_lockdown pair $Hostname $Out 2>&1 | ForEach-Object { "$_" }
     $Written = (Test-Path -LiteralPath $Out) -and ((Get-Item -LiteralPath $Out).Length -gt 0)
     if ($LASTEXITCODE -ne 0 -or -not $Written) {
@@ -221,10 +221,10 @@ try {
         $Kept = $true
         Write-Host "Could not copy the file into LocSim:"
         if ($AfcErr.Count -gt 0) { $AfcErr | ForEach-Object { Write-Host $_ } } else { Write-Host "idevice-tools exited with code $AfcCode" }
-        Write-Host "Is LocSim installed and the iPhone unlocked?"
+        Write-Host "Is LocSim installed and the device unlocked?"
         Write-Host ""
         Write-Host "The pairing file is at: $Out"
-        Write-Host "It contains a private key that grants access to this iPhone."
+        Write-Host "It contains a private key that grants access to this device."
         Write-Host "Move it to the device, for example with the Apple Devices app (Files tab > LocSim)."
         Write-Host "Avoid cloud storage and email. Delete it here afterwards."
         exit 3
