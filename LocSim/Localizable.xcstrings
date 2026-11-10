@@ -7207,6 +7207,47 @@
         }
       }
     },
+    "Restore Removed Favorites" : {
+      "comment" : "Settings: adds back the favorites that a change from iCloud removed on this device",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entfernte Favoriten wiederherstellen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restaurar favoritos eliminados"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restaurer les favoris supprimés"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ripristina i preferiti rimossi"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verwijderde favorieten herstellen"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restaurar Favoritos Removidos"
+          }
+        }
+      }
+    },
     "Returns the place LocSim simulates, with its name and coordinates. Fails when no location is simulated." : {
       "comment" : "Shortcuts action description",
       "localizations" : {
