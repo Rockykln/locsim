@@ -2,6 +2,20 @@
 
 What changed in each version that testers received through TestFlight.
 
+## 1.0 (6), 10 November 2026
+
+- Portuguese (Brazil) and Dutch
+- The medium widget lists your most used favorites or the ones you choose in its settings
+- iCloud Sync for favorites, off unless turned on in Settings. Favorites that a change
+  from another device removes can be restored in Settings
+- A notice when the time zone follows the simulated place, with the setting that keeps
+  the real one
+- New Shortcuts actions: Is Location Simulated and Get Simulated Location
+- The Live Activity's coordinates stay readable on dark wallpapers and in Always On
+- A pairing file the device does not accept is reported as such (LS-203), not as an
+  unreachable device
+- Setup scripts: clearer messages for iPad and when no device can be listed
+
 ## 1.0 (5), 5 November 2026
 
 - Widgets for the Home Screen and the Lock Screen: they show whether a location is
