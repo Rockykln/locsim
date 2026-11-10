@@ -24,6 +24,7 @@ struct SettingsView: View {
     @AppStorage(SettingsKey.recentsEnabled) private var recentsEnabled = true
     @AppStorage(SettingsKey.liveActivity) private var liveActivity = true
     @AppStorage(SettingsKey.iCloudFavorites) private var iCloudFavorites = false
+    @ObservedObject private var favorites = FavoriteList.shared
     #if DEBUG
     @AppStorage(SettingsKey.liveActivitySystemLook) private var liveActivitySystemLook = false
     private static let systemLookTitle = "Live Activity: System Look (Debug)"
@@ -268,6 +269,15 @@ struct SettingsView: View {
             }
             .onChange(of: iCloudFavorites) { _, on in
                 if on { FavoriteSync.turnedOn(FavoriteList.shared) } else { FavoriteSync.turnedOff() }
+            }
+            if !favorites.removedByICloud.isEmpty {
+                Button {
+                    favorites.restoreRemovedByICloud()
+                } label: {
+                    item("Restore Removed Favorites", "arrow.uturn.backward", .orange,
+                         value: "\(favorites.removedByICloud.count)")
+                }
+                .foregroundStyle(.primary)
             }
         } header: {
             Text("Favorites")

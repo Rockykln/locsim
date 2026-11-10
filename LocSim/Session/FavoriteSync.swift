@@ -45,7 +45,8 @@ enum FavoriteSync {
     }
 
     static func push(_ items: [Favorite]) {
-        guard isOn, let data = try? JSONEncoder().encode(items) else { return }
+        let payload = Payload(favorites: items, cleared: items.isEmpty)
+        guard isOn, let data = try? JSONEncoder().encode(payload) else { return }
         guard data != store.data(forKey: key) else { return }
         store.set(data, forKey: key)
         let count = items.count
@@ -61,13 +62,13 @@ enum FavoriteSync {
         store.synchronize()
         let remote = load()
         // Plain values: the log evaluates its arguments later, outside the main actor.
-        let wasJoined = joined, count = remote?.count ?? -1
+        let wasJoined = joined, count = remote?.favorites.count ?? -1
         log.debug("Started, joined: \(wasJoined), favorites in iCloud: \(count)")
-        if joined, let remote {
-            list.applyFromICloud(remote)
+        if joined {
+            apply(remote, list)
         } else {
             // Only adds: a list from iCloud that is not here yet must not be replaced.
-            mergeIn(remote ?? [], list)
+            mergeIn(remote?.favorites ?? [], list)
         }
     }
 
@@ -98,18 +99,37 @@ enum FavoriteSync {
         default:
             break
         }
-        let remote = load() ?? []
+        let remote = load()
         if joined {
-            list.applyFromICloud(remote)
+            apply(remote, list)
         } else {
-            mergeIn(remote, list)
+            mergeIn(remote?.favorites ?? [], list)
             joined = true
         }
+    }
+
+    /// Takes over the list from iCloud, but never an empty one over this device's favorites
+    /// unless the last favorite was removed on purpose. Favorites it removes here are kept, see
+    /// `FavoriteList.removedByICloud`.
+    private static func apply(_ remote: Payload?, _ list: FavoriteList) {
+        guard let remote else {
+            // Missing or unreadable: this device's list is the better copy.
+            if !list.items.isEmpty { push(list.items) }
+            return
+        }
+        if remote.favorites.isEmpty, !list.items.isEmpty, !remote.cleared {
+            log.error("Ignored an empty list from iCloud that was not cleared on purpose")
+            push(list.items)
+            return
+        }
+        list.applyFromICloud(remote.favorites)
     }
 
     /// Adds the favorites only in iCloud and sends the result back, so both sides have all of them.
     private static func mergeIn(_ remote: [Favorite], _ list: FavoriteList) {
         let merged = merge(list.items, remote)
+        // Nothing on either side: sending an empty list would only look like a deliberate clear.
+        guard !merged.isEmpty else { return }
         if merged != list.items {
             list.items = merged   // sends it through didSet
         } else {
@@ -117,9 +137,19 @@ enum FavoriteSync {
         }
     }
 
-    private static func load() -> [Favorite]? {
+    /// The list and whether it is empty on purpose, in one value so they always arrive together.
+    private struct Payload: Codable {
+        var favorites: [Favorite]
+        /// Someone removed the last favorite; an empty list without it is never taken over.
+        var cleared: Bool
+    }
+
+    /// Also reads the plain list of earlier test builds, which never counts as cleared.
+    private static func load() -> Payload? {
         guard let data = store.data(forKey: key) else { return nil }
-        return try? JSONDecoder().decode([Favorite].self, from: data)
+        if let payload = try? JSONDecoder().decode(Payload.self, from: data) { return payload }
+        guard let list = try? JSONDecoder().decode([Favorite].self, from: data) else { return nil }
+        return Payload(favorites: list, cleared: false)
     }
 
     /// This device's favorites first, then those only in iCloud. The same favorite on both sides,
@@ -132,7 +162,7 @@ enum FavoriteSync {
         return result
     }
 
-    private static func same(_ a: Favorite, _ b: Favorite) -> Bool {
+    static func same(_ a: Favorite, _ b: Favorite) -> Bool {
         a.id == b.id || (a.name == b.name && a.coordinate.distance(to: b.coordinate) < 1)
     }
 }
