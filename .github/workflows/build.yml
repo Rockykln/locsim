@@ -149,7 +149,7 @@ jobs:
           widgets="$app/PlugIns/LocSimWidgets.appex"
           test "$(plutil -extract NSExtension.NSExtensionPointIdentifier raw "$widgets/Info.plist")" = "com.apple.widgetkit-extension"
           test -f "$app/PrivacyInfo.xcprivacy" && test -f "$appex/PrivacyInfo.xcprivacy" && test -f "$widgets/PrivacyInfo.xcprivacy"
-          for lang in de fr es it; do
+          for lang in de fr es it nl pt-BR; do
             test -f "$app/$lang.lproj/Localizable.strings" || { echo "missing $lang.lproj/Localizable.strings"; exit 1; }
           done
 

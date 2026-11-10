@@ -36,7 +36,8 @@ computer.
 - Long-press the map, search for a place or enter coordinates
   (`48.8566, 2.3522`, `48,8566 2,3522`, `48°51'23.8"N 2°21'07.9"E`)
 - Paste coordinates, Apple Maps or Google Maps links
-- Favorites and the last five locations
+- Favorites and the last five locations; with iCloud Sync turned on (off by default), the
+  same favorites on every device of the Apple Account
 - From outside the app: the Home Screen widget (medium size: three favorites, the most
   used or the ones chosen under Edit Widget; a tap opens LocSim and sets one), quick
   actions on the app icon (Set Last Location, the two most used favorites, Search) and,
@@ -58,7 +59,10 @@ computer.
   location access)
 - Siri phrases: set a favorite, clear the location. Shortcuts actions: Set Location
   to Favorite, Set Coordinates, Set Location to Place (name, address, coordinates or
-  map link), Clear Location
+  map link), Clear Location, and for automations Is Location Simulated and Get
+  Simulated Location
+- A notice, and in the background a notification, when the device's time zone follows
+  the simulated place, with the setting that stops it
 - Clear, or closing LocSim, restores the real location
 
 **Under the hood**
@@ -165,9 +169,11 @@ on the device, and the local tunnel sends nothing off it. Location fixes are onl
 compared with the simulated location and never stored. For the widgets, the app writes
 the simulated place and the favorites (name and coordinate) into its App Group container
 on the device, so a widget can list the most used ones or the ones chosen for it. How
-often each favorite was used is counted on the device only. LocSim only talks to Apple
-Maps for map tiles and search, to GitHub when the Developer Disk Image has to be
-downloaded, and to Apple's signing server when it is installed. Details:
+often each favorite was used is counted on the device only. Only with iCloud Sync turned
+on are the favorites also kept in the user's iCloud, for their other devices; LocSim
+runs no server. Notifications are made on the device. LocSim only talks to Apple Maps
+for map tiles and search, to GitHub when the Developer Disk Image has to be downloaded,
+and to Apple's signing server when it is installed. Details:
 [privacy policy](https://locsim.rockykln.com/privacy/).
 
 ## Building

@@ -1,9 +1,13 @@
-Build 6: Portuguese (Brazil) and Dutch, favorites you choose for the Home Screen widget and updated setup scripts on the website.
+Build 6: Portuguese (Brazil) and Dutch, favorites you choose for the Home Screen widget, favorites through iCloud, a warning when the time zone follows the simulated place, two Shortcuts actions to read the state, and updated setup scripts on the website.
 
 Please test:
 - Languages: LocSim, its widgets and the website are now also in Portuguese (Brazil) and Dutch. If you speak one of them, check the texts in the app, the widgets, Control Center, the quick actions and Shortcuts.
 - Widget favorites: add the Location Status widget in the medium size, or hold an existing one and choose Edit Widget. Show Most Used is on by default and lists the three most used favorites. Turn it off and choose up to three favorites; the widget lists them in that order. Tapping one opens LocSim and sets it.
 - Rename and delete: a chosen favorite you rename in LocSim shows the new name in the widget; a deleted one drops out. When none is left, the widget lists the most used ones again.
 - Setup scripts: if you set up LocSim again (after an iOS update or on another computer), use the scripts from locsim.rockykln.com/setup. The pairing file is now kept in a private folder and only lands next to the script when copying it into LocSim fails. Error messages are clearer, and the Windows command also works with older PowerShell.
+- iCloud: turn on Settings > Favorites > iCloud Sync on two devices with the same Apple Account. Favorites you add, rename, reorder or delete on one should appear on the other within a minute or so. Turning it on keeps the favorites of both sides. It is off by default. Favorites that a change from the other device removes can be added back with Settings > Favorites > Restore Removed Favorites.
+- Time zone: with Settings > Privacy & Security > Location Services > System Services > Setting Time Zone on, simulate a place in another time zone (best offline). LocSim should show a notice on the map, and a notification while it is in the background, naming that setting. Allow notifications when asked.
+- Shortcuts: Is Location Simulated returns true or false; Get Simulated Location returns the place with its name and coordinates, or fails when nothing is simulated. Both run without opening LocSim.
+- Pairing file: a file the device does not accept, for example one made for another device, now shows Pairing rejected (LS-203) instead of a connection error.
 
 If something fails, tap the status line, choose Copy Details and send it with your feedback.

@@ -58,6 +58,8 @@ struct AppError: Error, Equatable {
         case .pairingLockdown:
             return ("LS-102", String(localized: "Wrong pairing file"),
                     String(localized: "This is a lockdown pairing file. LocSim needs the RPPairing file from the setup script."))
+        case .pairingRefused:
+            return rejectedEntry
         case .localTunnel:
             return ("LS-205", String(localized: "Local connection not started"),
                     String(localized: "LocSim could not start its connection to this iPhone. Allow the VPN configuration when iOS asks and try again."))

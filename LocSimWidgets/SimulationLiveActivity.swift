@@ -186,9 +186,9 @@ private struct LockScreenView: View {
                     Text(context.state.coordinate)
                         .accessibilityLabel(Text(context.state.spokenCoordinate ?? context.state.coordinate))
                         .font(.footnote.monospacedDigit().weight(.medium))
-                        // The system's gray adapts to light and dark; once the screen is dimmed,
-                        // gray fades too much, so the digits turn white.
-                        .foregroundStyle(dimmed ? AnyShapeStyle(.white) : AnyShapeStyle(.secondary))
+                        // Not gray: on the clear glass over a dark wallpaper gray digits vanish,
+                        // and in Always On gray fades too much.
+                        .foregroundStyle(dimmed ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
                     Spacer(minLength: 8)

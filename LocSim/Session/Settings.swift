@@ -21,6 +21,12 @@ enum SettingsKey {
     static let recents = "recentLocations"
     static let recentsEnabled = "recentsEnabled"
     static let liveActivity = "liveActivity"
+    /// Off unless turned on: favorites shared through the person's iCloud.
+    static let iCloudFavorites = "iCloudFavorites"
+    /// Whether this device has merged with the list in iCloud since it was turned on.
+    static let iCloudFavoritesJoined = "iCloudFavoritesJoined"
+    /// Favorites that a change from iCloud removed on this device, to restore them.
+    static let favoritesRemovedByICloud = "favoritesRemovedByICloud"
 }
 
 enum Defaults {
@@ -111,6 +117,13 @@ final class FavoriteList: ObservableObject {
 
     // Data that could not be read at all stays as it is until the list is changed on purpose.
     private var unreadable = false
+    // Set while a list from iCloud is applied, so it is not sent straight back.
+    private var fromICloud = false
+
+    /// Favorites that a list from iCloud removed here. Kept until restored, so a sync can never
+    /// lose favorites for good.
+    @Published private(set) var removedByICloud: [Favorite] =
+        StoredList.load(SettingsKey.favoritesRemovedByICloud) ?? []
 
     @Published var items: [Favorite] {
         didSet {
@@ -124,6 +137,7 @@ final class FavoriteList: ObservableObject {
             // So Siri knows the favorite names in "Set LocSim to …".
             LocSimShortcuts.updateAppShortcutParameters()
             WidgetSync.setFavorites(items)
+            if !fromICloud { FavoriteSync.push(items) }
         }
     }
 
@@ -137,7 +151,32 @@ final class FavoriteList: ObservableObject {
         unreadable = loaded == nil
         // didSet does not run in init; the widget may still list favorites from an older version.
         let current = items
-        Task { @MainActor in WidgetSync.setFavorites(current) }
+        Task { @MainActor in
+            WidgetSync.setFavorites(current)
+            FavoriteSync.start(self)
+        }
+    }
+
+    /// The list changed on another device. Unreadable data here is replaced too: iCloud has a copy.
+    func applyFromICloud(_ remote: [Favorite]) {
+        guard remote != items else { return }
+        let removed = items.filter { local in !remote.contains { FavoriteSync.same(local, $0) } }
+        if !removed.isEmpty {
+            removedByICloud = Array(FavoriteSync.merge(removed, removedByICloud).prefix(Self.keptLimit))
+            StoredList.save(removedByICloud, SettingsKey.favoritesRemovedByICloud)
+        }
+        fromICloud = true
+        items = remote
+        fromICloud = false
+    }
+
+    private static let keptLimit = 200
+
+    /// Adds the favorites that iCloud removed back to the list, which sends them to iCloud again.
+    func restoreRemovedByICloud() {
+        items = FavoriteSync.merge(items, removedByICloud)
+        removedByICloud = []
+        UserDefaults.standard.removeObject(forKey: SettingsKey.favoritesRemovedByICloud)
     }
 
     /// The favorite at this spot, within a meter, so the star shows it is already saved.

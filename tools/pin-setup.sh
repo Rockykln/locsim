@@ -20,7 +20,7 @@ shift $((OPTIND - 1))
 
 cd "$(git rev-parse --show-toplevel)"
 
-pages="site/public/setup/index.html site/public/de/setup/index.html site/public/fr/setup/index.html site/public/es/setup/index.html site/public/it/setup/index.html"
+pages="site/public/setup/index.html site/public/de/setup/index.html site/public/fr/setup/index.html site/public/es/setup/index.html site/public/it/setup/index.html site/public/pt/setup/index.html site/public/nl/setup/index.html"
 scripts="tools/make-pairing.sh tools/make-pairing.ps1"
 raw_re='raw\.githubusercontent\.com/Rockykln/locsim/[^/"<[:space:]]+/tools/make-pairing\.(sh|ps1)'
 tree_re='github\.com/Rockykln/locsim/tree/(main|[0-9a-f]{40})/tools"'

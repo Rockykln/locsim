@@ -48,7 +48,7 @@
 </header>
 <main id="main">
 <div class="doc wrap"><article><h1>Privacy Policy</h1>
-<p class="lead">Effective 9 November 2026</p>
+<p class="lead">Effective 10 November 2026</p>
 <p>The LocSim app collects no personal data and sends nothing to us. We only process data that you send us by email or that Apple provides to us through TestFlight. LocSim has no accounts, analytics, advertising or tracking.</p>
 <nav class="toc" aria-label="Contents"><p>Contents</p><ol><li><a href="#controller">Controller</a></li><li><a href="#the-app-on-your-device">The app on your device</a></li><li><a href="#connections-the-app-makes">Connections the app makes</a></li><li><a href="#testflight">TestFlight</a></li><li><a href="#email">Email</a></li><li><a href="#this-website">This website</a></li><li><a href="#recipients-and-transfers">Recipients and transfers</a></li><li><a href="#your-rights">Your rights</a></li><li><a href="#changes">Changes</a></li></ol></nav>
 <h2 id="controller">Controller</h2>
@@ -59,6 +59,8 @@
 <li><strong>Live Activity:</strong> shows the simulated place on the Lock Screen and in the Dynamic Island. It is created on the device; nothing is sent for it.</li>
 <li><strong>Widgets:</strong> the simulated place (name, coordinate and start time) and your favorites (name and coordinate), to list the most used ones or the ones you chose for a widget, are written to a container on the device that LocSim shares with its widgets (App Group), so the widgets can show them, also on the Lock Screen. Nothing leaves the device for it.</li>
 <li><strong>Favorites, recent locations, last location and settings:</strong> stored on the device and included in its backups. This includes the last location with its name for Set Last Location, and how often and how long each favorite was simulated, which is used to list the most used ones first. Recent locations can be turned off and cleared in the app.</li>
+<li><strong>iCloud Sync (off unless you turn it on):</strong> the favorites (name and coordinate) are also kept in your iCloud, so your other devices with the same Apple Account show them. Apple stores them under your account; LocSim runs no server and we cannot see them. How often a favorite is used is not shared.</li>
+<li><strong>Notifications:</strong> if the time zone of the device follows the simulated place, LocSim shows a notice and can send a notification. Both are made on the device; nothing is sent for them.</li>
 <li><strong>Log:</strong> kept in memory only and cleared when the app quits. It leaves the device only if you copy it yourself.</li>
 <li><strong>Location:</strong> your real location is used on the device to keep the connection open in the background and, once you allow location access, to show it on the map. While LocSim runs, location fixes are also compared on the device with the simulated location to notice when iOS resets it. Fixes are not stored, and LocSim does not send your location anywhere.</li>
 </ul>

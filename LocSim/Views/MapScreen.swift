@@ -18,6 +18,8 @@ struct MapScreen: View {
     @State private var favoriteName = ""
     @State private var searchError: String?
     @State private var shownError: AppError?
+    @ObservedObject private var timeZone = TimeZoneWatch.shared
+    @State private var showTimeZoneHelp = false
     @State private var droppedPins = 0
     @State private var feedback = 0
     @State private var resolving: String?
@@ -399,6 +401,16 @@ struct MapScreen: View {
             Button("Cancel", role: .cancel) {}
         } message: { error in
             Text(error.message)
+        }
+        .alert("Time Zone Changed", isPresented: $showTimeZoneHelp) {
+            // Apps may only open their own page in Settings; the message names the path from there.
+            Button("Open Settings") {
+                if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
+            }
+            Button("Don’t Show Again") { timeZone.dismiss() }
+            Button("OK", role: .cancel) {}
+        } message: {
+            if let zone = timeZone.changedTo { Text(TimeZoneWatch.help(for: zone)) }
         }
         .alert("Location access is off", isPresented: $locationOff) {
             Button("Open Settings") {
@@ -1153,6 +1165,23 @@ struct MapScreen: View {
                     .multilineTextAlignment(.leading)
                 }
                 .buttonStyle(.plain)
+            }
+
+            if timeZone.showsNotice, let zone = timeZone.changedTo {
+                Button {
+                    showTimeZoneHelp = true
+                } label: {
+                    Label {
+                        Text("The time zone changed to \(TimeZoneWatch.name(of: zone)) with the simulated place. Tap for details.")
+                            .foregroundStyle(.primary)
+                    } icon: {
+                        Image(systemName: "clock.badge.exclamationmark").foregroundStyle(.orange)
+                    }
+                    .font(.caption)
+                    .multilineTextAlignment(.leading)
+                }
+                .buttonStyle(.plain)
+                .onAppear { timeZone.askForNotifications() }
             }
 
             // Side by side; long translations (de, fr) get a smaller font, then no icons. Stacked

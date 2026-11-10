@@ -23,6 +23,8 @@ struct SettingsView: View {
     @AppStorage(SettingsKey.haptics) private var haptics = true
     @AppStorage(SettingsKey.recentsEnabled) private var recentsEnabled = true
     @AppStorage(SettingsKey.liveActivity) private var liveActivity = true
+    @AppStorage(SettingsKey.iCloudFavorites) private var iCloudFavorites = false
+    @ObservedObject private var favorites = FavoriteList.shared
 
     @State private var importing = false
     // Read in onAppear: an initial value here would touch the disk every time the parent redraws.
@@ -44,6 +46,7 @@ struct SettingsView: View {
                 statusSection
                 pairingSection
                 mapSection
+                favoritesSection
                 connectionSection
                 ddiSection
                 Section {
@@ -244,6 +247,30 @@ struct SettingsView: View {
             Text("Map")
         } footer: {
             Text("Set on Selection sends a choice right away. Recent Locations keeps the last five.")
+        }
+    }
+
+    private var favoritesSection: some View {
+        Section {
+            Toggle(isOn: $iCloudFavorites) {
+                item("iCloud Sync", "icloud.fill", .blue)
+            }
+            .onChange(of: iCloudFavorites) { _, on in
+                if on { FavoriteSync.turnedOn(FavoriteList.shared) } else { FavoriteSync.turnedOff() }
+            }
+            if !favorites.removedByICloud.isEmpty {
+                Button {
+                    favorites.restoreRemovedByICloud()
+                } label: {
+                    item("Restore Removed Favorites", "arrow.uturn.backward", .orange,
+                         value: "\(favorites.removedByICloud.count)")
+                }
+                .foregroundStyle(.primary)
+            }
+        } header: {
+            Text("Favorites")
+        } footer: {
+            Text("Keeps your favorites the same on all devices with your Apple Account, through your iCloud. How often each favorite is used stays on this device.")
         }
     }
 

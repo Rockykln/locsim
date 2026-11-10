@@ -1,9 +1,13 @@
-Build 6: Nederlands en Portugees (Brazilië), zelf gekozen favorieten in de widget op het beginscherm en bijgewerkte installatiescripts op de website.
+Build 6: Nederlands en Portugees (Brazilië), zelf gekozen favorieten in de widget, favorieten via iCloud, een melding als de tijdzone de gesimuleerde plaats volgt, twee opdrachten om de status te lezen en bijgewerkte installatiescripts op de website.
 
 Test graag:
 - Talen: LocSim, de widgets en de website zijn nu ook in het Nederlands en het Portugees (Brazilië). Controleer de teksten in de app, de widgets, het Bedieningspaneel, de snelle taken en Opdrachten.
 - Favorieten in de widget: voeg de widget „Locatiestatus” in middelgroot formaat toe, of houd een bestaande widget ingedrukt en kies „Wijzig widget”. „Toon meestgebruikte” staat standaard aan en toont de drie meestgebruikte favorieten. Zet het uit en kies tot drie favorieten; de widget toont ze in die volgorde. Tik op een ervan om LocSim te openen en hem in te stellen.
 - Naam wijzigen en verwijderen: geef je een gekozen favoriet in LocSim een andere naam, dan toont de widget de nieuwe naam; een verwijderde favoriet verdwijnt. Is er geen meer over, dan toont de widget weer de meestgebruikte.
 - Installatiescripts: als je LocSim opnieuw instelt (na een iOS-update of op een andere computer), gebruik dan de scripts van locsim.rockykln.com/nl/setup. Het koppelingsbestand staat nu in een privémap en komt alleen naast het script terecht als kopiëren naar LocSim mislukt. Foutmeldingen zijn duidelijker en de Windows-opdracht werkt ook met oudere versies van PowerShell.
+- iCloud: zet Instellingen > Favorieten > iCloud-synchronisatie aan op twee apparaten met hetzelfde Apple Account. Favorieten die je op het ene toevoegt, hernoemt, herschikt of verwijdert, zouden binnen ongeveer een minuut op het andere moeten verschijnen. Bij het inschakelen blijven de favorieten van beide kanten behouden. Standaard staat het uit. Favorieten die een wijziging van het andere apparaat verwijdert, zet je terug met Instellingen > Favorieten > Verwijderde favorieten herstellen.
+- Tijdzone: met Instellingen > Privacy en beveiliging > Locatievoorzieningen > Systeemvoorzieningen > Stel tijdzone in aan simuleer je een plaats in een andere tijdzone (liefst offline). LocSim zou een melding op de kaart moeten tonen, en op de achtergrond een notificatie, die deze instelling noemt. Sta notificaties toe als daarom wordt gevraagd.
+- Opdrachten: ‘Wordt locatie gesimuleerd’ geeft waar of onwaar terug; ‘Haal gesimuleerde locatie op’ geeft de plaats met naam en coördinaten terug, of mislukt als er niets wordt gesimuleerd. Beide werken zonder LocSim te openen.
+- Koppelingsbestand: een bestand dat het apparaat niet accepteert, bijvoorbeeld een voor een ander apparaat, toont nu „Koppeling geweigerd” (LS-203) in plaats van een verbindingsfout.
 
 Als er iets misgaat, tik op de statusregel, kies „Kopieer details” en stuur die mee met je feedback.

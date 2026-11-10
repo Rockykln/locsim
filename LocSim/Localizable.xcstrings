@@ -30,6 +30,18 @@
             "state" : "translated",
             "value" : "%@\n\nErrore %@"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@\n\nFout %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@\n\nErro %@"
+          }
         }
       }
     },
@@ -55,6 +67,18 @@
           }
         },
         "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ (%@)"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ (%@)"
+          }
+        },
+        "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ (%@)"
@@ -88,6 +112,18 @@
             "state" : "translated",
             "value" : "%@ gradi est"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ graden oost"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ graus leste"
+          }
         }
       }
     },
@@ -116,6 +152,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ gradi nord"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ graden noord"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ graus norte"
           }
         }
       }
@@ -146,6 +194,18 @@
             "state" : "translated",
             "value" : "%@ gradi sud"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ graden zuid"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ graus sul"
+          }
         }
       }
     },
@@ -174,6 +234,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ gradi ovest"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ graden west"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ graus oeste"
           }
         }
       }
@@ -204,6 +276,59 @@
             "state" : "translated",
             "value" : "%@: %@ (%@)"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@: %@ (%@)"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@: %@ (%@)"
+          }
+        }
+      }
+    },
+    "A location is simulated." : {
+      "comment" : "Shortcuts result",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es wird ein Standort simuliert."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se está simulando una ubicación."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une position est simulée."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "È simulata una posizione."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Er wordt een locatie gesimuleerd."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uma localização está sendo simulada."
+          }
         }
       }
     },
@@ -231,6 +356,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Una configurazione da fare una sola volta con un computer e un cavo USB. Dopo, LocSim funziona senza computer."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eenmalige configuratie met een computer en een USB-kabel. Daarna werkt LocSim zonder computer."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uma configuração única com um computador e um cabo USB. Depois disso, o LocSim funciona sem computador."
           }
         }
       }
@@ -261,6 +398,18 @@
             "state" : "translated",
             "value" : "Un nome di luogo o un indirizzo, ad esempio Torre Eiffel o Alexanderplatz, Berlino"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Een plaatsnaam of adres, bijvoorbeeld Eiffeltoren of Alexanderplatz, Berlijn"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Um nome de lugar ou endereço, por exemplo Torre Eiffel ou Alexanderplatz, Berlim"
+          }
         }
       }
     },
@@ -290,6 +439,18 @@
             "state" : "translated",
             "value" : "Un luogo che la persona ha salvato come preferito in LocSim"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Een plaats die de persoon als favoriet in LocSim heeft bewaard"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Um lugar que a pessoa salvou como favorito no LocSim"
+          }
         }
       }
     },
@@ -317,6 +478,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Una simulazione in corso si interrompe. Per crearne uno nuovo serve lo script di configurazione."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Een lopende simulatie stopt. Voor een nieuw bestand heb je het configuratiescript nodig."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uma simulação em andamento é interrompida. Para criar um novo arquivo, é preciso o script de configuração."
           }
         }
       }
@@ -347,6 +520,18 @@
             "state" : "translated",
             "value" : "Info"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Info"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sobre"
+          }
         }
       }
     },
@@ -374,6 +559,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Licenze open source"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opensourcelicenties"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Licenças de código aberto"
           }
         }
       }
@@ -404,6 +601,18 @@
             "state" : "translated",
             "value" : "Attiva"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actief"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ativa"
+          }
         }
       }
     },
@@ -431,6 +640,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Posizione attiva"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actieve locatie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Localização ativa"
           }
         }
       }
@@ -460,6 +681,18 @@
             "state" : "translated",
             "value" : "Consenti connessioni tramite Wi-Fi"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbindingen via wifi toestaan"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permitir conexões por Wi-Fi"
+          }
         }
       }
     },
@@ -487,6 +720,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Consenti a LocSim l’accesso alla rete locale in Impostazioni > Privacy e sicurezza > Rete locale, poi riprova."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sta het lokale netwerk toe voor LocSim via Instellingen > Privacy en beveiliging > Lokaal netwerk en probeer het opnieuw."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permita a Rede Local para o LocSim em Ajustes > Privacidade e Segurança > Rede Local e tente novamente."
           }
         }
       }
@@ -516,6 +761,18 @@
             "state" : "translated",
             "value" : "Consenti a LocSim l’accesso alla posizione in Impostazioni per mostrare dove ti trovi."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sta locatietoegang toe voor LocSim in Instellingen om je positie te tonen."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permita o acesso à localização para o LocSim em Ajustes para mostrar a sua posição."
+          }
         }
       }
     },
@@ -544,6 +801,18 @@
             "state" : "translated",
             "value" : "Consenti la connessione locale"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lokale verbinding toestaan"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permitir a conexão local"
+          }
         }
       }
     },
@@ -571,6 +840,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "È selezionata un’altra VPN"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ander vpn geselecteerd"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outra VPN está selecionada"
           }
         }
       }
@@ -601,6 +882,18 @@
             "state" : "translated",
             "value" : "Automatica"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatisch"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automática"
+          }
         }
       }
     },
@@ -630,6 +923,18 @@
             "state" : "translated",
             "value" : "Isolato"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Huizenblok"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quarteirão"
+          }
         }
       }
     },
@@ -658,6 +963,18 @@
             "state" : "translated",
             "value" : "Annulla"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annuleer"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelar"
+          }
         }
       }
     },
@@ -685,6 +1002,100 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Verifica file di abbinamento"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controleer koppelingsbestand"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verificar Arquivo de Emparelhamento"
+          }
+        }
+      }
+    },
+    "Check whether a location is simulated" : {
+      "comment" : "Shortcuts action summary",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prüfen, ob ein Standort simuliert wird"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comprobar si se simula una ubicación"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifier si une position est simulée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verifica se una posizione è simulata"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controleer of een locatie wordt gesimuleerd"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verificar se uma localização está sendo simulada"
+          }
+        }
+      }
+    },
+    "Choose Favorites" : {
+      "comment" : "Widget settings: title",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoriten wählen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elegir favoritos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisir des favoris"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scegli i preferiti"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kies favorieten"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolher Favoritos"
           }
         }
       }
@@ -715,6 +1126,18 @@
             "state" : "translated",
             "value" : "Città"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stad"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cidade"
+          }
         }
       }
     },
@@ -743,6 +1166,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ripristina"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herstel"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Redefinir"
           }
         }
       }
@@ -779,6 +1214,18 @@
             "state" : "translated",
             "value" : "Cancella"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wis"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limpar"
+          }
         }
       }
     },
@@ -808,6 +1255,18 @@
             "state" : "translated",
             "value" : "Ripristina posizione"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herstel locatie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Redefinir Localização"
+          }
         }
       }
     },
@@ -835,6 +1294,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cancella registro"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wis log"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limpar Registro"
           }
         }
       }
@@ -864,6 +1335,18 @@
             "state" : "translated",
             "value" : "Cancella posizioni recenti"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wis recente locaties"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limpar locais recentes"
+          }
         }
       }
     },
@@ -891,6 +1374,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cancella ricerca"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wis zoekopdracht"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limpar busca"
           }
         }
       }
@@ -921,6 +1416,18 @@
             "state" : "translated",
             "value" : "Ripristina la posizione simulata"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herstel de gesimuleerde locatie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Redefinir a localização simulada"
+          }
         }
       }
     },
@@ -950,6 +1457,18 @@
             "state" : "translated",
             "value" : "Ripristino…"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herstellen…"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Redefinindo…"
+          }
         }
       }
     },
@@ -975,6 +1494,18 @@
           }
         },
         "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Commit"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Commit"
+          }
+        },
+        "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Commit"
@@ -1008,6 +1539,18 @@
             "state" : "translated",
             "value" : "Connessione…"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbinden…"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectando…"
+          }
         }
       }
     },
@@ -1036,6 +1579,18 @@
             "state" : "translated",
             "value" : "Per connettersi serve il Wi-Fi, poi basta la rete cellulare. “Mantieni attivo in background” mantiene attiva la simulazione in background."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voor het verbinden is wifi nodig, daarna werkt ook mobiel netwerk. ‘Actief houden op achtergrond’ houdt de simulatie op de achtergrond actief."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para conectar é preciso Wi-Fi, depois a rede celular também funciona. “Manter Ativo em Segundo Plano” mantém a simulação ativa em segundo plano."
+          }
         }
       }
     },
@@ -1063,6 +1618,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Connessione"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbinding"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conexão"
           }
         }
       }
@@ -1093,6 +1660,18 @@
             "state" : "translated",
             "value" : "Connessione annullata"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbinding geannuleerd"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conexão cancelada"
+          }
         }
       }
     },
@@ -1121,6 +1700,18 @@
             "state" : "translated",
             "value" : "Connessione non riuscita"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbinding mislukt"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falha na conexão"
+          }
         }
       }
     },
@@ -1148,6 +1739,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Connessione persa"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbinding verbroken"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conexão perdida"
           }
         }
       }
@@ -1178,6 +1781,18 @@
             "state" : "translated",
             "value" : "Continua"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ga door"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuar"
+          }
         }
       }
     },
@@ -1206,6 +1821,18 @@
             "state" : "translated",
             "value" : "Formato coordinate"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coördinaatnotatie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Formato das Coordenadas"
+          }
         }
       }
     },
@@ -1233,6 +1860,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Coordinate"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coördinaten"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coordenadas"
           }
         }
       }
@@ -1263,6 +1902,18 @@
             "state" : "translated",
             "value" : "Coordinate copiate"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coördinaten gekopieerd"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coordenadas copiadas"
+          }
         }
       }
     },
@@ -1290,6 +1941,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Coordinate o link di Mappe"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coördinaten of een Kaarten-link"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coordenadas ou um link do Mapas"
           }
         }
       }
@@ -1319,6 +1982,18 @@
             "state" : "translated",
             "value" : "Copia coordinate"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kopieer coördinaten"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar Coordenadas"
+          }
         }
       }
     },
@@ -1346,6 +2021,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Copia dettagli"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kopieer details"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar Detalhes"
           }
         }
       }
@@ -1375,6 +2062,18 @@
             "state" : "translated",
             "value" : "Copia registro"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kopieer log"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar Registro"
+          }
         }
       }
     },
@@ -1402,6 +2101,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Copia i dettagli e allegali a una richiesta di supporto."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kopieer de details en voeg ze toe aan een ondersteuningsverzoek."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copie os detalhes e inclua-os em um pedido de suporte."
           }
         }
       }
@@ -1431,6 +2142,18 @@
             "state" : "translated",
             "value" : "Impossibile verificare. Consenti la connessione locale, connettiti a una rete Wi-Fi e riprova. (%@)"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controle niet mogelijk. Sta de lokale verbinding toe, maak verbinding met een wifinetwerk en probeer het opnieuw. (%@)"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível verificar. Permita a conexão local, conecte-se a uma rede Wi-Fi e tente novamente. (%@)"
+          }
         }
       }
     },
@@ -1458,6 +2181,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Crea il file di abbinamento"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maak het koppelingsbestand aan"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Criar o arquivo de emparelhamento"
           }
         }
       }
@@ -1487,6 +2222,18 @@
             "state" : "translated",
             "value" : "Si crea una volta con lo script di configurazione su un computer."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wordt eenmalig met het configuratiescript op een computer aangemaakt."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Criado uma vez com o script de configuração em um computador."
+          }
         }
       }
     },
@@ -1514,6 +2261,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Decimale"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decimaal"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decimal"
           }
         }
       }
@@ -1543,6 +2302,18 @@
             "state" : "translated",
             "value" : "Cifre decimali"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decimalen"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Casas Decimais"
+          }
         }
       }
     },
@@ -1570,6 +2341,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gradi, minuti, secondi"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Graden, minuten, seconden"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Graus, Minutos, Segundos"
           }
         }
       }
@@ -1599,6 +2382,18 @@
             "state" : "translated",
             "value" : "Elimina"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verwijder"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar"
+          }
         }
       }
     },
@@ -1627,6 +2422,18 @@
             "state" : "translated",
             "value" : "Elimina file DDI"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verwijder DDI-bestanden"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar Arquivos DDI"
+          }
         }
       }
     },
@@ -1651,6 +2458,18 @@
           }
         },
         "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image"
+          }
+        },
+        "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Developer Disk Image"
@@ -1684,6 +2503,18 @@
             "state" : "translated",
             "value" : "Developer Disk Image scaricata"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image gedownload"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image baixada"
+          }
         }
       }
     },
@@ -1711,6 +2542,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Developer Disk Image necessaria"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image vereist"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image necessária"
           }
         }
       }
@@ -1740,6 +2583,18 @@
             "state" : "translated",
             "value" : "Developer Disk Image non disponibile"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image niet beschikbaar"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image indisponível"
+          }
         }
       }
     },
@@ -1768,6 +2623,18 @@
             "state" : "translated",
             "value" : "Developer Disk Image non installata"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image niet geïnstalleerd"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image não instalada"
+          }
         }
       }
     },
@@ -1795,6 +2662,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dispositivo non raggiungibile"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apparaat niet bereikbaar"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dispositivo inacessível"
           }
         }
       }
@@ -1825,6 +2704,18 @@
             "state" : "translated",
             "value" : "Quartiere"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wijk"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bairro"
+          }
         }
       }
     },
@@ -1852,6 +2743,59 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fine"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gereed"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
+    "Don’t Show Again" : {
+      "comment" : "Alert button: hide the time zone notice until the next simulation",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht mehr anzeigen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No volver a mostrar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ne plus afficher"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non mostrare più"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niet meer tonen"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não Mostrar Novamente"
           }
         }
       }
@@ -1882,6 +2826,18 @@
             "state" : "translated",
             "value" : "Scarica"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Baixar"
+          }
         }
       }
     },
@@ -1910,6 +2866,18 @@
             "state" : "translated",
             "value" : "Scarica file DDI"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download DDI-bestanden"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Baixar Arquivos DDI"
+          }
         }
       }
     },
@@ -1937,6 +2905,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Download non riuscito"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Downloaden mislukt"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falha no download"
           }
         }
       }
@@ -1967,6 +2947,18 @@
             "state" : "translated",
             "value" : "Scaricati"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gedownload"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Baixados"
+          }
         }
       }
     },
@@ -1995,6 +2987,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Inserisci segnaposto al centro della mappa"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Markeer het midden van de kaart"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marcar o centro do mapa"
           }
         }
       }
@@ -2025,6 +3029,18 @@
             "state" : "translated",
             "value" : "Segnaposto"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gemarkeerde locatie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Local marcado"
+          }
         }
       }
     },
@@ -2052,6 +3068,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Attiva Modalità sviluppatore"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schakel ontwikkelaarsmodus in"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ativar o Modo de Desenvolvedor"
           }
         }
       }
@@ -2081,6 +3109,18 @@
             "state" : "translated",
             "value" : "Esci dall’anteprima"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beëindig voorvertoning"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encerrar Prévia"
+          }
         }
       }
     },
@@ -2109,6 +3149,18 @@
             "state" : "translated",
             "value" : "Termina la posizione simulata e ripristina quella reale."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beëindigt de gesimuleerde locatie en herstelt de echte."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encerra a localização simulada e restaura a real."
+          }
         }
       }
     },
@@ -2136,6 +3188,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Esplora mappa, ricerca e preferiti senza configurare nulla. La posizione di questo iPhone non cambia."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verken de kaart, het zoeken en de favorieten zonder configuratie. De locatie van deze iPhone verandert niet."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Explore o mapa, a busca e os favoritos sem nenhuma configuração. A localização deste iPhone não muda."
           }
         }
       }
@@ -2166,6 +3230,18 @@
             "state" : "translated",
             "value" : "Preferito"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoriet"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorito"
+          }
         }
       }
     },
@@ -2195,6 +3271,18 @@
             "state" : "translated",
             "value" : "Preferito rimosso"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoriet verwijderd"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorito removido"
+          }
         }
       }
     },
@@ -2222,6 +3310,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Preferiti"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorieten"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoritos"
           }
         }
       }
@@ -2252,6 +3352,18 @@
             "state" : "translated",
             "value" : "File"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bestanden"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arquivos"
+          }
         }
       }
     },
@@ -2279,6 +3391,59 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ad esempio 48.8566, 2.3522"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bijvoorbeeld 48.8566, 2.3522"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por exemplo 48.8566, 2.3522"
+          }
+        }
+      }
+    },
+    "Get Simulated Location" : {
+      "comment" : "Shortcuts action title",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simulierten Standort abrufen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obtener la ubicación simulada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obtenir la position simulée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ottieni posizione simulata"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haal gesimuleerde locatie op"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obter Localização Simulada"
           }
         }
       }
@@ -2308,6 +3473,59 @@
             "state" : "translated",
             "value" : "Inizia"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aan de slag"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Começar"
+          }
+        }
+      }
+    },
+    "Get the simulated location" : {
+      "comment" : "Shortcuts action summary",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simulierten Standort abrufen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obtener la ubicación simulada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obtenir la position simulée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ottieni la posizione simulata"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haal de gesimuleerde locatie op"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obter a localização simulada"
+          }
         }
       }
     },
@@ -2336,6 +3554,18 @@
             "state" : "translated",
             "value" : "Feedback aptico"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haptische feedback"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retorno tátil"
+          }
         }
       }
     },
@@ -2363,6 +3593,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nome host"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hostnaam"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nome do host"
           }
         }
       }
@@ -2393,6 +3635,59 @@
             "state" : "translated",
             "value" : "Ibrida"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hybride"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Híbrido"
+          }
+        }
+      }
+    },
+    "iCloud Sync" : {
+      "comment" : "Settings switch: share favorites through iCloud",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud-Synchronisierung"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronización con iCloud"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronisation iCloud"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronizzazione iCloud"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud-synchronisatie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronização do iCloud"
+          }
         }
       }
     },
@@ -2421,6 +3716,18 @@
             "state" : "translated",
             "value" : "Importa file di abbinamento"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importeer koppelingsbestand"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importar Arquivo de Emparelhamento"
+          }
         }
       }
     },
@@ -2448,6 +3755,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Importa il file di abbinamento"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importeer het koppelingsbestand"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importar o arquivo de emparelhamento"
           }
         }
       }
@@ -2478,6 +3797,18 @@
             "state" : "translated",
             "value" : "Importato"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geïmporteerd"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importado"
+          }
         }
       }
     },
@@ -2505,6 +3836,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Installazione della Developer Disk Image non riuscita. Serve una connessione a internet. Riprova."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Installeren van de Developer Disk Image mislukt. Hiervoor is een internetverbinding nodig. Probeer het opnieuw."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falha ao instalar a Developer Disk Image. É preciso uma conexão com a internet. Tente novamente."
           }
         }
       }
@@ -2534,6 +3877,59 @@
             "state" : "translated",
             "value" : "iOS non l’ha fornita. LocSim può scaricarla da GitHub, circa 16 MB."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOS heeft deze niet geleverd. LocSim kan hem downloaden van GitHub, ongeveer 16 MB."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O iOS não a forneceu. O LocSim pode baixá-la do GitHub, cerca de 16 MB."
+          }
+        }
+      }
+    },
+    "Is Location Simulated" : {
+      "comment" : "Shortcuts action title",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wird Standort simuliert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Se simula la ubicación?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Position simulée ?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posizione simulata?"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wordt locatie gesimuleerd"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Localização Simulada?"
+          }
         }
       }
     },
@@ -2561,6 +3957,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Connettiti a una rete Wi-Fi e riprova."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maak verbinding met een wifinetwerk en probeer het opnieuw."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conecte-se a uma rede Wi-Fi e tente novamente."
           }
         }
       }
@@ -2590,6 +3998,18 @@
             "state" : "translated",
             "value" : "Connettiti a una rete Wi-Fi. Se continua a non funzionare, attiva “Mostra questo iPhone quando connesso alla rete Wi-Fi” nel Finder. Consenti anche a LocSim l’accesso alla rete locale in Impostazioni > Privacy e sicurezza > Rete locale."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maak verbinding met een wifinetwerk. Als het blijft mislukken, schakel dan ‘Toon deze iPhone als er wifi beschikbaar is’ in de Finder in. Sta ook het lokale netwerk toe voor LocSim via Instellingen > Privacy en beveiliging > Lokaal netwerk."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conecte-se a uma rede Wi-Fi. Se continuar falhando, ative “Mostrar este iPhone quando houver conexão Wi-Fi” no Finder. Permita também a Rede Local para o LocSim em Ajustes > Privacidade e Segurança > Rede Local."
+          }
         }
       }
     },
@@ -2617,6 +4037,59 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mantieni attivo in background"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actief houden op achtergrond"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manter Ativo em Segundo Plano"
+          }
+        }
+      }
+    },
+    "Keeps your favorites the same on all devices with your Apple Account, through your iCloud. How often each favorite is used stays on this device." : {
+      "comment" : "Settings footer under iCloud Sync",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hält deine Favoriten auf allen Geräten mit deinem Apple Account gleich, über dein iCloud. Wie oft du einen Favoriten nutzt, bleibt auf diesem Gerät."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantiene tus favoritos iguales en todos los dispositivos con tu cuenta de Apple, a través de tu iCloud. La frecuencia de uso de cada favorito se queda en este dispositivo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Garde vos favoris identiques sur tous les appareils de votre compte Apple, via votre iCloud. La fréquence d’utilisation de chaque favori reste sur cet appareil."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantiene uguali i tuoi preferiti su tutti i dispositivi con il tuo Account Apple, tramite il tuo iCloud. La frequenza d’uso di ogni preferito resta su questo dispositivo."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Houdt je favorieten gelijk op alle apparaten met je Apple Account, via je iCloud. Hoe vaak je elke favoriet gebruikt, blijft op dit apparaat."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantém seus favoritos iguais em todos os dispositivos com sua Conta Apple, pelo seu iCloud. A frequência de uso de cada favorito fica neste dispositivo."
           }
         }
       }
@@ -2646,6 +4119,18 @@
             "state" : "translated",
             "value" : "Lingua"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taal"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Idioma"
+          }
         }
       }
     },
@@ -2673,6 +4158,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Più tardi"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Later"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mais Tarde"
           }
         }
       }
@@ -2703,6 +4200,18 @@
             "state" : "translated",
             "value" : "Attività in tempo reale"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Live-activiteit"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atividade ao Vivo"
+          }
         }
       }
     },
@@ -2730,6 +4239,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Connessione locale non avviata"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lokale verbinding niet gestart"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conexão local não iniciada"
           }
         }
       }
@@ -2759,6 +4280,18 @@
             "state" : "translated",
             "value" : "Accesso alla rete locale disattivato"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toegang tot lokaal netwerk uit"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acesso à Rede Local desativado"
+          }
         }
       }
     },
@@ -2786,6 +4319,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "L’accesso alla posizione è disattivato"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Locatietoegang staat uit"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O acesso à localização está desativado"
           }
         }
       }
@@ -2816,6 +4361,18 @@
             "state" : "translated",
             "value" : "Posizione ripristinata"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Locatie hersteld"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Localização redefinida"
+          }
         }
       }
     },
@@ -2843,6 +4400,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Posizione non ripristinata"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Locatie niet hersteld"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Localização não redefinida"
           }
         }
       }
@@ -2872,6 +4441,18 @@
             "state" : "translated",
             "value" : "Posizione non impostata"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Locatie niet ingesteld"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Localização não definida"
+          }
         }
       }
     },
@@ -2899,6 +4480,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Servizio di localizzazione non disponibile"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Locatievoorziening niet beschikbaar"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serviço de localização indisponível"
           }
         }
       }
@@ -2929,6 +4522,18 @@
             "state" : "translated",
             "value" : "Posizione impostata"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Locatie ingesteld"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Localização definida"
+          }
         }
       }
     },
@@ -2957,6 +4562,18 @@
             "state" : "translated",
             "value" : "LocSim non è riuscito ad avviare la connessione a questo iPhone. Consenti la configurazione VPN quando iOS lo chiede e riprova."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim kon de verbinding met deze iPhone niet starten. Sta de vpn-configuratie toe wanneer iOS erom vraagt en probeer het opnieuw."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O LocSim não conseguiu iniciar a conexão com este iPhone. Permita a configuração de VPN quando o iOS solicitar e tente novamente."
+          }
         }
       }
     },
@@ -2984,6 +4601,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "LocSim non è ancora configurato. Apri LocSim e segui i passaggi di configurazione."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim is nog niet geconfigureerd. Open LocSim en volg de configuratiestappen."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O LocSim ainda não está configurado. Abra o LocSim e siga as etapas de configuração."
           }
         }
       }
@@ -3014,6 +4643,18 @@
             "state" : "translated",
             "value" : "LocSim simula %@."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim simuleert %@."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O LocSim simula %@."
+          }
         }
       }
     },
@@ -3041,6 +4682,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La connessione locale di LocSim si basa su StosVPN."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De lokale verbinding van LocSim is gebaseerd op StosVPN."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A conexão local do LocSim é baseada no StosVPN."
           }
         }
       }
@@ -3070,6 +4723,18 @@
             "state" : "translated",
             "value" : "La connessione locale di LocSim la sostituisce mentre una posizione è attiva. Tocca di nuovo “Imposta posizione” per continuare, poi seleziona di nuovo la tua VPN in Impostazioni."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De lokale verbinding van LocSim vervangt deze zolang een locatie actief is. Tik opnieuw op ‘Stel locatie in’ om door te gaan en selecteer je vpn daarna weer in Instellingen."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A conexão local do LocSim a substitui enquanto uma localização estiver ativa. Toque em “Definir Localização” novamente para continuar e, depois, selecione a sua VPN de novo em Ajustes."
+          }
         }
       }
     },
@@ -3094,6 +4759,18 @@
           }
         },
         "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registro"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log"
+          }
+        },
+        "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Registro"
@@ -3127,6 +4804,18 @@
             "state" : "translated",
             "value" : "Registro cancellato"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log gewist"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registro limpo"
+          }
         }
       }
     },
@@ -3156,6 +4845,18 @@
             "state" : "translated",
             "value" : "Registro copiato"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log gekopieerd"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registro copiado"
+          }
         }
       }
     },
@@ -3184,6 +4885,18 @@
             "state" : "translated",
             "value" : "Mappa"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kaart"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mapa"
+          }
         }
       }
     },
@@ -3211,6 +4924,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Stile mappa"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kaartstijl"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estilo do Mapa"
           }
         }
       }
@@ -3241,6 +4966,18 @@
             "state" : "translated",
             "value" : "Mancante"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ontbreekt"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausente"
+          }
         }
       }
     },
@@ -3269,6 +5006,18 @@
             "state" : "translated",
             "value" : "Monta automaticamente"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatisch activeren"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Montar Automaticamente"
+          }
         }
       }
     },
@@ -3293,6 +5042,18 @@
           }
         },
         "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nome"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Naam"
+          }
+        },
+        "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nome"
@@ -3325,6 +5086,18 @@
             "state" : "translated",
             "value" : "Necessaria se iOS non la fornisce. Circa 16 MB da GitHub, scaricabile qui in anticipo."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nodig als iOS deze niet levert. Ongeveer 16 MB van GitHub, kan hier vooraf worden gedownload."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Necessária se o iOS não a fornecer. Cerca de 16 MB do GitHub, pode ser baixada aqui com antecedência."
+          }
         }
       }
     },
@@ -3352,6 +5125,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nessuna coordinata trovata in “%@”."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geen coördinaten gevonden in ‘%@’."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma coordenada encontrada em “%@”."
           }
         }
       }
@@ -3381,6 +5166,18 @@
             "state" : "translated",
             "value" : "Nessuna voce"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geen items"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum Registro"
+          }
         }
       }
     },
@@ -3408,6 +5205,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nessun preferito"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geen favorieten"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum Favorito"
           }
         }
       }
@@ -3437,6 +5246,18 @@
             "state" : "translated",
             "value" : "Nessuna posizione simulata."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Er wordt geen locatie gesimuleerd."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma localização está sendo simulada."
+          }
         }
       }
     },
@@ -3464,6 +5285,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nessun file di abbinamento"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geen koppelingsbestand"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum arquivo de emparelhamento"
           }
         }
       }
@@ -3493,6 +5326,18 @@
             "state" : "translated",
             "value" : "Nessun risultato per “%@”"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geen resultaten voor ‘%@’"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum resultado para “%@”"
+          }
         }
       }
     },
@@ -3520,6 +5365,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nessun suggerimento. Tocca “Cerca” per avviare la ricerca."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geen suggesties. Tik op ‘Zoek’ om ernaar te zoeken."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma sugestão. Toque em “Buscar” para pesquisar."
           }
         }
       }
@@ -3550,6 +5407,18 @@
             "state" : "translated",
             "value" : "Non attiva"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niet actief"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inativa"
+          }
         }
       }
     },
@@ -3579,6 +5448,18 @@
             "state" : "translated",
             "value" : "Non scaricati"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niet gedownload"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não baixados"
+          }
         }
       }
     },
@@ -3603,6 +5484,18 @@
           }
         },
         "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        },
+        "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "OK"
@@ -3635,6 +5528,18 @@
             "state" : "translated",
             "value" : "Sul computer, attiva “Mostra questo iPhone quando connesso alla rete Wi-Fi” nel Finder o nell’app Dispositivi Apple."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schakel op de computer ‘Toon deze iPhone als er wifi beschikbaar is’ in de Finder of de Apple Apparaten-app in."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No computador, ative “Mostrar este iPhone quando houver conexão Wi-Fi” no Finder ou no app Dispositivos Apple."
+          }
         }
       }
     },
@@ -3662,6 +5567,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Apri Impostazioni"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Instellingen"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Ajustes"
           }
         }
       }
@@ -3691,6 +5608,18 @@
             "state" : "translated",
             "value" : "Apri la guida alla configurazione"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open configuratiegids"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Guia de Configuração"
+          }
         }
       }
     },
@@ -3718,6 +5647,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Apre LocSim e simula una posizione da coordinate o da un link di mappa che le contiene."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opent LocSim en simuleert een locatie op basis van coördinaten of een kaartlink die ze bevat."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre o LocSim e simula uma localização a partir de coordenadas ou de um link de mapa que as contenha."
           }
         }
       }
@@ -3748,6 +5689,18 @@
             "state" : "translated",
             "value" : "Apre LocSim e simula di nuovo l’ultima posizione."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opent LocSim en simuleert de laatste locatie opnieuw."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre o LocSim e simula a última localização novamente."
+          }
         }
       }
     },
@@ -3775,6 +5728,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Apre LocSim e simula la posizione di un preferito salvato."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opent LocSim en simuleert de locatie van een bewaarde favoriet."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre o LocSim e simula a localização de um favorito salvo."
           }
         }
       }
@@ -3805,6 +5770,18 @@
             "state" : "translated",
             "value" : "Apre LocSim, trova un luogo dal nome o dall’indirizzo e ne simula la posizione. Funzionano anche coordinate e link di mappa."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opent LocSim, zoekt een plaats op naam of adres en simuleert de locatie ervan. Coördinaten en kaartlinks werken ook."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre o LocSim, encontra um lugar pelo nome ou endereço e simula a sua localização. Coordenadas e links de mapa também funcionam."
+          }
         }
       }
     },
@@ -3833,6 +5810,18 @@
             "state" : "translated",
             "value" : "Abbinamento"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Koppeling"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emparelhamento"
+          }
         }
       }
     },
@@ -3860,6 +5849,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "File di abbinamento"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Koppelingsbestand"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arquivo de Emparelhamento"
           }
         }
       }
@@ -3890,6 +5891,18 @@
             "state" : "translated",
             "value" : "File di abbinamento importato"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Koppelingsbestand geïmporteerd"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arquivo de emparelhamento importado"
+          }
         }
       }
     },
@@ -3917,6 +5930,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "File di abbinamento non valido"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Koppelingsbestand ongeldig"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arquivo de emparelhamento inválido"
           }
         }
       }
@@ -3946,6 +5971,18 @@
             "state" : "translated",
             "value" : "Abbinamento rifiutato"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Koppeling geweigerd"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emparelhamento recusado"
+          }
         }
       }
     },
@@ -3973,6 +6010,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Servizio di abbinamento non disponibile"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Koppelingsdienst niet beschikbaar"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serviço de emparelhamento indisponível"
           }
         }
       }
@@ -4003,6 +6052,59 @@
             "state" : "translated",
             "value" : "Incolla"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plak"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Colar"
+          }
+        }
+      }
+    },
+    "Pick the favorites the widget lists. Without a choice it lists the most used ones." : {
+      "comment" : "Widget settings: description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle die Favoriten, die das Widget anzeigt. Ohne Auswahl zeigt es die meistgenutzten."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elige los favoritos que muestra el widget. Si no eliges ninguno, muestra los más usados."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez les favoris affichés par le widget. Sans choix, il affiche les plus utilisés."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scegli i preferiti mostrati dal widget. Senza una scelta mostra i più usati."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kies de favorieten die de widget toont. Zonder keuze toont hij de meestgebruikte."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolha os favoritos que o widget mostra. Sem escolha, ele mostra os mais usados."
+          }
         }
       }
     },
@@ -4031,6 +6133,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Segnaposto inserito al centro della mappa"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Locatie in het midden van de kaart gemarkeerd"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Local marcado no centro do mapa"
           }
         }
       }
@@ -4061,6 +6175,18 @@
             "state" : "translated",
             "value" : "Segnaposto: %@"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gemarkeerde locatie: %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Local marcado: %@"
+          }
         }
       }
     },
@@ -4089,6 +6215,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Luogo"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plaats"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lugar"
           }
         }
       }
@@ -4119,6 +6257,18 @@
             "state" : "translated",
             "value" : "Luogo o coordinate"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plaats of coördinaten"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lugar ou coordenadas"
+          }
         }
       }
     },
@@ -4143,6 +6293,18 @@
           }
         },
         "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Porta"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Poort"
+          }
+        },
+        "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Porta"
@@ -4175,6 +6337,18 @@
             "state" : "translated",
             "value" : "Porta %lld"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Poort %lld"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Porta %lld"
+          }
         }
       }
     },
@@ -4202,6 +6376,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La porta deve essere un numero da 1 a 65535. Lascia vuoto il campo per trovarla automaticamente."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De poort moet een getal van 1 tot 65535 zijn. Laat het veld leeg om hem automatisch te vinden."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A porta deve ser um número de 1 a 65535. Deixe o campo vazio para encontrá-la automaticamente."
           }
         }
       }
@@ -4232,6 +6418,18 @@
             "state" : "translated",
             "value" : "Anteprima"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voorvertoning"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prévia"
+          }
         }
       }
     },
@@ -4259,6 +6457,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Anteprima: la posizione di questo iPhone non cambia."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voorvertoning: de locatie van deze iPhone verandert niet."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prévia: a localização deste iPhone não muda."
           }
         }
       }
@@ -4288,6 +6498,18 @@
             "state" : "translated",
             "value" : "Informativa sulla privacy"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacybeleid"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Política de Privacidade"
+          }
         }
       }
     },
@@ -4315,6 +6537,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Chiudi LocSim nel selettore app per ripristinare la posizione reale."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stop LocSim in de appkiezer om de echte locatie te herstellen."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encerre o LocSim no Seletor de Apps para restaurar a localização real."
           }
         }
       }
@@ -4345,6 +6579,18 @@
             "state" : "translated",
             "value" : "Recenti"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recent"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recentes"
+          }
         }
       }
     },
@@ -4374,6 +6620,18 @@
             "state" : "translated",
             "value" : "Posizione recente rimossa"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recente locatie verwijderd"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Local recente removido"
+          }
         }
       }
     },
@@ -4401,6 +6659,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Posizioni recenti"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recente locaties"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Locais Recentes"
           }
         }
       }
@@ -4431,6 +6701,18 @@
             "state" : "translated",
             "value" : "Posizioni recenti cancellate"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recente locaties gewist"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Locais recentes limpos"
+          }
         }
       }
     },
@@ -4460,6 +6742,18 @@
             "state" : "translated",
             "value" : "Connessione ripristinata"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opnieuw verbonden"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconectado"
+          }
         }
       }
     },
@@ -4488,6 +6782,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Riconnessione…"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opnieuw verbinden…"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconectando…"
           }
         }
       }
@@ -4524,6 +6830,18 @@
             "state" : "translated",
             "value" : "Riconnessione"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opnieuw verbinden"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconectando"
+          }
         }
       }
     },
@@ -4552,6 +6870,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Riconnessione: %@"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opnieuw verbinden: %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconectando: %@"
           }
         }
       }
@@ -4582,6 +6912,18 @@
             "state" : "translated",
             "value" : "Rimuovi"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verwijder"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remover"
+          }
         }
       }
     },
@@ -4609,6 +6951,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rimuovi preferito"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verwijder favoriet"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remover favorito"
           }
         }
       }
@@ -4638,6 +6992,18 @@
             "state" : "translated",
             "value" : "Rimuovi file di abbinamento"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verwijder koppelingsbestand"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remover Arquivo de Emparelhamento"
+          }
         }
       }
     },
@@ -4665,6 +7031,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rimuovere il file di abbinamento?"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Koppelingsbestand verwijderen?"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remover o arquivo de emparelhamento?"
           }
         }
       }
@@ -4694,6 +7072,18 @@
             "state" : "translated",
             "value" : "Rinomina"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wijzig naam"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renomear"
+          }
         }
       }
     },
@@ -4721,6 +7111,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sostituisci file di abbinamento"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vervang koppelingsbestand"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Substituir Arquivo de Emparelhamento"
           }
         }
       }
@@ -4750,6 +7152,18 @@
             "state" : "translated",
             "value" : "Repository"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repository"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repositório"
+          }
         }
       }
     },
@@ -4777,6 +7191,141 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Intervallo di reinvio"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verzendinterval"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intervalo de Reenvio"
+          }
+        }
+      }
+    },
+    "Restore Removed Favorites" : {
+      "comment" : "Settings: adds back the favorites that a change from iCloud removed on this device",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entfernte Favoriten wiederherstellen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restaurar favoritos eliminados"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restaurer les favoris supprimés"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ripristina i preferiti rimossi"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verwijderde favorieten herstellen"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restaurar Favoritos Removidos"
+          }
+        }
+      }
+    },
+    "Returns the place LocSim simulates, with its name and coordinates. Fails when no location is simulated." : {
+      "comment" : "Shortcuts action description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gibt den Ort zurück, den LocSim simuliert, mit Name und Koordinaten. Schlägt fehl, wenn kein Standort simuliert wird."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Devuelve el lugar que simula LocSim, con su nombre y coordenadas. Falla si no se simula ninguna ubicación."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renvoie le lieu que LocSim simule, avec son nom et ses coordonnées. Échoue si aucune position n’est simulée."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restituisce il luogo simulato da LocSim, con nome e coordinate. Non riesce se nessuna posizione è simulata."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geeft de plaats terug die LocSim simuleert, met naam en coördinaten. Mislukt als er geen locatie wordt gesimuleerd."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retorna o local que o LocSim simula, com nome e coordenadas. Falha se nenhuma localização estiver sendo simulada."
+          }
+        }
+      }
+    },
+    "Returns true while LocSim simulates a location, otherwise false." : {
+      "comment" : "Shortcuts action description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gibt „wahr“ zurück, solange LocSim einen Standort simuliert, sonst „falsch“."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Devuelve verdadero mientras LocSim simula una ubicación y falso en caso contrario."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renvoie vrai tant que LocSim simule une position, sinon faux."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restituisce vero mentre LocSim simula una posizione, altrimenti falso."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geeft waar terug zolang LocSim een locatie simuleert, anders onwaar."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retorna verdadeiro enquanto o LocSim simula uma localização; caso contrário, falso."
           }
         }
       }
@@ -4806,6 +7355,18 @@
             "state" : "translated",
             "value" : "Esegui lo script della guida alla configurazione su un Mac o su un computer Windows o Linux."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voer het script uit de configuratiegids uit op een Mac-, Windows- of Linux-computer."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Execute o script do guia de configuração em um Mac ou em um computador com Windows ou Linux."
+          }
         }
       }
     },
@@ -4833,6 +7394,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Esegui lo script di configurazione o importa un file di abbinamento nelle impostazioni di LocSim, in “Abbinamento”."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voer het configuratiescript uit of importeer een koppelingsbestand in de instellingen van LocSim onder ‘Koppeling’."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Execute o script de configuração ou importe um arquivo de emparelhamento nos ajustes do LocSim, em “Emparelhamento”."
           }
         }
       }
@@ -4862,6 +7435,18 @@
             "state" : "translated",
             "value" : "Librerie Rust"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rust-bibliotheken"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bibliotecas Rust"
+          }
         }
       }
     },
@@ -4889,6 +7474,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Librerie Rust in idevice"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rust-bibliotheken in idevice"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bibliotecas Rust no idevice"
           }
         }
       }
@@ -4919,6 +7516,18 @@
             "state" : "translated",
             "value" : "Satellite"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Satelliet"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Satélite"
+          }
         }
       }
     },
@@ -4946,6 +7555,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Salva"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bewaar"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salvar"
           }
         }
       }
@@ -4975,6 +7596,18 @@
             "state" : "translated",
             "value" : "Salva un luogo con la stella accanto alle sue coordinate."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bewaar een plaats met de ster naast de coördinaten."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salve um lugar com a estrela ao lado das coordenadas."
+          }
         }
       }
     },
@@ -5002,6 +7635,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Salva preferito"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bewaar favoriet"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salvar favorito"
           }
         }
       }
@@ -5032,6 +7677,18 @@
             "state" : "translated",
             "value" : "Cerca"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoek"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar"
+          }
         }
       }
     },
@@ -5059,6 +7716,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La ricerca non è disponibile. Controlla la connessione a internet."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoeken is niet beschikbaar. Controleer de internetverbinding."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A busca está indisponível. Verifique a conexão com a internet."
           }
         }
       }
@@ -5088,6 +7757,18 @@
             "state" : "translated",
             "value" : "Cerca luogo o coordinate"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoek plaats of coördinaten"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar lugar ou coordenadas"
+          }
         }
       }
     },
@@ -5115,6 +7796,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Invio della posizione non riuscito. Tocca “Imposta posizione” per riprovare."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versturen van de locatie mislukt. Tik op ‘Stel locatie in’ om het opnieuw te proberen."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falha ao enviar a localização. Toque em “Definir Localização” para tentar novamente."
           }
         }
       }
@@ -5145,6 +7838,18 @@
             "state" : "translated",
             "value" : "Imposta coordinate"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stel coördinaten in"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definir Coordenadas"
+          }
         }
       }
     },
@@ -5173,6 +7878,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Imposta preferito"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stel favoriet in"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definir Favorito"
           }
         }
       }
@@ -5203,6 +7920,18 @@
             "state" : "translated",
             "value" : "Imposta l’ultima posizione"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stel laatste locatie in"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definir Última Localização"
+          }
         }
       }
     },
@@ -5230,6 +7959,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Imposta posizione"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stel locatie in"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definir Localização"
           }
         }
       }
@@ -5260,6 +8001,18 @@
             "state" : "translated",
             "value" : "Imposta posizione su ${coordinates}"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stel locatie in op ${coordinates}"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definir localização como ${coordinates}"
+          }
         }
       }
     },
@@ -5288,6 +8041,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Imposta posizione su ${favorite}"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stel locatie in op ${favorite}"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definir localização como ${favorite}"
           }
         }
       }
@@ -5318,6 +8083,18 @@
             "state" : "translated",
             "value" : "Imposta posizione su ${place}"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stel locatie in op ${place}"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definir localização como ${place}"
+          }
         }
       }
     },
@@ -5346,6 +8123,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Imposta posizione su preferito"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stel locatie in op favoriet"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definir Localização como Favorito"
           }
         }
       }
@@ -5376,6 +8165,18 @@
             "state" : "translated",
             "value" : "Imposta posizione su un luogo"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stel locatie in op plaats"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definir Localização como Lugar"
+          }
         }
       }
     },
@@ -5403,6 +8204,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Imposta alla selezione"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instellen bij selectie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definir ao Selecionar"
           }
         }
       }
@@ -5432,6 +8245,18 @@
             "state" : "translated",
             "value" : "“Imposta alla selezione” invia subito la scelta. “Posizioni recenti” conserva le ultime cinque."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "‘Instellen bij selectie’ verstuurt een keuze meteen. ‘Recente locaties’ onthoudt de laatste vijf."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“Definir ao Selecionar” envia a escolha imediatamente. “Locais Recentes” guarda os últimos cinco."
+          }
         }
       }
     },
@@ -5459,6 +8284,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Impostazioni"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instellingen"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustes"
           }
         }
       }
@@ -5488,6 +8325,18 @@
             "state" : "translated",
             "value" : "Impostazioni > Privacy e sicurezza > Modalità sviluppatore. Se l’interruttore non c’è, la guida alla configurazione spiega come farlo comparire."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instellingen > Privacy en beveiliging > Ontwikkelaarsmodus. Ontbreekt de schakelaar, dan laat de configuratiegids zien hoe je hem zichtbaar maakt."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustes > Privacidade e Segurança > Modo de Desenvolvedor. Se a opção não aparecer, o guia de configuração mostra como exibi-la."
+          }
         }
       }
     },
@@ -5515,6 +8364,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Passaggi di configurazione"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configuratiestappen"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etapas de Configuração"
           }
         }
       }
@@ -5544,6 +8405,18 @@
             "state" : "translated",
             "value" : "I link brevi di Google Maps non sono supportati. Apri il link e copia l’indirizzo completo dal browser."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Korte Google Maps-links worden niet ondersteund. Open de link en kopieer het volledige adres uit de browser."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Links curtos do Google Maps não são compatíveis. Abra o link e copie o endereço completo do navegador."
+          }
         }
       }
     },
@@ -5571,6 +8444,59 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mostra posizione attiva"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toon actieve locatie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar localização ativa"
+          }
+        }
+      }
+    },
+    "Show Most Used" : {
+      "comment" : "Widget settings: switch between the most used favorites and a chosen list",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meistgenutzte zeigen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar los más usados"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher les plus utilisés"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra i più usati"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toon meestgebruikte"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar os Mais Usados"
           }
         }
       }
@@ -5600,6 +8526,18 @@
             "state" : "translated",
             "value" : "Mostra la mia posizione"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toon mijn locatie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar minha localização"
+          }
         }
       }
     },
@@ -5628,6 +8566,18 @@
             "state" : "translated",
             "value" : "Mostra segnaposto"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toon gemarkeerde locatie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar local marcado"
+          }
         }
       }
     },
@@ -5655,6 +8605,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mostra i dettagli dell’errore"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toont details van de fout"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra detalhes do erro"
           }
         }
       }
@@ -5685,6 +8647,18 @@
             "state" : "translated",
             "value" : "Standard"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standaard"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Padrão"
+          }
         }
       }
     },
@@ -5713,6 +8687,18 @@
             "state" : "translated",
             "value" : "Passaggio %lld"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stap %lld"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etapa %lld"
+          }
         }
       }
     },
@@ -5740,6 +8726,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Passaggio %lld, completato"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stap %lld, voltooid"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etapa %lld, concluída"
           }
         }
       }
@@ -5770,6 +8768,18 @@
             "state" : "translated",
             "value" : "Strada"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Straat"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rua"
+          }
         }
       }
     },
@@ -5797,6 +8807,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Supporto"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ondersteuning"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suporte"
           }
         }
       }
@@ -5826,6 +8848,18 @@
             "state" : "translated",
             "value" : "La connessione al dispositivo si è interrotta. Controlla il Wi-Fi e riprova."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De verbinding met het apparaat is weggevallen. Controleer de wifi en probeer het opnieuw."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A conexão com o dispositivo foi interrompida. Verifique o Wi-Fi e tente novamente."
+          }
         }
       }
     },
@@ -5853,6 +8887,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La connessione al dispositivo è stata chiusa. Controlla il Wi-Fi. Mentre una posizione è attiva, LocSim si riconnette da solo."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De verbinding met het apparaat is gesloten. Controleer de wifi. Zolang een locatie actief is, maakt LocSim zelf opnieuw verbinding."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A conexão com o dispositivo foi encerrada. Verifique o Wi-Fi. O LocSim se reconecta sozinho enquanto uma localização estiver ativa."
           }
         }
       }
@@ -5882,6 +8928,18 @@
             "state" : "translated",
             "value" : "Impossibile scaricare la Developer Disk Image. Controlla la connessione a internet."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De Developer Disk Image kon niet worden gedownload. Controleer de internetverbinding."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível baixar a Developer Disk Image. Verifique a conexão com a internet."
+          }
         }
       }
     },
@@ -5909,6 +8967,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Il dispositivo non ha accettato il file di abbinamento. Verifica che il nome host nelle impostazioni di LocSim corrisponda a quello usato dallo script di configurazione, oppure crea un nuovo file, ad esempio dopo un aggiornamento di iOS."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het apparaat heeft het koppelingsbestand niet geaccepteerd. Controleer of de hostnaam in de instellingen van LocSim overeenkomt met die van het configuratiescript, of maak een nieuw bestand aan, bijvoorbeeld na een iOS-update."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O dispositivo não aceitou o arquivo de emparelhamento. Verifique se o nome do host nos ajustes do LocSim corresponde ao usado pelo script de configuração ou crie um novo arquivo, por exemplo após uma atualização do iOS."
           }
         }
       }
@@ -5939,6 +9009,18 @@
             "state" : "translated",
             "value" : "Il dispositivo non ha reso disponibile la simulazione della posizione. Attiva “Monta automaticamente” nelle impostazioni di LocSim, in “Developer Disk Image”, o riavvia il dispositivo."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het apparaat biedt geen locatiesimulatie. Schakel ‘Automatisch activeren’ in de instellingen van LocSim onder ‘Developer Disk Image’ in of herstart het apparaat."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O dispositivo não forneceu a simulação de localização. Ative “Montar Automaticamente” nos ajustes do LocSim, em “Developer Disk Image”, ou reinicie o dispositivo."
+          }
         }
       }
     },
@@ -5966,6 +9048,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Impossibile leggere lo stato della Developer Disk Image. Verifica che Modalità sviluppatore sia attiva."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De status van de Developer Disk Image kon niet worden gelezen. Controleer of de ontwikkelaarsmodus aan staat."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível ler o estado da Developer Disk Image. Verifique se o Modo de Desenvolvedor está ativado."
           }
         }
       }
@@ -5995,6 +9089,18 @@
             "state" : "translated",
             "value" : "Impossibile leggere il file. Creane uno nuovo con lo script di configurazione."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het bestand kon niet worden gelezen. Maak een nieuw bestand aan met het configuratiescript."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível ler o arquivo. Crie um novo com o script de configuração."
+          }
         }
       }
     },
@@ -6022,6 +9128,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La posizione di questo iPhone non cambia."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De locatie van deze iPhone verandert niet."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A localização deste iPhone não muda."
           }
         }
       }
@@ -6052,6 +9170,18 @@
             "state" : "translated",
             "value" : "La posizione non è stata impostata."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De locatie is niet ingesteld."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A localização não foi definida."
+          }
         }
       }
     },
@@ -6079,6 +9209,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Il file di abbinamento non era valido ed è stato rimosso. Esegui di nuovo lo script di configurazione."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het koppelingsbestand was ongeldig en is verwijderd. Voer het configuratiescript opnieuw uit."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O arquivo de emparelhamento era inválido e foi removido. Execute o script de configuração novamente."
           }
         }
       }
@@ -6108,6 +9250,18 @@
             "state" : "translated",
             "value" : "Il file di abbinamento funziona con questo dispositivo."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het koppelingsbestand werkt met dit apparaat."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O arquivo de emparelhamento funciona com este dispositivo."
+          }
         }
       }
     },
@@ -6136,6 +9290,18 @@
             "state" : "translated",
             "value" : "La posizione reale è stata ripristinata."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De echte locatie is terug."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A localização real voltou."
+          }
         }
       }
     },
@@ -6163,6 +9329,100 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lo script di configurazione lo copia in LocSim. Altrimenti copialo con AirDrop o il Finder e importalo qui."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het configuratiescript kopieert het naar LocSim. Kopieer het anders via AirDrop of de Finder en importeer het hier."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O script de configuração o copia para o LocSim. Caso contrário, copie-o com o AirDrop ou o Finder e importe-o aqui."
+          }
+        }
+      }
+    },
+    "The time zone changed to %@ with the simulated place. Tap for details." : {
+      "comment" : "Notice on the map; %@ is a time zone name such as Central European Time",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Zeitzone hat mit dem simulierten Ort zu %@ gewechselt. Für Details tippen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La zona horaria ha cambiado a %@ con el lugar simulado. Toca para ver detalles."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le fuseau horaire est passé à %@ avec le lieu simulé. Touchez pour en savoir plus."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il fuso orario è passato a %@ con il luogo simulato. Tocca per i dettagli."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De tijdzone is met de gesimuleerde plaats gewijzigd naar %@. Tik voor details."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O fuso horário mudou para %@ com o local simulado. Toque para ver detalhes."
+          }
+        }
+      }
+    },
+    "The time zone follows the simulated place and is now %@. To keep the real time zone, turn off Settings > Privacy & Security > Location Services > System Services > Setting Time Zone." : {
+      "comment" : "Notification text and alert message; %@ is a time zone name. The path names the iOS Settings screens in the user's language.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Zeitzone folgt dem simulierten Ort und ist jetzt %@. Um die echte Zeitzone zu behalten, schalte Einstellungen > Datenschutz & Sicherheit > Ortungsdienste > Systemdienste > Zeitzone einstellen aus."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La zona horaria sigue al lugar simulado y ahora es %@. Para mantener la zona horaria real, desactiva Ajustes > Privacidad y seguridad > Localización > Servicios del sistema > Ajuste de zona horaria."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le fuseau horaire suit le lieu simulé et est désormais %@. Pour garder le vrai fuseau horaire, désactivez Réglages > Confidentialité et sécurité > Service de localisation > Services système > Réglage du fuseau horaire."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il fuso orario segue il luogo simulato ed è ora %@. Per mantenere il fuso orario reale, disattiva Impostazioni > Privacy e sicurezza > Localizzazione > Servizi di sistema > Impostazione fuso orario."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De tijdzone volgt de gesimuleerde plaats en is nu %@. Om de echte tijdzone te houden, zet je Instellingen > Privacy en beveiliging > Locatievoorzieningen > Systeemvoorzieningen > Stel tijdzone in uit."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O fuso horário segue o local simulado e agora é %@. Para manter o fuso horário real, desative Ajustes > Privacidade e Segurança > Serviços de Localização > Serviços do Sistema > Ajuste do Fuso Horário."
           }
         }
       }
@@ -6193,6 +9453,18 @@
             "state" : "translated",
             "value" : "Questo iPhone"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deze iPhone"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este iPhone"
+          }
         }
       }
     },
@@ -6220,6 +9492,59 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Questo è un file di abbinamento lockdown. LocSim ha bisogno del file RPPairing dello script di configurazione."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dit is een lockdown-koppelingsbestand. LocSim heeft het RPPairing-bestand van het configuratiescript nodig."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este é um arquivo de emparelhamento lockdown. O LocSim precisa do arquivo RPPairing criado pelo script de configuração."
+          }
+        }
+      }
+    },
+    "Time Zone Changed" : {
+      "comment" : "Notification and alert title: the device's time zone moved with the simulated place",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeitzone geändert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zona horaria cambiada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fuseau horaire modifié"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fuso orario cambiato"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tijdzone gewijzigd"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fuso Horário Alterado"
           }
         }
       }
@@ -6249,6 +9574,18 @@
             "state" : "translated",
             "value" : "Prova senza dispositivo"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Probeer zonder apparaat"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Experimentar sem Dispositivo"
+          }
         }
       }
     },
@@ -6276,6 +9613,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Errore imprevisto"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Onverwachte fout"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erro inesperado"
           }
         }
       }
@@ -6306,6 +9655,18 @@
             "state" : "translated",
             "value" : "sconosciuto"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "onbekend"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "desconhecido"
+          }
         }
       }
     },
@@ -6333,6 +9694,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Versione"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versão"
           }
         }
       }
@@ -6362,6 +9735,18 @@
             "state" : "translated",
             "value" : "Sito web"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Website"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Site"
+          }
         }
       }
     },
@@ -6389,6 +9774,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ti diamo il benvenuto in LocSim"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welkom bij LocSim"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Boas-vindas ao LocSim"
           }
         }
       }
@@ -6418,6 +9815,18 @@
             "state" : "translated",
             "value" : "La prima volta che imposti una posizione, iOS chiede di aggiungere una configurazione VPN. LocSim la usa solo per raggiungere questo iPhone. Nessun traffico esce dal dispositivo attraverso di essa."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wanneer je voor het eerst een locatie instelt, vraagt iOS om een vpn-configuratie toe te voegen. LocSim gebruikt deze alleen om deze iPhone te bereiken. Er verlaat geen verkeer het apparaat via deze configuratie."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Na primeira vez que você define uma localização, o iOS pede para adicionar uma configuração de VPN. O LocSim a usa apenas para alcançar este iPhone. Nenhum tráfego sai do dispositivo por ela."
+          }
         }
       }
     },
@@ -6445,6 +9854,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Senza accesso alla posizione, la simulazione si interrompe in background. Tocca per consentirlo."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zonder locatietoegang stopt de simulatie op de achtergrond. Tik om toe te staan."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem acesso à localização, a simulação para em segundo plano. Toque para permitir."
           }
         }
       }
@@ -6474,6 +9895,18 @@
             "state" : "translated",
             "value" : "File di abbinamento errato"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verkeerd koppelingsbestand"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arquivo de emparelhamento incorreto"
+          }
         }
       }
     },
@@ -6501,6 +9934,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zoom alla selezione"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoom bij selectie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoom ao Selecionar"
           }
         }
       }

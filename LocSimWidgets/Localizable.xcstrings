@@ -1,6 +1,50 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@" : {
+      "shouldTranslate" : false
+    },
+    "Choose Favorites" : {
+      "comment" : "Widget settings: title",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoriten wählen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elegir favoritos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisir des favoris"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scegli i preferiti"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kies favorieten"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolher Favoritos"
+          }
+        }
+      }
+    },
     "Clear" : {
       "localizations" : {
         "de" : {
@@ -25,6 +69,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ripristina"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herstel"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Redefinir"
           }
         }
       }
@@ -54,6 +110,18 @@
             "state" : "translated",
             "value" : "Ripristina posizione"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herstel locatie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Redefinir Localização"
+          }
         }
       }
     },
@@ -81,6 +149,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ripristina la posizione simulata"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herstel de gesimuleerde locatie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Redefinir a localização simulada"
           }
         }
       }
@@ -111,6 +191,18 @@
             "state" : "translated",
             "value" : "Connessione · Non ancora impostata"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbinden · Nog niet ingesteld"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectando · Ainda não definida"
+          }
         }
       }
     },
@@ -138,6 +230,59 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Termina la posizione simulata e ripristina quella reale."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beëindigt de gesimuleerde locatie en herstelt de echte."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encerra a localização simulada e restaura a real."
+          }
+        }
+      }
+    },
+    "Favorite" : {
+      "comment" : "Widget settings: one favorite",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorit"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorito"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favori"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preferito"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoriet"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorito"
           }
         }
       }
@@ -168,6 +313,18 @@
             "state" : "translated",
             "value" : "Preferiti"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorieten"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoritos"
+          }
         }
       }
     },
@@ -196,6 +353,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Stato della posizione"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Locatiestatus"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estado da Localização"
           }
         }
       }
@@ -226,6 +395,18 @@
             "state" : "translated",
             "value" : "Nessun preferito"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geen favorieten"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum Favorito"
+          }
         }
       }
     },
@@ -254,6 +435,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Non simulata"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niet gesimuleerd"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não simulada"
           }
         }
       }
@@ -284,6 +477,18 @@
             "state" : "translated",
             "value" : "Verifica la posizione in LocSim"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controleer de locatie in LocSim"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verifique a localização no LocSim"
+          }
         }
       }
     },
@@ -312,6 +517,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Apre LocSim e imposta questa posizione"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opent LocSim en stelt deze locatie in"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre o LocSim e define esta localização"
           }
         }
       }
@@ -342,6 +559,59 @@
             "state" : "translated",
             "value" : "Apre LocSim e simula di nuovo l’ultima posizione."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opent LocSim en simuleert de laatste locatie opnieuw."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre o LocSim e simula a última localização novamente."
+          }
+        }
+      }
+    },
+    "Pick the favorites the widget lists. Without a choice it lists the most used ones." : {
+      "comment" : "Widget settings: description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle die Favoriten, die das Widget anzeigt. Ohne Auswahl zeigt es die meistgenutzten."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elige los favoritos que muestra el widget. Si no eliges ninguno, muestra los más usados."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez les favoris affichés par le widget. Sans choix, il affiche les plus utilisés."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scegli i preferiti mostrati dal widget. Senza una scelta mostra i più usati."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kies de favorieten die de widget toont. Zonder keuze toont hij de meestgebruikte."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolha os favoritos que o widget mostra. Sem escolha, ele mostra os mais usados."
+          }
         }
       }
     },
@@ -370,6 +640,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Posizione reale"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Echte locatie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Localização real"
           }
         }
       }
@@ -400,6 +682,59 @@
             "state" : "translated",
             "value" : "Imposta l’ultima posizione"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stel laatste locatie in"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definir Última Localização"
+          }
+        }
+      }
+    },
+    "Show Most Used" : {
+      "comment" : "Widget settings: switch between the most used favorites and a chosen list",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meistgenutzte zeigen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar los más usados"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher les plus utilisés"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra i più usati"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toon meestgebruikte"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar os Mais Usados"
+          }
         }
       }
     },
@@ -429,6 +764,18 @@
             "state" : "translated",
             "value" : "Mostra se è simulata una posizione. Tocca un preferito per impostarlo in LocSim."
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toont of een locatie wordt gesimuleerd. Tik op een favoriet om deze in LocSim in te stellen."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra se uma localização está sendo simulada. Toque em um favorito para defini-lo no LocSim."
+          }
         }
       }
     },
@@ -456,6 +803,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Posizione simulata"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gesimuleerde locatie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Localização simulada"
           }
         }
       }
@@ -486,6 +845,18 @@
             "state" : "translated",
             "value" : "Posizione simulata · Riconnessione"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gesimuleerde locatie · Opnieuw verbinden"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Localização simulada · Reconectando"
+          }
         }
       }
     },
@@ -514,6 +885,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Simulata · %@"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gesimuleerd · %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simulada · %@"
           }
         }
       }
@@ -544,6 +927,18 @@
             "state" : "translated",
             "value" : "Dalle ore %@"
           }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sinds %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desde %@"
+          }
         }
       }
     },
@@ -572,6 +967,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "È in uso la posizione reale."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De echte locatie wordt gebruikt."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A localização real está em uso."
           }
         }
       }

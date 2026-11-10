@@ -11,7 +11,8 @@
 # lock_screen); the wallpaper has to be set by hand once, simctl cannot set it.
 #        LOCK=manual          lock and wake the Simulator by hand
 #        WALLPAPER=ok         skip the wallpaper question
-#        WAKE_DELAY=12        seconds between locking and waking with the space bar
+#        WAKE_DELAY=12        minimum seconds between locking and waking, if the dimmed
+#                             Live Activity is not recognized
 set -eu
 
 DEVICE=${DEVICE:-"iPhone 17"}
@@ -19,7 +20,7 @@ BUNDLE=com.rockykln.locsim
 ROOT=$(CDPATH= cd -- "$(dirname "$0")/.." >/dev/null && pwd)
 OUT="$ROOT/design/screenshots"
 BUILD="$ROOT/build/screenshots"
-LANGS=${*:-"en de fr es it"}
+LANGS=${*:-"en de fr es it pt-BR nl"}
 SCREENS=${SCREENS:-"map search recents live favorites"}
 # screen:file:seconds to wait for map tiles and search results
 SHOTS="map:1-map:8 search:2-search:8 recents:3-recents:6 favorites:5-favorites:8"
@@ -28,7 +29,7 @@ wants() { case " $SCREENS " in *" $1 "*) return 0 ;; esac; return 1; }
 say() { printf '\n%s\n' "$*"; }
 
 for lang in $LANGS; do
-    case $lang in en|de|fr|es|it) ;; *) echo "Unknown language: $lang (en de fr es it)" >&2; exit 1 ;; esac
+    case $lang in en|de|fr|es|it|pt-BR|nl) ;; *) echo "Unknown language: $lang (en de fr es it pt-BR nl)" >&2; exit 1 ;; esac
 done
 for screen in $SCREENS; do
     case $screen in map|search|recents|live|favorites) ;; *) echo "Unknown screen: $screen (map search recents live favorites)" >&2; exit 1 ;; esac
@@ -62,7 +63,8 @@ APP="$BUILD/Build/Products/Debug-iphonesimulator/LocSim.app"
 boot() {
     xcrun simctl boot "$UDID" 2>/dev/null || true
     xcrun simctl bootstatus "$UDID" -b >/dev/null
-    xcrun simctl status_bar "$UDID" override --time 9:41 \
+    # A blank carrier: the lit Lock Screen would show "Carrier".
+    xcrun simctl status_bar "$UDID" override --time 9:41 --operatorName " " \
         --dataNetwork wifi --wifiMode active --wifiBars 3 \
         --cellularMode active --cellularBars 4 \
         --batteryState discharging --batteryLevel 100
@@ -119,6 +121,8 @@ locale_for() {
         fr) echo fr_FR ;;
         es) echo es_ES ;;
         it) echo it_IT ;;
+        pt-BR) echo pt_BR ;;
+        nl) echo nl_NL ;;
         *) echo en_US ;;
     esac
 }
@@ -189,25 +193,110 @@ end run
 APPLESCRIPT
 }
 
+# Screenshot of the Lock Screen, judged by tools/live-check.py: prints "<state> <level>".
+# $1: the level from the previous call, to tell whether the activity is still changing.
+# Fails, with the reason in $BUILD/live.log, when either step does not work.
+live_state() {
+    xcrun simctl io "$UDID" screenshot --type=bmp "$BUILD/live.bmp" >"$BUILD/live.log" 2>&1 &&
+        python3 "$ROOT/tools/live-check.py" "$BUILD/live.bmp" ${1:+"$1"} 2>"$BUILD/live.log"
+}
+
+# Prints 1 when the Simulator is locked, 0 when not, nothing when it cannot tell.
+lock_state() {
+    xcrun simctl spawn "$UDID" notifyutil -g com.apple.springboard.lockstate 2>/dev/null |
+        awk '{print $NF}' || true
+}
+
+# Takes the Lock Screen shot and checks the saved image itself: "Swipe up to open" can fade
+# in between the last check and the shot. Needs sips (macOS) to read the PNG.
+shoot_live() {
+    n=0
+    while :; do
+        shoot "$1"
+        command -v sips >/dev/null || return 0
+        sips -s format bmp "$1" --out "$BUILD/final.bmp" >/dev/null 2>&1 || return 0
+        state=$(python3 "$ROOT/tools/live-check.py" "$BUILD/final.bmp" final) || return 0
+        case "$state" in lit*) return 0 ;; esac
+        n=$((n + 1))
+        [ "$n" -lt 8 ] || { echo "  the saved shot still shows: ${state% *}" >&2; return 1; }
+        echo "  saved shot shows: ${state% *}, taking it again"
+        sleep 0.75
+    done
+}
+
 lock_screen() {
     if [ "${LOCK:-auto}" = manual ]; then
         printf '%s: press Cmd-L in the Simulator, click its screen once so it is lit, then press Enter here. ' "$lang"
         read -r _
         return
     fi
-    # The locked Simulator stays lit for a few seconds before it dims; a key before that does
-    # nothing. WAKE_DELAY changes the wait.
-    if press_key lock && sleep "${WAKE_DELAY:-12}" && press_key wake; then
-        echo "  locked with Cmd-L, woken with the space bar"
+    if ! press_key lock; then
+        echo "Could not lock the Simulator automatically: $(head -1 "$BUILD/lock.log")" >&2
+        echo "Allow the terminal app under System Settings > Privacy & Security > Accessibility" >&2
+        echo "and under Automation for System Events, or run with LOCK=manual." >&2
+        LOCK=manual
+        lock_screen
         return
     fi
-    echo "Could not lock the Simulator automatically: $(head -1 "$BUILD/lock.log")" >&2
-    echo "Allow the terminal app under System Settings > Privacy & Security > Accessibility" >&2
-    echo "and under Automation for System Events, or run with LOCK=manual." >&2
-    LOCK=manual
-    lock_screen
+    # Cmd-L sometimes does not reach the Simulator; SpringBoard tells whether it is locked.
+    sleep 2
+    if [ "$(lock_state)" = 0 ]; then
+        echo "  not locked, pressing Cmd-L again"
+        press_key lock || true
+        sleep 2
+        [ "$(lock_state)" = 0 ] && echo "  still not locked; check $lang/4-live.png" >&2
+    fi
+    # Wake only once the Live Activity has been on the Lock Screen for over a second and the
+    # screen has dimmed into Always On: woken earlier, iOS keeps an unfinished activity.
+    # If the dimmed activity is not recognized, WAKE_DELAY seconds with the activity shown do.
+    shown=0 dimmed=0 i=0
+    while [ "$i" -lt 40 ]; do
+        sleep 1
+        i=$((i + 1))
+        if ! state=$(live_state); then
+            # Without a working check, fall back to waiting WAKE_DELAY seconds.
+            echo "  Lock Screen check failed: $(tail -1 "$BUILD/live.log")" >&2
+            sleep $((${WAKE_DELAY:-12} - i > 0 ? ${WAKE_DELAY:-12} - i : 0))
+            break
+        fi
+        echo "  ${i}s: ${state% *}"
+        case "$state" in
+            none*) shown=0 dimmed=0 ;;
+            dim*) shown=$((shown + 1)) dimmed=$((dimmed + 1)) ;;
+            *) shown=$((shown + 1)) dimmed=0 ;;
+        esac
+        [ "$dimmed" -ge 2 ] && break
+        [ "$shown" -ge 2 ] && [ "$i" -ge "${WAKE_DELAY:-12}" ] && break
+    done
+    [ "$shown" -ge 2 ] || echo "  no Live Activity on the Lock Screen after ${i}s" >&2
+    press_key wake || true
+    echo "  locked with Cmd-L, woken with the space bar after ${i}s"
 }
 
+# Waits until the Live Activity is lit and finished drawing. After waking, iOS sometimes keeps
+# the Always On version; another press of the space bar helps then. "Swipe up to open" fades
+# after a few seconds; if it stays, the shot is taken with it.
+wait_lit() {
+    [ "${LOCK:-auto}" = manual ] && { sleep 3.5; return 0; }
+    level=
+    i=0
+    while [ "$i" -lt 25 ]; do
+        sleep 1
+        i=$((i + 1))
+        state=$(live_state "$level") || { echo "  Lock Screen check failed: $(tail -1 "$BUILD/live.log")" >&2; sleep 3.5; return 1; }
+        level=${state#* }
+        echo "  ${i}s: ${state% *}"
+        case "$state" in
+            lit*) echo "  Live Activity lit after ${i}s"; return 0 ;;
+            hint*) [ "$i" -ge 15 ] && { echo "  Live Activity lit, \"Swipe up to open\" still shown"; return 0; } ;;
+            dim*) case "$i" in 6 | 12 | 18) echo "  still Always On, pressing the space bar again"; press_key wake || true ;; esac ;;
+        esac
+    done
+    echo "  The Live Activity did not light up; check $lang/4-live.png." >&2
+    return 1
+}
+
+dim=
 if wants live && [ "${WALLPAPER:-ask}" != ok ]; then
     say "The Lock Screen shots need a light stock wallpaper (Settings > Wallpaper in the Simulator).
 It stays set; skip this question next time with WALLPAPER=ok. Press Enter to start."
@@ -249,14 +338,20 @@ for lang in $LANGS; do
         echo "$lang: Lock Screen with the Live Activity"
         launch live
         # The demo starts the Live Activity after a second, and iOS takes a while to draw it.
-        sleep 18
+        sleep 23
         lock_screen
-        # The Lock Screen needs a moment after waking until the Live Activity is drawn on it.
-        sleep 3.5
-        shoot "$OUT/$lang/4-live.png"
+        ok=1
+        wait_lit || ok=0
+        shoot_live "$OUT/$lang/4-live.png" || ok=0
+        [ "$ok" = 1 ] || dim="$dim $lang"
         # Older per-theme shots would win over this one in render.py.
         rm -f "$OUT/$lang/light/4-live.png" "$OUT/$lang/dark/4-live.png"
     fi
 done
 xcrun simctl terminate "$UDID" "$BUNDLE" 2>/dev/null || true
+if [ -n "$dim" ]; then
+    say "The Lock Screen shot is not right for:$dim. Take these again with
+  SCREENS=live WALLPAPER=ok tools/screenshots.sh$dim"
+    exit 1
+fi
 say "Done. Next: design/mockups/render.py"

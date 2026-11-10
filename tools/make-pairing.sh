@@ -72,7 +72,7 @@ case "$(uname -s)-$(uname -m)" in
 esac
 
 if [[ "$ASSET" == linux ]] && grep -qi microsoft /proc/version 2>/dev/null; then
-  echo "This is WSL, which cannot reach an iPhone over USB." >&2
+  echo "This is WSL, which cannot reach an iPhone or iPad over USB." >&2
   echo "Run make-pairing.ps1 in Windows PowerShell instead (see the setup guide)." >&2
   exit 1
 fi
@@ -139,10 +139,10 @@ fi
 
 checklist() {
   echo "Check:" >&2
-  echo "  - the iPhone is unlocked and connected by USB" >&2
-  echo "  - \"Trust This Computer\" was accepted on the iPhone" >&2
+  echo "  - the iPhone or iPad is unlocked and connected by USB" >&2
+  echo "  - \"Trust This Computer\" was accepted on the device" >&2
   echo "  - Developer Mode is on (Settings > Privacy & Security)" >&2
-  echo "  - only one iPhone is connected, or pass --udid" >&2
+  echo "  - only one device is connected, or pass --udid" >&2
   if [[ "$ASSET" == linux ]]; then
     echo "  - usbmuxd is running (systemctl status usbmuxd)" >&2
   fi
@@ -151,13 +151,23 @@ checklist() {
 UDID_ARGS=()
 if [[ -n "$UDID" ]]; then
   UDID_ARGS=(--udid "$UDID")
-elif devices="$("$LIST" 2>/dev/null)"; then
+else
+  # Without the list the tool would pick a device itself, a guess when several are connected.
+  if ! devices="$("$LIST" 2>/dev/null)"; then
+    # Run again for the message only: stderr in the list could be read as a device.
+    list_err="$("$LIST" 2>&1 >/dev/null || true)"
+    echo "Could not list the connected devices:" >&2
+    printf '%s\n' "${list_err:-no output from idevice_id}" | sed 's/^/  /' >&2
+    echo >&2
+    checklist
+    exit 1
+  fi
   usb="$(printf '%s\n' "$devices" | awk '
     /connection_type:/ { usb = ($0 ~ /connection_type: Usb,/) }
     /udid:/ && usb { gsub(/[ ",]/, ""); sub(/^udid:/, ""); print }' | sort -u)"
   count="$(printf '%s' "$usb" | grep -c . || true)"
   if [[ "$count" -gt 1 ]]; then
-    echo "More than one iPhone is connected over USB:" >&2
+    echo "More than one iPhone or iPad is connected over USB:" >&2
     printf '%s\n' "$usb" | sed 's/^/  /' >&2
     echo "Connect only one, or pick one with: bash $0 --udid <UDID>" >&2
     exit 1
@@ -165,7 +175,7 @@ elif devices="$("$LIST" 2>/dev/null)"; then
     # Explicit, so a device that usbmuxd only sees over the network is not picked instead.
     UDID_ARGS=(--udid "$usb")
   else
-    echo "No iPhone is connected over USB." >&2
+    echo "No iPhone or iPad is connected over USB." >&2
     echo >&2
     checklist
     exit 1
@@ -182,7 +192,7 @@ trap 'exit 129' HUP
 WORK="$(mktemp -d)"
 TMP="$WORK/rppairing.plist"
 
-echo "Unlock the iPhone. If it asks, tap Trust and enter the passcode."
+echo "Unlock the iPhone or iPad. If it asks, tap Trust and enter the passcode."
 if ! pair_log="$("$BIN" ${UDID_ARGS[@]+"${UDID_ARGS[@]}"} remotepairing_lockdown pair "$HOSTNAME_ARG" "$TMP" 2>&1)" || [[ ! -s "$TMP" ]]; then
   echo "Pairing failed:" >&2
   printf '%s\n' "${pair_log:-no output from idevice-tools}" >&2
@@ -201,7 +211,7 @@ else
   {
     echo "Could not copy the file into LocSim:"
     printf '%s\n' "${afc_err:-idevice-tools exited with an error}"
-    echo "Is LocSim installed and the iPhone unlocked?"
+    echo "Is LocSim installed and the device unlocked?"
     echo
   } >&2
   # Kept for a manual import.

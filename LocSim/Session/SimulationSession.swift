@@ -55,6 +55,10 @@ final class SimulationSession: ObservableObject {
                 // The preview changes nothing on the device, so it counts as no use.
                 FavoriteUsage.activeChanged(to: isSimulated ? nil : active)
             }
+            // The preview does not move the device, so its time zone stays.
+            if (active == nil) != (oldValue == nil), !isSimulated {
+                if active == nil { TimeZoneWatch.shared.stopped() } else { TimeZoneWatch.shared.started() }
+            }
         }
     }
     @Published private(set) var state: State = .idle {
@@ -194,6 +198,12 @@ final class SimulationSession: ObservableObject {
     }
 
     private var isSimulated: Bool { Demo.isOn || isPreview }
+    /// The place the device simulates now, for Shortcuts: not the preview, not while connecting
+    /// or clearing. While reconnecting the device still keeps the last location it got.
+    var simulatedPlace: (coordinate: CLLocationCoordinate2D, name: String?)? {
+        guard !isSimulated, !clearing, let active, state == .active || state.isReconnecting else { return nil }
+        return (active, activeName)
+    }
     var hasPairing: Bool { isSimulated || PairingStore.exists }
     func requestLocationPermission() { keepAlive.requestPermission() }
     var canClear: Bool { active != nil || state == .connecting || linkOpen }
@@ -489,6 +499,7 @@ final class SimulationSession: ObservableObject {
     /// Sends right away after returning to the app instead of waiting for the next interval.
     func becameActive() async {
         lastSent = sentAt
+        TimeZoneWatch.shared.check()
         if active != nil {
             liveActivity.markStale(after: Timing.freshWhileKeptAlive)
             WidgetSync.markStale(after: WidgetSync.freshFor)
@@ -671,6 +682,8 @@ final class SimulationSession: ObservableObject {
         if manual == nil, !portText.isEmpty { write("ignoring invalid port \"\(portText)\"") }
         var lastError: Error = DeviceError(.tunnel, "No port to try")
         var tried: UInt16?
+        var resetPorts: Set<UInt16> = []
+        var localPorts: Set<UInt16> = []
 
         func attempt(_ candidate: UInt16) async throws -> Bool {
             do {
@@ -683,6 +696,7 @@ final class SimulationSession: ObservableObject {
                 throw CancellationError()
             } catch {
                 write(error.localizedDescription)
+                if TunnelFailure.isReset(error.localizedDescription) { resetPorts.insert(candidate) }
                 renewLinkIfStuck()
                 if tried == nil || Self.rank(error) >= Self.rank(lastError) { lastError = error }
                 return false
@@ -710,6 +724,7 @@ final class SimulationSession: ObservableObject {
             let services = await resolver.browse()
             try ensureCurrent(started)
             refused = resolver.searchRefused
+            localPorts = Set(services.filter(\.isLocal).map(\.port))
             // Names and addresses of other devices on the network stay out of the log.
             for s in services { write("bonjour port \(s.port) \(s.isLocal ? "local" : "remote")") }
             if refused {
@@ -731,6 +746,11 @@ final class SimulationSession: ObservableObject {
         }
         if refused, Self.rank(lastError) < 3 {
             throw DeviceError(.localNetwork, "Bonjour search refused; last error: \(lastError.localizedDescription)")
+        }
+        if Self.rank(lastError) < 3, TunnelFailure.refusedSilently(localPorts: localPorts, resetPorts: resetPorts) {
+            write("pairing service of this device reset the connection: pairing refused")
+            throw DeviceError(.pairingRefused,
+                              "The device's pairing service reset the connection; last error: \(lastError.localizedDescription)")
         }
         throw lastError
     }

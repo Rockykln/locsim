@@ -48,6 +48,24 @@
               "Ferma ${applicationName}"
             ]
           }
+        },
+        "nl" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Herstel de locatie in ${applicationName}",
+              "Stop ${applicationName}"
+            ]
+          }
+        },
+        "pt-BR" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Redefinir a localização no ${applicationName}",
+              "Parar o ${applicationName}"
+            ]
+          }
         }
       }
     },
@@ -101,6 +119,26 @@
               "Imposta ${applicationName} su ${favorite}",
               "Simula ${favorite} con ${applicationName}",
               "Imposta un preferito in ${applicationName}"
+            ]
+          }
+        },
+        "nl" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Stel ${applicationName} in op ${favorite}",
+              "Simuleer ${favorite} met ${applicationName}",
+              "Stel een favoriet in met ${applicationName}"
+            ]
+          }
+        },
+        "pt-BR" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Definir ${applicationName} como ${favorite}",
+              "Simular ${favorite} com o ${applicationName}",
+              "Definir um favorito no ${applicationName}"
             ]
           }
         }

@@ -18,7 +18,10 @@ struct WidgetSnapshot: Codable, Equatable {
     var since: Date?
     /// After this the app may have ended without saying so; the widget then asks to check.
     var freshUntil: Date?
+    /// The most used favorites, which the widget lists unless the person chose others.
     var favorites: [Place]
+    /// All favorites in the app's order, to choose from in the widget's settings.
+    var catalog: [Place]?
 
     static let empty = WidgetSnapshot(active: nil, since: nil, favorites: [])
     static let group = "group.com.rockykln.locsim"

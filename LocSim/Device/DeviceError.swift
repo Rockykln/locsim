@@ -7,6 +7,8 @@ struct DeviceError: LocalizedError {
         case pairingMissing
         case pairingInvalid
         case pairingLockdown
+        /// The device's pairing service resets the connection instead of answering.
+        case pairingRefused
         case localTunnel
         case otherVPN
         case localNetwork
