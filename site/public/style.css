@@ -106,6 +106,9 @@ address { font-style: normal; }
 .lead { font-size: clamp(1.1rem, 1.6vw, 1.3rem); line-height: 1.5; color: var(--muted); max-width: 34rem; }
 .hint { margin-top: 0.75rem; font-size: 0.9rem; color: var(--muted); }
 .muted { color: var(--muted); }
+.notice { max-width: 34rem; margin-bottom: 1.5rem; padding: 0.85rem 1rem; border: 1px solid var(--glass-line); border-left: 4px solid var(--accent); border-radius: 12px; background: var(--glass); }
+.notice p { margin: 0.25rem 0 0; font-size: 0.95rem; line-height: 1.5; }
+.beta-notice { margin: 0 0 1rem; padding: 0.7rem 0.9rem; border-left: 4px solid var(--accent); border-radius: 8px; background: var(--bg-alt); font-size: 0.95rem; }
 .eyebrow { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1rem; }
 
 code { font: 0.88em ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--code); padding: 0.1em 0.35em; border-radius: 4px; overflow-wrap: anywhere; }
