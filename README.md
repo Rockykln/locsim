@@ -2,7 +2,7 @@
 
 [![Build](https://github.com/Rockykln/locsim/actions/workflows/build.yml/badge.svg)](https://github.com/Rockykln/locsim/actions/workflows/build.yml)
 ![iOS](https://img.shields.io/badge/iOS-17.4%2B-lightgrey)
-[![TestFlight](https://img.shields.io/badge/TestFlight-public%20beta-0a84ff)](#testflight)
+[![TestFlight](https://img.shields.io/badge/TestFlight-unavailable-lightgrey)](#status)
 ![Languages](https://img.shields.io/badge/languages-en%20%7C%20de%20%7C%20fr%20%7C%20es%20%7C%20it%20%7C%20pt--BR%20%7C%20nl-lightgrey)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
@@ -24,6 +24,17 @@ A developer tool for testing location-based apps.
   <a href="https://locsim.rockykln.com/support/">Support</a> ·
   <a href="https://locsim.rockykln.com">Website</a>
 </p>
+
+## Status
+
+**November 2026:** Apple has ended all TestFlight builds of LocSim and rejected the App
+Store submission. So far I have not received any information from Apple about what the
+problem is. The installed beta no longer opens, and new builds expire right away. I am
+sorry about that.
+
+The source code stays fully available here, and you can still build LocSim yourself
+(see [Building](#building)). I am pausing work on new features until I know more.
+Updates will be posted here and on the [website](https://locsim.rockykln.com).
 
 LocSim uses the same location simulation service as Xcode. It reaches the iPhone's own
 developer services through a small local tunnel, after a one-time pairing with a
@@ -86,6 +97,8 @@ computer.
 - A Mac, Windows or Linux computer once, for Developer Mode and the pairing file
 
 ## TestFlight
+
+Currently unavailable, see [Status](#status).
 
 - **Public Beta**: stable test builds. [Join on TestFlight](https://testflight.apple.com/join/vyrbctky).
 - **Early Access**: new features land here first. Request a personal invite on the
