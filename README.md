@@ -28,12 +28,14 @@ A developer tool for testing location-based apps.
 ## Status
 
 **November 2026:** Apple has ended all TestFlight builds of LocSim and rejected the App
-Store submission. So far I have not received any information from Apple about what the
-problem is. The installed beta no longer opens, and new builds expire right away. I am
-sorry about that.
+Store submission. On 13 November Apple named the reason: an automated check flagged
+the local packet tunnel as a VPN and asked what user data it collects. LocSim collects
+none; the tunnel routes only 10.7.0.1 back to the device itself (see
+[How it works](#how-it-works)). I have answered, and LocSim is back in review. Until
+then the installed beta does not open.
 
 The source code stays fully available here, and you can still build LocSim yourself
-(see [Building](#building)). I am pausing work on new features until I know more.
+(see [Building](#building)). New features stay paused until the review is through.
 Updates will be posted here and on the [website](https://locsim.rockykln.com).
 
 LocSim uses the same location simulation service as Xcode. It reaches the iPhone's own
