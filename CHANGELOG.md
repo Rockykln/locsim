@@ -4,7 +4,20 @@ What changed in each version that testers received through TestFlight.
 
 ## 1.0 (8), 17 November 2026
 
-- Same features as build 6. Replaces the earlier builds, which Apple ended
+Replaces the earlier builds, which Apple ended. Same features as build 6, plus:
+
+- iCloud Sync for favorites: a new or restored device waits for the list from iCloud and
+  only adds to it; favorites deleted before that stay deleted
+- A Clear that did not finish is shown as such: Clear stays available, and the Shortcuts
+  actions and the map no longer treat the location as real
+- LocSim's local connection passes on TCP only, and stops trying ports after Clear
+- Pasting: Google Maps links use the place instead of the map view; labeled coordinates,
+  Wikipedia's coordinate block, Waze and OpenStreetMap links and degrees with decimal
+  minutes followed by the letter are recognized; search terms like "7 11" stay names
+- Widget taps and quick actions wait until an open sheet has closed
+- Keep Alive in Background is now Keep Location in Background
+- A warning when a copy of the pairing file is left in LocSim's folder in Files
+- Setup scripts check their cached download on every run; the setup page shows their checksums
 
 ## 1.0 (6), 10 November 2026
 
