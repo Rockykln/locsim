@@ -23,9 +23,13 @@ enum PairingStore {
         FileManager.default.fileExists(atPath: storeURL.path)
     }
 
-    /// A file in Documents that may be a pairing file, not yet imported.
+    /// A file in Documents that may be a pairing file and was not imported yet.
     static var hasDroppedFile: Bool {
-        !droppedFiles().isEmpty
+        let seen = UserDefaults.standard.dictionary(forKey: importedKey) as? [String: Double] ?? [:]
+        return droppedFiles().contains { url, modified in
+            dropNames.contains(url.lastPathComponent)
+                || seen[url.lastPathComponent] != (modified?.timeIntervalSince1970 ?? 0)
+        }
     }
 
     /// Imports a dropped file and reports whether one replaced or added the stored file.
@@ -63,11 +67,17 @@ enum PairingStore {
     private static func read(_ url: URL) throws -> Data {
         let size = (try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
         guard size <= maxSize else { throw DeviceError(.pairingInvalid, "File too large for a pairing file") }
+        let data: Data
         do {
-            return try Data(contentsOf: url)
+            // Read with a bound too: the size above may be unknown, e.g. for a file in iCloud Drive.
+            let handle = try FileHandle(forReadingFrom: url)
+            defer { try? handle.close() }
+            data = try handle.read(upToCount: maxSize + 1) ?? Data()
         } catch {
             throw DeviceError(.pairingInvalid, "Cannot read file: \(error.localizedDescription)")
         }
+        guard data.count <= maxSize else { throw DeviceError(.pairingInvalid, "File too large for a pairing file") }
+        return data
     }
 
     static func remove() {

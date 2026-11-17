@@ -19,8 +19,8 @@ struct WebPage: Identifiable {
 
 extension View {
     /// Opens web links inside LocSim instead of switching to Safari.
-    func webPageSheet(_ page: Binding<WebPage?>) -> some View {
-        sheet(item: page) { page in
+    func webPageSheet(_ page: Binding<WebPage?>, onDismiss: (() -> Void)? = nil) -> some View {
+        sheet(item: page, onDismiss: onDismiss) { page in
             SafariView(url: page.url).ignoresSafeArea()
         }
     }

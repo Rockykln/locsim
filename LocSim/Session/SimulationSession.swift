@@ -208,7 +208,8 @@ final class SimulationSession: ObservableObject {
     private(set) var unclearedPlace: (coordinate: CLLocationCoordinate2D, name: String?)?
     /// A location is simulated, or a Clear did not finish and the device may still keep it.
     var mayStillBeSimulated: Bool { simulatedPlace != nil || unclearedPlace != nil }
-    var hasPairing: Bool { isSimulated || PairingStore.exists }
+    /// A file the setup script copied in counts: connecting takes it in.
+    var hasPairing: Bool { isSimulated || PairingStore.exists || PairingStore.hasDroppedFile }
 
     /// Takes in a pairing file the setup script copied into Documents. Left for later while a
     /// connection is being made, which takes it in itself.
@@ -237,7 +238,8 @@ final class SimulationSession: ObservableObject {
         await checkNewPairing()
     }
     func requestLocationPermission() { keepAlive.requestPermission() }
-    var canClear: Bool { active != nil || state == .connecting || linkOpen }
+    /// Also after a Clear that did not finish, so it can be tried again.
+    var canClear: Bool { active != nil || state == .connecting || linkOpen || unclearedPlace != nil }
     /// A Set, a Clear or a queued Set has not finished yet.
     var isWorking: Bool { busy || clearing || pending != nil }
 
@@ -390,7 +392,8 @@ final class SimulationSession: ObservableObject {
         }
         // Nothing may resend or set while the device clears; a Set made meanwhile runs afterwards.
         clearing = true
-        let clearedPlace = active.map { (coordinate: $0, name: activeName) }
+        // A second Clear after one that did not finish still concerns the same place.
+        let clearedPlace = active.map { (coordinate: $0, name: activeName) } ?? unclearedPlace
         active = nil
         let finished = await clearLink()
         // The state is written before anything else can run, so a Set made next is not overwritten.
@@ -430,8 +433,10 @@ final class SimulationSession: ObservableObject {
         return await withCheckedContinuation { continuation in
             let once = ResumeOnce(continuation)
             Task { @MainActor in
+                var cleared = false
                 do {
                     try await link.clear()
+                    cleared = true
                     self.write("cleared")
                 } catch {
                     self.write(error.localizedDescription)
@@ -439,7 +444,8 @@ final class SimulationSession: ObservableObject {
                 }
                 once.finish(true)
                 self.syncLink()
-                self.recoverFromLateClear(started)
+                // Only a clear the device confirmed lifts the error; a failed one may not have run.
+                if cleared { self.recoverFromLateClear(started) }
             }
             Task { @MainActor in
                 try? await Task.sleep(nanoseconds: Timing.clearTimeout * 1_000_000_000)
@@ -450,8 +456,9 @@ final class SimulationSession: ObservableObject {
 
     // The clear only came through after the timeout, so its error no longer applies.
     private func recoverFromLateClear(_ started: Int) {
-        guard started == generation, state.error?.code == AppError.clearFailedCode else { return }
+        guard started == generation else { return }
         unclearedPlace = nil
+        guard state.error?.code == AppError.clearFailedCode else { return }
         state = .idle
         releaseIfIdleInBackground()
     }
@@ -461,6 +468,8 @@ final class SimulationSession: ObservableObject {
         generation += 1
         stopResending()
         active = nil
+        // Closing the connection and the tunnel ends any simulation left on the device.
+        unclearedPlace = nil
         state = .idle
         write("disconnected")
         if !renewLinkIfStuck() { await link.close() }
