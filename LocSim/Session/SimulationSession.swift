@@ -390,7 +390,7 @@ final class SimulationSession: ObservableObject {
         }
         // Nothing may resend or set while the device clears; a Set made meanwhile runs afterwards.
         clearing = true
-        let clearedPlace = active.map { ($0, activeName) }
+        let clearedPlace = active.map { (coordinate: $0, name: activeName) }
         active = nil
         let finished = await clearLink()
         // The state is written before anything else can run, so a Set made next is not overwritten.
