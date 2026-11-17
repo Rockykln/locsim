@@ -91,37 +91,19 @@ struct SettingsView: View {
                 }
             }
             .fileImporter(isPresented: $importing, allowedContentTypes: [.propertyList, .xml, .data]) { result in
-                do {
-                    try PairingStore.importFile(at: result.get())
-                    pairingMessage = nil
-                    pairingReplaced()
-                    announce(String(localized: "Pairing file imported"))
-                } catch {
-                    let deviceError = error as? DeviceError ?? DeviceError(.pairingInvalid, error.localizedDescription)
-                    pairingMessage = AppError(deviceError).summary
-                    announce(pairingMessage)
-                }
+                pairingMessage = session.importPairing(result)
+                announce(pairingMessage ?? String(localized: "Pairing file imported"))
                 refreshPairing()
             }
         }
     }
 
-    /// Adopts a file the setup script dropped into Documents. While the setup steps are open
-    /// they do this themselves, so a replaced file is handled once.
+    /// Takes in a file the setup script dropped into Documents and shows the current state.
     private func refreshPairing() {
-        guard !showWelcome else { return }
-        if PairingStore.adoptNow() { pairingReplaced() }
+        session.adoptDroppedPairing()
         hasPairing = PairingStore.exists
         rejectedDrop = PairingStore.rejectedDrop
         lockdownDrop = PairingStore.lockdownDrop
-    }
-
-    private func pairingReplaced() {
-        Task {
-            if session.isPreview { session.endPreview() }
-            await session.pairingChanged()
-            await session.checkNewPairing()
-        }
     }
 
     private var statusSection: some View {

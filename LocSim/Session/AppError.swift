@@ -12,9 +12,13 @@ struct AppError: Error, Equatable {
     static let clearFailedCode = "LS-402"
     static let otherVPNCode = "LS-207"
     static let ddiConsentCode = "LS-303"
+    static let unreachableCode = "LS-201"
+    static let pairingServiceCode = "LS-202"
+    static let rejectedCode = "LS-203"
+    static let connectionFailedCode = "LS-206"
 
     /// The device or the file itself refuses the pairing, as opposed to not being reachable.
-    var rejectsPairing: Bool { ["LS-100", "LS-101", "LS-102", "LS-203"].contains(code) }
+    var rejectsPairing: Bool { ["LS-100", "LS-101", "LS-102", Self.rejectedCode].contains(code) }
 
     init(_ error: Error) {
         let detail = error.localizedDescription
@@ -34,14 +38,11 @@ struct AppError: Error, Equatable {
 
     /// Text for the clipboard, so a support request contains everything needed.
     var report: String {
-        let info = Bundle.main.infoDictionary
-        let version = info?["CFBundleShortVersionString"] as? String ?? "?"
-        let build = info?["CFBundleVersion"] as? String ?? "?"
         let os = ProcessInfo.processInfo.operatingSystemVersionString
         return """
             \(code) \(title)
             \(detail)
-            LocSim \(version) (\(build)) \(AppLinks.commit), iOS \(os)
+            LocSim \(AppLinks.version) \(AppLinks.commit), iOS \(os)
             """
     }
 
@@ -106,19 +107,19 @@ struct AppError: Error, Equatable {
         case .rejected:
             return rejectedEntry
         case .timeout:
-            return ("LS-201", String(localized: "Device not reachable"),
+            return (unreachableCode, String(localized: "Device not reachable"),
                     String(localized: "Join a Wi-Fi network and try again."))
         case .unavailable:
-            return ("LS-202", String(localized: "Pairing service unavailable"),
+            return (pairingServiceCode, String(localized: "Pairing service unavailable"),
                     String(localized: "Join a Wi-Fi network. If it keeps failing, enable Show this iPhone when on Wi-Fi in Finder. Also allow Local Network for LocSim under Settings > Privacy & Security > Local Network."))
         case .other:
-            return ("LS-206", String(localized: "Connection failed"),
+            return (connectionFailedCode, String(localized: "Connection failed"),
                     String(localized: "The connection to the device broke off. Check Wi-Fi and try again."))
         }
     }
 
     private static var rejectedEntry: Entry {
-        ("LS-203", String(localized: "Pairing rejected"),
+        (rejectedCode, String(localized: "Pairing rejected"),
          String(localized: "The device did not accept the pairing file. Check that the hostname in LocSim's settings matches the one used by the setup script, or create a new file, for example after an iOS update."))
     }
 }
