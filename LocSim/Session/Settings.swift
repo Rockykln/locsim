@@ -25,6 +25,10 @@ enum SettingsKey {
     static let iCloudFavorites = "iCloudFavorites"
     /// Whether this device has merged with the list in iCloud since it was turned on.
     static let iCloudFavoritesJoined = "iCloudFavoritesJoined"
+    /// Joined without having heard from iCloud; what it sends is only added on other devices.
+    static let iCloudFavoritesBlind = "iCloudFavoritesBlind"
+    /// Favorites deleted on this device before it joined, so joining does not bring them back.
+    static let iCloudFavoritesDeleted = "iCloudFavoritesDeletedBeforeJoin"
     /// Favorites that a change from iCloud removed on this device, to restore them.
     static let favoritesRemovedByICloud = "favoritesRemovedByICloud"
 }
@@ -137,7 +141,7 @@ final class FavoriteList: ObservableObject {
             // So Siri knows the favorite names in "Set LocSim to …".
             LocSimShortcuts.updateAppShortcutParameters()
             WidgetSync.setFavorites(items)
-            if !fromICloud { FavoriteSync.push(items) }
+            if !fromICloud { FavoriteSync.localChange(from: oldValue, to: items) }
         }
     }
 
@@ -171,6 +175,13 @@ final class FavoriteList: ObservableObject {
     }
 
     private static let keptLimit = 200
+
+    /// A merge with the list from iCloud: nothing is removed, and FavoriteSync sends it itself.
+    func setFromSync(_ merged: [Favorite]) {
+        fromICloud = true
+        items = merged
+        fromICloud = false
+    }
 
     /// Adds the favorites that iCloud removed back to the list, which sends them to iCloud again.
     func restoreRemovedByICloud() {
