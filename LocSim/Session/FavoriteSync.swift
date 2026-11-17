@@ -104,6 +104,9 @@ enum FavoriteSync {
         // Plain values: the log evaluates its arguments later, outside the main actor.
         let wasJoined = joined, count = remote?.favorites.count ?? -1
         log.debug("Started, joined: \(wasJoined), favorites in iCloud: \(count)")
+        // Joined without having heard from iCloud: the local copy may be its own addition or
+        // old, so only a change notification is acted on.
+        if joined, blind { return }
         if joined, let remote {
             apply(remote, list)
             return
