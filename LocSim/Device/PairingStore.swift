@@ -1,8 +1,8 @@
 import Foundation
 import LocSimCore
 
-/// Stores the imported RPPairing file. Files dropped into Documents are imported
-/// on next access.
+/// Stores the imported RPPairing file. Files dropped into Documents are imported by `adoptNow()`,
+/// whose caller handles a replaced file, and when a connection starts.
 enum PairingStore {
     private static let fileName = "rppairing.plist"
     // Names the setup script writes; only these are ever deleted. Other .plist files with "pair"
@@ -18,9 +18,14 @@ enum PairingStore {
         return dir.appendingPathComponent(fileName)
     }
 
+    /// Only looks; a dropped file is not taken in here, so a replaced file is never missed.
     static var exists: Bool {
-        adoptDroppedFile()
-        return FileManager.default.fileExists(atPath: storeURL.path)
+        FileManager.default.fileExists(atPath: storeURL.path)
+    }
+
+    /// A file in Documents that may be a pairing file, not yet imported.
+    static var hasDroppedFile: Bool {
+        !droppedFiles().isEmpty
     }
 
     /// Imports a dropped file and reports whether one replaced or added the stored file.
@@ -34,7 +39,6 @@ enum PairingStore {
     }
 
     static func load() throws -> Data {
-        adoptDroppedFile()
         guard let data = try? Data(contentsOf: storeURL) else {
             throw DeviceError(.pairingMissing, "No pairing file imported")
         }

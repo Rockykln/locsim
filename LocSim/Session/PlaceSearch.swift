@@ -67,7 +67,7 @@ final class PlaceSearch: NSObject, ObservableObject, MKLocalSearchCompleterDeleg
     /// Places from Maps links: coordinates in the link itself, a short Apple Maps link that has to be
     /// followed first, or only a name or address to search for.
     func place(fromLink text: String) async throws -> Place? {
-        guard let url = MapLink.url(in: text), MapLink.isMap(url) else { return nil }
+        guard let url = MapLink.url(in: text), MapLink.isPlaceLink(url) else { return nil }
         if MapLink.isGoogleShortLink(url) { throw UnsupportedMapLink() }
         var link = url
         if MapLink.isAppleShortLink(url) {

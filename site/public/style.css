@@ -26,7 +26,9 @@
 /* Chosen with the theme button: the browser must not repaint it. */
 :root[data-theme="light"] { color-scheme: light only; }
 
-:root[data-theme="dark"] {
+/* Dark palette, written once. theme.js sets data-scheme to the theme in use: the chosen one,
+   or the system's while the theme is "auto". Without JavaScript the page stays light. */
+:root[data-scheme="dark"] {
   --bg: #0e0d17;
   --bg-alt: #161423;
   --text: #f3f1f8;
@@ -43,30 +45,9 @@
   --on-sky-muted: #d9d2ee;
   --glass: rgba(255, 255, 255, 0.1);
   --glass-line: rgba(255, 255, 255, 0.2);
-  color-scheme: dark;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0e0d17;
-    --bg-alt: #161423;
-    --text: #f3f1f8;
-    --muted: #a9a4b8;
-    --line: #2a2738;
-    --control-line: #66617a;
-    --accent: #ff6a5e;
-    --button: #f3f1f8;
-    --button-text: #17131f;
-    --code: #201d30;
-    --flag-ring: rgba(255, 255, 255, 0.28);
-    --sky: url("/img/sky-dark.webp");
-    --on-sky: #ffffff;
-    --on-sky-muted: #d9d2ee;
-    --glass: rgba(255, 255, 255, 0.1);
-    --glass-line: rgba(255, 255, 255, 0.2);
-    color-scheme: light dark;
-  }
-}
+:root[data-theme="dark"] { color-scheme: dark; }
 
 /* Base */
 
@@ -166,7 +147,6 @@ pre code { padding: 0; background: none; white-space: inherit; overflow-wrap: no
 
 .hero { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: center; gap: 2rem 4rem; padding-top: clamp(6.5rem, 12vh, 9rem); padding-bottom: clamp(2.5rem, 6vh, 4.5rem); }
 .hero-phone { display: flex; justify-content: center; }
-.hero-phone picture { display: contents; }
 .hero-phone img { display: block; width: min(100%, 20rem, calc((100vh - 9rem) * 0.47)); min-width: 14rem; height: auto; }
 
 /* Sections */
@@ -335,9 +315,8 @@ details p { margin: 0.5rem 0 0.25rem; color: var(--muted); }
 
 /* Images per theme */
 
-:root[data-theme="dark"] .only-light, :root[data-theme="light"] .only-dark { display: none; }
-@media (prefers-color-scheme: light) { :root:not([data-theme]) .only-dark { display: none; } }
-@media (prefers-color-scheme: dark) { :root:not([data-theme]) .only-light { display: none; } }
+/* Hidden images with loading="lazy" are never fetched, so only one variant loads. */
+:root[data-scheme="dark"] .only-light, :root:not([data-scheme="dark"]) .only-dark { display: none; }
 
 /* Footer */
 
@@ -412,8 +391,7 @@ html.dialog-open, html.dialog-open body { overflow: hidden; overscroll-behavior:
 button.button { font: inherit; font-size: 0.98rem; font-weight: 600; cursor: pointer; }
 .beta-dialog { width: min(34rem, calc(100% - 2rem)); max-height: calc(100dvh - 2rem); padding: 0; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28); overscroll-behavior: contain; }
 .beta-dialog::backdrop { background: rgba(14, 13, 23, 0.5); }
-:root[data-theme="dark"] .beta-dialog::backdrop { background: rgba(0, 0, 0, 0.72); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .beta-dialog::backdrop { background: rgba(0, 0, 0, 0.72); } }
+:root[data-scheme="dark"] .beta-dialog::backdrop { background: rgba(0, 0, 0, 0.72); }
 .beta-dialog section { padding: 1.4rem 1.5rem 1.5rem; }
 .beta-dialog section[hidden] { display: none; }
 .beta-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
@@ -500,7 +478,7 @@ pre.has-copy { padding-right: 3.25rem; }
 
 @media print {
   /* Light colors in every theme, so nothing prints dark on dark. */
-  :root, :root[data-theme="dark"], :root:not([data-theme="light"]) {
+  :root, :root[data-scheme="dark"] {
     --bg: #ffffff; --bg-alt: #ffffff; --text: #000000; --muted: #333333; --line: #cccccc; --control-line: #999999; --accent: #000000;
     --button: #000000; --button-text: #ffffff; --code: #f2f2f2; --on-sky: #000000; --on-sky-muted: #333333;
     --glass: transparent; --glass-line: #cccccc; color-scheme: light;

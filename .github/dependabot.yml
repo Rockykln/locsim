@@ -1,7 +1,7 @@
 version: 2
 updates:
-  # Keeps the SHA-pinned actions current. The idevice and XcodeGen downloads in the
-  # workflows are pinned by version and SHA-256 and are updated by hand.
+  # Keeps the SHA-pinned actions current. The idevice and XcodeGen downloads in
+  # .github/actions/prepare-ios are pinned by version and SHA-256 and are updated by hand.
   - package-ecosystem: github-actions
     directory: /
     schedule:

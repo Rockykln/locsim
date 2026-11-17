@@ -93,7 +93,8 @@ enum LocationIntentRunner {
         let session = SimulationSession.shared
         // Without the one-time setup there is nothing to connect to; say so instead of failing later.
         // The preview only moves the pin; a Shortcut must not report a location as simulated.
-        guard PairingStore.exists || Demo.isOn else {
+        // A file the setup script copied in is taken in when the connection starts.
+        guard PairingStore.exists || PairingStore.hasDroppedFile || Demo.isOn else {
             throw LocationIntentError(String(localized: "LocSim is not set up yet. Open LocSim and follow the setup steps."))
         }
         if session.isPreview { session.endPreview() }

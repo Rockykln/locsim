@@ -91,48 +91,30 @@ struct SettingsView: View {
                 }
             }
             .fileImporter(isPresented: $importing, allowedContentTypes: [.propertyList, .xml, .data]) { result in
-                do {
-                    try PairingStore.importFile(at: result.get())
-                    pairingMessage = nil
-                    pairingReplaced()
-                    announce(String(localized: "Pairing file imported"))
-                } catch {
-                    let deviceError = error as? DeviceError ?? DeviceError(.pairingInvalid, error.localizedDescription)
-                    pairingMessage = AppError(deviceError).summary
-                    announce(pairingMessage)
-                }
+                pairingMessage = session.importPairing(result)
+                announce(pairingMessage ?? String(localized: "Pairing file imported"))
                 refreshPairing()
             }
         }
     }
 
-    /// Adopts a file the setup script dropped into Documents. While the setup steps are open
-    /// they do this themselves, so a replaced file is handled once.
+    /// Takes in a file the setup script dropped into Documents and shows the current state.
     private func refreshPairing() {
-        guard !showWelcome else { return }
-        if PairingStore.adoptNow() { pairingReplaced() }
+        session.adoptDroppedPairing()
         hasPairing = PairingStore.exists
         rejectedDrop = PairingStore.rejectedDrop
         lockdownDrop = PairingStore.lockdownDrop
-    }
-
-    private func pairingReplaced() {
-        Task {
-            if session.isPreview { session.endPreview() }
-            await session.pairingChanged()
-            await session.checkNewPairing()
-        }
     }
 
     private var statusSection: some View {
         Section {
             HStack(spacing: 12) {
                 Circle()
-                    .fill(stateColor)
+                    .fill(session.statusColor)
                     .frame(width: 10, height: 10)
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(stateTitle)
+                    Text(session.statusTitle)
                         .font(.headline)
                     if let detail = stateDetail() {
                         Text(detail)
@@ -462,18 +444,6 @@ struct SettingsView: View {
         }
     }
 
-    // Until the device answers, the state still says active although the location is going.
-    private var stateTitle: String {
-        if session.isClearing { return String(localized: "Clearing") }
-        switch session.state {
-        case .idle: return String(localized: "Not active")
-        case .connecting: return String(localized: "Connecting")
-        case .active: return session.isPreview ? String(localized: "Preview") : String(localized: "Active")
-        case .reconnecting: return String(localized: "Reconnecting")
-        case .failed(let error): return error.title
-        }
-    }
-
     /// `spoken` reads the coordinate in words for VoiceOver.
     private func stateDetail(spoken: Bool = false) -> String? {
         if session.isClearing { return nil }
@@ -488,16 +458,6 @@ struct SettingsView: View {
             return parts.joined(separator: " · ")
         case .reconnecting(let error), .failed(let error): return error.messageWithCode
         default: return nil
-        }
-    }
-
-    private var stateColor: Color {
-        if session.isClearing { return .orange }
-        switch session.state {
-        case .active: return .green
-        case .failed: return .red
-        case .connecting, .reconnecting: return .orange
-        case .idle: return .gray
         }
     }
 }

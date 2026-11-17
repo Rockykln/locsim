@@ -204,7 +204,38 @@ final class SimulationSession: ObservableObject {
         guard !isSimulated, !clearing, let active, state == .active || state.isReconnecting else { return nil }
         return (active, activeName)
     }
+    /// The place of a Clear that did not finish: the device may still simulate it.
+    private(set) var unclearedPlace: (coordinate: CLLocationCoordinate2D, name: String?)?
+    /// A location is simulated, or a Clear did not finish and the device may still keep it.
+    var mayStillBeSimulated: Bool { simulatedPlace != nil || unclearedPlace != nil }
     var hasPairing: Bool { isSimulated || PairingStore.exists }
+
+    /// Takes in a pairing file the setup script copied into Documents. Left for later while a
+    /// connection is being made, which takes it in itself.
+    func adoptDroppedPairing() {
+        guard !busy, !clearing, PairingStore.adoptNow() else { return }
+        write("pairing file taken from Documents")
+        Task { await pairingFileReplaced() }
+    }
+
+    /// Imports a pairing file picked in Files. Returns the error to show, if any.
+    func importPairing(_ result: Result<URL, Error>) -> String? {
+        do {
+            try PairingStore.importFile(at: result.get())
+            Task { await pairingFileReplaced() }
+            return nil
+        } catch {
+            let deviceError = error as? DeviceError ?? DeviceError(.pairingInvalid, error.localizedDescription)
+            return AppError(deviceError).summary
+        }
+    }
+
+    /// A new pairing file was imported: the old connection goes, the new file is checked.
+    func pairingFileReplaced() async {
+        if isPreview { endPreview() }
+        await pairingChanged()
+        await checkNewPairing()
+    }
     func requestLocationPermission() { keepAlive.requestPermission() }
     var canClear: Bool { active != nil || state == .connecting || linkOpen }
     /// A Set, a Clear or a queued Set has not finished yet.
@@ -302,6 +333,7 @@ final class SimulationSession: ObservableObject {
             activeSet = set
             activeName = name
             askedCode = nil
+            unclearedPlace = nil
             active = coordinate
             state = .active
             outcome = .set
@@ -318,7 +350,8 @@ final class SimulationSession: ObservableObject {
             stopResending(keepQueued: true)
             active = nil
             // The device side may still be open (e.g. DDI not mounted); the next Set starts fresh.
-            await link.close()
+            // A stuck link is replaced at once: closing it would wait for the call that hangs.
+            if !renewLinkIfStuck() { await link.close() }
             syncLink()
             // A Clear made while the link closed has the last word.
             guard started == generation else { return }
@@ -357,10 +390,15 @@ final class SimulationSession: ObservableObject {
         }
         // Nothing may resend or set while the device clears; a Set made meanwhile runs afterwards.
         clearing = true
+        let clearedPlace = active.map { (coordinate: $0, name: activeName) }
         active = nil
         let finished = await clearLink()
         // The state is written before anything else can run, so a Set made next is not overwritten.
-        if finished {
+        // A Set queued while the device cleared already shows that it is connecting and runs next.
+        unclearedPlace = finished ? nil : clearedPlace
+        if pending != nil {
+            if !finished { write("clearing did not finish, the queued Set runs next") }
+        } else if finished {
             state = .idle
         } else {
             fail(DeviceError(.clearLocation, "Clearing the location did not finish"))
@@ -413,6 +451,7 @@ final class SimulationSession: ObservableObject {
     // The clear only came through after the timeout, so its error no longer applies.
     private func recoverFromLateClear(_ started: Int) {
         guard started == generation, state.error?.code == AppError.clearFailedCode else { return }
+        unclearedPlace = nil
         state = .idle
         releaseIfIdleInBackground()
     }
@@ -424,7 +463,7 @@ final class SimulationSession: ObservableObject {
         active = nil
         state = .idle
         write("disconnected")
-        await link.close()
+        if !renewLinkIfStuck() { await link.close() }
         syncLink()
         await releaseTunnelIfIdle()
     }
@@ -498,6 +537,7 @@ final class SimulationSession: ObservableObject {
 
     /// Sends right away after returning to the app instead of waiting for the next interval.
     func becameActive() async {
+        adoptDroppedPairing()
         lastSent = sentAt
         TimeZoneWatch.shared.check()
         if active != nil {
@@ -672,6 +712,12 @@ final class SimulationSession: ObservableObject {
 
     /// Opens the RPPairing tunnel: last known or default port first, Bonjour only when that fails.
     private func openTunnel(_ started: Int) async throws {
+        // A file the setup script copied in meanwhile is used for this connection right away.
+        if PairingStore.adoptNow() {
+            PairingStore.clearRejection()
+            setPairingCheck(.notChecked)
+            write("pairing file taken from Documents")
+        }
         let pairing = try PairingStore.load()
         let host = TunnelAddress.peer
         try await tunnel.start()
@@ -686,6 +732,8 @@ final class SimulationSession: ObservableObject {
         var localPorts: Set<UInt16> = []
 
         func attempt(_ candidate: UInt16) async throws -> Bool {
+            // A Clear or disconnect while ports are tried stops the search here.
+            try ensureCurrent(started)
             do {
                 try await link.openTunnel(LinkConfig(host: host, port: candidate, hostname: hostname, pairing: pairing))
                 try ensureCurrent(started)
@@ -758,9 +806,9 @@ final class SimulationSession: ObservableObject {
     // Which failure to report when several ports fail: a refusal says the most, "socket io" the least.
     private static func rank(_ error: Error) -> Int {
         switch AppError(error).code {
-        case "LS-203": return 3
-        case "LS-201", "LS-206": return 2
-        case "LS-202": return 0
+        case AppError.rejectedCode: return 3
+        case AppError.unreachableCode, AppError.connectionFailedCode: return 2
+        case AppError.pairingServiceCode: return 0
         default: return 1
         }
     }
@@ -818,8 +866,7 @@ final class SimulationSession: ObservableObject {
     private func checkFix(_ fix: CLLocationCoordinate2D, accuracy: CLLocationAccuracy) {
         // A Set or resend in progress sends anyway.
         guard let active, !isSimulated, state == .active, !busy, !clearing else { return }
-        let distance = CLLocation(latitude: fix.latitude, longitude: fix.longitude)
-            .distance(from: CLLocation(latitude: active.latitude, longitude: active.longitude))
+        let distance = fix.distance(to: active)
         // A coarse fix that may still be at the simulated place is no reset.
         guard distance - max(0, accuracy) > KeepAlive.jump else { return }
         // A reset that keeps coming back must not turn into a send loop.
@@ -864,7 +911,7 @@ final class SimulationSession: ObservableObject {
         let started = generation
         stopResending(keepQueued: true)
         active = nil
-        await link.close()
+        if !renewLinkIfStuck() { await link.close() }
         syncLink()
         guard started == generation else { return }
         fail(error)
