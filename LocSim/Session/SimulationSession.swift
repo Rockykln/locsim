@@ -204,6 +204,10 @@ final class SimulationSession: ObservableObject {
         guard !isSimulated, !clearing, let active, state == .active || state.isReconnecting else { return nil }
         return (active, activeName)
     }
+    /// The place of a Clear that did not finish: the device may still simulate it.
+    private(set) var unclearedPlace: (coordinate: CLLocationCoordinate2D, name: String?)?
+    /// A location is simulated, or a Clear did not finish and the device may still keep it.
+    var mayStillBeSimulated: Bool { simulatedPlace != nil || unclearedPlace != nil }
     var hasPairing: Bool { isSimulated || PairingStore.exists }
 
     /// Takes in a pairing file the setup script copied into Documents. Left for later while a
@@ -329,6 +333,7 @@ final class SimulationSession: ObservableObject {
             activeSet = set
             activeName = name
             askedCode = nil
+            unclearedPlace = nil
             active = coordinate
             state = .active
             outcome = .set
@@ -385,10 +390,12 @@ final class SimulationSession: ObservableObject {
         }
         // Nothing may resend or set while the device clears; a Set made meanwhile runs afterwards.
         clearing = true
+        let clearedPlace = active.map { ($0, activeName) }
         active = nil
         let finished = await clearLink()
         // The state is written before anything else can run, so a Set made next is not overwritten.
         // A Set queued while the device cleared already shows that it is connecting and runs next.
+        unclearedPlace = finished ? nil : clearedPlace
         if pending != nil {
             if !finished { write("clearing did not finish, the queued Set runs next") }
         } else if finished {
@@ -444,6 +451,7 @@ final class SimulationSession: ObservableObject {
     // The clear only came through after the timeout, so its error no longer applies.
     private func recoverFromLateClear(_ started: Int) {
         guard started == generation, state.error?.code == AppError.clearFailedCode else { return }
+        unclearedPlace = nil
         state = .idle
         releaseIfIdleInBackground()
     }

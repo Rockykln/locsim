@@ -110,11 +110,11 @@ struct SettingsView: View {
         Section {
             HStack(spacing: 12) {
                 Circle()
-                    .fill(stateColor)
+                    .fill(session.statusColor)
                     .frame(width: 10, height: 10)
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(stateTitle)
+                    Text(session.statusTitle)
                         .font(.headline)
                     if let detail = stateDetail() {
                         Text(detail)
@@ -444,18 +444,6 @@ struct SettingsView: View {
         }
     }
 
-    // Until the device answers, the state still says active although the location is going.
-    private var stateTitle: String {
-        if session.isClearing { return String(localized: "Clearing") }
-        switch session.state {
-        case .idle: return String(localized: "Not active")
-        case .connecting: return String(localized: "Connecting")
-        case .active: return session.isPreview ? String(localized: "Preview") : String(localized: "Active")
-        case .reconnecting: return String(localized: "Reconnecting")
-        case .failed(let error): return error.title
-        }
-    }
-
     /// `spoken` reads the coordinate in words for VoiceOver.
     private func stateDetail(spoken: Bool = false) -> String? {
         if session.isClearing { return nil }
@@ -470,16 +458,6 @@ struct SettingsView: View {
             return parts.joined(separator: " · ")
         case .reconnecting(let error), .failed(let error): return error.messageWithCode
         default: return nil
-        }
-    }
-
-    private var stateColor: Color {
-        if session.isClearing { return .orange }
-        switch session.state {
-        case .active: return .green
-        case .failed: return .red
-        case .connecting, .reconnecting: return .orange
-        case .idle: return .gray
         }
     }
 }

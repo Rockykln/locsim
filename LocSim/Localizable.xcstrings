@@ -1472,6 +1472,88 @@
         }
       }
     },
+    "Clearing the location did not finish. The device may still simulate %@." : {
+      "comment" : "Shortcuts result when the last Clear did not finish, followed by the place",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Zurücksetzen des Standorts wurde nicht abgeschlossen. Das Gerät simuliert eventuell noch %@."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se terminó de borrar la ubicación. Es posible que el dispositivo aún simule %@."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’effacement de la position ne s’est pas terminé. L’appareil simule peut-être encore %@."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La cancellazione della posizione non è terminata. Il dispositivo potrebbe ancora simulare %@."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het wissen van de locatie is niet voltooid. Het apparaat simuleert mogelijk nog %@."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A limpeza da localização não terminou. O aparelho talvez ainda simule %@."
+          }
+        }
+      }
+    },
+    "Clearing the location did not finish. The device may still simulate it." : {
+      "comment" : "Shortcuts result when the last Clear did not finish",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Zurücksetzen des Standorts wurde nicht abgeschlossen. Das Gerät simuliert ihn eventuell noch."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se terminó de borrar la ubicación. Es posible que el dispositivo aún la simule."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’effacement de la position ne s’est pas terminé. L’appareil la simule peut-être encore."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La cancellazione della posizione non è terminata. Il dispositivo potrebbe ancora simularla."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het wissen van de locatie is niet voltooid. Het apparaat simuleert hem mogelijk nog."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A limpeza da localização não terminou. O aparelho talvez ainda a simule."
+          }
+        }
+      }
+    },
     "Commit" : {
       "comment" : "Git commit of the build",
       "localizations" : {

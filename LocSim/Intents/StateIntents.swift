@@ -20,8 +20,13 @@ struct IsLocationSimulatedIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult & ReturnsValue<Bool> & ProvidesDialog {
-        let simulated = SimulationSession.shared.simulatedPlace != nil
-        return .result(value: simulated, dialog: simulated ? "A location is simulated." : "No location is simulated.")
+        let session = SimulationSession.shared
+        // After a Clear that did not finish the device may still report the simulated place.
+        let simulated = session.mayStillBeSimulated
+        let dialog: IntentDialog = session.simulatedPlace == nil && simulated
+            ? "Clearing the location did not finish. The device may still simulate it."
+            : simulated ? "A location is simulated." : "No location is simulated."
+        return .result(value: simulated, dialog: dialog)
     }
 }
 
@@ -40,7 +45,8 @@ struct GetSimulatedLocationIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult & ReturnsValue<CLPlacemark> & ProvidesDialog {
-        guard let place = SimulationSession.shared.simulatedPlace else {
+        let session = SimulationSession.shared
+        guard let place = session.simulatedPlace ?? session.unclearedPlace else {
             throw LocationIntentError(String(localized: "No location is simulated."))
         }
         let c = place.coordinate
@@ -48,6 +54,9 @@ struct GetSimulatedLocationIntent: AppIntent {
         // A placemark, so Shortcuts treats it as a location: latitude, longitude, name, maps.
         let placemark = CLPlacemark(
             location: CLLocation(latitude: c.latitude, longitude: c.longitude), name: name, postalAddress: nil)
+        if session.simulatedPlace == nil {
+            return .result(value: placemark, dialog: "Clearing the location did not finish. The device may still simulate \(name).")
+        }
         return .result(value: placemark, dialog: "LocSim simulates \(name).")
     }
 }
