@@ -103,24 +103,30 @@ fi
 DIR="$CACHE/idevice-tools-$ASSET-$VERSION"
 BIN="$DIR/idevice-tools"
 LIST="$DIR/idevice_id"
+# The download stays in the cache and is checked against the pinned checksum on every run;
+# the programs are unpacked from it each time, so a changed file in the cache is never run.
+ZIP="$CACHE/idevice-tools-$ASSET-$VERSION.zip"
 
-if [[ "$(cat "$DIR/.verified" 2>/dev/null)" != "$VERSION $SHA" || ! -x "$BIN" || ! -x "$LIST" ]]; then
-  rm -rf "$DIR"
-  mkdir -p "$DIR"
-  ZIP="$DIR/idevice-tools-$ASSET-$VERSION.zip"
+zip_sha() {
+  if command -v sha256sum >/dev/null; then
+    sha256sum "$ZIP" | awk '{print $1}'
+  else
+    shasum -a 256 "$ZIP" | awk '{print $1}'
+  fi
+}
+
+mkdir -p "$CACHE"
+if [[ ! -f "$ZIP" || "$(zip_sha)" != "$SHA" ]]; then
+  rm -f "$ZIP"
   URL="https://github.com/jkcoxson/idevice/releases/download/$VERSION/idevice-tools-$ASSET-$VERSION.zip"
   if ! curl -fL --proto '=https' --proto-redir '=https' --retry 3 --connect-timeout 15 -o "$ZIP" "$URL"; then
-    rm -rf "$DIR"
+    rm -f "$ZIP"
     echo "Download failed: $URL" >&2
     exit 1
   fi
-  if command -v sha256sum >/dev/null; then
-    actual="$(sha256sum "$ZIP" | awk '{print $1}')"
-  else
-    actual="$(shasum -a 256 "$ZIP" | awk '{print $1}')"
-  fi
+  actual="$(zip_sha)"
   if [[ "$actual" != "$SHA" ]]; then
-    rm -rf "$DIR"
+    rm -f "$ZIP"
     {
       echo "Checksum mismatch for $(basename "$ZIP"), the file was deleted."
       echo "  expected: $SHA"
@@ -128,13 +134,13 @@ if [[ "$(cat "$DIR/.verified" 2>/dev/null)" != "$VERSION $SHA" || ! -x "$BIN" ||
     } >&2
     exit 1
   fi
-  unzip -q -o "$ZIP" idevice-tools idevice_id -d "$DIR"
-  rm -f "$ZIP"
-  chmod +x "$BIN" "$LIST"
-  if [[ "$ASSET" != linux ]]; then
-    xattr -d com.apple.quarantine "$BIN" "$LIST" 2>/dev/null || true
-  fi
-  echo "$VERSION $SHA" > "$DIR/.verified"
+fi
+rm -rf "$DIR"
+mkdir -p "$DIR"
+unzip -q -o "$ZIP" idevice-tools idevice_id -d "$DIR"
+chmod +x "$BIN" "$LIST"
+if [[ "$ASSET" != linux ]]; then
+  xattr -d com.apple.quarantine "$BIN" "$LIST" 2>/dev/null || true
 fi
 
 checklist() {
@@ -203,6 +209,10 @@ fi
 chmod 600 "$TMP"
 echo
 echo "Hostname: $HOSTNAME_ARG (must match LocSim > Settings > Hostname)"
+if [[ "$ASSET" == linux ]]; then LOCKDOWN="/var/lib/lockdown"; else LOCKDOWN="/var/db/lockdown"; fi
+echo "Trusting this computer left a pairing record for the device in $LOCKDOWN."
+echo "To withdraw the trust, delete it there, or on the device use Settings > Developer >"
+echo "Clear Trusted Computers; LocSim then needs a new pairing file."
 # LocSim picks the file up from its Documents folder and removes it there.
 # The tool can report errors on stderr with exit code 0, so stderr counts as failure.
 if afc_err="$("$BIN" ${UDID_ARGS[@]+"${UDID_ARGS[@]}"} afc --documents com.rockykln.locsim upload "$TMP" /Documents/rppairing.plist 2>&1 >/dev/null)" && [[ -z "$afc_err" ]]; then
