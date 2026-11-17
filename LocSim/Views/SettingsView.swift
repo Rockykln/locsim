@@ -29,6 +29,8 @@ struct SettingsView: View {
     @State private var importing = false
     // Read in onAppear: an initial value here would touch the disk every time the parent redraws.
     @State private var hasPairing = false
+    @State private var copiesInFiles: [String] = []
+    @State private var pickedFile = false
     // Copied from PairingStore, which is not observed, so the footer redraws when it changes.
     @State private var rejectedDrop = false
     @State private var lockdownDrop = false
@@ -91,48 +93,32 @@ struct SettingsView: View {
                 }
             }
             .fileImporter(isPresented: $importing, allowedContentTypes: [.propertyList, .xml, .data]) { result in
-                do {
-                    try PairingStore.importFile(at: result.get())
-                    pairingMessage = nil
-                    pairingReplaced()
-                    announce(String(localized: "Pairing file imported"))
-                } catch {
-                    let deviceError = error as? DeviceError ?? DeviceError(.pairingInvalid, error.localizedDescription)
-                    pairingMessage = AppError(deviceError).summary
-                    announce(pairingMessage)
-                }
+                pairingMessage = session.importPairing(result)
+                pickedFile = pairingMessage == nil
+                announce(pairingMessage ?? String(localized: "Pairing file imported"))
                 refreshPairing()
             }
         }
     }
 
-    /// Adopts a file the setup script dropped into Documents. While the setup steps are open
-    /// they do this themselves, so a replaced file is handled once.
+    /// Takes in a file the setup script dropped into Documents and shows the current state.
     private func refreshPairing() {
-        guard !showWelcome else { return }
-        if PairingStore.adoptNow() { pairingReplaced() }
+        session.adoptDroppedPairing()
         hasPairing = PairingStore.exists
         rejectedDrop = PairingStore.rejectedDrop
         lockdownDrop = PairingStore.lockdownDrop
-    }
-
-    private func pairingReplaced() {
-        Task {
-            if session.isPreview { session.endPreview() }
-            await session.pairingChanged()
-            await session.checkNewPairing()
-        }
+        copiesInFiles = PairingStore.copiesInDocuments
     }
 
     private var statusSection: some View {
         Section {
             HStack(spacing: 12) {
                 Circle()
-                    .fill(stateColor)
+                    .fill(session.statusColor)
                     .frame(width: 10, height: 10)
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(stateTitle)
+                    Text(session.statusTitle)
                         .font(.headline)
                     if let detail = stateDetail() {
                         Text(detail)
@@ -199,6 +185,12 @@ struct SettingsView: View {
             } else if lockdownDrop, !hasPairing {
                 // Kept: it may be the user's own file for another tool.
                 ErrorFooter(String(localized: "This is a lockdown pairing file. LocSim needs the RPPairing file from the setup script."))
+            } else if !copiesInFiles.isEmpty {
+                // Never deleted by LocSim: they may be the user's own copies.
+                Text("A pairing file is still in LocSim's folder in Files: \(copiesInFiles.formatted(.list(type: .and))). It contains a key for this device and is part of device backups. Delete it there if you no longer need it.")
+                    .foregroundStyle(.orange)
+            } else if pickedFile {
+                Text("The file you picked stays where it was. It contains a key for this device; delete it if it is in iCloud Drive or another shared place.")
             } else {
                 Text("Created once with the setup script on a computer.")
             }
@@ -289,7 +281,7 @@ struct SettingsView: View {
             // Applies now, not only after the current wait.
             .onChange(of: resend) { _, _ in session.resendIntervalChanged() }
             Toggle(isOn: $keepAlive) {
-                item("Keep Alive in Background", "moon.fill", .indigo)
+                item("Keep Location in Background", "moon.fill", .indigo)
             }
             .onChange(of: keepAlive) { _, on in session.keepAliveChanged(on) }
         } header: {
@@ -299,7 +291,7 @@ struct SettingsView: View {
             if !port.trimmingCharacters(in: .whitespaces).isEmpty, PairingPorts.manual(port) == nil {
                 ErrorFooter(String(localized: "Port must be a number from 1 to 65535. Leave it empty to find it automatically."))
             } else {
-                Text("Connecting needs Wi-Fi, then cellular works too. “Keep Alive in Background” keeps the simulation running in the background.")
+                Text("Connecting needs Wi-Fi, then cellular works too. “Keep Location in Background” keeps the simulated location while LocSim is in the background and sets it again if iOS resets it.")
             }
         }
     }
@@ -462,18 +454,6 @@ struct SettingsView: View {
         }
     }
 
-    // Until the device answers, the state still says active although the location is going.
-    private var stateTitle: String {
-        if session.isClearing { return String(localized: "Clearing") }
-        switch session.state {
-        case .idle: return String(localized: "Not active")
-        case .connecting: return String(localized: "Connecting")
-        case .active: return session.isPreview ? String(localized: "Preview") : String(localized: "Active")
-        case .reconnecting: return String(localized: "Reconnecting")
-        case .failed(let error): return error.title
-        }
-    }
-
     /// `spoken` reads the coordinate in words for VoiceOver.
     private func stateDetail(spoken: Bool = false) -> String? {
         if session.isClearing { return nil }
@@ -488,16 +468,6 @@ struct SettingsView: View {
             return parts.joined(separator: " · ")
         case .reconnecting(let error), .failed(let error): return error.messageWithCode
         default: return nil
-        }
-    }
-
-    private var stateColor: Color {
-        if session.isClearing { return .orange }
-        switch session.state {
-        case .active: return .green
-        case .failed: return .red
-        case .connecting, .reconnecting: return .orange
-        case .idle: return .gray
         }
     }
 }

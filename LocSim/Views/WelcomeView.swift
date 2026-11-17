@@ -91,16 +91,9 @@ struct WelcomeView: View {
                 .padding()
             }
             .fileImporter(isPresented: $importing, allowedContentTypes: [.propertyList, .xml, .data]) { result in
-                do {
-                    try PairingStore.importFile(at: result.get())
-                    message = nil
-                    pairingReplaced()
-                } catch {
-                    let deviceError = error as? DeviceError ?? DeviceError(.pairingInvalid, error.localizedDescription)
-                    message = AppError(deviceError).summary
-                    // Shown below the button, where VoiceOver would not find it on its own.
-                    if let message { AccessibilityNotification.Announcement(message).post() }
-                }
+                message = session.importPairing(result)
+                // Shown below the button, where VoiceOver would not find it on its own.
+                if let message { AccessibilityNotification.Announcement(message).post() }
                 readPairing()
             }
             // The setup script copies the file in over USB while this screen is open.
@@ -110,35 +103,22 @@ struct WelcomeView: View {
                     do { try await Task.sleep(nanoseconds: 2_000_000_000) } catch { return }
                     guard scenePhase == .active else { continue }
                     readPairing()
-                    if hasPairing { pairingReplaced() }
                 }
             }
-            .onAppear {
-                if PairingStore.adoptNow() { pairingReplaced() }
-                readPairing()
-            }
+            .onAppear(perform: readPairing)
             // Picks up a file copied through the Files tab while the app was in the background.
             .onChange(of: scenePhase) { _, phase in
                 guard phase == .active else { return }
-                let replaced = PairingStore.adoptNow()
-                let hadPairing = hasPairing
                 readPairing()
-                if replaced || (hasPairing && !hadPairing) { pairingReplaced() }
             }
         }
     }
 
+    /// Takes in a file the setup script dropped into Documents and shows the current state.
     private func readPairing() {
+        session.adoptDroppedPairing()
         hasPairing = PairingStore.exists
         rejectedDrop = PairingStore.rejectedDrop
-    }
-
-    private func pairingReplaced() {
-        Task {
-            if session.isPreview { session.endPreview() }
-            await session.pairingChanged()
-            await session.checkNewPairing()
-        }
     }
 
     private func step<Action: View>(

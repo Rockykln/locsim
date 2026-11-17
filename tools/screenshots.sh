@@ -218,7 +218,12 @@ shoot_live() {
         state=$(python3 "$ROOT/tools/live-check.py" "$BUILD/final.bmp" final) || return 0
         case "$state" in lit*) return 0 ;; esac
         n=$((n + 1))
-        [ "$n" -lt 8 ] || { echo "  the saved shot still shows: ${state% *}" >&2; return 1; }
+        if [ "$n" -ge 8 ]; then
+            # lock_screen accepts a hint that does not go away; so does the saved shot.
+            case "$state" in hint*) echo "  saved shot keeps \"Swipe up to open\", using it"; return 0 ;; esac
+            echo "  the saved shot still shows: ${state% *}" >&2
+            return 1
+        fi
         echo "  saved shot shows: ${state% *}, taking it again"
         sleep 0.75
     done

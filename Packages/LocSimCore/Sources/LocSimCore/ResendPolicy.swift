@@ -5,8 +5,11 @@ public enum ResendPolicy {
     public static let maximum = 60
 
     public static func delay(base: Int, failures: Int) -> Int {
+        // A long interval stays as it is; only the retries after a failure are capped.
         let base = max(base, minimum)
         let failures = min(max(failures, 0), 4)
-        return failures == 0 ? base : min(base << failures, maximum)
+        guard failures > 0 else { return base }
+        let (doubled, overflow) = base.multipliedReportingOverflow(by: 1 << failures)
+        return max(min(base, maximum), overflow ? maximum : min(doubled, maximum))
     }
 }

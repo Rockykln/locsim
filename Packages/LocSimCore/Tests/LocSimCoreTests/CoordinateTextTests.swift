@@ -113,6 +113,9 @@ final class CoordinateTextTests: XCTestCase {
         // A name in geo: is a search, not 0,0.
         XCTAssertNil(CoordinateText.parse("geo:0,0?q=Eiffel+Tower"))
         XCTAssertEqual(MapLink.placeName(try XCTUnwrap(MapLink.url(in: "geo:0,0?q=Eiffel+Tower"))), "Eiffel Tower")
+        // A geo: URI with a name is searched by that name, like a Maps link.
+        XCTAssertTrue(MapLink.isPlaceLink(try XCTUnwrap(MapLink.url(in: "geo:0,0?q=Eiffel+Tower"))))
+        XCTAssertFalse(MapLink.isPlaceLink(try XCTUnwrap(URL(string: "https://example.com/?q=Cafe"))))
         assertParses("geo:0,0?q=48.85,2.35(Cafe)", 48.85, 2.35)
         assertParses("Pin: geo:48.85,2.35.", 48.85, 2.35)
         // Google place links: the place, not the map center.
@@ -213,6 +216,9 @@ final class CoordinateTextTests: XCTestCase {
         assertParses("40.7 N 74.0 Oeste", language: "de", 40.7, -74.0)
         assertParses("45.4 N 9.2 Est", language: "it", 45.4, 9.2)
         assertParses("40.7 N 74.0 West", language: "de", 40.7, -74.0)
+        // Catalan and Romanian, the other languages where O means west.
+        assertParses("41.38 N 2.17 Oest", language: "de", 41.38, -2.17)
+        assertParses("44.43 N 26.1 Vest", language: "de", 44.43, -26.1)
     }
 
     func testPortugueseAndDutchWords() {

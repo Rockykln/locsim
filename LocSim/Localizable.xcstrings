@@ -372,6 +372,47 @@
         }
       }
     },
+    "A pairing file is still in LocSim's folder in Files: %@. It contains a key for this device and is part of device backups. Delete it there if you no longer need it." : {
+      "comment" : "Settings, Pairing footer; the file names follow",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Im LocSim-Ordner in „Dateien“ liegt noch eine Pairing-Datei: %@. Sie enthält einen Schlüssel für dieses Gerät und ist Teil der Geräte-Backups. Lösche sie dort, wenn du sie nicht mehr brauchst."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todavía hay un archivo de emparejamiento en la carpeta de LocSim en Archivos: %@. Contiene una clave para este dispositivo y se incluye en sus copias de seguridad. Bórralo allí si ya no lo necesitas."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un fichier de jumelage se trouve encore dans le dossier de LocSim dans Fichiers : %@. Il contient une clé pour cet appareil et fait partie de ses sauvegardes. Supprimez-le là-bas si vous n’en avez plus besoin."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nella cartella di LocSim in File c’è ancora un file di abbinamento: %@. Contiene una chiave per questo dispositivo ed è incluso nei backup del dispositivo. Eliminalo lì se non ti serve più."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Er staat nog een koppelingsbestand in de map van LocSim in Bestanden: %@. Het bevat een sleutel voor dit apparaat en zit in de reservekopieën van het apparaat. Verwijder het daar als je het niet meer nodig hebt."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ainda há um arquivo de emparelhamento na pasta do LocSim no app Arquivos: %@. Ele contém uma chave para este aparelho e faz parte dos backups do aparelho. Apague-o lá se não precisar mais dele."
+          }
+        }
+      }
+    },
     "A place name or address, for example Eiffel Tower or Alexanderplatz, Berlin" : {
       "comment" : "App Intent parameter description",
       "localizations" : {
@@ -1472,6 +1513,88 @@
         }
       }
     },
+    "Clearing the location did not finish. The device may still simulate %@." : {
+      "comment" : "Shortcuts result when the last Clear did not finish, followed by the place",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Zurücksetzen des Standorts wurde nicht abgeschlossen. Das Gerät simuliert eventuell noch %@."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se terminó de borrar la ubicación. Es posible que el dispositivo aún simule %@."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’effacement de la position ne s’est pas terminé. L’appareil simule peut-être encore %@."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La cancellazione della posizione non è terminata. Il dispositivo potrebbe ancora simulare %@."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het wissen van de locatie is niet voltooid. Het apparaat simuleert mogelijk nog %@."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A limpeza da localização não terminou. O aparelho talvez ainda simule %@."
+          }
+        }
+      }
+    },
+    "Clearing the location did not finish. The device may still simulate it." : {
+      "comment" : "Shortcuts result when the last Clear did not finish",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Zurücksetzen des Standorts wurde nicht abgeschlossen. Das Gerät simuliert ihn eventuell noch."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se terminó de borrar la ubicación. Es posible que el dispositivo aún la simule."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’effacement de la position ne s’est pas terminé. L’appareil la simule peut-être encore."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La cancellazione della posizione non è terminata. Il dispositivo potrebbe ancora simularla."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het wissen van de locatie is niet voltooid. Het apparaat simuleert hem mogelijk nog."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A limpeza da localização não terminou. O aparelho talvez ainda a simule."
+          }
+        }
+      }
+    },
     "Commit" : {
       "comment" : "Git commit of the build",
       "localizations" : {
@@ -1554,42 +1677,42 @@
         }
       }
     },
-    "Connecting needs Wi-Fi, then cellular works too. “Keep Alive in Background” keeps the simulation running in the background." : {
+    "Connecting needs Wi-Fi, then cellular works too. “Keep Location in Background” keeps the simulated location while LocSim is in the background and sets it again if iOS resets it." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zum Verbinden ist WLAN nötig, danach reicht Mobilfunk. „Im Hintergrund aktiv halten“ lässt die Simulation im Hintergrund weiterlaufen."
+            "value" : "Zum Verbinden ist WLAN nötig, danach reicht Mobilfunk. „Standort im Hintergrund halten“ behält den simulierten Standort, während LocSim im Hintergrund ist, und setzt ihn erneut, wenn iOS ihn zurücksetzt."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Para conectar se necesita Wi-Fi; después bastan los datos móviles. “Mantener activo en segundo plano” mantiene la simulación en segundo plano."
+            "value" : "Para conectar se necesita Wi-Fi; después bastan los datos móviles. “Mantener la ubicación en segundo plano” conserva la ubicación simulada mientras LocSim está en segundo plano y la vuelve a establecer si iOS la restablece."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La connexion nécessite le Wi-Fi, ensuite le réseau cellulaire suffit. « Maintenir actif en arrière-plan » garde la simulation active en arrière-plan."
+            "value" : "La connexion nécessite le Wi-Fi, ensuite le réseau cellulaire suffit. « Garder la position en arrière-plan » conserve la position simulée tant que LocSim est en arrière-plan et la rétablit si iOS la réinitialise."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Per connettersi serve il Wi-Fi, poi basta la rete cellulare. “Mantieni attivo in background” mantiene attiva la simulazione in background."
+            "value" : "Per connettersi serve il Wi-Fi, poi basta la rete cellulare. “Mantieni la posizione in background” conserva la posizione simulata mentre LocSim è in background e la reimposta se iOS la ripristina."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Voor het verbinden is wifi nodig, daarna werkt ook mobiel netwerk. ‘Actief houden op achtergrond’ houdt de simulatie op de achtergrond actief."
+            "value" : "Voor het verbinden is wifi nodig, daarna werkt ook mobiel netwerk. ‘Locatie op achtergrond behouden’ houdt de gesimuleerde locatie vast terwijl LocSim op de achtergrond is en stelt hem opnieuw in als iOS hem herstelt."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Para conectar é preciso Wi-Fi, depois a rede celular também funciona. “Manter Ativo em Segundo Plano” mantém a simulação ativa em segundo plano."
+            "value" : "Para conectar é preciso Wi-Fi, depois a rede celular também funciona. “Manter Localização em Segundo Plano” mantém a localização simulada enquanto o LocSim está em segundo plano e a define novamente se o iOS a redefinir."
           }
         }
       }
@@ -4013,42 +4136,42 @@
         }
       }
     },
-    "Keep Alive in Background" : {
+    "Keep Location in Background" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Im Hintergrund aktiv halten"
+            "value" : "Standort im Hintergrund halten"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mantener activo en segundo plano"
+            "value" : "Mantener la ubicación en segundo plano"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maintenir actif en arrière-plan"
+            "value" : "Garder la position en arrière-plan"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mantieni attivo in background"
+            "value" : "Mantieni la posizione in background"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Actief houden op achtergrond"
+            "value" : "Locatie op achtergrond behouden"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Manter Ativo em Segundo Plano"
+            "value" : "Manter Localização em Segundo Plano"
           }
         }
       }
@@ -9100,6 +9223,47 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Não foi possível ler o arquivo. Crie um novo com o script de configuração."
+          }
+        }
+      }
+    },
+    "The file you picked stays where it was. It contains a key for this device; delete it if it is in iCloud Drive or another shared place." : {
+      "comment" : "Settings, Pairing footer after importing a file picked in Files",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die ausgewählte Datei bleibt, wo sie war. Sie enthält einen Schlüssel für dieses Gerät; lösche sie, wenn sie in iCloud Drive oder an einem anderen geteilten Ort liegt."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El archivo que elegiste se queda donde estaba. Contiene una clave para este dispositivo; bórralo si está en iCloud Drive o en otro lugar compartido."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le fichier choisi reste à son emplacement. Il contient une clé pour cet appareil ; supprimez-le s’il se trouve dans iCloud Drive ou un autre endroit partagé."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il file scelto resta dov’era. Contiene una chiave per questo dispositivo; eliminalo se si trova in iCloud Drive o in un altro luogo condiviso."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het gekozen bestand blijft waar het was. Het bevat een sleutel voor dit apparaat; verwijder het als het in iCloud Drive of op een andere gedeelde plek staat."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O arquivo escolhido continua onde estava. Ele contém uma chave para este aparelho; apague-o se estiver no iCloud Drive ou em outro local compartilhado."
           }
         }
       }

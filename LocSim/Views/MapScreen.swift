@@ -14,6 +14,8 @@ struct MapScreen: View {
     @State private var showWelcome = false
     @State private var showFavorites = false
     @State private var favoritePick: Favorite?
+    /// A widget or quick action that arrived while a sheet was open; run once it has closed.
+    @State private var deferredRequest: ExternalRequests.Kind?
     @State private var naming = false
     @State private var favoriteName = ""
     @State private var searchError: String?
@@ -359,8 +361,8 @@ struct MapScreen: View {
         .sheet(isPresented: $showWelcome) {
             WelcomeView().environmentObject(session)
         }
-        .webPageSheet($webPage)
-        .sheet(isPresented: $showSettings) {
+        .webPageSheet($webPage, onDismiss: runDeferredRequest)
+        .sheet(isPresented: $showSettings, onDismiss: runDeferredRequest) {
             SettingsView()
                 .environmentObject(session)
                 .environmentObject(recents)
@@ -368,6 +370,7 @@ struct MapScreen: View {
         // The pick is applied once the sheet is gone: a setup sheet opened while this one
         // is still closing would not appear.
         .sheet(isPresented: $showFavorites, onDismiss: {
+            runDeferredRequest()
             guard let favorite = favoritePick else { return }
             favoritePick = nil
             select(favorite.coordinate, name: favorite.name, apply: autoApply)
@@ -833,7 +836,7 @@ struct MapScreen: View {
         if let coordinate = CoordinateParser.parse(text) {
             let name = MapLink.url(in: text).flatMap(MapLink.placeName)
             select(coordinate, name: name, apply: autoApply)
-        } else if MapLink.url(in: text).map(MapLink.isMap) == true {
+        } else if MapLink.url(in: text).map(MapLink.isPlaceLink) == true {
             searchTask?.cancel()
             resolving = text
             searchTask = Task { await openLink(text) }
@@ -952,7 +955,8 @@ struct MapScreen: View {
     private var locateButton: some View {
         Button {
             locateTask?.cancel()
-            if let active = session.active {
+            // After a Clear that did not finish, the device may still be at the simulated place.
+            if let active = session.active ?? session.unclearedPlace?.coordinate {
                 fly(to: active)
             } else {
                 showsUserLocation = true
@@ -972,26 +976,23 @@ struct MapScreen: View {
         .accessibilityShowsLargeContentViewer()
     }
 
-    /// Only the part of the map between the top bar and the panel counts as visible.
     // Only read for its authorization status; one instance instead of a new one per state change.
     private static let locationManager = CLLocationManager()
 
+    /// Only the part of the map between the top bar and the panel counts as visible.
     private func isVisible(_ c: CLLocationCoordinate2D) -> Bool {
         guard let r = visibleRegion, r.span.latitudeDelta > 0, mapBottom > 0 else { return false }
-        // Wrapped, so a point just across the antimeridian is not half a world away.
-        var dLon = abs(c.longitude - r.center.longitude).truncatingRemainder(dividingBy: 360)
-        if dLon > 180 { dLon = 360 - dLon }
-        guard dLon <= r.span.longitudeDelta / 2 else { return false }
+        // Wrapped to -180...180, so a point just across the antimeridian is not half a world away.
+        var dLon = (c.longitude - r.center.longitude).truncatingRemainder(dividingBy: 360)
+        if dLon > 180 { dLon -= 360 } else if dLon < -180 { dLon += 360 }
+        guard abs(dLon) <= r.span.longitudeDelta / 2 else { return false }
         // Close enough on the spans a camera move can leave; the map is shown from the top of the screen.
         let y = (r.center.latitude + r.span.latitudeDelta / 2 - c.latitude) / r.span.latitudeDelta * mapBottom
+        let x = mapFrame.minX + (dLon / r.span.longitudeDelta + 0.5) * mapFrame.width
         if phoneLandscape {
-            let x = mapFrame.minX
-                + (c.longitude - (r.center.longitude - r.span.longitudeDelta / 2)) / r.span.longitudeDelta * mapFrame.width
             return x > mapFrame.minX && x < panelLeading && y > topBarBottom && y < mapBottom
         }
         if usesSidebar {
-            let x = mapFrame.minX
-                + (c.longitude - (r.center.longitude - r.span.longitudeDelta / 2)) / r.span.longitudeDelta * mapFrame.width
             return x > columnTrailing && x < mapFrame.maxX - trailingInset && y > 0 && y < mapBottom
         }
         return y > topBarBottom && y < min(panelTop, mapBottom)
@@ -1010,7 +1011,10 @@ struct MapScreen: View {
     // Never asks for permission; that happens when the user taps the locate button.
     private func showRealPositionIfAllowed() {
         // After a failed Clear the simulation may still be in force.
-        guard !Demo.isOn, session.active == nil, session.state.error?.code != AppError.clearFailedCode else {
+        // While clearing, the device still reports the simulated place as its own.
+        guard !Demo.isOn, session.active == nil, !session.isClearing, !session.mayStillBeSimulated,
+              session.state.error?.code != AppError.clearFailedCode else {
+            showsUserLocation = false
             return
         }
         switch Self.locationManager.authorizationStatus {
@@ -1022,7 +1026,7 @@ struct MapScreen: View {
     private func flyToRealLocation() async {
         session.requestLocationPermission()
         // The wait for a fix below should not run while the permission prompt is open.
-        let manager = CLLocationManager()
+        let manager = Self.locationManager
         let wasAsked = manager.authorizationStatus == .notDetermined
         while manager.authorizationStatus == .notDetermined {
             try? await Task.sleep(nanoseconds: 200_000_000)
@@ -1251,7 +1255,7 @@ struct MapScreen: View {
     private var status: some View {
         HStack(spacing: 8) {
             Circle()
-                .fill(stateColor)
+                .fill(session.statusColor)
                 .frame(width: 8, height: 8)
                 .accessibilityHidden(true)
             Text(statusLine())
@@ -1315,14 +1319,12 @@ struct MapScreen: View {
 
     /// `spoken` reads the coordinate in words for VoiceOver.
     private func statusLine(spoken: Bool = false) -> String {
-        // Until the device answers, the state still says active although the location is going.
-        if session.isClearing { return String(localized: "Clearing") }
+        if session.isClearing { return session.statusTitle }
         var parts: [String] = []
         switch session.state {
-        case .idle: parts.append(String(localized: "Not active"))
-        case .connecting: parts.append(String(localized: "Connecting"))
+        case .idle, .connecting: parts.append(session.statusTitle)
         case .active:
-            parts.append(String(localized: "Active"))
+            parts.append(session.statusTitle)
             // The pin shows the active location unless it was moved since.
             if let active = session.active, CoordinateParser.format(active) != CoordinateParser.format(session.target) {
                 parts.append(spoken ? CoordinateParser.spoken(active) : CoordinateParser.format(active))
@@ -1340,16 +1342,6 @@ struct MapScreen: View {
         return parts.joined(separator: "  ·  ")
     }
 
-    private var stateColor: Color {
-        if session.isClearing { return .orange }
-        switch session.state {
-        case .active: return .green
-        case .failed: return .red
-        case .connecting, .reconnecting: return .orange
-        case .idle: return .secondary
-        }
-    }
-
     // MARK: - Actions
 
     private func submitSearch() {
@@ -1357,7 +1349,7 @@ struct MapScreen: View {
             select(coordinate, name: MapLink.url(in: search.query).flatMap(MapLink.placeName), apply: autoApply)
             return
         }
-        if MapLink.url(in: search.query).map(MapLink.isMap) == true {
+        if MapLink.url(in: search.query).map(MapLink.isPlaceLink) == true {
             paste(search.query)
             return
         }
@@ -1416,15 +1408,32 @@ struct MapScreen: View {
     }
 
     private func handle(_ kind: ExternalRequests.Kind) {
-        // Settings and Favorites would hide the map and the search field.
-        showSettings = false
-        showFavorites = false
+        // Settings and Favorites would hide the map and the search field. The request waits until
+        // the sheet has closed: a setup sheet opened while another one closes would not appear.
+        // A request that arrives while the sheet is still closing replaces the waiting one.
+        if showSettings || showFavorites || webPage != nil || deferredRequest != nil {
+            deferredRequest = kind
+            showSettings = false
+            showFavorites = false
+            webPage = nil
+            return
+        }
         switch kind {
         case .set(let latitude, let longitude, let name):
             select(CLLocationCoordinate2D(latitude: latitude, longitude: longitude), name: name, apply: true)
         case .search:
-            searchFocused = true
+            // On a cold launch the field is not there yet and an early focus request is dropped.
+            Task { @MainActor in
+                try? await Task.sleep(for: .milliseconds(350))
+                searchFocused = true
+            }
         }
+    }
+
+    private func runDeferredRequest() {
+        guard let kind = deferredRequest else { return }
+        deferredRequest = nil
+        handle(kind)
     }
 
     /// Every Set goes through here; without a pairing file it opens the setup steps instead.

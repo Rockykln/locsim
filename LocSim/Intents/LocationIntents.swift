@@ -76,7 +76,7 @@ struct ClearLocationIntent: AppIntent {
         let session = SimulationSession.shared
         // A location only lasts as long as this process, so a fresh launch has nothing to clear.
         // After a Clear that did not finish, the device may still simulate it: try again.
-        let unfinished = session.state.error?.code == AppError.clearFailedCode
+        let unfinished = session.state.error?.code == AppError.clearFailedCode || session.unclearedPlace != nil
         guard session.canClear || unfinished else {
             return .result(dialog: "No location is simulated.")
         }
@@ -93,7 +93,8 @@ enum LocationIntentRunner {
         let session = SimulationSession.shared
         // Without the one-time setup there is nothing to connect to; say so instead of failing later.
         // The preview only moves the pin; a Shortcut must not report a location as simulated.
-        guard PairingStore.exists || Demo.isOn else {
+        // A file the setup script copied in is taken in when the connection starts.
+        guard PairingStore.exists || PairingStore.hasDroppedFile || Demo.isOn else {
             throw LocationIntentError(String(localized: "LocSim is not set up yet. Open LocSim and follow the setup steps."))
         }
         if session.isPreview { session.endPreview() }

@@ -39,14 +39,22 @@ public enum CoordinateText {
     public static func parse(_ text: String, language: String? = currentLanguage) -> Coordinate? {
         let oIsWest = isWestO(language)
         let links = MapLink.links(in: text)
-        let maps = links.filter { $0.url.scheme?.lowercased() == "geo" || MapLink.isMap($0.url) }
+        let maps = links.filter { MapLink.isPlaceLink($0.url) }
         if let c = maps.lazy.compactMap({ mapLink($0.url, oIsWest: oIsWest) }).first { return c }
-        // Numbers in a Maps link without coordinates, e.g. in a place ID, are no coordinates.
-        if !maps.isEmpty { return nil }
-        // Coordinates written next to other links, "48.85, 2.35 https://…": only the links are removed.
+        // A Maps link without coordinates names the place and is followed or searched instead.
+        // Google's short links cannot be followed, so coordinates written next to them count.
+        if !maps.isEmpty, !maps.allSatisfy({ MapLink.isGoogleShortLink($0.url) }) { return nil }
+        // Coordinates written next to other links, "48.85, 2.35 https://…": only the links are
+        // removed, so numbers inside a link, e.g. a place ID, never count.
         var rest = text
         for link in links.reversed() { rest.replaceSubrange(link.range, with: " ") }
         rest = rest.replacingOccurrences(of: #"\(\s*\)|\[\s*\]|<\s*>"#, with: " ", options: .regularExpression)
+        // Wikipedia writes the same place several ways: "48°51′24″N 2°21′08″E / 48.85667°N … / 48.85667; 2.35222".
+        if rest.contains(" / ") {
+            for part in rest.components(separatedBy: " / ") {
+                if let c = parseText(part, oIsWest: oIsWest) { return c }
+            }
+        }
         return parseText(rest, oIsWest: oIsWest)
     }
 
@@ -55,13 +63,21 @@ public enum CoordinateText {
         return ["fr", "es", "it", "pt", "ca", "ro", "gl"].contains(code ?? "")
     }
 
+    // "Latitude: 48.85, Longitude: 2.35", "lat 48.85 lon 2.35": labels are dropped, the order stays.
+    private static let labels = try! NSRegularExpression(
+        pattern: #"(?<!\p{L})(?:coordinates?|coords?|gps|lat(?:itude)?|lon(?:g(?:itude)?)?|lng|breite(?:ngrad)?|länge(?:ngrad)?)(?!\p{L})\s*[:=]?"#,
+        options: [.caseInsensitive])
+
     private static func parseText(_ text: String, oIsWest: Bool) -> Coordinate? {
-        let input = unwrap(normalize(text, oIsWest: oIsWest))
+        let unlabeled = labels.stringByReplacingMatches(
+            in: text, range: NSRange(text.startIndex..., in: text), withTemplate: " ")
+        let input = unwrap(normalize(unlabeled, oIsWest: oIsWest))
         guard !isRejectedNumber(input) else { return nil }
         // "48.85, W 2.35": each half has its own letter, wherever it stands.
         if let c = parseHalves(input) { return c }
         if isDMS(input) { return parseDMS(input) }
-        return parseDecimal(input) ?? parseDegreesMinutes(input)
+        return parseDecimal(input) ?? parseDegreesMinutes(input, degreesMinutes, letter: 1)
+            ?? parseDegreesMinutes(input, degreesMinutesTrailing, letter: 3)
     }
 
     private static let wrappers: [Character: Character] = [
@@ -148,7 +164,7 @@ public enum CoordinateText {
 
     /// Coordinates from a Maps link or geo: URI only, never from other numbers in the URL.
     public static func coordinate(inLink url: URL, language: String? = currentLanguage) -> Coordinate? {
-        guard url.scheme?.lowercased() == "geo" || MapLink.isMap(url) else { return nil }
+        guard MapLink.isPlaceLink(url) else { return nil }
         return mapLink(url, oIsWest: isWestO(language))
     }
 
@@ -186,12 +202,28 @@ public enum CoordinateText {
             let c = Coordinate(latitude: lat, longitude: lon)
             if c.isValid { return c }
         }
-        // Not "sll": in Apple's links that is only the center of the search area.
-        for key in ["ll", "coordinate", "q", "query", "daddr", "destination"] {
+        if let lat = MapLink.value("lat", in: url).flatMap(Double.init),
+           let lon = (MapLink.value("lon", in: url) ?? MapLink.value("lng", in: url)).flatMap(Double.init) {
+            let c = Coordinate(latitude: lat, longitude: lon)
+            if c.isValid { return c }
+        }
+        // Waze: to=ll.48.85,2.35
+        if let to = MapLink.value("to", in: url), to.hasPrefix("ll."), let c = pair(String(to.dropFirst(3))) {
+            return c
+        }
+        // Not "sll": in Apple's links that is only the center of the search area. In Google's,
+        // "ll" is only the map view too, so the place in q or the destination comes first.
+        let host = url.host?.lowercased() ?? ""
+        let google = host.contains("google.") || host.hasSuffix("goo.gl")
+        let keys = google
+            ? ["q", "query", "daddr", "destination", "coordinate", "ll"]
+            : ["ll", "coordinate", "q", "query", "daddr", "destination"]
+        for key in keys {
             guard let value = MapLink.value(key, in: url) else { continue }
             // "48.85,2.35 (Cafe)": the label in brackets is not part of the coordinates.
             let bare = String(value.prefix { $0 != "(" }).trimmingCharacters(in: .whitespaces)
-            if let c = pair(bare) { return c }
+            // A search term such as "7 11" is a name; only a view or pin may be whole numbers.
+            if let c = pair(bare, decimalRequired: !["ll", "coordinate"].contains(key)) { return c }
             // Coordinates written out, e.g. q=48°51'23.8"N 2°21'07.9"E.
             if bare.range(of: #"\d"#, options: .regularExpression) != nil, let c = parseText(bare, oIsWest: oIsWest) {
                 return c
@@ -225,12 +257,12 @@ public enum CoordinateText {
         if kind == "dir" {
             // Not the map view (@…) or options such as data=… and am=t.
             let stops = parts.dropFirst((maps ?? 0) + 2).filter { !$0.hasPrefix("@") && !$0.contains("=") }
-            return stops.last.flatMap { pair($0.replacingOccurrences(of: "+", with: " ")) }
+            return stops.last.flatMap { pair($0.replacingOccurrences(of: "+", with: " "), decimalRequired: true) }
         }
         // /maps/search/48.85,+2.35/… and /maps/place/48.85,+2.35/…: the term itself is the place.
         if kind == "search" || kind == "place", let maps, parts.indices.contains(maps + 2) {
             let term = parts[maps + 2].replacingOccurrences(of: "+", with: " ")
-            if let c = pair(term) { return c }
+            if let c = pair(term, decimalRequired: true) { return c }
             // Written out, /maps/place/48°51'23.8"N+2°21'07.9"E
             if term.range(of: #"\d"#, options: .regularExpression) != nil, let c = parseText(term, oIsWest: oIsWest) {
                 return c
@@ -252,12 +284,14 @@ public enum CoordinateText {
 
     /// "48.85,2.35", "48.85 2.35" or "loc:48.85,2.35"; a third number (altitude in geo:) may follow.
     /// Anything else, e.g. "10 20 Main Street", is no coordinate.
-    private static func pair(_ text: String) -> Coordinate? {
+    /// `decimalRequired`: search terms such as "7 11" or "24 7" are names, not coordinates.
+    private static func pair(_ text: String, decimalRequired: Bool = false) -> Coordinate? {
         var text = text.trimmingCharacters(in: .whitespaces)
         if text.lowercased().hasPrefix("loc:") { text.removeFirst(4) }
         let parts = text.split(whereSeparator: { $0 == "," || $0 == " " })
         guard parts.count == 2 || parts.count == 3,
               parts.allSatisfy({ $0.range(of: #"^[-+]?\d+(\.\d+)?$"#, options: .regularExpression) != nil }),
+              !decimalRequired || parts.prefix(2).contains(where: { $0.contains(".") }),
               let lat = Double(parts[0]), let lon = Double(parts[1]) else { return nil }
         let c = Coordinate(latitude: lat, longitude: lon)
         return c.isValid ? c : nil
@@ -285,7 +319,7 @@ public enum CoordinateText {
             .replacingOccurrences(of: "[\u{2000}-\u{200A}\u{202F}\u{205F}\u{3000}\u{00A0}]", with: " ", options: .regularExpression)
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .uppercased()
-            .replacingOccurrences(of: #"(?<!\p{L})(?:OUEST|OESTE|OVEST|WEST)(?!\p{L})"#, with: "W", options: .regularExpression)
+            .replacingOccurrences(of: #"(?<!\p{L})(?:OUEST|OESTE|OVEST|OEST|VEST|WEST)(?!\p{L})"#, with: "W", options: .regularExpression)
             .replacingOccurrences(of: #"(?<!\p{L})(?:OOST|OST|LESTE|ESTE|EST|EAST)(?!\p{L})"#, with: "E", options: .regularExpression)
             .replacingOccurrences(of: #"(?<!\p{L})(?:NOORD|NORD|NORTE|NORTH)(?!\p{L})"#, with: "N", options: .regularExpression)
             .replacingOccurrences(of: #"(?<!\p{L})(?:ZUID|SÜD|SUD|SUL|SUR|SOUTH)(?!\p{L})"#, with: "S", options: .regularExpression)
@@ -374,18 +408,25 @@ public enum CoordinateText {
     private static let degreesMinutes = try! NSRegularExpression(pattern:
         #"^([NSEW])\s*(\d{1,3})(?:\s*°\s*|\s+)(\d{1,2}(?:[.,]\d+)?)\s*['′’]?\s*[,;]?\s*"#
             + #"([NSEW])\s*(\d{1,3})(?:\s*°\s*|\s+)(\d{1,2}(?:[.,]\d+)?)\s*['′’]?$"#)
+    // The same with the letter after each value: "48° 51.397 N 2° 21.132 E".
+    private static let degreesMinutesTrailing = try! NSRegularExpression(pattern:
+        #"^(\d{1,3})(?:\s*°\s*|\s+)(\d{1,2}(?:[.,]\d+)?)\s*['′’]?\s*([NSEW])\s*[,;]?\s*"#
+            + #"(\d{1,3})(?:\s*°\s*|\s+)(\d{1,2}(?:[.,]\d+)?)\s*['′’]?\s*([NSEW])$"#)
 
-    private static func parseDegreesMinutes(_ text: String) -> Coordinate? {
-        guard let match = degreesMinutes.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)) else {
+    /// `letter` is the group of the hemisphere letter within each value: 1 before, 3 after.
+    private static func parseDegreesMinutes(_ text: String, _ regex: NSRegularExpression, letter: Int) -> Coordinate? {
+        guard let match = regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)) else {
             return nil
         }
         func group(_ index: Int) -> String { Range(match.range(at: index), in: text).map { String(text[$0]) } ?? "" }
+        let degreesGroup = letter == 1 ? 2 : 1
         var values: [Value] = []
         for offset in [0, 3] {
-            guard let degrees = Double(group(2 + offset)),
-                  let minutes = Double(group(3 + offset).replacingOccurrences(of: ",", with: ".")), minutes < 60
+            guard let degrees = Double(group(degreesGroup + offset)),
+                  let minutes = Double(group(degreesGroup + 1 + offset).replacingOccurrences(of: ",", with: ".")),
+                  minutes < 60
             else { return nil }
-            values.append(Value(magnitude: degrees + minutes / 60, negative: false, hemisphere: group(1 + offset)))
+            values.append(Value(magnitude: degrees + minutes / 60, negative: false, hemisphere: group(letter + offset)))
         }
         return coordinate(values)
     }

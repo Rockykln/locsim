@@ -52,6 +52,10 @@ done
 tmps=""
 trap 'rm -f $tmps' EXIT
 
+if command -v sha256sum >/dev/null 2>&1; then sha() { sha256sum; }; else sha() { shasum -a 256; }; fi
+sha_sh="$(git show "$commit:tools/make-pairing.sh" | sha | cut -d' ' -f1)"
+sha_ps1="$(git show "$commit:tools/make-pairing.ps1" | sha | cut -d' ' -f1 | tr '[:lower:]' '[:upper:]')"
+
 old=""
 changed=0
 for page in $pages; do
@@ -65,19 +69,25 @@ for page in $pages; do
   n="$(grep -oE "$tree_re" "$page" | grep -c . || true)"
   [ "$n" -eq 1 ] || die "$page: expected 1 'read the scripts' link, found $n"
 
+  n="$(grep -oE 'data-sha="make-pairing\.(sh|ps1)">[0-9A-Fa-f]{64}<' "$page" | grep -c . || true)"
+  [ "$n" -eq 2 ] || die "$page: expected 2 script checksums, found $n"
+
   tmp="$(mktemp "$page.XXXXXX")"
   tmps="$tmps $tmp"
   cp -p "$page" "$tmp"
+  # The checksums shown on the page follow the pin: lowercase as shasum prints them,
+  # uppercase for Get-FileHash on Windows.
   sed -E \
     -e "s#(raw\.githubusercontent\.com/Rockykln/locsim/)[^/\"<[:space:]]+(/tools/make-pairing\.)#\1$commit\2#g" \
     -e "s#(github\.com/Rockykln/locsim/tree/)(main|[0-9a-f]{40})(/tools\")#\1$commit\3#g" \
+    -e "s#(data-sha=\"make-pairing\.sh\">)[0-9A-Fa-f]{64}#\1$sha_sh#" \
+    -e "s#(data-sha=\"make-pairing\.ps1\">)[0-9A-Fa-f]{64}#\1$sha_ps1#" \
     "$page" > "$tmp"
   n="$(grep -oE "Rockykln/locsim/(tree/)?$commit/tools(/make-pairing\.|\")" "$tmp" | grep -c . || true)"
   [ "$n" -eq 3 ] || die "$page: rewrite check failed"
   cmp -s "$page" "$tmp" || changed=1
 done
 
-if command -v sha256sum >/dev/null 2>&1; then sha() { sha256sum; }; else sha() { shasum -a 256; }; fi
 echo "New pin: $commit"
 for script in $scripts; do
   echo "  sha256 $(git show "$commit:$script" | sha | cut -d' ' -f1)  $script"

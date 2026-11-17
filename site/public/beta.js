@@ -3,37 +3,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   var root = document.documentElement;
 
-  // The Clipboard API needs HTTPS; the selection fallback also works without it.
-  function copyText(text, host) {
-    if (navigator.clipboard && window.isSecureContext) {
-      return navigator.clipboard.writeText(text).catch(function () { return copyBySelection(text, host); });
-    }
-    return copyBySelection(text, host);
-  }
-
-  function copyBySelection(text, host) {
-    var before = document.activeElement;
-    return new Promise(function (resolve, reject) {
-      var area = document.createElement("textarea");
-      area.value = text;
-      area.setAttribute("readonly", "");
-      area.style.position = "fixed";
-      area.style.opacity = "0";
-      host.appendChild(area);
-      var ok = false;
-      try {
-        area.select();
-        area.setSelectionRange(0, text.length);
-        ok = document.execCommand("copy");
-      } catch (e) {
-        ok = false;
-      } finally {
-        host.removeChild(area);
-        if (before && before.focus) before.focus();
-      }
-      if (ok) resolve(); else reject();
-    });
-  }
+  var copyText = window.copyText;
 
   function setup(dialog) {
     var form = dialog.querySelector("form");

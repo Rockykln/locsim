@@ -39,6 +39,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="/style.css">
 <script src="/theme.js"></script>
+<script src="/clipboard.js" defer></script>
 <script src="/copy.js" defer></script>
 </head>
 <body>
@@ -71,11 +72,13 @@
 <h3>Mac and Linux</h3>
 <pre><code>curl -fLO https://raw.githubusercontent.com/Rockykln/locsim/efb1fcdc9bd4ceacd5e8e47f3a981528b01f41f5/tools/make-pairing.sh
 bash make-pairing.sh</code></pre>
+<p class="checksum">Optional, before running it: <code>shasum -a 256 make-pairing.sh</code> (Linux: <code>sha256sum make-pairing.sh</code>) must show: <code data-sha="make-pairing.sh">ad2c3bb355342a4475e22dc64fe69bb21b81a8742a1a7955e8f32006d4dd8f64</code></p>
 <p>Linux also needs <code>usbmuxd</code> and glibc 2.38 or newer: Debian 13, Ubuntu 24.04, Fedora 39 or later.</p>
 <h3>Windows</h3>
 <p>Needs the Apple Devices app or iTunes. In PowerShell:</p>
 <pre><code>curl.exe -fLO https://raw.githubusercontent.com/Rockykln/locsim/efb1fcdc9bd4ceacd5e8e47f3a981528b01f41f5/tools/make-pairing.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File make-pairing.ps1</code></pre>
+<p class="checksum">Optional check: <code>Get-FileHash make-pairing.ps1</code> must show: <code data-sha="make-pairing.ps1">06E6868CC805CD3BF4C27C08C38CD3B67993786CF9C3AAA0B0291E495885E15F</code></p>
 <h2>4. Import the file into LocSim</h2>
 <ol>
 <li>If LocSim is installed, the script copies the file into the app and deletes it from the computer. Open LocSim, and the setup screen shows the file as imported.</li>
