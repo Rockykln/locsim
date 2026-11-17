@@ -2,6 +2,10 @@
 
 What changed in each version that testers received through TestFlight.
 
+## 1.0 (8), 17 November 2026
+
+- Same features as build 6. Replaces the earlier builds, which Apple ended
+
 ## 1.0 (6), 10 November 2026
 
 - Portuguese (Brazil) and Dutch
