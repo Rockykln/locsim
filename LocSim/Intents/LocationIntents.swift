@@ -76,7 +76,7 @@ struct ClearLocationIntent: AppIntent {
         let session = SimulationSession.shared
         // A location only lasts as long as this process, so a fresh launch has nothing to clear.
         // After a Clear that did not finish, the device may still simulate it: try again.
-        let unfinished = session.state.error?.code == AppError.clearFailedCode
+        let unfinished = session.state.error?.code == AppError.clearFailedCode || session.unclearedPlace != nil
         guard session.canClear || unfinished else {
             return .result(dialog: "No location is simulated.")
         }

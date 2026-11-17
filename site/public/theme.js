@@ -20,6 +20,12 @@
     // The theme in use, which the dark palette and the image variants follow.
     var dark = theme === "dark" || (theme === "auto" && systemDark.matches);
     root.setAttribute("data-scheme", dark ? "dark" : "light");
+    // The hero picture loads early, by the system setting; a chosen theme switches its source.
+    // Lazy images would load late, and two eager ones would always load both.
+    var sources = document.querySelectorAll("source[data-theme-source]");
+    for (var j = 0; j < sources.length; j++) {
+      sources[j].setAttribute("media", theme === "auto" ? "(prefers-color-scheme: dark)" : dark ? "all" : "not all");
+    }
     var metas = document.querySelectorAll('meta[name="theme-color"]');
     for (var i = 0; i < metas.length; i++) {
       var media = metas[i].getAttribute("media") || "";
@@ -30,7 +36,10 @@
 
   apply(current);
   // "auto" follows a change of the system setting while the page is open.
-  systemDark.addEventListener("change", function () { if (current === "auto") apply(current); });
+  function systemChanged() { if (current === "auto") apply(current); }
+  // Safari before 14 only knows addListener.
+  if (systemDark.addEventListener) systemDark.addEventListener("change", systemChanged);
+  else if (systemDark.addListener) systemDark.addListener(systemChanged);
 
   // Language menu: close on outside press or Escape. iOS Safari fires no click for taps on
   // plain text or background, so the press itself is used.

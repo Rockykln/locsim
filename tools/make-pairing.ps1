@@ -35,6 +35,16 @@ if ($Out) {
     # Native tools resolve relative paths against the process directory, not the PowerShell location.
     $Out = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Out)
     $PairDir = $null
+    # The file is replaced and removed on failure, so it must never be a folder.
+    if (Test-Path -LiteralPath $Out -PathType Container) {
+        Write-Host "The output must be a file name, not a folder: $Out"
+        exit 2
+    }
+    $OutParent = Split-Path -Parent $Out
+    if ($OutParent -and -not (Test-Path -LiteralPath $OutParent -PathType Container)) {
+        Write-Host "Folder for the output file does not exist: $OutParent"
+        exit 2
+    }
 } else {
     $PairDir = Join-Path $env:LOCALAPPDATA "locsim\pairing"
     $Out = Join-Path $PairDir "rppairing.plist"
@@ -190,7 +200,7 @@ try {
         }
     }
     $Started = $true
-    if (Test-Path -LiteralPath $Out) { Remove-Item -LiteralPath $Out -Force }
+    if (Test-Path -LiteralPath $Out -PathType Leaf) { Remove-Item -LiteralPath $Out -Force }
 
     Write-Host "Unlock the iPhone or iPad. If it asks, tap Trust and enter the passcode."
     $PairLog = & $Bin @UdidArgs remotepairing_lockdown pair $Hostname $Out 2>&1 | ForEach-Object { "$_" }
@@ -232,7 +242,7 @@ try {
 } finally {
     $env:RUST_LOG = $OldRustLog
     # A pairing file from a failed or interrupted run must not stay on the disk.
-    if ($Started -and -not $Kept -and (Test-Path -LiteralPath $Out)) { Remove-Item -LiteralPath $Out -Force }
+    if ($Started -and -not $Kept -and (Test-Path -LiteralPath $Out -PathType Leaf)) { Remove-Item -LiteralPath $Out -Force }
     if ($OldEncoding) {
         try { [Console]::OutputEncoding = $OldEncoding } catch { }
     }

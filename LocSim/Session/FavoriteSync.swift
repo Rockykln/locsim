@@ -5,21 +5,24 @@ import os
 /// store. The data stays in the person's iCloud; LocSim runs no server. How often a favorite was
 /// used is not shared: it stays on each device.
 ///
-/// The list travels as a whole and the newest change wins. Until this device has seen the list in
-/// iCloud once, it merges instead and sends nothing: right after turning it on, or on a new
-/// install, the local copy of the iCloud data can still be empty, and sending this device's list
-/// then would replace the favorites of the other devices.
+/// The list travels as a whole and the newest change wins, so a device must never send a list
+/// that misses favorites it has not seen yet:
+/// - Until a device has heard from iCloud it sends nothing; changes made meanwhile, deletions
+///   included, are merged in once it does.
+/// - A device that never hears from iCloud (offline, or no list exists yet) joins after a while,
+///   but what it sends then is marked as an addition: other devices merge it instead of taking
+///   it over, until this device hears from iCloud.
+/// - A missing or unreadable list in iCloud is never answered with this device's list.
+/// - Favorites a list from iCloud removes here are kept, see `FavoriteList.removedByICloud`.
 @MainActor
 enum FavoriteSync {
     private static let key = "favorites"
     private static let log = Logger(subsystem: "com.rockykln.locsim", category: "iCloud")
     private static var observer: NSObjectProtocol?
     private static var waitTask: Task<Void, Never>?
-    /// Joined without ever seeing a list in iCloud. The next list that arrives is merged, not
-    /// taken over, in case it was only late.
-    private static var joinedWithoutList = false
-    /// How long to wait for the list from iCloud before this device starts it.
-    private static let firstDeviceWait: Duration = .seconds(60)
+    /// How long to wait for news from iCloud before this device joins without it.
+    private static let joinWait: Duration = .seconds(60)
+    private static let deletedLimit = 200
     private static var store: NSUbiquitousKeyValueStore { .default }
 
     static var isOn: Bool { UserDefaults.standard.bool(forKey: SettingsKey.iCloudFavorites) && !Demo.isOn }
@@ -28,6 +31,24 @@ enum FavoriteSync {
     private static var joined: Bool {
         get { UserDefaults.standard.bool(forKey: SettingsKey.iCloudFavoritesJoined) }
         set { UserDefaults.standard.set(newValue, forKey: SettingsKey.iCloudFavoritesJoined) }
+    }
+
+    /// Joined without having heard from iCloud: what this device sends is only added elsewhere.
+    private static var blind: Bool {
+        get { UserDefaults.standard.bool(forKey: SettingsKey.iCloudFavoritesBlind) }
+        set { UserDefaults.standard.set(newValue, forKey: SettingsKey.iCloudFavoritesBlind) }
+    }
+
+    /// Favorites deleted here before joining, so the merge does not bring them back.
+    private static var deletedBeforeJoin: [Favorite] {
+        get { StoredList.load(SettingsKey.iCloudFavoritesDeleted) ?? [] }
+        set {
+            if newValue.isEmpty {
+                UserDefaults.standard.removeObject(forKey: SettingsKey.iCloudFavoritesDeleted)
+            } else {
+                StoredList.save(Array(newValue.suffix(deletedLimit)), SettingsKey.iCloudFavoritesDeleted)
+            }
+        }
     }
 
     /// At launch.
@@ -39,7 +60,7 @@ enum FavoriteSync {
     /// Turned on in Settings.
     static func turnedOn(_ list: FavoriteList) {
         guard isOn else { return }
-        joined = false
+        reset()
         connect(list)
     }
 
@@ -47,22 +68,29 @@ enum FavoriteSync {
     static func turnedOff() {
         if let observer { NotificationCenter.default.removeObserver(observer) }
         observer = nil
+        reset()
+    }
+
+    private static func reset() {
         waitTask?.cancel()
         waitTask = nil
         joined = false
-        joinedWithoutList = false
+        blind = false
+        deletedBeforeJoin = []
     }
 
-    /// Sends the list, but only once this device has joined: before that, its list is merged
-    /// with the one from iCloud when that arrives.
-    static func push(_ items: [Favorite]) {
-        guard isOn, joined else { return }
-        let payload = Payload(favorites: items, cleared: items.isEmpty)
-        guard let data = try? JSONEncoder().encode(payload) else { return }
-        guard data != store.data(forKey: key) else { return }
-        store.set(data, forKey: key)
-        let count = items.count
-        log.debug("Sent \(count) favorites")
+    /// Every change made on this device, also restoring favorites.
+    static func localChange(from old: [Favorite], to new: [Favorite]) {
+        guard isOn else { return }
+        if joined {
+            send(new, additive: blind)
+            return
+        }
+        let removed = old.filter { before in !new.contains { same(before, $0) } }
+        if !removed.isEmpty { deletedBeforeJoin = merge(deletedBeforeJoin, removed) }
+        // A favorite added again is no longer deleted.
+        let readded = deletedBeforeJoin.filter { gone in new.contains { same(gone, $0) } }
+        if !readded.isEmpty { deletedBeforeJoin = deletedBeforeJoin.filter { gone in !readded.contains { same(gone, $0) } } }
     }
 
     private static func connect(_ list: FavoriteList) {
@@ -76,39 +104,34 @@ enum FavoriteSync {
         // Plain values: the log evaluates its arguments later, outside the main actor.
         let wasJoined = joined, count = remote?.favorites.count ?? -1
         log.debug("Started, joined: \(wasJoined), favorites in iCloud: \(count)")
-        if joined {
+        // Joined without having heard from iCloud: the local copy may be its own addition or
+        // old, so only a change notification is acted on.
+        if joined, blind { return }
+        if joined, let remote {
             apply(remote, list)
-        } else {
-            // The local copy of the iCloud data can be missing or old here. Sending now could
-            // replace a newer list, so this device waits for news from iCloud.
-            waitForList(list)
+            return
         }
+        // Joined, but no list here: a device restored from a backup or moved to a new one keeps
+        // this setting, not the local copy of the iCloud data. It must not send its old list.
+        if joined {
+            log.debug("Joined, but no list here yet: waiting for iCloud")
+            joined = false
+            blind = false
+        }
+        waitForList(list)
     }
 
-    /// Joins when iCloud reports a change. Without one, for example when nothing changed or no
-    /// list exists yet, it joins after a while with what the local copy holds then; with no list
-    /// at all this device starts it, and a list that still arrives later is merged.
+    /// Joins when iCloud reports a change. Without one, for example offline or when no list
+    /// exists yet, it joins after a while with what it has, marked as an addition.
     private static func waitForList(_ list: FavoriteList) {
         waitTask?.cancel()
         waitTask = Task { @MainActor [weak list] in
-            try? await Task.sleep(for: firstDeviceWait)
-            guard !Task.isCancelled, let list, isOn, !joined else { return }
-            if let remote = load() {
-                join(remote.favorites, list)
-            } else if FileManager.default.ubiquityIdentityToken != nil {
-                log.debug("No list in iCloud: this device starts it")
-                joinedWithoutList = true
-                join([], list)
-            }
+            try? await Task.sleep(for: joinWait)
+            guard !Task.isCancelled, let list, isOn, !joined,
+                  FileManager.default.ubiquityIdentityToken != nil else { return }
+            log.debug("No news from iCloud: joining, sending only additions")
+            join(load(), list, heardFromICloud: false)
         }
-    }
-
-    /// Merges with the list from iCloud and sends the result, so both sides have all favorites.
-    private static func join(_ remote: [Favorite], _ list: FavoriteList) {
-        waitTask?.cancel()
-        waitTask = nil
-        joined = true
-        mergeIn(remote, list)
     }
 
     private static func observe(_ list: FavoriteList) {
@@ -134,65 +157,115 @@ enum FavoriteSync {
             return
         case NSUbiquitousKeyValueStoreAccountChange:
             // Another Apple Account: its list is new to this device.
-            joined = false
+            reset()
+            if load() == nil {
+                // The new account's list may not be here yet.
+                waitForList(list)
+                return
+            }
         default:
             break
         }
         let remote = load()
-        if joined, !joinedWithoutList {
-            apply(remote, list)
-        } else if remote == nil, reason == NSUbiquitousKeyValueStoreAccountChange {
-            // The new account's list may not be here yet.
-            waitForList(list)
-        } else {
-            // First news from iCloud: only add, never replace.
-            joinedWithoutList = false
-            join(remote?.favorites ?? [], list)
+        guard joined else {
+            join(remote, list, heardFromICloud: true)
+            return
         }
+        // Missing or unreadable, e.g. from a newer version: never answered with this list.
+        guard let remote else { return }
+        if blind {
+            // First news after joining without it: the list from iCloud may be newer, so both are kept.
+            blind = false
+            addFromICloud(remote.favorites, list)
+            return
+        }
+        apply(remote, list)
+    }
+
+    /// Merges with the list from iCloud. Having heard from iCloud, the result replaces the list
+    /// there; it only leaves out what was deleted here on purpose. Without that, it is sent as an
+    /// addition, since the local copy of the iCloud data may be old.
+    private static func join(_ remote: Payload?, _ list: FavoriteList, heardFromICloud: Bool) {
+        waitTask?.cancel()
+        waitTask = nil
+        let deleted = deletedBeforeJoin
+        let remoteItems = (remote?.favorites ?? []).filter { item in !deleted.contains { same($0, item) } }
+        let merged = merge(list.items, remoteItems)
+        joined = true
+        blind = !heardFromICloud
+        deletedBeforeJoin = []
+        if merged != list.items { list.setFromSync(merged) }
+        let count = merged.count
+        log.debug("Joined with \(count) favorites")
+        if merged.isEmpty {
+            // Everything was deleted here on purpose while waiting: that is a clear.
+            if heardFromICloud, !deleted.isEmpty, remote?.favorites.isEmpty == false { send([], additive: false) }
+            return
+        }
+        if merged != remote?.favorites { send(merged, additive: blind) }
     }
 
     /// Takes over the list from iCloud, but never an empty one over this device's favorites
     /// unless the last favorite was removed on purpose. Favorites it removes here are kept, see
-    /// `FavoriteList.removedByICloud`.
-    private static func apply(_ remote: Payload?, _ list: FavoriteList) {
-        guard let remote else {
-            // Missing or unreadable: this device's list is the better copy.
-            if !list.items.isEmpty { push(list.items) }
+    /// `FavoriteList.removedByICloud`. A list marked as an addition is merged instead.
+    private static func apply(_ remote: Payload, _ list: FavoriteList) {
+        if remote.additive {
+            addFromICloud(remote.favorites, list)
             return
         }
         if remote.favorites.isEmpty, !list.items.isEmpty, !remote.cleared {
             log.error("Ignored an empty list from iCloud that was not cleared on purpose")
-            push(list.items)
+            send(list.items, additive: false)
             return
         }
         list.applyFromICloud(remote.favorites)
     }
 
-    /// Adds the favorites only in iCloud and sends the result back. Call only once joined.
-    private static func mergeIn(_ remote: [Favorite], _ list: FavoriteList) {
+    /// Keeps everything on both sides and sends the result as the new list.
+    private static func addFromICloud(_ remote: [Favorite], _ list: FavoriteList) {
         let merged = merge(list.items, remote)
-        // Nothing on either side: sending an empty list would only look like a deliberate clear.
-        guard !merged.isEmpty else { return }
-        if merged != list.items {
-            list.items = merged   // sends it through didSet
-        } else {
-            push(merged)
-        }
+        if merged != list.items { list.setFromSync(merged) }
+        if !merged.isEmpty, merged != remote { send(merged, additive: false) }
     }
 
-    /// The list and whether it is empty on purpose, in one value so they always arrive together.
+    private static func send(_ items: [Favorite], additive: Bool) {
+        let payload = Payload(favorites: items, cleared: items.isEmpty && !additive, additive: additive)
+        guard let data = try? JSONEncoder().encode(payload) else { return }
+        guard data != store.data(forKey: key) else { return }
+        store.set(data, forKey: key)
+        let count = items.count
+        log.debug("Sent \(count) favorites, addition: \(additive)")
+    }
+
+    /// The list and how to take it, in one value so they always arrive together.
     private struct Payload: Codable {
         var favorites: [Favorite]
         /// Someone removed the last favorite; an empty list without it is never taken over.
         var cleared: Bool
+        /// Sent by a device that had not heard from iCloud: merged, never taken over.
+        var additive: Bool
+
+        init(favorites: [Favorite], cleared: Bool, additive: Bool) {
+            self.favorites = favorites
+            self.cleared = cleared
+            self.additive = additive
+        }
+
+        init(from decoder: Decoder) throws {
+            let c = try decoder.container(keyedBy: CodingKeys.self)
+            favorites = try c.decode([Favorite].self, forKey: .favorites)
+            cleared = try c.decodeIfPresent(Bool.self, forKey: .cleared) ?? false
+            additive = try c.decodeIfPresent(Bool.self, forKey: .additive) ?? false
+        }
     }
 
     /// Also reads the plain list of earlier test builds, which never counts as cleared.
+    /// One unreadable entry makes the whole list unreadable: taking over the rest would drop it.
     private static func load() -> Payload? {
         guard let data = store.data(forKey: key) else { return nil }
         if let payload = try? JSONDecoder().decode(Payload.self, from: data) { return payload }
         guard let list = try? JSONDecoder().decode([Favorite].self, from: data) else { return nil }
-        return Payload(favorites: list, cleared: false)
+        return Payload(favorites: list, cleared: false, additive: false)
     }
 
     /// This device's favorites first, then those only in iCloud. The same favorite on both sides,

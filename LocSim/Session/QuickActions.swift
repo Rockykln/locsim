@@ -14,7 +14,7 @@ enum QuickActions {
     static func refresh() {
         let session = SimulationSession.shared
         var items: [UIApplicationShortcutItem] = []
-        if session.active != nil {
+        if session.active != nil || session.unclearedPlace != nil {
             items.append(item(.clear, String(localized: "Clear Location"), symbol: "arrow.uturn.backward"))
         } else if LastCoordinate.isSaved {
             items.append(item(.last, String(localized: "Set Last Location"), subtitle: LastCoordinate.loadName(),

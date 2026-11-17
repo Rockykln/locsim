@@ -361,7 +361,7 @@ struct MapScreen: View {
         .sheet(isPresented: $showWelcome) {
             WelcomeView().environmentObject(session)
         }
-        .webPageSheet($webPage)
+        .webPageSheet($webPage, onDismiss: runDeferredRequest)
         .sheet(isPresented: $showSettings, onDismiss: runDeferredRequest) {
             SettingsView()
                 .environmentObject(session)
@@ -1011,8 +1011,10 @@ struct MapScreen: View {
     // Never asks for permission; that happens when the user taps the locate button.
     private func showRealPositionIfAllowed() {
         // After a failed Clear the simulation may still be in force.
-        guard !Demo.isOn, session.active == nil, session.unclearedPlace == nil,
+        // While clearing, the device still reports the simulated place as its own.
+        guard !Demo.isOn, session.active == nil, !session.isClearing, !session.mayStillBeSimulated,
               session.state.error?.code != AppError.clearFailedCode else {
+            showsUserLocation = false
             return
         }
         switch Self.locationManager.authorizationStatus {
@@ -1408,17 +1410,23 @@ struct MapScreen: View {
     private func handle(_ kind: ExternalRequests.Kind) {
         // Settings and Favorites would hide the map and the search field. The request waits until
         // the sheet has closed: a setup sheet opened while another one closes would not appear.
-        if showSettings || showFavorites {
+        // A request that arrives while the sheet is still closing replaces the waiting one.
+        if showSettings || showFavorites || webPage != nil || deferredRequest != nil {
             deferredRequest = kind
             showSettings = false
             showFavorites = false
+            webPage = nil
             return
         }
         switch kind {
         case .set(let latitude, let longitude, let name):
             select(CLLocationCoordinate2D(latitude: latitude, longitude: longitude), name: name, apply: true)
         case .search:
-            searchFocused = true
+            // On a cold launch the field is not there yet and an early focus request is dropped.
+            Task { @MainActor in
+                try? await Task.sleep(for: .milliseconds(350))
+                searchFocused = true
+            }
         }
     }
 
