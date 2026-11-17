@@ -3,9 +3,10 @@ import XCTest
 @testable import LocSimCore
 
 final class LoopbackPacketTests: XCTestCase {
-    private func packet(from source: [UInt8], to destination: [UInt8]) -> Data {
+    private func packet(from source: [UInt8], to destination: [UInt8], protocol number: UInt8 = 6) -> Data {
         var bytes = [UInt8](repeating: 0, count: 28)
         bytes[0] = 0x45
+        bytes[9] = number
         bytes.replaceSubrange(12..<16, with: source)
         bytes.replaceSubrange(16..<20, with: destination)
         for i in 20..<28 { bytes[i] = UInt8(i) }
@@ -24,6 +25,9 @@ final class LoopbackPacketTests: XCTestCase {
         var v6 = packet(from: [10, 7, 0, 0], to: [10, 7, 0, 1])
         v6[0] = 0x60
         XCTAssertNil(LoopbackPacket.reflected(v6))
+        // Only TCP reaches the developer services; UDP and ICMP are dropped.
+        XCTAssertNil(LoopbackPacket.reflected(packet(from: [10, 7, 0, 0], to: [10, 7, 0, 1], protocol: 17)))
+        XCTAssertNil(LoopbackPacket.reflected(packet(from: [10, 7, 0, 0], to: [10, 7, 0, 1], protocol: 1)))
     }
 
     func testSliceWithOffset() throws {
