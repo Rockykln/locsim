@@ -68,17 +68,17 @@
 <li><strong>Linux:</strong> <code>pymobiledevice3 lockdown wifi-connections on</code></li>
 </ul>
 <h2>3. Crie o arquivo de emparelhamento</h2>
-<p>O script baixa o <code>idevice-tools</code>, verifica o checksum e grava o <code>rppairing.plist</code>. Você pode <a href="https://github.com/Rockykln/locsim/tree/efb1fcdc9bd4ceacd5e8e47f3a981528b01f41f5/tools">ler os scripts</a> antes.</p>
+<p>O script baixa o <code>idevice-tools</code>, verifica o checksum e grava o <code>rppairing.plist</code>. Você pode <a href="https://github.com/Rockykln/locsim/tree/73c5e3aca8ce8ad5805fcc8de70ef7e42824e422/tools">ler os scripts</a> antes.</p>
 <h3>Mac e Linux</h3>
-<pre><code>curl -fLO https://raw.githubusercontent.com/Rockykln/locsim/efb1fcdc9bd4ceacd5e8e47f3a981528b01f41f5/tools/make-pairing.sh
+<pre><code>curl -fLO https://raw.githubusercontent.com/Rockykln/locsim/73c5e3aca8ce8ad5805fcc8de70ef7e42824e422/tools/make-pairing.sh
 bash make-pairing.sh</code></pre>
-<p class="checksum">Opcional, antes de executar: <code>shasum -a 256 make-pairing.sh</code> (Linux: <code>sha256sum make-pairing.sh</code>) deve mostrar: <code data-sha="make-pairing.sh">ad2c3bb355342a4475e22dc64fe69bb21b81a8742a1a7955e8f32006d4dd8f64</code></p>
+<p class="checksum">Opcional, antes de executar: <code>shasum -a 256 make-pairing.sh</code> (Linux: <code>sha256sum make-pairing.sh</code>) deve mostrar: <code data-sha="make-pairing.sh">86c4121244775fca63fffe5308634806b6f85c483e6c945a71bb47ef5f0811af</code></p>
 <p>No Linux, também são necessários o <code>usbmuxd</code> e a glibc 2.38 ou mais recente: Debian 13, Ubuntu 24.04, Fedora 39 ou posterior.</p>
 <h3>Windows</h3>
 <p>Requer o app Dispositivos Apple ou o iTunes. No PowerShell:</p>
-<pre><code>curl.exe -fLO https://raw.githubusercontent.com/Rockykln/locsim/efb1fcdc9bd4ceacd5e8e47f3a981528b01f41f5/tools/make-pairing.ps1
+<pre><code>curl.exe -fLO https://raw.githubusercontent.com/Rockykln/locsim/73c5e3aca8ce8ad5805fcc8de70ef7e42824e422/tools/make-pairing.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File make-pairing.ps1</code></pre>
-<p class="checksum">Verificação opcional: <code>Get-FileHash make-pairing.ps1</code> deve mostrar: <code data-sha="make-pairing.ps1">06E6868CC805CD3BF4C27C08C38CD3B67993786CF9C3AAA0B0291E495885E15F</code></p>
+<p class="checksum">Verificação opcional: <code>Get-FileHash make-pairing.ps1</code> deve mostrar: <code data-sha="make-pairing.ps1">51A4365E596C21425292D80442C3355DA7936C7EA59DB35051A4058F92D830F5</code></p>
 <h2>4. Importe o arquivo no LocSim</h2>
 <ol>
 <li>Se o LocSim estiver instalado, o script copia o arquivo para o app e o apaga do computador. Abra o LocSim: a tela de configuração mostra o arquivo como importado.</li>
