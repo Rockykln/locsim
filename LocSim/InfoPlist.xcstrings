@@ -80,43 +80,43 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zeigt deinen Standort auf der Karte. Während ein Standort simuliert wird, nutzt LocSim die Ortung im Hintergrund, um die Verbindung zu diesem iPhone offen zu halten."
+            "value" : "Zeigt deinen Standort auf der Karte. Während ein Standort simuliert wird, prüft LocSim im Hintergrund, ob iOS ihn auf deinen echten Standort zurückgesetzt hat, und setzt den simulierten erneut."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shows your position on the map. While a location is simulated, LocSim uses location in the background to keep its connection to this iPhone open."
+            "value" : "Shows your position on the map. While a location is simulated, LocSim checks in the background whether iOS has reset it to your real location, and sets the simulated one again."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Muestra tu ubicación en el mapa. Mientras se simula una ubicación, LocSim usa la ubicación en segundo plano para mantener abierta su conexión con este iPhone."
+            "value" : "Muestra tu ubicación en el mapa. Mientras se simula una ubicación, LocSim comprueba en segundo plano si iOS la ha restablecido a tu ubicación real y vuelve a establecer la simulada."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Affiche votre position sur la carte. Pendant la simulation d’une position, LocSim utilise la localisation en arrière-plan pour garder ouverte sa connexion à cet iPhone."
+            "value" : "Affiche votre position sur la carte. Pendant la simulation d’une position, LocSim vérifie en arrière-plan si iOS l’a remise à votre position réelle et rétablit la position simulée."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostra la tua posizione sulla mappa. Mentre simula una posizione, LocSim usa la localizzazione in background per mantenere aperta la connessione a questo iPhone."
+            "value" : "Mostra la tua posizione sulla mappa. Mentre simula una posizione, LocSim controlla in background se iOS l’ha riportata alla tua posizione reale e reimposta quella simulata."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Toont je positie op de kaart. Terwijl een locatie wordt gesimuleerd, gebruikt LocSim de locatie op de achtergrond om de verbinding met deze iPhone open te houden."
+            "value" : "Toont je positie op de kaart. Terwijl een locatie wordt gesimuleerd, controleert LocSim op de achtergrond of iOS die heeft teruggezet naar je echte locatie, en stelt de gesimuleerde opnieuw in."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostra a sua posição no mapa. Enquanto uma localização é simulada, o LocSim usa a localização em segundo plano para manter aberta a conexão com este iPhone."
+            "value" : "Mostra a sua posição no mapa. Enquanto uma localização é simulada, o LocSim verifica em segundo plano se o iOS a redefiniu para a sua localização real e define a simulada novamente."
           }
         }
       }

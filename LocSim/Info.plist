@@ -56,7 +56,7 @@
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Finds the Remote Pairing service of this device.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Shows your position on the map. While a location is simulated, LocSim uses location in the background to keep its connection to this iPhone open.</string>
+	<string>Shows your position on the map. While a location is simulated, LocSim checks in the background whether iOS has reset it to your real location, and sets the simulated one again.</string>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>
