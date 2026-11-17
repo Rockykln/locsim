@@ -154,8 +154,8 @@ LocSim ──TCP──▶ 10.7.0.1:<port> ──LocSimTunnel──▶ remotepair
 ```
 
 1. LocSim starts its packet tunnel extension, which only routes the host
-   `10.7.0.1`. It swaps the source and destination of each packet, so the traffic
-   reaches this iPhone's own services. It has no server and no settings, and stops
+   `10.7.0.1`. It swaps the source and destination of each TCP packet, so the traffic
+   reaches this iPhone's own services; anything else is dropped. It has no server and no settings, and stops
    with LocSim, or by itself about two minutes after LocSim was closed.
 2. The tunnel is opened on the default RPPairing port 49152. If that fails, the
    port is discovered via Bonjour (`_remotepairing._tcp`), as it can differ on
