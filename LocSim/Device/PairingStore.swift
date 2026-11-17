@@ -23,6 +23,12 @@ enum PairingStore {
         FileManager.default.fileExists(atPath: storeURL.path)
     }
 
+    /// Pairing files left in LocSim's folder in Files: the user's own copies and lockdown files.
+    /// They are part of device backups and hold a key for this device, so the user is told.
+    static var copiesInDocuments: [String] {
+        droppedFiles().map { $0.0.lastPathComponent }
+    }
+
     /// A file in Documents that may be a pairing file and was not imported yet.
     static var hasDroppedFile: Bool {
         let seen = UserDefaults.standard.dictionary(forKey: importedKey) as? [String: Double] ?? [:]

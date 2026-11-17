@@ -28,7 +28,9 @@ $Sha256 = "1c15e627652db1bc7c68f3d32675be07238b75282b510cd5828e9f4bec692a2f"
 $Dir = Join-Path $env:LOCALAPPDATA "locsim\idevice-tools-windows-$Version"
 $Bin = Join-Path $Dir "idevice-tools.exe"
 $List = Join-Path $Dir "idevice_id.exe"
-$Marker = Join-Path $Dir ".verified"
+# Kept in the cache and checked against the pinned checksum on every run; the programs are
+# unpacked from it each time, so a changed file in the cache is never run.
+$Zip = Join-Path $env:LOCALAPPDATA "locsim\idevice-tools-windows-$Version.zip"
 $Sid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value
 
 if ($Out) {
@@ -95,12 +97,11 @@ try {
     }
 
     # -LiteralPath everywhere: folders like "Projects [old]" would otherwise be read as wildcards.
-    # An empty marker reads as $null; the [string] cast keeps .Trim() from throwing.
-    $Verified = (Test-Path -LiteralPath $Marker) -and (([string](Get-Content -LiteralPath $Marker -Raw)).Trim() -eq "$Version $Sha256")
-    if (-not ($Verified -and (Test-Path -LiteralPath $Bin) -and (Test-Path -LiteralPath $List))) {
-        if (Test-Path -LiteralPath $Dir) { Remove-Item -LiteralPath $Dir -Recurse -Force }
-        New-Item -ItemType Directory -Force -Path $Dir | Out-Null
-        $Zip = Join-Path $Dir "idevice-tools-windows-$Version.zip"
+    New-Item -ItemType Directory -Force -Path (Split-Path -Parent $Zip) | Out-Null
+    $Cached = (Test-Path -LiteralPath $Zip -PathType Leaf) -and
+        ((Get-FileHash -Algorithm SHA256 -LiteralPath $Zip).Hash.ToLower() -eq $Sha256)
+    if (-not $Cached) {
+        if (Test-Path -LiteralPath $Zip) { Remove-Item -LiteralPath $Zip -Force }
         $Url = "https://github.com/jkcoxson/idevice/releases/download/$Version/idevice-tools-windows-$Version.zip"
         if ($PSVersionTable.PSVersion.Major -lt 6) {
             [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
@@ -112,41 +113,42 @@ try {
         $OldProgress = $ProgressPreference
         $ProgressPreference = "SilentlyContinue"
         try {
-            try {
-                Invoke-WebRequest -UseBasicParsing -OutFile $Zip -Uri $Url
-            } catch {
-                Write-Host "Could not download idevice-tools:"
-                Write-Host "  $($_.Exception.Message)"
-                Write-Host "URL: $Url"
-                Write-Host "Check the internet connection. Behind a proxy or firewall, github.com and"
-                Write-Host "*.githubusercontent.com must be reachable; set the proxy in Windows Settings > Network & internet > Proxy."
-                exit 1
-            }
-            $Actual = (Get-FileHash -Algorithm SHA256 -LiteralPath $Zip).Hash.ToLower()
-            if ($Actual -ne $Sha256) {
-                Remove-Item -LiteralPath $Zip
-                Write-Host "Checksum mismatch for idevice-tools: $Actual"
-                Write-Host "Expected: $Sha256"
-                Write-Host "A proxy may have changed the download. Nothing was run."
-                exit 1
-            }
-            try {
-                Expand-Archive -LiteralPath $Zip -DestinationPath $Dir -Force
-            } catch {
-                Write-Host "Could not unpack idevice-tools: $($_.Exception.Message)"
-                Write-AntivirusHint
-                exit 1
-            }
+            Invoke-WebRequest -UseBasicParsing -OutFile $Zip -Uri $Url
+        } catch {
+            Write-Host "Could not download idevice-tools:"
+            Write-Host "  $($_.Exception.Message)"
+            Write-Host "URL: $Url"
+            Write-Host "Check the internet connection. Behind a proxy or firewall, github.com and"
+            Write-Host "*.githubusercontent.com must be reachable; set the proxy in Windows Settings > Network & internet > Proxy."
+            exit 1
         } finally {
             $ProgressPreference = $OldProgress
         }
-        Remove-Item -LiteralPath $Zip
-        if (-not ((Test-Path -LiteralPath $Bin) -and (Test-Path -LiteralPath $List))) {
-            Write-Host "idevice-tools was unpacked, but its programs are gone."
-            Write-AntivirusHint
+        $Actual = (Get-FileHash -Algorithm SHA256 -LiteralPath $Zip).Hash.ToLower()
+        if ($Actual -ne $Sha256) {
+            Remove-Item -LiteralPath $Zip
+            Write-Host "Checksum mismatch for idevice-tools: $Actual"
+            Write-Host "Expected: $Sha256"
+            Write-Host "A proxy may have changed the download. Nothing was run."
             exit 1
         }
-        Set-Content -LiteralPath $Marker -Value "$Version $Sha256"
+    }
+    if (Test-Path -LiteralPath $Dir) { Remove-Item -LiteralPath $Dir -Recurse -Force }
+    $OldProgress = $ProgressPreference
+    $ProgressPreference = "SilentlyContinue"
+    try {
+        Expand-Archive -LiteralPath $Zip -DestinationPath $Dir -Force
+    } catch {
+        Write-Host "Could not unpack idevice-tools: $($_.Exception.Message)"
+        Write-AntivirusHint
+        exit 1
+    } finally {
+        $ProgressPreference = $OldProgress
+    }
+    if (-not ((Test-Path -LiteralPath $Bin) -and (Test-Path -LiteralPath $List))) {
+        Write-Host "idevice-tools was unpacked, but its programs are gone."
+        Write-AntivirusHint
+        exit 1
     }
 
     # Native tools write to stderr; with "Stop" Windows PowerShell 5.1 would turn that into an exception.
@@ -219,6 +221,9 @@ try {
 
     Write-Host ""
     Write-Host "Hostname: $Hostname (must match LocSim > Settings > Hostname)"
+    Write-Host "Trusting this computer left a pairing record for the device in $env:ProgramData\Apple\Lockdown."
+    Write-Host "To withdraw the trust, delete it there, or on the device use Settings > Developer >"
+    Write-Host "Clear Trusted Computers; LocSim then needs a new pairing file."
 
     # LocSim picks the file up from its Documents folder and removes it there.
     # The tool can report errors on stderr with exit code 0, so stderr counts as failure.

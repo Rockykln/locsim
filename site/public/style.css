@@ -477,6 +477,10 @@ pre.has-copy { padding-right: 3.25rem; }
 @keyframes beta-up { from { transform: translateY(100%); } }
 @keyframes beta-fade { from { opacity: 0; } }
 
+/* Script checksums: long hex values wrap instead of widening the page. */
+.checksum { font-size: 0.9rem; color: var(--muted); }
+.checksum code[data-sha] { overflow-wrap: anywhere; word-break: break-all; }
+
 /* Print */
 
 @media print {

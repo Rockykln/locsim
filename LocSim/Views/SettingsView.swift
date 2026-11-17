@@ -29,6 +29,8 @@ struct SettingsView: View {
     @State private var importing = false
     // Read in onAppear: an initial value here would touch the disk every time the parent redraws.
     @State private var hasPairing = false
+    @State private var copiesInFiles: [String] = []
+    @State private var pickedFile = false
     // Copied from PairingStore, which is not observed, so the footer redraws when it changes.
     @State private var rejectedDrop = false
     @State private var lockdownDrop = false
@@ -92,6 +94,7 @@ struct SettingsView: View {
             }
             .fileImporter(isPresented: $importing, allowedContentTypes: [.propertyList, .xml, .data]) { result in
                 pairingMessage = session.importPairing(result)
+                pickedFile = pairingMessage == nil
                 announce(pairingMessage ?? String(localized: "Pairing file imported"))
                 refreshPairing()
             }
@@ -104,6 +107,7 @@ struct SettingsView: View {
         hasPairing = PairingStore.exists
         rejectedDrop = PairingStore.rejectedDrop
         lockdownDrop = PairingStore.lockdownDrop
+        copiesInFiles = PairingStore.copiesInDocuments
     }
 
     private var statusSection: some View {
@@ -181,6 +185,12 @@ struct SettingsView: View {
             } else if lockdownDrop, !hasPairing {
                 // Kept: it may be the user's own file for another tool.
                 ErrorFooter(String(localized: "This is a lockdown pairing file. LocSim needs the RPPairing file from the setup script."))
+            } else if !copiesInFiles.isEmpty {
+                // Never deleted by LocSim: they may be the user's own copies.
+                Text("A pairing file is still in LocSim's folder in Files: \(copiesInFiles.formatted(.list(type: .and))). It contains a key for this device and is part of device backups. Delete it there if you no longer need it.")
+                    .foregroundStyle(.orange)
+            } else if pickedFile {
+                Text("The file you picked stays where it was. It contains a key for this device; delete it if it is in iCloud Drive or another shared place.")
             } else {
                 Text("Created once with the setup script on a computer.")
             }
@@ -271,7 +281,7 @@ struct SettingsView: View {
             // Applies now, not only after the current wait.
             .onChange(of: resend) { _, _ in session.resendIntervalChanged() }
             Toggle(isOn: $keepAlive) {
-                item("Keep Alive in Background", "moon.fill", .indigo)
+                item("Keep Location in Background", "moon.fill", .indigo)
             }
             .onChange(of: keepAlive) { _, on in session.keepAliveChanged(on) }
         } header: {
@@ -281,7 +291,7 @@ struct SettingsView: View {
             if !port.trimmingCharacters(in: .whitespaces).isEmpty, PairingPorts.manual(port) == nil {
                 ErrorFooter(String(localized: "Port must be a number from 1 to 65535. Leave it empty to find it automatically."))
             } else {
-                Text("Connecting needs Wi-Fi, then cellular works too. “Keep Alive in Background” keeps the simulation running in the background.")
+                Text("Connecting needs Wi-Fi, then cellular works too. “Keep Location in Background” keeps the simulated location while LocSim is in the background and sets it again if iOS resets it.")
             }
         }
     }
