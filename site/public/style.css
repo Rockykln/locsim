@@ -48,6 +48,8 @@
 }
 
 :root[data-theme="dark"] { color-scheme: dark; }
+/* Without JavaScript the palette stays light, so built-in controls must stay light too. */
+:root:not([data-scheme]) { color-scheme: light; }
 
 /* Base */
 
@@ -147,6 +149,7 @@ pre code { padding: 0; background: none; white-space: inherit; overflow-wrap: no
 
 .hero { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: center; gap: 2rem 4rem; padding-top: clamp(6.5rem, 12vh, 9rem); padding-bottom: clamp(2.5rem, 6vh, 4.5rem); }
 .hero-phone { display: flex; justify-content: center; }
+.hero-phone picture { display: contents; }
 .hero-phone img { display: block; width: min(100%, 20rem, calc((100vh - 9rem) * 0.47)); min-width: 14rem; height: auto; }
 
 /* Sections */
@@ -484,6 +487,9 @@ pre.has-copy { padding-right: 3.25rem; }
     --glass: transparent; --glass-line: #cccccc; color-scheme: light;
   }
   body { background: #ffffff; color: #000000; }
+  /* The light screenshots on paper, also when the page is dark. */
+  :root[data-scheme="dark"] .only-light { display: block; }
+  :root[data-scheme="dark"] .only-dark { display: none; }
   .site-nav, .actions, .code-filter, .help-options, .hint, .still-stuck, .copy-code, .skip, .beta-dialog, .toc, .faq-more { display: none !important; }
   .sky, .sky.hero, .sky.cta { background: none; color: var(--text); }
   .sky p, .sky .lead { color: var(--muted); }
