@@ -12,24 +12,25 @@
   }
 
   var current = read();
+  var systemDark = window.matchMedia("(prefers-color-scheme: dark)");
 
   function apply(theme) {
     if (theme === "auto") root.removeAttribute("data-theme");
     else root.setAttribute("data-theme", theme);
+    // The theme in use, which the dark palette and the image variants follow.
+    var dark = theme === "dark" || (theme === "auto" && systemDark.matches);
+    root.setAttribute("data-scheme", dark ? "dark" : "light");
     var metas = document.querySelectorAll('meta[name="theme-color"]');
     for (var i = 0; i < metas.length; i++) {
       var media = metas[i].getAttribute("media") || "";
       var system = media.indexOf("dark") !== -1 ? "dark" : "light";
       metas[i].setAttribute("content", colors[theme === "auto" ? system : theme]);
     }
-    // Picture sources follow the system; a chosen theme overrides them, so only one variant loads.
-    var sources = document.querySelectorAll("source[data-theme-source]");
-    for (var j = 0; j < sources.length; j++) {
-      sources[j].setAttribute("media", theme === "auto" ? "(prefers-color-scheme: dark)" : theme === "dark" ? "all" : "not all");
-    }
   }
 
   apply(current);
+  // "auto" follows a change of the system setting while the page is open.
+  systemDark.addEventListener("change", function () { if (current === "auto") apply(current); });
 
   // Language menu: close on outside press or Escape. iOS Safari fires no click for taps on
   // plain text or background, so the press itself is used.
