@@ -39,7 +39,7 @@ public enum CoordinateText {
     public static func parse(_ text: String, language: String? = currentLanguage) -> Coordinate? {
         let oIsWest = isWestO(language)
         let links = MapLink.links(in: text)
-        let maps = links.filter { $0.url.scheme?.lowercased() == "geo" || MapLink.isMap($0.url) }
+        let maps = links.filter { MapLink.isPlaceLink($0.url) }
         if let c = maps.lazy.compactMap({ mapLink($0.url, oIsWest: oIsWest) }).first { return c }
         // Numbers in a Maps link without coordinates, e.g. in a place ID, are no coordinates.
         if !maps.isEmpty { return nil }
@@ -148,7 +148,7 @@ public enum CoordinateText {
 
     /// Coordinates from a Maps link or geo: URI only, never from other numbers in the URL.
     public static func coordinate(inLink url: URL, language: String? = currentLanguage) -> Coordinate? {
-        guard url.scheme?.lowercased() == "geo" || MapLink.isMap(url) else { return nil }
+        guard MapLink.isPlaceLink(url) else { return nil }
         return mapLink(url, oIsWest: isWestO(language))
     }
 
@@ -285,7 +285,7 @@ public enum CoordinateText {
             .replacingOccurrences(of: "[\u{2000}-\u{200A}\u{202F}\u{205F}\u{3000}\u{00A0}]", with: " ", options: .regularExpression)
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .uppercased()
-            .replacingOccurrences(of: #"(?<!\p{L})(?:OUEST|OESTE|OVEST|WEST)(?!\p{L})"#, with: "W", options: .regularExpression)
+            .replacingOccurrences(of: #"(?<!\p{L})(?:OUEST|OESTE|OVEST|OEST|VEST|WEST)(?!\p{L})"#, with: "W", options: .regularExpression)
             .replacingOccurrences(of: #"(?<!\p{L})(?:OOST|OST|LESTE|ESTE|EST|EAST)(?!\p{L})"#, with: "E", options: .regularExpression)
             .replacingOccurrences(of: #"(?<!\p{L})(?:NOORD|NORD|NORTE|NORTH)(?!\p{L})"#, with: "N", options: .regularExpression)
             .replacingOccurrences(of: #"(?<!\p{L})(?:ZUID|SÜD|SUD|SUL|SUR|SOUTH)(?!\p{L})"#, with: "S", options: .regularExpression)

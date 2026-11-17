@@ -833,7 +833,7 @@ struct MapScreen: View {
         if let coordinate = CoordinateParser.parse(text) {
             let name = MapLink.url(in: text).flatMap(MapLink.placeName)
             select(coordinate, name: name, apply: autoApply)
-        } else if MapLink.url(in: text).map(MapLink.isMap) == true {
+        } else if MapLink.url(in: text).map(MapLink.isPlaceLink) == true {
             searchTask?.cancel()
             resolving = text
             searchTask = Task { await openLink(text) }
@@ -1357,7 +1357,7 @@ struct MapScreen: View {
             select(coordinate, name: MapLink.url(in: search.query).flatMap(MapLink.placeName), apply: autoApply)
             return
         }
-        if MapLink.url(in: search.query).map(MapLink.isMap) == true {
+        if MapLink.url(in: search.query).map(MapLink.isPlaceLink) == true {
             paste(search.query)
             return
         }

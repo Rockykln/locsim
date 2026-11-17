@@ -4,7 +4,7 @@ import Foundation
 public enum MapLink {
     public static func url(in text: String) -> URL? {
         let found = links(in: text).map(\.url)
-        let maps = found.filter { $0.scheme?.lowercased() == "geo" || isMap($0) }
+        let maps = found.filter(isPlaceLink)
         // A Maps link wins over other links in the same text, one with coordinates over one without.
         return maps.first(where: hasCoordinates) ?? maps.first ?? found.first
     }
@@ -52,6 +52,11 @@ public enum MapLink {
             ?? URL(string: link.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed) ?? link)
         else { return nil }
         return (url, dropped)
+    }
+
+    /// A Maps link or a geo: URI: both can carry coordinates or a place name to search for.
+    public static func isPlaceLink(_ url: URL) -> Bool {
+        url.scheme?.lowercased() == "geo" || isMap(url)
     }
 
     public static func isMap(_ url: URL) -> Bool {
