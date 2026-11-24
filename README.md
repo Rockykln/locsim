@@ -2,7 +2,7 @@
 
 [![Build](https://github.com/Rockykln/locsim/actions/workflows/build.yml/badge.svg)](https://github.com/Rockykln/locsim/actions/workflows/build.yml)
 ![iOS](https://img.shields.io/badge/iOS-17.4%2B-lightgrey)
-[![TestFlight](https://img.shields.io/badge/TestFlight-unavailable-lightgrey)](#status)
+[![TestFlight](https://img.shields.io/badge/TestFlight-public%20beta-0a84ff)](#testflight)
 ![Languages](https://img.shields.io/badge/languages-en%20%7C%20de%20%7C%20fr%20%7C%20es%20%7C%20it%20%7C%20pt--BR%20%7C%20nl-lightgrey)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
@@ -27,16 +27,11 @@ A developer tool for testing location-based apps.
 
 ## Status
 
-**November 2026:** Apple has ended all TestFlight builds of LocSim. On 13 November Apple
-named the reason: an automated check flagged the local packet tunnel as a VPN. LocSim
+**November 2026:** LocSim is back on TestFlight with build 8. Apple had ended all earlier
+builds because an automated check flagged the local packet tunnel as a VPN. LocSim
 collects no data; the tunnel routes only 10.7.0.1 back to the device itself (see
-[How it works](#how-it-works)). I have answered and on 17 November submitted build 8,
-with a detailed explanation and many fixes (see the [changelog](CHANGELOG.md)). Until
-Apple approves it, the installed beta does not open.
-
-The source code stays fully available here, and you can still build LocSim yourself
-(see [Building](#building)). Updates will be posted here and on the
-[website](https://locsim.rockykln.com).
+[How it works](#how-it-works)). Install build 8 in TestFlight, as older builds no longer
+open. What changed is in the [changelog](CHANGELOG.md).
 
 LocSim uses the same location simulation service as Xcode. It reaches the iPhone's own
 developer services through a small local tunnel, after a one-time pairing with a
@@ -99,8 +94,6 @@ computer.
 - A Mac, Windows or Linux computer once, for Developer Mode and the pairing file
 
 ## TestFlight
-
-Currently unavailable, see [Status](#status).
 
 - **Public Beta**: stable test builds. [Join on TestFlight](https://testflight.apple.com/join/vyrbctky).
 - **Early Access**: new features land here first. Request a personal invite on the
