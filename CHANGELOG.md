@@ -2,6 +2,27 @@
 
 What changed in each version that testers received through TestFlight.
 
+## 1.0 (9), 25 November 2026
+
+Fixes for what came up with build 8:
+
+- Before LocSim adds its VPN configuration for the first time, it explains it (LS-209)
+- Removing a favorite with the star, clearing the recent places, turning off Recent
+  Locations, deleting the DDI files and removing or replacing the pairing file ask first
+- The pairing file is checked more thoroughly: an old lockdown pairing file is reported
+  as the wrong file (LS-102), a full iPhone as Not enough storage (LS-901)
+- After a Clear that did not finish, the Live Activity, the widget and the quick actions
+  keep showing the place
+- Continue or Download sets the place that asked; tapping the status line shows the
+  question again
+- A connection step that hangs reports its own code instead of LS-204
+- Pasting: labels in longitude, latitude order split by a slash, OpenStreetMap
+  directions links and ul.waze.com links
+- A location set from a Shortcut keeps connecting when Shortcuts stops waiting
+- A Live Activity older than six hours is replaced while LocSim is open
+- VoiceOver announcements name the place; some buttons have larger tap targets
+- Wording fixes in all languages
+
 ## 1.0 (8), 17 November 2026
 
 Replaces the earlier builds, which Apple ended. Same features as build 6, plus:

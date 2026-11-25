@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Help with setup or an error code
+    url: https://locsim.rockykln.com/support/
+    about: The support page explains every error code and has a form that prepares an email.
+  - name: Security problem
+    url: https://github.com/Rockykln/locsim/security/advisories/new
+    about: Report it privately, not in a public issue.

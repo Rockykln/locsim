@@ -9,6 +9,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function copy(text) { return window.copyText(text); }
 
+  // Screen readers do not notice a changed button label; a status line is read out.
+  var status = document.createElement("p");
+  status.className = "sr-only";
+  status.setAttribute("role", "status");
+  document.body.appendChild(status);
+  function announce(text) {
+    status.textContent = "";
+    setTimeout(function () { status.textContent = text; }, 50);
+  }
+
   document.querySelectorAll("pre > code").forEach(function (code) {
     var pre = code.parentNode;
     var button = document.createElement("button");
@@ -18,7 +28,9 @@ document.addEventListener("DOMContentLoaded", function () {
     button.title = idle;
     button.innerHTML = ICON_COPY;
     button.addEventListener("click", function () {
-      copy(code.textContent.trim() + "\n").then(function () {
+      // No line break at the end: pasted into a terminal, the command waits for Return.
+      copy(code.textContent.trim()).then(function () {
+        announce(done);
         button.innerHTML = ICON_DONE;
         button.setAttribute("aria-label", done);
         button.title = done;
@@ -32,8 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 2000);
       }, function () {});
     });
-    // The button sits on a wrapper, not in the pre: the pre scrolls sideways on narrow
-    // screens and would take the button along.
+    // The button sits on a wrapper, not in the pre, so it stays in place whatever the pre does.
     var wrap = document.createElement("div");
     wrap.className = "copy-wrap";
     pre.parentNode.insertBefore(wrap, pre);

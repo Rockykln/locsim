@@ -14,8 +14,11 @@ slides and joins up in the App Store. Title font: Inter (`fonts/`, SIL OFL 1.1).
    (not committed). The app runs in demo mode (`-demo map|search|recents|live|favorites`):
    sample places in the app's language, an active location, no device connection,
    nothing saved. Release builds ignore the argument.
-   For the Lock Screen with the Live Activity (`4-live`) the script waits until you lock
-   the Simulator (Cmd-L). Each language restarts the Simulator in that system language,
+   For the Lock Screen with the Live Activity (`4-live`) the script locks the Simulator
+   itself (Cmd-L, then the space bar to light the Lock Screen). That needs Accessibility
+   and Automation access for the terminal app; without it, or with `LOCK=manual`, it asks
+   you to lock by hand. `WALLPAPER=ok` skips the question about the wallpaper, `DEVICE=`
+   picks another simulator (the image checks expect an iPhone 17). Each language restarts the Simulator in that system language,
    since the Live Activity follows it. The first run may ask whether LocSim may show
    Live Activities: allow it once and run that language again.
 2. Run `design/mockups/render.py` (needs Firefox, ImageMagick 7 and oxipng or optipng;

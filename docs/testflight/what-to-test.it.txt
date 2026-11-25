@@ -1,13 +1,15 @@
-Build 6: portoghese (Brasile) e olandese, preferiti a scelta nel widget, preferiti tramite iCloud, un avviso quando il fuso orario segue il luogo simulato, due comandi rapidi per leggere lo stato e script di configurazione aggiornati sul sito.
+La build 9 corregge ciò che è emerso con la build 8. Preferiti e impostazioni restano.
 
-Da testare:
-- Lingue: LocSim, i suoi widget e il sito ora sono anche in portoghese (Brasile) e olandese. Se parli una di queste lingue, controlla i testi nell’app, nei widget, nel Centro di Controllo, nelle azioni rapide e in Comandi Rapidi.
-- Preferiti nel widget: aggiungi il widget “Stato della posizione” in dimensione media, oppure tieni premuto un widget esistente e scegli “Modifica widget”. “Mostra i più usati” è attivo di default ed elenca i tre preferiti più usati. Disattivalo e scegli fino a tre preferiti; il widget li elenca in quell’ordine. Toccandone uno si apre LocSim e lo imposta.
-- Rinomina ed eliminazione: un preferito scelto che rinomini in LocSim appare nel widget con il nuovo nome; uno eliminato sparisce. Se non ne resta nessuno, il widget torna a mostrare i più usati.
-- Script di configurazione: se configuri di nuovo LocSim (dopo un aggiornamento di iOS o su un altro computer), usa gli script di locsim.rockykln.com/it/setup. Il file di abbinamento ora resta in una cartella privata e finisce accanto allo script solo se la copia in LocSim non riesce. I messaggi di errore sono più chiari e il comando per Windows funziona anche con versioni meno recenti di PowerShell.
-- iCloud: attiva Impostazioni > Preferiti > Sincronizzazione iCloud su due dispositivi con lo stesso Account Apple. I preferiti aggiunti, rinominati, riordinati o eliminati su uno dovrebbero comparire sull’altro entro circa un minuto. Attivandola si conservano i preferiti di entrambi. È disattivata per impostazione predefinita. I preferiti rimossi da una modifica dell’altro dispositivo si possono riaggiungere con Impostazioni > Preferiti > Ripristina i preferiti rimossi.
-- Fuso orario: con Impostazioni > Privacy e sicurezza > Localizzazione > Servizi di sistema > Impostazione fuso orario attiva, simula un luogo in un altro fuso orario (meglio offline). LocSim dovrebbe mostrare un avviso sulla mappa, e una notifica in background, che nomina questa impostazione. Consenti le notifiche quando richiesto.
-- Comandi Rapidi: “Posizione simulata?” restituisce vero o falso; “Ottieni posizione simulata” restituisce il luogo con nome e coordinate, o non riesce se nulla è simulato. Entrambi funzionano senza aprire LocSim.
-- File di abbinamento: un file che il dispositivo non accetta, per esempio creato per un altro dispositivo, ora appare come “Abbinamento rifiutato” (LS-203) invece che come errore di connessione.
+Da provare:
+- Prima connessione: prima di aggiungere la sua configurazione VPN per la prima volta, LocSim la spiega e ti chiede di continuare (LS-209). Lo vedi solo se la configurazione VPN di LocSim non esiste ancora, per esempio dopo averla eliminata nelle impostazioni di iOS, alla voce VPN.
+- Eliminare chiede prima conferma: rimuovere un preferito con la stella, svuotare le posizioni recenti, disattivare “Posizioni recenti”, eliminare i file DDI e rimuovere o sostituire il file di abbinamento.
+- File di abbinamento: “Verifica file di abbinamento” controlla il file più a fondo. Un vecchio file di abbinamento lockdown viene segnalato come file errato (LS-102), e un iPhone pieno come “Spazio insufficiente” (LS-901).
+- Ripristino: se un ripristino non si conclude, l’attività in tempo reale, il widget e le azioni rapide continuano a mostrare il luogo, e “Ripristina” si può toccare di nuovo.
+- Domande: quando LocSim chiede di un’altra VPN o del download del DDI, “Continua” e “Scarica” impostano il luogo che ha chiesto. Toccando la riga di stato la domanda ricompare.
+- Connessione: la riga di stato indica quando il DDI viene scaricato o installato, e un passaggio bloccato segnala il proprio codice invece di LS-204.
+- Incollare: più formati, per esempio “Lng / Lat: 2.35, 48.85”, link di percorso di OpenStreetMap e link di ul.waze.com.
+- Comandi rapidi: una posizione impostata da un comando rapido continua a connettersi anche se Comandi non aspetta più.
+- Attività in tempo reale: con LocSim aperto, un’attività in tempo reale più vecchia di sei ore viene sostituita da una nuova prima che iOS la termini.
+- VoiceOver: gli annunci nominano il luogo, e alcuni pulsanti hanno un’area di tocco più grande.
 
-Se qualcosa non funziona, tocca la riga di stato, scegli “Copia dettagli” e inviali con il tuo feedback.
+Se qualcosa non va, tocca la riga di stato, scegli “Copia dettagli” e inviali con il tuo feedback.

@@ -20,7 +20,9 @@ shift $((OPTIND - 1))
 
 cd "$(git rev-parse --show-toplevel)"
 
-pages="site/public/setup/index.html site/public/de/setup/index.html site/public/fr/setup/index.html site/public/es/setup/index.html site/public/it/setup/index.html site/public/pt/setup/index.html site/public/nl/setup/index.html"
+# Every page that links the scripts, so a new language is not missed.
+pages="$(git grep -l 'raw.githubusercontent.com/Rockykln/locsim/' -- 'site/public/*.html' | tr '\n' ' ')"
+[ -n "$pages" ] || die "no page in site/public links the setup scripts"
 scripts="tools/make-pairing.sh tools/make-pairing.ps1"
 raw_re='raw\.githubusercontent\.com/Rockykln/locsim/[^/"<[:space:]]+/tools/make-pairing\.(sh|ps1)'
 tree_re='github\.com/Rockykln/locsim/tree/(main|[0-9a-f]{40})/tools"'
@@ -37,6 +39,11 @@ short="$(git rev-parse --short=7 "$commit")"
 # Only commits on main stay reachable; other branches may be deleted.
 git merge-base --is-ancestor "$commit" origin/main ||
   die "$short is not on origin/main. Merge and push it first, then pin."
+
+# The scripts should be the ones a build was made with; build tags are v*.
+if [ -z "$(git tag --contains "$commit" --list 'v*')" ]; then
+  echo "pin-setup: warning: $short is in no build tag (v*); the scripts may not be in a build yet." >&2
+fi
 
 for page in $pages; do
   [ -f "$page" ] || die "$page not found"
