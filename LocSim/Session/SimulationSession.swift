@@ -102,13 +102,20 @@ final class SimulationSession: ObservableObject {
     @Published private(set) var isClearing = false
     // The name travels with the queued Set, so a pin moved in the meantime cannot rename it.
     private var pending: Pending? {
-        didSet {
-            let queued = pending != nil
-            if hasQueuedSet != queued { hasQueuedSet = queued }
-        }
+        didSet { updateSetInProgress() }
     }
-    /// A Set waits for the current work, e.g. a reconnect, so the button can show it.
-    @Published private(set) var hasQueuedSet = false
+    // A Set from apply() runs, as opposed to a resend or a pairing check.
+    private var applying = false {
+        didSet { updateSetInProgress() }
+    }
+    /// A Set waits for the current work, e.g. a reconnect, or runs; the button shows it, also
+    /// while a location is active and the state stays as it is.
+    @Published private(set) var setInProgress = false
+
+    private func updateSetInProgress() {
+        let running = pending != nil || applying
+        if setInProgress != running { setInProgress = running }
+    }
     /// The long step of connecting, if one runs: a download or install can take minutes.
     @Published private(set) var connectStep: String?
     private struct Pending {
@@ -237,10 +244,13 @@ final class SimulationSession: ObservableObject {
 
     /// Takes in a pairing file the setup script copied into Documents. Left for later while a
     /// connection is being made, which takes it in itself.
-    func adoptDroppedPairing() {
-        guard !busy, !clearing, PairingStore.adoptNow() else { return }
+    /// Returns whether a file was taken in, so an old import error can go.
+    @discardableResult
+    func adoptDroppedPairing() -> Bool {
+        guard !busy, !clearing, PairingStore.adoptNow() else { return false }
         write("pairing file taken from Documents")
         Task { await pairingFileReplaced() }
+        return true
     }
 
     /// Imports a pairing file picked in Files. Returns the error to show, if any.
@@ -356,11 +366,13 @@ final class SimulationSession: ObservableObject {
             return
         }
         busy = true
+        applying = true
         // A direct Set replaces anything still queued.
         resolve(pending?.request, .notSet)
         pending = nil
         var outcome = SetOutcome.notSet
         defer {
+            applying = false
             // Consent that this Set did not use (the link was still open) must not carry over.
             tunnel.allowTakeover = false
             resolve(request, outcome)

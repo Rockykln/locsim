@@ -1290,7 +1290,7 @@ struct MapScreen: View {
             } label: {
                 HStack(spacing: 8) {
                     // A Set made while reconnecting waits for it; without this it looked ignored.
-                    if session.state == .connecting || session.hasQueuedSet {
+                    if session.state == .connecting || session.setInProgress {
                         ProgressView().controlSize(.small)
                     } else if icons {
                         Image(systemName: "location.fill")
