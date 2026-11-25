@@ -36,12 +36,16 @@ public enum MapLink {
         let isGeo = link.lowercased().hasPrefix("geo:")
         // Chats put links in sentences or brackets: "see https://…)." should not keep ")."
         // A closing bracket stays only if it closes one in the link, e.g. a geo: label.
+        // Counted once: counting again for every dropped bracket made a long run of ")" slow.
         let opening: [Character: Character] = [")": "(", "]": "[", "}": "{"]
+        var count: [Character: Int] = [:]
+        for c in link where "()[]{}".contains(c) { count[c, default: 0] += 1 }
         while let last = link.last {
             if ".,;:!?'\"".contains(last) {
                 link.removeLast()
-            } else if let open = opening[last], link.filter({ $0 == last }).count > link.filter({ $0 == open }).count {
+            } else if let open = opening[last], count[last, default: 0] > count[open, default: 0] {
                 link.removeLast()
+                count[last, default: 0] -= 1
             } else {
                 break
             }
@@ -65,7 +69,8 @@ public enum MapLink {
         if host == "maps.apple.com" || host.hasSuffix(".maps.apple.com") { return true }
         if host == "maps.app.goo.gl" || isGoogleShortLink(url) { return true }
         let bare = host.hasPrefix("www.") ? String(host.dropFirst(4)) : host
-        if ["openstreetmap.org", "osm.org", "waze.com"].contains(bare) { return true }
+        // Not every subdomain: wiki.openstreetmap.org or support.waze.com are no maps.
+        if ["openstreetmap.org", "osm.org", "waze.com", "ul.waze.com"].contains(bare) { return true }
         if bare == "bing.com", url.path.hasPrefix("/maps") { return true }
         // google.com/maps, google.de/maps, maps.google.com, but not docs.google.com.
         return host.hasPrefix("maps.google.") || (bare.hasPrefix("google.") && url.path.hasPrefix("/maps"))
@@ -75,7 +80,15 @@ public enum MapLink {
     /// redirects to. Only Apple's links are resolved, since Apple already serves the map.
     public static func isAppleShortLink(_ url: URL) -> Bool {
         let host = url.host?.lowercased() ?? ""
-        return (host == "maps.apple" || host.hasSuffix(".maps.apple")) && url.path.hasPrefix("/p/")
+        return ["http", "https"].contains(url.scheme?.lowercased() ?? "")
+            && (host == "maps.apple" || host.hasSuffix(".maps.apple")) && url.path.hasPrefix("/p/")
+    }
+
+    /// Where a short link may lead: only Apple's own hosts over https. Other hosts are not asked.
+    public static func isAppleRedirect(_ url: URL) -> Bool {
+        let host = url.host?.lowercased() ?? ""
+        return url.scheme?.lowercased() == "https"
+            && (host == "apple" || host.hasSuffix(".apple") || host == "apple.com" || host.hasSuffix(".apple.com"))
     }
 
     /// The last redirect of a short link can be a page without the place (maps.apple.com/unsupported),
@@ -103,7 +116,10 @@ public enum MapLink {
 
     /// The place name in a link, to label the pin or to search for when there are no coordinates.
     public static func placeName(_ url: URL) -> String? {
-        for key in ["name", "q", "query", "address"] {
+        // A search or event link next to coordinates names nothing on the map.
+        guard isPlaceLink(url) else { return nil }
+        // daddr and destination: the target of a route.
+        for key in ["name", "q", "query", "address", "daddr", "destination"] {
             guard var value = value(key, in: url)?.trimmingCharacters(in: .whitespacesAndNewlines),
                   !value.isEmpty else { continue }
             // geo: labels: "geo:0,0?q=Cafe(Label)" or "q=48.85,2.35(Cafe)"
@@ -121,6 +137,12 @@ public enum MapLink {
            ["place", "search"].contains(parts[maps + 1]) {
             let name = parts[maps + 2].replacingOccurrences(of: "+", with: " ")
             if !name.hasPrefix("@"), CoordinateText.parse(name) == nil { return name }
+        }
+        // Directions, /maps/dir/<start>/<destination>/@…: the last stop, as for coordinates.
+        if let maps = parts.firstIndex(of: "maps"), parts.indices.contains(maps + 1), parts[maps + 1] == "dir",
+           let stop = parts.dropFirst(maps + 2).filter({ !$0.hasPrefix("@") && !$0.contains("=") }).last {
+            let name = stop.replacingOccurrences(of: "+", with: " ")
+            if CoordinateText.parse(name) == nil { return name }
         }
         return nil
     }
