@@ -6,8 +6,17 @@
   Permissions-Policy: geolocation=(), camera=(), microphone=()
   Cross-Origin-Opener-Policy: same-origin
 
-/flags/*
+/*.svg
   Cache-Control: public, max-age=86400
 
 /*.png
+  Cache-Control: public, max-age=86400
+
+/*.webp
+  Cache-Control: public, max-age=86400
+
+/*.jpg
+  Cache-Control: public, max-age=86400
+
+/favicon.ico
   Cache-Control: public, max-age=86400

@@ -4,6 +4,7 @@
 *Settings > General > Social preview*. The website uses `site/public/og.jpg` and
 `og-de.jpg` (1200 × 630, JPEG so they stay small enough for messenger previews) through Open Graph tags.
 
-The images show the map and the Lock Screen with the Live Activity from the build 4 mockups
-(dark theme, `render.py`'s phones without background), the sky from `site/public/img/` and the
-logo from `site/public/brand-dark.svg`, laid out as HTML and rendered with headless Firefox.
+All three are made by `design/mockups/render.py --social` (light, the default) or
+`--social dark`, from the current screenshots in `design/screenshots/` and a generated sky,
+laid out as HTML and rendered with headless Firefox. The texts per language are in
+`social.json`.

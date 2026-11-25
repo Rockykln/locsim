@@ -13,6 +13,17 @@ document.addEventListener("DOMContentLoaded", function () {
     var longNote = dialog.querySelector("[data-long]");
     var body = "";
     var tooLong = false;
+    // Set once the email was opened or copied; the form is cleared when the dialog closes.
+    var sent = false;
+    // Screen readers do not notice a changed button label; a status line is read out.
+    var status = document.createElement("p");
+    status.className = "sr-only";
+    status.setAttribute("role", "status");
+    dialog.appendChild(status);
+    function announce(text) {
+      status.textContent = "";
+      if (text) setTimeout(function () { status.textContent = text; }, 50);
+    }
 
     function show(step, noFocus) {
       dialog.querySelectorAll("[data-step]").forEach(function (section) {
@@ -56,6 +67,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     dialog.addEventListener("close", function () {
       root.classList.remove("dialog-open");
+      // Cleared only now, so "Edit" after sending still shows what was entered.
+      if (sent) {
+        sent = false;
+        form.reset();
+      }
       // Otherwise a reload of a #beta link opens the dialog again.
       if (location.hash === "#" + dialog.id) {
         history.replaceState(null, "", location.pathname + location.search);
@@ -167,13 +183,15 @@ document.addEventListener("DOMContentLoaded", function () {
     // Once the email is opened or copied, the request is done: the next visit starts empty.
     // The prepared text stays, so opening and copying both keep working on this step.
     // A text too long for the link is still needed for copying, so the form stays filled.
-    mail.addEventListener("click", function () { if (!tooLong) form.reset(); });
+    mail.addEventListener("click", function () { if (!tooLong) sent = true; });
     copy.addEventListener("click", function () {
       copyText(body, dialog).then(function () {
         copy.textContent = copy.getAttribute("data-done");
-        if (!tooLong) form.reset();
+        announce(copy.getAttribute("data-done"));
+        if (!tooLong) sent = true;
       }, function () {
         copy.textContent = copy.getAttribute("data-idle");
+        announce(copy.getAttribute("data-failed") || "");
       });
     });
   }

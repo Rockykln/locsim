@@ -1,9 +1,10 @@
 # Releasing to TestFlight
 
-Builds are uploaded either from Xcode on the Mac or by the `testflight` workflow, which
-only runs when started by hand. The workflow archives with automatic, cloud-managed signing through the App Store Connect
-API, so no certificates or provisioning profiles are stored in the repository or in
-secrets.
+Builds are uploaded from Xcode on the Mac. The `testflight` workflow is kept for later
+but not used: its environment has no secrets (steps 2 to 4 below were never done), so it
+cannot upload. It would archive with automatic, cloud-managed signing through the App
+Store Connect API, so no certificates or provisioning profiles would be stored in the
+repository or in secrets.
 
 ## Version and build number
 
@@ -27,7 +28,7 @@ To upload from Xcode, run `xcodegen generate` after raising the numbers, then
 
    | Bundle ID | Capabilities |
    | --- | --- |
-   | `com.rockykln.locsim` | *Network Extensions*, *App Groups* (`group.com.rockykln.locsim`) |
+   | `com.rockykln.locsim` | *Network Extensions*, *App Groups* (`group.com.rockykln.locsim`), *iCloud* (key-value storage only, no container) |
    | `com.rockykln.locsim.tunnel` | *Network Extensions* |
    | `com.rockykln.locsim.widgets` | *App Groups* (`group.com.rockykln.locsim`) |
 
@@ -57,18 +58,27 @@ To upload from Xcode, run `xcodegen generate` after raising the numbers, then
    and rulesets protect `main` and all `v*` tags: they cannot be deleted or force-pushed,
    so a tag cannot be moved to another commit. Admins can bypass the rulesets. Secret scanning with push protection and Dependabot alerts are on.
 
+## Branches
+
+Work happens on feature and fix branches. They are merged into `preview`, never rebased
+onto it and never force-pushed; the Mac builds from `preview` (`git pull && xcodegen
+generate`). `main` is the published state: a push to `main` puts the website live, so
+`preview` is merged into `main` only when a build is released.
+
 ## Uploading a build
 
 1. Raise `CURRENT_PROJECT_VERSION` in `project.yml` (and `MARKETING_VERSION` for a new
-   release) and commit.
-2. Tag the commit with `v`, `MARKETING_VERSION`, a dash and `CURRENT_PROJECT_VERSION`,
+   release) on `preview` and commit.
+2. Push `preview` and wait until the `build` workflow is green for that commit.
+3. On the Mac: `git pull && xcodegen generate`, then *Product > Archive* and *Distribute
+   App > App Store Connect*.
+4. Tag the commit with `v`, `MARKETING_VERSION`, a dash and `CURRENT_PROJECT_VERSION`,
    e.g. for version 1.0 build 5: `git tag -a v1.0-5 -m "Build 5" && git push origin v1.0-5`.
-   Every build gets its tag, also one uploaded from Xcode, so patches can branch off the
-   shipped state. Pushing a tag starts nothing.
-3. Upload from Xcode, or run the workflow by hand: *Actions > testflight > Run workflow*,
-   select the tag (e.g. `v1.0-5`) under *Use workflow from*, then approve the run in the
-   `testflight` environment. The environment only allows `v*` tags, and the tag check
-   fails if the tag does not match `project.yml`.
+   Every build gets its tag, so patches can branch off the shipped state. Pushing a tag
+   starts nothing (on commits before build 5 the old workflow still reacts to a tag; do
+   not approve such a run).
+5. When the build is released to testers: merge `preview` into `main` (website live),
+   then point the setup guide at the build (see *Setup guide* below).
 
 Processing in App Store Connect takes a few minutes after the upload. The build
 then appears for the internal group.
@@ -101,7 +111,16 @@ Access requests for Early Access and development builds arrive at locsim@rockykl
 - Testers need the same prerequisites as for a source build: Developer Mode and their
   own pairing file.
 - Build 5 and later need Xcode 27.1 or later (iOS 27.1 SDK), also on the CI runner. The
-  Siri AI tools on `feature/siri-ai` need the iOS 27.3 SDK and are not part of build 5.
+  Siri AI tools on `feature/siri-ai` need the iOS 27.3 SDK and are not part of any build yet.
+- Before an App Store release: under *Pricing and Availability*, turn off availability on
+  Apple silicon Macs and on Apple Vision Pro; in TestFlight, enable neither for any group.
+  LocSim only works on the iPhone it runs on.
+- The English usage descriptions are in `LocSim/Info.plist` and in
+  `LocSim/InfoPlist.xcstrings`; change both together.
+- Before each build, check for new idevice releases and RustSec advisories for rustls and
+  aws-lc (watch releases on github.com/jkcoxson/idevice; Dependabot does not cover it).
+- New error codes and changed error texts go on the support page in all languages with
+  the release.
 - The packet tunnel makes App Review treat LocSim as a possible VPN app (guideline 5.4,
   organization accounts only). The review notes must explain that it only reaches the
   device itself, and China should stay excluded from availability.
