@@ -39,23 +39,23 @@ final class DeviceLink: @unchecked Sendable {
     }
 
     func openTunnel(_ config: LinkConfig) async throws {
-        try await run(Timeout.tunnel) { try self.openTunnelLocked(config) }
+        try await run(Timeout.tunnel, .tunnel, "Tunnel") { try self.openTunnelLocked(config) }
     }
 
     func isDDIMounted() async throws -> Bool {
-        try await run(Timeout.query) { try self.ddiMountedLocked() }
+        try await run(Timeout.query, .ddiQuery, "DDI query") { try self.ddiMountedLocked() }
     }
 
     func mountDDI(from directory: URL, method: DDIMethod) async throws {
-        try await run(Timeout.mount) { try self.mountDDILocked(directory, method) }
+        try await run(Timeout.mount, .ddiInstall, "DDI mount") { try self.mountDDILocked(directory, method) }
     }
 
     func openLocation() async throws {
-        try await run(Timeout.location) { try self.openLocationLocked() }
+        try await run(Timeout.location, .locationService, "Location service") { try self.openLocationLocked() }
     }
 
     func set(latitude: Double, longitude: Double) async throws {
-        try await run(Timeout.send) {
+        try await run(Timeout.send, .notConnected, "Set location") {
             guard let location = self.location else { throw DeviceError(.notConnected, "Not connected") }
             do {
                 try Self.check(location_simulation_set(location, latitude, longitude), .setLocation, "Set location")
@@ -67,7 +67,7 @@ final class DeviceLink: @unchecked Sendable {
     }
 
     func clear() async throws {
-        try await run(Timeout.send) {
+        try await run(Timeout.send, .notConnected, "Clear location") {
             defer { self.closeLocked() }
             guard let location = self.location else { return }
             try Self.check(location_simulation_clear(location), .clearLocation, "Clear location")
@@ -75,7 +75,7 @@ final class DeviceLink: @unchecked Sendable {
     }
 
     func close() async {
-        _ = try? await run(Timeout.send) { self.closeLocked() }
+        _ = try? await run(Timeout.send, .notConnected, "Close") { self.closeLocked() }
     }
 
     /// Closes a replaced link once the call blocking its queue returns, however long that takes.
@@ -88,7 +88,11 @@ final class DeviceLink: @unchecked Sendable {
     }
 
     // idevice calls can block on a dead connection without returning, so each one has a deadline.
-    private func run<T>(_ timeout: TimeInterval, _ body: @escaping () throws -> T) async throws -> T {
+    // A missed deadline is reported for the step that hung: a tunnel that never came up is
+    // "not reachable", a mount that hung is a failed install, not a lost connection.
+    private func run<T>(
+        _ timeout: TimeInterval, _ kind: DeviceError.Kind, _ step: String, _ body: @escaping () throws -> T
+    ) async throws -> T {
         try await withCheckedThrowingContinuation { cont in
             let gate = ResumeGate()
             // A timer source, not asyncAfter: cancelling it once the call returns also removes the wakeup.
@@ -104,7 +108,7 @@ final class DeviceLink: @unchecked Sendable {
                         self.tunnelFlag = false
                     }
                 }
-                cont.resume(throwing: DeviceError(.notConnected, "Device did not respond within \(Int(timeout)) s"))
+                cont.resume(throwing: DeviceError(kind, "\(step) timed out: no response within \(Int(timeout)) s"))
             }
             // Started before the call, which may finish and cancel it right away.
             deadline.resume()
