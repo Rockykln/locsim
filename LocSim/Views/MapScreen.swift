@@ -100,7 +100,7 @@ struct MapScreen: View {
                 camera = start
                 mapCenter = session.target
                 // Saved before names were kept, or set from a Shortcut with bare coordinates.
-                if session.targetName == nil { session.targetName = knownName(for: session.target) }
+                if session.targetName == nil { session.targetName = session.knownName(for: session.target) }
                 showRealPositionIfAllowed()
                 if !session.hasPairing { showWelcome = true }
                 showDemo()
