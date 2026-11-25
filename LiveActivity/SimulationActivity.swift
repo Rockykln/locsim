@@ -51,10 +51,12 @@ struct StopSimulationIntent: LiveActivityIntent {
         let session = SimulationSession.shared
         await session.clear()
         // iOS may suspend LocSim as soon as this returns; the activity must be gone by then.
-        // Kept when the Clear failed or a new Set started meanwhile: the location may still be simulated.
+        // Kept when the Clear failed, is still waiting for the device, or a new Set started
+        // meanwhile: the location may still be simulated.
         // A failed Clear is reported, so the Control Center button does not look like it worked.
         if let error = session.state.error { throw LocationIntentError(error.summary) }
-        guard session.active == nil, session.state != .connecting else { return .result() }
+        guard session.active == nil, session.state != .connecting, !session.isClearing,
+              session.unclearedPlace == nil else { return .result() }
         for activity in Activity<SimulationActivityAttributes>.activities {
             await activity.end(nil, dismissalPolicy: .immediate)
         }

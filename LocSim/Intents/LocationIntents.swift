@@ -47,10 +47,13 @@ struct SetCoordinatesIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        guard let c = CoordinateParser.parse(coordinates) else {
+        // Whole numbers count here: "0, 0" is meant as coordinates, not typed halfway.
+        guard let c = CoordinateParser.parse(coordinates, allowWholeNumbers: true) else {
             throw LocationIntentError(String(localized: "No coordinates found in “\(coordinates)”."))
         }
-        try await LocationIntentRunner.set(c, name: nil)
+        // The same names as in the app: from a map link, else a favorite or recent place at this spot.
+        let name = CoordinateParser.linkName(in: coordinates) ?? SimulationSession.shared.knownName(for: c)
+        try await LocationIntentRunner.set(c, name: name)
         // Siri reads degree symbols poorly; the coordinate is spoken in words and shown as usual.
         return .result(dialog: IntentDialog(
             full: "LocSim simulates \(CoordinateParser.spoken(c)).",
@@ -80,8 +83,11 @@ struct ClearLocationIntent: AppIntent {
         guard session.canClear || unfinished else {
             return .result(dialog: "No location is simulated.")
         }
+        // The preview only moved the pin; the device never had a location to give back.
+        let wasPreview = session.isPreview
         // Also waits for the Live Activity to end: iOS may suspend LocSim as soon as this returns.
         await session.clear()
+        if wasPreview { return .result(dialog: "No location is simulated.") }
         if let error = session.state.error { throw LocationIntentError(error.summary) }
         return .result(dialog: "The real location is back.")
     }
@@ -141,8 +147,8 @@ struct SetPlaceIntent: AppIntent {
         let found: PlaceSearch.Place
         if let c = CoordinateParser.parse(place) {
             // A map link keeps the place name it carries, as when pasted into the search field.
-            let name = MapLink.url(in: place).flatMap(MapLink.placeName) ?? CoordinateParser.format(c)
-            found = .init(name: name, coordinate: c)
+            let name = CoordinateParser.linkName(in: place) ?? SimulationSession.shared.knownName(for: c)
+            found = .init(name: name ?? CoordinateParser.format(c), coordinate: c)
         } else {
             let search = PlaceSearch()
             do {

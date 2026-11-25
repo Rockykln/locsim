@@ -11,6 +11,8 @@ struct DeviceError: LocalizedError {
         case pairingRefused
         case localTunnel
         case otherVPN
+        /// LocSim's VPN configuration does not exist yet; the user is told before iOS asks.
+        case vpnNotice
         case localNetwork
         case tunnel
         case notConnected
@@ -21,6 +23,8 @@ struct DeviceError: LocalizedError {
         case locationService
         case setLocation
         case clearLocation
+        /// Writing a file failed because the device is full.
+        case storage
         case other
     }
 
@@ -38,4 +42,14 @@ struct DeviceError: LocalizedError {
     }
 
     var errorDescription: String? { message }
+
+    /// The device has no space left, as Foundation and URLSession report it.
+    static func isOutOfSpace(_ error: Error) -> Bool {
+        let ns = error as NSError
+        if ns.domain == NSCocoaErrorDomain, ns.code == NSFileWriteOutOfSpaceError { return true }
+        if ns.domain == NSPOSIXErrorDomain, ns.code == Int(ENOSPC) { return true }
+        if let code = (error as? URLError)?.code, code == .cannotWriteToFile || code == .cannotCreateFile { return true }
+        if let underlying = ns.userInfo[NSUnderlyingErrorKey] as? Error { return isOutOfSpace(underlying) }
+        return false
+    }
 }

@@ -52,7 +52,8 @@ enum DDIStore {
             values.isExcludedFromBackup = true
             try? root.setResourceValues(values)
         } catch {
-            throw DeviceError(.ddiDownload, "Cannot create DDI folder: \(error.localizedDescription)")
+            throw DeviceError(DeviceError.isOutOfSpace(error) ? .storage : .ddiDownload,
+                              "Cannot create DDI folder: \(error.localizedDescription)")
         }
 
         for file in method.files {
@@ -61,8 +62,15 @@ enum DDIStore {
             try? fm.removeItem(at: target)
 
             log("downloading \(file.name)")
-            let (temp, response) = try await session.download(
-                from: baseURL.appendingPathComponent("\(method.folder)/\(file.name)"))
+            let temp: URL
+            let response: URLResponse
+            do {
+                (temp, response) = try await session.download(
+                    from: baseURL.appendingPathComponent("\(method.folder)/\(file.name)"))
+            } catch let error where DeviceError.isOutOfSpace(error) {
+                // A full device is no network problem.
+                throw DeviceError(.storage, "Cannot download \(file.name): \(error.localizedDescription)")
+            }
             let status = (response as? HTTPURLResponse)?.statusCode ?? 0
             guard status == 200, await verify(temp, file.sha256) else {
                 try? fm.removeItem(at: temp)
@@ -73,8 +81,15 @@ enum DDIStore {
             } catch {
                 try? fm.removeItem(at: temp)
                 if await verify(target, file.sha256) { continue }
-                throw DeviceError(.ddiDownload, "Cannot store \(file.name): \(error.localizedDescription)")
+                throw DeviceError(DeviceError.isOutOfSpace(error) ? .storage : .ddiDownload,
+                                  "Cannot store \(file.name): \(error.localizedDescription)")
             }
+        }
+        // Images for another method (an iOS update switched it) or an older commit are not used again.
+        let root = dir.deletingLastPathComponent()
+        for other in (try? fm.contentsOfDirectory(at: root, includingPropertiesForKeys: nil)) ?? []
+        where other.lastPathComponent != dir.lastPathComponent {
+            try? fm.removeItem(at: other)
         }
         return dir
     }
@@ -85,6 +100,12 @@ enum DDIStore {
         config.timeoutIntervalForResource = 300
         return URLSession(configuration: config)
     }()
+
+    /// Any images on the device, also for another method than the current one.
+    static var hasFiles: Bool {
+        let root = directory(for: .cryptex).deletingLastPathComponent()
+        return !((try? FileManager.default.contentsOfDirectory(atPath: root.path)) ?? []).isEmpty
+    }
 
     static func remove() {
         try? FileManager.default.removeItem(at: directory(for: .cryptex).deletingLastPathComponent())

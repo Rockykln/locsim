@@ -78,6 +78,9 @@ final class TunnelFailureTests: XCTestCase {
     func testMessages() {
         XCTAssertEqual(TunnelFailure.classify(code: 16, subCode: 0, message: "InternalError(\"connect: Connection refused\")"), .unavailable)
         XCTAssertEqual(TunnelFailure.classify(code: nil, subCode: nil, message: "operation timed out"), .timeout)
+        // LocSim's own deadline for a tunnel that never came up.
+        XCTAssertEqual(TunnelFailure.classify(code: nil, subCode: nil, message: "Tunnel timed out: no response within 30 s"),
+                       .timeout)
         XCTAssertEqual(TunnelFailure.classify(code: nil, subCode: nil, message: "RemotePairing(PairVerifyFailed)"), .rejected)
         XCTAssertEqual(TunnelFailure.classify(code: nil, subCode: nil, message: "connection reset by peer"), .other)
         XCTAssertEqual(TunnelFailure.classify(code: nil, subCode: nil, message: "Xpc(disconnect: peer closed)"), .other)

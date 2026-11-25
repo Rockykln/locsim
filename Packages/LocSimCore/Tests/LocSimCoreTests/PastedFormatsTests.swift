@@ -58,6 +58,112 @@ final class PastedFormatsTests: XCTestCase {
         XCTAssertEqual(parse("https://www.openstreetmap.org/?lat=48.8566&lon=2.3522&zoom=15"), paris)
     }
 
+    func testLabelsInReverseOrder() {
+        XCTAssertEqual(parse("Longitude: 2.3522, Latitude: 48.8566"), paris)
+        XCTAssertEqual(parse("lng: 2.3522 lat: 48.8566"), paris)
+        XCTAssertEqual(parse("Länge: 2,3522 Breite: 48,8566", "de"), paris)
+        XCTAssertEqual(parse("lon: 151.2093, lat: -33.8688"), Coordinate(latitude: -33.8688, longitude: 151.2093))
+        // Letters already give the order; the labels must not swap a second time.
+        XCTAssertEqual(parse("Longitude: 2.3522 E, Latitude: 48.8566 N"), paris)
+        XCTAssertEqual(parse("Lat/Long: 48.8566, 2.3522"), paris)
+        XCTAssertEqual(parse("Lng / Lat: 2.3522, 48.8566"), paris)
+        XCTAssertNil(parse("Long Beach 12"))
+    }
+
+    func testAndIsNoHemisphere() {
+        XCTAssertNil(parse("41.9028 e 12.4964", "it"))
+        XCTAssertNil(parse("Lat: 38.7223 e Long: -9.1393", "pt"))
+        // An uppercase E stays east.
+        XCTAssertEqual(parse("2.3522 E 48.8566"), paris)
+        XCTAssertEqual(parse("48.85 N 2.35"), Coordinate(latitude: 48.85, longitude: 2.35))
+    }
+
+    func testTypographicMarksAndLabels() {
+        for text in ["48°51‘23.8“N 2°21‘07.9“E", "48°51´23.8\"N 2°21´07.9\"E", "48°51ʹ23.8ʺN 2°21ʹ07.9ʺE"] {
+            let c = parse(text)
+            XCTAssertEqual(c?.latitude ?? 0, 48.856611, accuracy: 1e-5, text)
+            XCTAssertEqual(c?.longitude ?? 0, 2.352194, accuracy: 1e-5, text)
+        }
+        XCTAssertEqual(parse("Koordinaten: 48.8566, 2.3522", "de"), paris)
+        XCTAssertEqual(parse("Coordonnées : 48.8566, 2.3522", "fr"), paris)
+        XCTAssertEqual(parse("Latitud: 40.4168, Longitud: -3.7038", "es"), Coordinate(latitude: 40.4168, longitude: -3.7038))
+        XCTAssertEqual(parse("Latitudine: 48.8566, Longitudine: 2.3522", "it"), paris)
+        XCTAssertEqual(parse("Breedtegraad: 48.8566, Lengtegraad: 2.3522", "nl"), paris)
+        XCTAssertEqual(parse("📍 48.8566, 2.3522"), paris)
+        XCTAssertNil(parse("Location 1.5 2.5"))
+    }
+
+    func testWholeNumbersOnlyWhenAllowed() {
+        XCTAssertNil(parse("52, 13"))
+        XCTAssertEqual(CoordinateText.parse("52, 13", language: "en", allowWholeNumbers: true),
+                       Coordinate(latitude: 52, longitude: 13))
+        XCTAssertEqual(CoordinateText.parse("0, 0", language: "en", allowWholeNumbers: true),
+                       Coordinate(latitude: 0, longitude: 0))
+        XCTAssertEqual(CoordinateText.parse("90 180", language: "en", allowWholeNumbers: true),
+                       Coordinate(latitude: 90, longitude: 180))
+        XCTAssertNil(CoordinateText.parse("91, 0", language: "en", allowWholeNumbers: true))
+    }
+
+    func testRouteDestinations() throws {
+        let osm = "https://www.openstreetmap.org/directions?engine=fossgis_osrm_car"
+            + "&route=52.52%2C13.405%3B48.8566%2C2.3522#map=6/50.68/7.88"
+        XCTAssertEqual(parse(osm), paris)
+        XCTAssertNil(parse("https://www.openstreetmap.org/directions#map=6/50.68/7.88"))
+        XCTAssertEqual(parse("https://www.openstreetmap.org/directions?from=&to=48.8566%2C2.3522#map=6/50.68/7.88"), paris)
+        // A route without a destination names no place to go to.
+        let startOnly = try XCTUnwrap(URL(string: "https://www.google.com/maps/dir/Louvre//@48.86,2.33,14z"))
+        XCTAssertNil(MapLink.placeName(startOnly))
+        XCTAssertNil(parse("https://www.google.com/maps/dir/48.8606,2.3376//@48.86,2.33,14z"))
+        let trailing = try XCTUnwrap(URL(string: "https://www.google.com/maps/dir/Louvre/Eiffel+Tower/"))
+        XCTAssertEqual(MapLink.placeName(trailing), "Eiffel Tower")
+        let named = [
+            "https://www.google.com/maps/dir/?api=1&destination=Eiffel+Tower",
+            "https://maps.apple.com/?daddr=Eiffel+Tower",
+            "https://maps.apple.com/directions?destination=Eiffel%20Tower",
+            "https://www.google.com/maps/dir/48.80,2.30/Eiffel+Tower/@48.85,2.29,13z",
+        ]
+        for link in named {
+            let url = try XCTUnwrap(URL(string: link))
+            XCTAssertNil(parse(link), link)
+            XCTAssertEqual(MapLink.placeName(url), "Eiffel Tower", link)
+        }
+    }
+
+    func testWazeShareLinkAndOtherNames() throws {
+        XCTAssertEqual(parse("https://ul.waze.com/ul?place=ChIJ&ll=48.85661400%2C2.35222190&navigate=yes"),
+                       Coordinate(latitude: 48.856614, longitude: 2.3522219))
+        XCTAssertFalse(MapLink.isMap(try XCTUnwrap(URL(string: "https://wiki.openstreetmap.org/wiki/Main_Page"))))
+        // A search or event link names nothing on the map.
+        XCTAssertNil(MapLink.placeName(try XCTUnwrap(URL(string: "https://www.google.com/search?q=hotel+paris"))))
+        XCTAssertNil(MapLink.placeName(try XCTUnwrap(URL(string: "https://example.com/event?name=Party"))))
+        XCTAssertEqual(MapLink.placeName(try XCTUnwrap(URL(string: "https://maps.apple.com/?q=Eiffel+Tower"))), "Eiffel Tower")
+    }
+
+    func testShortLinkRedirectsStayAtApple() throws {
+        for link in ["https://maps.apple.com/place?q=x", "https://maps.apple/p/abc", "https://www.apple.com/maps/"] {
+            XCTAssertTrue(MapLink.isAppleRedirect(try XCTUnwrap(URL(string: link))), link)
+        }
+        for link in ["http://maps.apple.com/place", "https://example.com/", "https://maps.apple.com.example.org/",
+                     "https://notapple.com/"] {
+            XCTAssertFalse(MapLink.isAppleRedirect(try XCTUnwrap(URL(string: link))), link)
+        }
+        XCTAssertFalse(MapLink.isAppleShortLink(try XCTUnwrap(URL(string: "geo://maps.apple/p/abc"))))
+    }
+
+    func testLongInputStaysFast() {
+        let inputs = [
+            "https://maps.apple.com/?q=x" + String(repeating: ")", count: 4000),
+            String(repeating: "1", count: 3000) + "'",
+            "N 48 51.3" + String(repeating: " ", count: 1000) + "x",
+        ]
+        for text in inputs {
+            let start = Date()
+            _ = parse(text)
+            _ = MapLink.url(in: text)
+            XCTAssertLessThan(Date().timeIntervalSince(start), 0.5, String(text.prefix(30)))
+        }
+    }
+
     func testResendNeverShorterAfterFailure() {
         XCTAssertEqual(ResendPolicy.delay(base: 120, failures: 0), 120)
         XCTAssertEqual(ResendPolicy.delay(base: 120, failures: 1), 60)

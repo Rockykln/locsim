@@ -18,6 +18,13 @@ struct MapScreen: View {
     @State private var deferredRequest: ExternalRequests.Kind?
     @State private var naming = false
     @State private var favoriteName = ""
+    // Where the star was tapped: the pin may move while the name is typed.
+    @State private var namingAt: CLLocationCoordinate2D?
+    @State private var removingFavorite: Favorite?
+    @State private var confirmClearRecents = false
+    // Counts keyboard searches, so only the newest one ends the progress indicator.
+    @State private var searches = 0
+    @State private var searching = false
     @State private var searchError: String?
     @State private var shownError: AppError?
     @ObservedObject private var timeZone = TimeZoneWatch.shared
@@ -29,6 +36,9 @@ struct MapScreen: View {
     @State private var visibleRegion: MKCoordinateRegion?
     @State private var locationOff = false
     @State private var question: AppError?
+    // A question that came while a sheet was open; an alert under a sheet would not show.
+    @State private var deferredQuestion: AppError?
+    @State private var vpnNotice = false
     @State private var webPage: WebPage?
     @State private var suggestionsHeight: CGFloat = 0
     @FocusState private var searchFocused: Bool
@@ -90,7 +100,7 @@ struct MapScreen: View {
                 camera = start
                 mapCenter = session.target
                 // Saved before names were kept, or set from a Shortcut with bare coordinates.
-                if session.targetName == nil { session.targetName = knownName(for: session.target) }
+                if session.targetName == nil { session.targetName = session.knownName(for: session.target) }
                 showRealPositionIfAllowed()
                 if !session.hasPairing { showWelcome = true }
                 showDemo()
@@ -305,7 +315,11 @@ struct MapScreen: View {
         content
         .sensoryFeedback(trigger: session.setCount) { _, _ in haptics ? .success : nil }
         .onChange(of: session.setCount) { _, _ in
-            AccessibilityNotification.Announcement(String(localized: "Location set")).post()
+            // With the place: another announcement right after would otherwise cut it short.
+            let place = session.simulatedPlace
+            let spokenPlace = place.map { $0.name ?? CoordinateParser.spoken($0.coordinate) }
+            AccessibilityNotification.Announcement(
+                spokenPlace.map { String(localized: "Location set: \($0)") } ?? String(localized: "Location set")).post()
             // A Shortcut can set a place the map does not show; the map follows it there.
             // A Set from this screen does not: the user may have panned away on purpose,
             // and a fly still running would only restart.
@@ -329,8 +343,16 @@ struct MapScreen: View {
         .onChange(of: session.state) { old, new in
             announce(old, new)
             if new.error != nil { setFromApp = nil }
-            if let error = new.error, [AppError.ddiConsentCode, AppError.otherVPNCode].contains(error.code) {
-                question = error
+            if let error = new.error, AppError.questionCodes.contains(error.code) {
+                if showSettings || showFavorites || webPage != nil || showWelcome {
+                    deferredQuestion = error
+                } else {
+                    question = error
+                }
+            } else {
+                // Answered another way, e.g. LocSim selected again in Settings: the question is outdated.
+                if let asked = question, new.error?.code != asked.code { question = nil }
+                if let asked = deferredQuestion, new.error?.code != asked.code { deferredQuestion = nil }
             }
         }
         .onChange(of: scenePhase) { _, phase in
@@ -344,7 +366,10 @@ struct MapScreen: View {
                   let after = new.first(where: { $0.id == before.id }),
                   after.name != before.name, session.targetName == before.name else { return }
             session.targetName = after.name
-            if same(LastCoordinate.load(), session.target) { LastCoordinate.save(session.target, name: after.name) }
+            if LastCoordinate.isSaved, same(LastCoordinate.load(), session.target) {
+                LastCoordinate.save(session.target, name: after.name)
+            }
+            session.renameActive(at: session.target, to: after.name)
         }
         .onChange(of: session.active == nil) { _, idle in
             if idle {
@@ -358,7 +383,7 @@ struct MapScreen: View {
 
     private func withPresentations(_ content: some View) -> some View {
         content
-        .sheet(isPresented: $showWelcome) {
+        .sheet(isPresented: $showWelcome, onDismiss: runDeferredRequest) {
             WelcomeView().environmentObject(session)
         }
         .webPageSheet($webPage, onDismiss: runDeferredRequest)
@@ -390,7 +415,7 @@ struct MapScreen: View {
             Button("Copy Details") { Clipboard.copy(error.report) }
             Button("OK", role: .cancel) {}
         } message: { error in
-            Text("\(error.message)\n\nError \(error.code)")
+            Text("\(errorMessage(error))\n\nError \(error.code)")
         }
         .alert(
             question?.title ?? "",
@@ -399,18 +424,38 @@ struct MapScreen: View {
         ) { error in
             // Only this button gives consent; a Set that was waiting in the queue never does.
             Button(error.code == AppError.ddiConsentCode ? String(localized: "Download") : String(localized: "Continue")) {
+                // The answer sets the place that asked, which this screen set itself.
+                setFromApp = session.questionPlace ?? session.target
                 Task { await session.apply(consent: true) }
             }
-            Button("Cancel", role: .cancel) {}
+            // The notice before the first VPN configuration leads to the system prompt, which can
+            // be declined; a way around it is not offered (guideline 5.1.1).
+            if error.code != AppError.vpnNoticeCode {
+                Button("Cancel", role: .cancel) {}
+            }
         } message: { error in
-            Text(error.message)
+            // The general LS-207 text says to tap Set Location again; here the button is Continue.
+            Text(error.code == AppError.otherVPNCode
+                 ? String(localized: "LocSim's local connection replaces it while a location is active. Select your VPN again in Settings afterwards.")
+                 : error.message)
+        }
+        // Before the very first Set: iOS turns off another selected VPN when LocSim's configuration is added.
+        .alert(AppError(DeviceError(.vpnNotice, "")).title, isPresented: $vpnNotice) {
+            // Only Continue: a notice before a system prompt must lead to it (guideline 5.1.1).
+            Button("Continue") {
+                session.acceptVPNNotice()
+                setLocation()
+            }
+        } message: {
+            Text(AppError(DeviceError(.vpnNotice, "")).message)
         }
         .alert("Time Zone Changed", isPresented: $showTimeZoneHelp) {
             // Apps may only open their own page in Settings; the message names the path from there.
             Button("Open Settings") {
                 if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
             }
-            Button("Don’t Show Again") { timeZone.dismiss() }
+            // Until the next simulation, which may be in another time zone.
+            Button("Hide Until Next Location") { timeZone.dismiss() }
             Button("OK", role: .cancel) {}
         } message: {
             if let zone = timeZone.changedTo { Text(TimeZoneWatch.help(for: zone)) }
@@ -427,6 +472,27 @@ struct MapScreen: View {
             TextField("Name", text: $favoriteName)
             Button("Save") { saveFavorite() }
             Button("Cancel", role: .cancel) {}
+        }
+        // Favorites may be synced to other devices; one tap on the star should not remove one.
+        .confirmationDialog(
+            removingFavorite.map { String(localized: "Remove “\($0.name)” from favorites?") } ?? "",
+            isPresented: Binding(get: { removingFavorite != nil }, set: { if !$0 { removingFavorite = nil } }),
+            titleVisibility: .visible,
+            presenting: removingFavorite
+        ) { favorite in
+            Button("Remove", role: .destructive) {
+                favorites.items.removeAll { $0.id == favorite.id }
+                feedback += 1
+                AccessibilityNotification.Announcement(String(localized: "Favorite removed")).post()
+            }
+        }
+        // Here, not on the button: the list it is in closes with the keyboard when the dialog opens.
+        .confirmationDialog("Clear recent locations?", isPresented: $confirmClearRecents, titleVisibility: .visible) {
+            Button("Clear List", role: .destructive) {
+                recents.clear()
+                feedback += 1
+                AccessibilityNotification.Announcement(String(localized: "Recent locations cleared")).post()
+            }
         }
     }
 
@@ -514,7 +580,8 @@ struct MapScreen: View {
         session.target = center
         session.targetName = nil
         droppedPins += 1
-        AccessibilityNotification.Announcement(String(localized: "Pin dropped at map center")).post()
+        AccessibilityNotification.Announcement(
+            String(localized: "Pin dropped at map center: \(CoordinateParser.spoken(center))")).post()
     }
 
     private func dropPin(at point: CGPoint, proxy: MapProxy) {
@@ -607,10 +674,12 @@ struct MapScreen: View {
             .padding(.vertical, 10)
             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
             .accessibilitySortPriority(1)
+            // Long enough to read, and gone with a tap.
+            .onTapGesture { self.searchError = nil }
             .task(id: searchError) {
                 AccessibilityNotification.Announcement(searchError).post()
                 // VoiceOver users need longer: the message is read out, then found again by swiping.
-                let seconds: UInt64 = UIAccessibility.isVoiceOverRunning ? 12 : 4
+                let seconds: UInt64 = UIAccessibility.isVoiceOverRunning ? 12 : max(8, UInt64(searchError.count / 10))
                 // Cancelled by a newer error, which must stay for its own time.
                 guard (try? await Task.sleep(nanoseconds: seconds * 1_000_000_000)) != nil else { return }
                 self.searchError = nil
@@ -657,7 +726,7 @@ struct MapScreen: View {
                     resolving = nil
                 }
                 .onChange(of: searchFocused) { _, focused in if !focused { searchError = nil } }
-            if resolving != nil, !search.query.isEmpty, search.completions.isEmpty {
+            if searching || (resolving != nil && !search.query.isEmpty && search.completions.isEmpty) {
                 ProgressView().controlSize(.small)
             }
             if !search.query.isEmpty {
@@ -695,6 +764,8 @@ struct MapScreen: View {
                 .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { suggestionsHeight = $0 }
         }
         .scrollBounceBehavior(.basedOnSize)
+        // The list closes with the keyboard; scrolling through it must not close both.
+        .scrollDismissesKeyboard(.never)
         .frame(height: min(suggestionsHeight, dropdownMaxHeight))
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
         .shadow(color: .black.opacity(0.15), radius: 12, y: 4)
@@ -719,7 +790,7 @@ struct MapScreen: View {
                     subtitle: String(localized: "Coordinates"),
                     spokenTitle: CoordinateParser.spoken(coordinate)
                 ) {
-                    select(coordinate, name: nil, apply: autoApply)
+                    select(coordinate, name: CoordinateParser.linkName(in: search.query), apply: autoApply)
                 }
             }
             if let demo = Demo.suggestions {
@@ -791,14 +862,15 @@ struct MapScreen: View {
                     .foregroundStyle(Color.dropdownSecondary)
                     .accessibilityAddTraits(.isHeader)
                 Spacer()
-                Button(String(localized: "Clear List", defaultValue: "Clear", comment: "Removes all recent locations")) {
-                    recents.clear()
-                    feedback += 1
-                    AccessibilityNotification.Announcement(String(localized: "Recent locations cleared")).post()
+                // The frame is part of the label, so the whole 44 pt can be tapped.
+                Button {
+                    confirmClearRecents = true
+                } label: {
+                    Text(String(localized: "Clear List", defaultValue: "Clear", comment: "Removes all recent locations"))
+                        .font(.footnote.weight(.semibold))
+                        .frame(minWidth: 44, minHeight: 44)
+                        .contentShape(Rectangle())
                 }
-                .font(.footnote.weight(.semibold))
-                .frame(minWidth: 44, minHeight: 44)
-                .contentShape(Rectangle())
                 .accessibilityLabel("Clear recent locations")
                 // Lines up with the label inside the paste button above, not with its edge.
                 .padding(.trailing, 12)
@@ -834,8 +906,7 @@ struct MapScreen: View {
 
     private func paste(_ text: String) {
         if let coordinate = CoordinateParser.parse(text) {
-            let name = MapLink.url(in: text).flatMap(MapLink.placeName)
-            select(coordinate, name: name, apply: autoApply)
+            select(coordinate, name: CoordinateParser.linkName(in: text), apply: autoApply)
         } else if MapLink.url(in: text).map(MapLink.isPlaceLink) == true {
             searchTask?.cancel()
             resolving = text
@@ -971,6 +1042,8 @@ struct MapScreen: View {
         }
         .buttonStyle(.plain)
         .glassCircle()
+        // While clearing, the device still reports the simulated place as its own position.
+        .disabled(session.isClearing)
         .accessibilityLabel(
             session.active != nil ? String(localized: "Show active location") : String(localized: "Show my location"))
         .accessibilityShowsLargeContentViewer()
@@ -1126,7 +1199,8 @@ struct MapScreen: View {
 
             if let error = session.state.error {
                 Button {
-                    shownError = error
+                    // A question cancelled earlier can still be answered here.
+                    if AppError.questionCodes.contains(error.code) { question = error } else { shownError = error }
                 } label: {
                     status
                 }
@@ -1145,13 +1219,15 @@ struct MapScreen: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 0) }
-                    Button("End Preview") {
+                    Button {
                         session.endPreview()
                         if !session.hasPairing { showWelcome = true }
+                    } label: {
+                        Text("End Preview")
+                            .font(.caption.weight(.semibold))
+                            .frame(minHeight: 44)
+                            .contentShape(Rectangle())
                     }
-                    .font(.caption.weight(.semibold))
-                    .frame(minHeight: 44)
-                    .contentShape(Rectangle())
                 }
             }
 
@@ -1212,7 +1288,8 @@ struct MapScreen: View {
                 setLocation()
             } label: {
                 HStack(spacing: 8) {
-                    if session.state == .connecting {
+                    // A Set made while reconnecting waits for it; without this it looked ignored.
+                    if session.state == .connecting || session.setInProgress {
                         ProgressView().controlSize(.small)
                     } else if icons {
                         Image(systemName: "location.fill")
@@ -1276,11 +1353,10 @@ struct MapScreen: View {
         let saved = favorites.favorite(at: session.target)
         return Button {
             if let saved {
-                favorites.items.removeAll { $0.id == saved.id }
-                feedback += 1
-                AccessibilityNotification.Announcement(String(localized: "Favorite removed")).post()
+                removingFavorite = saved
             } else {
                 favoriteName = session.targetName ?? ""
+                namingAt = session.target
                 naming = true
             }
         } label: {
@@ -1307,6 +1383,10 @@ struct MapScreen: View {
         let text: String
         switch new {
         case .idle where old == .active || old.isReconnecting: text = String(localized: "Location cleared")
+        // A second Clear after one that did not finish. Not after a removed pairing file, which
+        // also ends a failure without clearing anything.
+        case .idle where old.error?.code == AppError.clearFailedCode && session.unclearedPlace == nil:
+            text = String(localized: "Location cleared")
         case .idle where old == .connecting: text = String(localized: "Connection cancelled")
         case .active where old.isReconnecting: text = String(localized: "Reconnected")
         case .reconnecting(let error) where !old.isReconnecting:
@@ -1322,7 +1402,16 @@ struct MapScreen: View {
         if session.isClearing { return session.statusTitle }
         var parts: [String] = []
         switch session.state {
-        case .idle, .connecting: parts.append(session.statusTitle)
+        case .idle: parts.append(session.statusTitle)
+        case .connecting:
+            if let step = session.connectStep {
+                // Without the ellipsis of the status title, which would stand right before the dot.
+                parts.append(String(localized: "Connecting (status)", defaultValue: "Connecting",
+                                    comment: "Status line while connecting, followed by the current step"))
+                parts.append(step)
+            } else {
+                parts.append(session.statusTitle)
+            }
         case .active:
             parts.append(session.statusTitle)
             // The pin shows the active location unless it was moved since.
@@ -1346,7 +1435,7 @@ struct MapScreen: View {
 
     private func submitSearch() {
         if let coordinate = search.coordinate {
-            select(coordinate, name: MapLink.url(in: search.query).flatMap(MapLink.placeName), apply: autoApply)
+            select(coordinate, name: CoordinateParser.linkName(in: search.query), apply: autoApply)
             return
         }
         if MapLink.url(in: search.query).map(MapLink.isPlaceLink) == true {
@@ -1355,7 +1444,11 @@ struct MapScreen: View {
         }
         guard !search.query.trimmingCharacters(in: .whitespaces).isEmpty else { return }
         searchTask?.cancel()
+        searches += 1
+        let number = searches
+        searching = true
         searchTask = Task {
+            defer { if searches == number { searching = false } }
             do {
                 let place = try await search.search()
                 guard !Task.isCancelled else { return }
@@ -1382,7 +1475,7 @@ struct MapScreen: View {
         searchTask?.cancel()
         locateTask?.cancel()
         session.target = coordinate
-        session.targetName = name ?? knownName(for: coordinate)
+        session.targetName = name ?? session.knownName(for: coordinate)
         searchFocused = false
         search.reset()
         fly(to: coordinate, duration: 1.2)
@@ -1395,16 +1488,6 @@ struct MapScreen: View {
     private func same(_ a: CLLocationCoordinate2D, _ b: CLLocationCoordinate2D?) -> Bool {
         guard let b else { return false }
         return abs(a.latitude - b.latitude) < 1e-7 && abs(a.longitude - b.longitude) < 1e-7
-    }
-
-    /// A typed or pasted coordinate that is a favorite or a recent place gets that name.
-    /// Matched to about a meter, so only the same spot counts, not a pin dropped next to it.
-    private func knownName(for c: CLLocationCoordinate2D) -> String? {
-        func same(_ other: CLLocationCoordinate2D) -> Bool {
-            abs(other.latitude - c.latitude) < 1e-5 && abs(other.longitude - c.longitude) < 1e-5
-        }
-        if let favorite = favorites.items.first(where: { same($0.coordinate) }) { return favorite.name }
-        return recents.items.first { $0.name != nil && same($0.coordinate) }?.name
     }
 
     private func handle(_ kind: ExternalRequests.Kind) {
@@ -1431,9 +1514,29 @@ struct MapScreen: View {
     }
 
     private func runDeferredRequest() {
+        if let asked = deferredQuestion {
+            deferredQuestion = nil
+            if session.state.error?.code == asked.code { question = asked }
+        }
         guard let kind = deferredRequest else { return }
         deferredRequest = nil
         handle(kind)
+    }
+
+    /// Adds the way the app itself offers, which the general texts (also used on the website and
+    /// in Shortcuts) leave out.
+    private func errorMessage(_ error: AppError) -> String {
+        guard case .failed(let current) = session.state, current == error else { return error.message }
+        switch error.code {
+        // After all attempts failed nothing reconnects by itself; the general text says it does
+        // while a location is active.
+        case AppError.notConnectedCode:
+            return error.message + "\n\n" + String(localized: "Tap Set Location to connect again.")
+        case AppError.clearFailedCode where session.canClear:
+            return error.message + "\n\n" + String(localized: "You can also tap Clear to try again.")
+        default:
+            return error.message
+        }
     }
 
     /// Every Set goes through here; without a pairing file it opens the setup steps instead.
@@ -1444,7 +1547,13 @@ struct MapScreen: View {
             return
         }
         setFromApp = session.target
-        Task { await session.apply() }
+        Task {
+            if await session.needsVPNNotice() {
+                vpnNotice = true
+                return
+            }
+            await session.apply()
+        }
     }
 
     private func showDemo() {
@@ -1460,19 +1569,21 @@ struct MapScreen: View {
 
     private func saveFavorite() {
         let name = favoriteName.trimmingCharacters(in: .whitespacesAndNewlines)
-        let c = session.target
+        let c = namingAt ?? session.target
+        namingAt = nil
         guard favorites.favorite(at: c) == nil else { return }
         feedback += 1
         favorites.items.append(Favorite(
             name: name.isEmpty ? CoordinateParser.format(c) : name,
             latitude: c.latitude,
             longitude: c.longitude))
-        // The pin carries the name from now on, also into the next Set.
-        if !name.isEmpty {
-            session.targetName = name
-            // Set Last Location and the next launch show it too.
-            if same(LastCoordinate.load(), c) { LastCoordinate.save(c, name: name) }
-        }
+        guard !name.isEmpty else { return }
+        // The pin carries the name from now on, also into the next Set, if it is still there.
+        if same(c, session.target) { session.targetName = name }
+        // Set Last Location and the next launch show it too, once a location was ever set.
+        if LastCoordinate.isSaved, same(LastCoordinate.load(), c) { LastCoordinate.save(c, name: name) }
+        // The Live Activity and the widget show the new name of the simulated place.
+        session.renameActive(at: c, to: name)
     }
 }
 

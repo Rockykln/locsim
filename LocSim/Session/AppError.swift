@@ -16,6 +16,10 @@ struct AppError: Error, Equatable {
     static let pairingServiceCode = "LS-202"
     static let rejectedCode = "LS-203"
     static let connectionFailedCode = "LS-206"
+    static let vpnNoticeCode = "LS-209"
+    static let notConnectedCode = "LS-204"
+    /// Errors that ask the user something; the answer (Continue, Download) sets the location.
+    static let questionCodes = [otherVPNCode, ddiConsentCode, vpnNoticeCode]
 
     /// The device or the file itself refuses the pairing, as opposed to not being reachable.
     var rejectsPairing: Bool { ["LS-100", "LS-101", "LS-102", Self.rejectedCode].contains(code) }
@@ -37,13 +41,27 @@ struct AppError: Error, Equatable {
     var messageWithCode: String { String(localized: "\(message) (\(code))") }
 
     /// Text for the clipboard, so a support request contains everything needed.
+    /// Whether hostname and port were changed is included, not their values.
     var report: String {
-        let os = ProcessInfo.processInfo.operatingSystemVersionString
+        let v = ProcessInfo.processInfo.operatingSystemVersion
+        let hostname = UserDefaults.standard.string(forKey: SettingsKey.hostname)?.trimmingCharacters(in: .whitespaces) ?? ""
+        let port = UserDefaults.standard.string(forKey: SettingsKey.port)?.trimmingCharacters(in: .whitespaces) ?? ""
+        let hostnameNote = hostname.isEmpty || hostname == Defaults.hostname ? "default" : "custom"
         return """
             \(code) \(title)
             \(detail)
-            LocSim \(AppLinks.version) \(AppLinks.commit), iOS \(os)
+            LocSim \(AppLinks.version) \(AppLinks.commit), iOS \(v.majorVersion).\(v.minorVersion).\(v.patchVersion), \(Self.model)
+            hostname \(hostnameNote), port \(port.isEmpty ? "auto" : "manual")
             """
+    }
+
+    /// The model identifier, e.g. iPhone18,3.
+    private static var model: String {
+        var info = utsname()
+        uname(&info)
+        return withUnsafeBytes(of: &info.machine) { raw in
+            String(decoding: raw.prefix { $0 != 0 }, as: UTF8.self)
+        }
     }
 
     private typealias Entry = (code: String, title: String, message: String)
@@ -70,10 +88,13 @@ struct AppError: Error, Equatable {
         case .localNetwork:
             return ("LS-208", String(localized: "Local Network access off"),
                     String(localized: "Allow Local Network for LocSim under Settings > Privacy & Security > Local Network, then try again."))
+        case .vpnNotice:
+            return (vpnNoticeCode, String(localized: "Local connection"),
+                    String(localized: "LocSim adds a VPN configuration to reach this iPhone, and iOS asks to allow it. If another VPN is selected, iOS turns it off; select it again in Settings afterwards."))
         case .tunnel:
             return tunnelEntry(error, detail: detail)
         case .notConnected:
-            return ("LS-204", String(localized: "Connection lost"),
+            return (notConnectedCode, String(localized: "Connection lost"),
                     String(localized: "The connection to the device closed. Check Wi-Fi. LocSim reconnects on its own while a location is active."))
         case .ddiQuery:
             return ("LS-300", String(localized: "Developer Disk Image not available"),
@@ -88,11 +109,17 @@ struct AppError: Error, Equatable {
             return ("LS-302", String(localized: "Developer Disk Image not installed"),
                     String(localized: "Installing the disk image failed. It needs an internet connection; try again."))
         case .locationService:
-            return ("LS-400", String(localized: "Location service unavailable"),
-                    String(localized: "The device did not provide location simulation. Turn on Mount Automatically in LocSim's settings under Developer Disk Image, or restart the device."))
+            // With the switch on, the image was mounted or connecting stopped before this point.
+            let message = UserDefaults.standard.bool(forKey: SettingsKey.autoMount)
+                ? String(localized: "The device did not provide location simulation. Try again; if it keeps failing, restart the device.")
+                : String(localized: "The device did not provide location simulation. Turn on Mount Automatically in LocSim's settings under Developer Disk Image, or restart the device.")
+            return ("LS-400", String(localized: "Location service unavailable"), message)
         case .setLocation:
             return ("LS-401", String(localized: "Location not set"),
                     String(localized: "Sending the location failed. Tap Set Location to try again."))
+        case .storage:
+            return ("LS-901", String(localized: "Not enough storage"),
+                    String(localized: "Free up storage on this iPhone, then try again."))
         case .clearLocation:
             return (clearFailedCode, String(localized: "Location not cleared"),
                     String(localized: "Quit LocSim in the App Switcher to restore the real location."))

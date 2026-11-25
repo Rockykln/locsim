@@ -26,16 +26,6 @@ final class SimulationSession: ObservableObject {
             if case .reconnecting = self { return true }
             return false
         }
-
-        var label: String {
-            switch self {
-            case .idle: return "idle"
-            case .connecting: return "connecting"
-            case .active: return "active"
-            case .reconnecting(let error): return "reconnecting \(error.code)"
-            case .failed(let error): return "error \(error.code)"
-            }
-        }
     }
 
     enum PairingCheck: Equatable {
@@ -94,6 +84,16 @@ final class SimulationSession: ObservableObject {
     @Published private(set) var setCount = 0
     let recents = RecentList()
 
+    /// A typed or pasted coordinate that is a favorite or a named recent place gets that name, in the
+    /// app and in Shortcuts. Matched to about a meter, so a pin dropped next to it does not count.
+    func knownName(for c: CLLocationCoordinate2D) -> String? {
+        func same(_ other: CLLocationCoordinate2D) -> Bool {
+            abs(other.latitude - c.latitude) < 1e-5 && abs(other.longitude - c.longitude) < 1e-5
+        }
+        if let favorite = FavoriteList.shared.items.first(where: { same($0.coordinate) }) { return favorite.name }
+        return recents.items.first { $0.name != nil && same($0.coordinate) }?.name
+    }
+
     private var link = DeviceLink()
     private let tunnel = LoopbackTunnel()
     private let keepAlive = KeepAlive()
@@ -101,12 +101,33 @@ final class SimulationSession: ObservableObject {
     private var busy = false
     // Set while Clear waits for the device, so no resend or Set can bring the location back.
     private var clearing = false {
-        didSet { if isClearing != clearing { isClearing = clearing } }
+        didSet {
+            guard isClearing != clearing else { return }
+            isClearing = clearing
+            // The Live Activity and the widget waited for the outcome of the Clear.
+            if !clearing { syncActivity() }
+        }
     }
     /// Clear is waiting for the device; the location is no longer shown as active.
     @Published private(set) var isClearing = false
     // The name travels with the queued Set, so a pin moved in the meantime cannot rename it.
-    private var pending: Pending?
+    private var pending: Pending? {
+        didSet { updateSetInProgress() }
+    }
+    // A Set from apply() runs, as opposed to a resend or a pairing check.
+    private var applying = false {
+        didSet { updateSetInProgress() }
+    }
+    /// A Set waits for the current work, e.g. a reconnect, or runs; the button shows it, also
+    /// while a location is active and the state stays as it is.
+    @Published private(set) var setInProgress = false
+
+    private func updateSetInProgress() {
+        let running = pending != nil || applying
+        if setInProgress != running { setInProgress = running }
+    }
+    /// The long step of connecting, if one runs: a download or install can take minutes.
+    @Published private(set) var connectStep: String?
     private struct Pending {
         let coordinate: CLLocationCoordinate2D
         let name: String?
@@ -114,19 +135,33 @@ final class SimulationSession: ObservableObject {
         let request: Int?
         let set: Int
     }
-    // The question (other VPN, DDI download) the last failed Set asked; only the user answers it.
+    // The question (other VPN, DDI download, first VPN configuration) the last failed Set or
+    // reconnect asked; only the user answers it. The answer applies to the place that asked,
+    // not to the pin, which may have moved since.
     private var askedCode: String?
-    private static let questionCodes = [AppError.otherVPNCode, AppError.ddiConsentCode]
-    // Shortcuts wait for the outcome of their own Set.
+    private var askedFor: (coordinate: CLLocationCoordinate2D, name: String?)?
+    // Shortcuts wait for the outcome of their own Set; one that stopped waiting gets none.
     private var requests = 0
+    private var waiting: Set<Int> = []
     private var outcomes: [Int: SetOutcome] = [:]
     private var resendAfterWork = false
     private var pendingCheck = false
+    // The generation the running pairing check started in, so a second tap can be told apart
+    // from a check for a new file.
+    private var runningCheck: Int?
     // Incremented by clear/disconnect so that work started earlier is discarded.
     private var generation = 0
-    private var lastPort: UInt16?
+    // The port the tunnel last came up on, kept across launches: it saves a Bonjour search when
+    // the device's port is not the default one. A wrong one costs one quick failed attempt.
+    private var lastPort: UInt16? {
+        get { (UserDefaults.standard.object(forKey: Self.lastPortKey) as? Int).flatMap { UInt16(exactly: $0) } }
+        set { UserDefaults.standard.set(newValue.map(Int.init), forKey: Self.lastPortKey) }
+    }
+    private static let lastPortKey = "lastTunnelPort"
     private var failedResends = 0
     private var backgroundFailures = 0
+    // True at launch too: the widget may show what an earlier run left.
+    private var returnedFromBackground = true
 
     private enum Timing {
         static let backgroundRetries = 3
@@ -205,7 +240,13 @@ final class SimulationSession: ObservableObject {
         return (active, activeName)
     }
     /// The place of a Clear that did not finish: the device may still simulate it.
-    private(set) var unclearedPlace: (coordinate: CLLocationCoordinate2D, name: String?)?
+    private(set) var unclearedPlace: (coordinate: CLLocationCoordinate2D, name: String?)? {
+        didSet {
+            guard (unclearedPlace == nil) != (oldValue == nil) else { return }
+            syncActivity()
+            QuickActions.refresh()
+        }
+    }
     /// A location is simulated, or a Clear did not finish and the device may still keep it.
     var mayStillBeSimulated: Bool { simulatedPlace != nil || unclearedPlace != nil }
     /// A file the setup script copied in counts: connecting takes it in.
@@ -213,17 +254,20 @@ final class SimulationSession: ObservableObject {
 
     /// Takes in a pairing file the setup script copied into Documents. Left for later while a
     /// connection is being made, which takes it in itself.
-    func adoptDroppedPairing() {
-        guard !busy, !clearing, PairingStore.adoptNow() else { return }
+    /// Returns whether a file was taken in, so an old import error can go.
+    @discardableResult
+    func adoptDroppedPairing() -> Bool {
+        guard !busy, !clearing, PairingStore.adoptNow() else { return false }
         write("pairing file taken from Documents")
         Task { await pairingFileReplaced() }
+        return true
     }
 
     /// Imports a pairing file picked in Files. Returns the error to show, if any.
     func importPairing(_ result: Result<URL, Error>) -> String? {
         do {
-            try PairingStore.importFile(at: result.get())
-            Task { await pairingFileReplaced() }
+            // The same file again changes nothing, so a running simulation stays.
+            if try PairingStore.importFile(at: result.get()) { Task { await pairingFileReplaced() } }
             return nil
         } catch {
             let deviceError = error as? DeviceError ?? DeviceError(.pairingInvalid, error.localizedDescription)
@@ -240,47 +284,74 @@ final class SimulationSession: ObservableObject {
     func requestLocationPermission() { keepAlive.requestPermission() }
     /// Also after a Clear that did not finish, so it can be tried again.
     var canClear: Bool { active != nil || state == .connecting || linkOpen || unclearedPlace != nil }
-    /// A Set, a Clear or a queued Set has not finished yet.
-    var isWorking: Bool { busy || clearing || pending != nil }
 
-    /// `consent` is true only when the user answered the question of the last failed Set
-    /// (replace the other VPN, download the DDI) with Continue or Download.
-    func apply(consent: Bool = false) async {
-        let takeover = consent && answerQuestion()
-        await apply(target, name: targetName, takeover: takeover)
+    /// The pin on the simulated place got a name: the Live Activity, the widget and Shortcuts use it too.
+    func renameActive(at c: CLLocationCoordinate2D, to name: String) {
+        guard let active, !Demo.isOn, active.distance(to: c) < 1, activeName != name else { return }
+        activeName = name
+        syncActivity()
     }
 
-    func apply(_ coordinate: CLLocationCoordinate2D) async {
-        await apply(coordinate, name: targetName)
+    /// The place the open question is about, so the map can show where the answer sets it.
+    var questionPlace: CLLocationCoordinate2D? { askedCode == nil ? nil : askedFor?.coordinate }
+
+    /// `consent` is true only when the user answered the question of the last failed Set or
+    /// reconnect (replace the other VPN, download the DDI, add the VPN configuration) with
+    /// Continue or Download. The answer sets the place that asked.
+    func apply(consent: Bool = false) async {
+        let place = consent ? askedFor : nil
+        let takeover = consent && answerQuestion()
+        if let place {
+            await apply(place.coordinate, name: place.name, takeover: takeover)
+        } else {
+            await apply(target, name: targetName, takeover: takeover)
+        }
     }
 
     /// For Shortcuts: sets the location and waits for this Set to end, also when it was queued.
+    /// The Set runs on its own: if iOS stops the Shortcut, it still finishes, like a tap in the app.
     func setAndWait(_ coordinate: CLLocationCoordinate2D, name: String?) async -> SetOutcome {
         requests += 1
         let request = requests
+        waiting.insert(request)
+        defer {
+            waiting.remove(request)
+            outcomes[request] = nil
+        }
         target = coordinate
         targetName = name
-        await apply(coordinate, name: name, request: request)
+        Task { await self.apply(coordinate, name: name, request: request) }
         let deadline = Date().addingTimeInterval(Timing.setWait)
         while outcomes[request] == nil, Date() < deadline {
-            try? await Task.sleep(nanoseconds: 250_000_000)
+            // A cancelled sleep returns at once; without this check the loop would spin.
+            do { try await Task.sleep(nanoseconds: 250_000_000) } catch { break }
         }
-        return outcomes.removeValue(forKey: request) ?? .notSet
+        return outcomes[request] ?? .notSet
     }
 
-    // Returns whether the answer allows replacing the other VPN; the DDI consent is stored.
+    // Returns whether the answer allows replacing the other VPN; the other consents are stored.
     private func answerQuestion() -> Bool {
-        defer { askedCode = nil }
+        defer {
+            askedCode = nil
+            askedFor = nil
+        }
         switch askedCode {
         case AppError.otherVPNCode: return true
         case AppError.ddiConsentCode: allowDDIDownload()
+        case AppError.vpnNoticeCode: UserDefaults.standard.set(true, forKey: SettingsKey.vpnNoticeShown)
         default: break
         }
         return false
     }
 
+    private func ask(_ code: String, about place: (coordinate: CLLocationCoordinate2D, name: String?)?) {
+        guard AppError.questionCodes.contains(code) else { return }
+        askedCode = code
+        askedFor = place
+    }
+
     private func resolve(_ request: Int?, _ outcome: SetOutcome) {
-        guard let request else { return }
+        guard let request, waiting.contains(request) else { return }
         outcomes[request] = outcome
     }
 
@@ -305,11 +376,15 @@ final class SimulationSession: ObservableObject {
             return
         }
         busy = true
+        applying = true
         // A direct Set replaces anything still queued.
         resolve(pending?.request, .notSet)
         pending = nil
         var outcome = SetOutcome.notSet
         defer {
+            applying = false
+            // Consent that this Set did not use (the link was still open) must not carry over.
+            tunnel.allowTakeover = false
             resolve(request, outcome)
             finishWork()
             releaseIfIdleInBackground()
@@ -327,7 +402,7 @@ final class SimulationSession: ObservableObject {
         // When-In-Use updates only start from the foreground, and the user may leave right after tapping.
         if UserDefaults.standard.bool(forKey: SettingsKey.keepAlive) { keepAlive.start() }
         do {
-            try await send(coordinate, reconnect: true, started: started)
+            try await send(coordinate, started: started)
             guard started == generation else { return await discard() }
             // Counted first: the Live Activity reads it when active and state change.
             setCount += 1
@@ -335,6 +410,7 @@ final class SimulationSession: ObservableObject {
             activeSet = set
             activeName = name
             askedCode = nil
+            askedFor = nil
             unclearedPlace = nil
             active = coordinate
             state = .active
@@ -344,7 +420,8 @@ final class SimulationSession: ObservableObject {
             backgroundFailures = 0
             write("set \(CoordinateParser.format(coordinate))")
             recents.add(coordinate, name: name)
-            if UserDefaults.standard.bool(forKey: SettingsKey.keepAlive) { keepAlive.start() }
+            // The setting may have been turned off while connecting.
+            if UserDefaults.standard.bool(forKey: SettingsKey.keepAlive) { keepAlive.start() } else { keepAlive.stop() }
             startResend()
         } catch {
             guard started == generation else { return await discard() }
@@ -357,7 +434,7 @@ final class SimulationSession: ObservableObject {
             syncLink()
             // A Clear made while the link closed has the last word.
             guard started == generation else { return }
-            fail(error)
+            fail(error, about: (coordinate: coordinate, name: name))
             outcome = .failed(AppError(error))
         }
     }
@@ -376,13 +453,19 @@ final class SimulationSession: ObservableObject {
         // would keep its late answer from lifting the error. Waiting lets a Shortcut report how it ended.
         if clearing {
             stopResending()
-            while clearing { try? await Task.sleep(nanoseconds: 100_000_000) }
+            while clearing {
+                do { try await Task.sleep(nanoseconds: 100_000_000) } catch { return }
+            }
             return
         }
+        // Clear is often tapped right before switching to the app being tested.
+        let backgroundTime = BackgroundTime("Clear location")
+        defer { backgroundTime.end() }
         generation += 1
         stopResending()
-        // Nothing was set yet, so there is nothing to clear on the device.
-        if active == nil, state == .connecting {
+        // Nothing was set yet, so there is nothing to clear on the device. After a Clear that did
+        // not finish there is: the normal path below stops the tunnel and settles that place.
+        if active == nil, state == .connecting, unclearedPlace == nil {
             // The attempt still running sees the new generation and closes the link itself.
             state = .idle
             write("connection cancelled")
@@ -407,11 +490,16 @@ final class SimulationSession: ObservableObject {
             fail(DeviceError(.clearLocation, "Clearing the location did not finish"))
         }
         clearing = false
-        // Not awaited: the location is already back, and stopping the tunnel can take seconds,
-        // which would keep a Control Center or Live Activity button busy. If iOS suspends LocSim
-        // first, the extension stops the tunnel by itself once the heartbeat is gone.
-        Task { await releaseTunnelIfIdle() }
-        if finished { releaseIfIdleInBackground() }
+        if finished {
+            // Not awaited: the location is already back, and stopping the tunnel can take seconds,
+            // which would keep a Control Center or Live Activity button busy. If iOS suspends LocSim
+            // first, the extension stops the tunnel by itself once the heartbeat is gone.
+            Task { await releaseTunnelIfIdle() }
+            releaseIfIdleInBackground()
+        } else {
+            // The device did not confirm; stopping the tunnel is what is left, so it is awaited.
+            await releaseTunnelIfIdle()
+        }
         runPending()
         // iOS may suspend LocSim right after a Clear from a Shortcut.
         await liveActivity.waitForEnd()
@@ -479,6 +567,10 @@ final class SimulationSession: ObservableObject {
 
     /// Pairing file removed or replaced: the running connection still uses the old one.
     func pairingChanged() async {
+        // A check still running uses the old file; its result must not show for the new one.
+        generation += 1
+        // Possibly another device.
+        lastPort = nil
         setPairingCheck(.notChecked)
         PairingStore.clearRejection()
         if case .failed = state { state = .idle }
@@ -498,7 +590,8 @@ final class SimulationSession: ObservableObject {
         backgroundFailures = 0
         resendTask?.cancel()
         resendTask = nil
-        keepAlive.stop()
+        // A queued Set runs next and needs it: in the background it could not be started again.
+        if !(keepQueued && pending != nil) { keepAlive.stop() }
     }
 
     // Assigning a @Published value redraws its views even when it did not change.
@@ -549,9 +642,16 @@ final class SimulationSession: ObservableObject {
         adoptDroppedPairing()
         lastSent = sentAt
         TimeZoneWatch.shared.check()
+        // A reload asked for in the background may never have happened; in the foreground it is free.
+        // Not when only Control Center or a notification covered the app.
+        if returnedFromBackground {
+            returnedFromBackground = false
+            WidgetSync.reload()
+        }
         if active != nil {
-            liveActivity.markStale(after: Timing.freshWhileKeptAlive)
-            WidgetSync.markStale(after: WidgetSync.freshFor)
+            // Renewed only when it runs short: every widget change costs a reload.
+            liveActivity.keepFresh()
+            WidgetSync.keepFresh()
             // Brings back an activity that could not be started or was ended while in the background.
             syncActivity()
         }
@@ -567,8 +667,12 @@ final class SimulationSession: ObservableObject {
     func noteLayout(_ line: String) { write(line) }
     #endif
 
-    /// Applies the Live Activity setting to a running session.
-    func liveActivityChanged() { syncActivity() }
+    /// Applies the Live Activity setting to a running session. `reshow`: the user turned it on
+    /// again, which also brings back an activity swiped away earlier.
+    func liveActivityChanged(reshow: Bool = false) {
+        if reshow { liveActivity.resetDismissal() }
+        syncActivity()
+    }
 
     /// The widgets and the Live Activity show coordinates in the chosen format too.
     func coordinateFormatChanged() {
@@ -578,17 +682,22 @@ final class SimulationSession: ObservableObject {
 
     /// Applies a new resend interval now instead of after the current wait.
     func resendIntervalChanged() {
-        guard resendTask != nil else { return }
+        // A resend in progress, e.g. one that restarts the tunnel, would be cancelled with it.
+        // The loop reads the interval each round, so the new value counts from the next wait.
+        guard resendTask != nil, !busy else { return }
         startResend()
     }
 
     // Not in the preview, where the location of the device does not change.
     private func syncActivity() {
         // The widget only shows a real simulation, not the preview or demo mode.
+        // While a Clear waits for the device, or did not finish, the location may still be
+        // simulated: the widget and the Live Activity keep showing it until that is settled.
+        let mayStillShow = clearing || unclearedPlace != nil
         if let active, !isSimulated, state == .active || state.isReconnecting {
             WidgetSync.setActive(
                 name: activeName ?? String(localized: "Dropped pin"), at: active, since: setAt)
-        } else if active == nil || isSimulated {
+        } else if (active == nil && !mayStillShow) || isSimulated {
             WidgetSync.clearActive()
         }
         // The demo shows its own activity for the screenshots; a scene change must not end it.
@@ -611,6 +720,18 @@ final class SimulationSession: ObservableObject {
                 reconnecting: false,
                 set: next.set,
                 startedAt: next.since)
+        } else if clearing {
+            // Left as it is until the device answers.
+        } else if let uncleared = unclearedPlace {
+            // A Clear that did not finish: the place may still be simulated, also after a new
+            // Set failed, which showed itself as connecting meanwhile.
+            liveActivity.show(
+                name: uncleared.name ?? String(localized: "Dropped pin"),
+                at: uncleared.coordinate,
+                connecting: false,
+                reconnecting: false,
+                set: activeSet,
+                startedAt: setAt)
         } else {
             liveActivity.end()
         }
@@ -626,7 +747,8 @@ final class SimulationSession: ObservableObject {
 
     /// Applies the Keep Alive setting to a running session.
     func keepAliveChanged(_ on: Bool) {
-        guard active != nil, !isSimulated else { return }
+        // While connecting too: the first Set already started it.
+        guard active != nil || state == .connecting, !isSimulated else { return }
         if on { keepAlive.start() } else { keepAlive.stop() }
     }
 
@@ -638,12 +760,22 @@ final class SimulationSession: ObservableObject {
 
     // Release location updates and any idle tunnel while nothing is simulated.
     func enteredBackground() async {
+        returnedFromBackground = true
         if active != nil {
             // Without Keep Alive iOS suspends LocSim and the simulation ends with the tunnel. With it,
             // resends keep moving the date on, so it only passes if iOS ended LocSim.
             let keptAlive = keepAlive.isRunning && !backgroundDenied
-            liveActivity.markStale(after: keptAlive ? Timing.freshWhileKeptAlive : TunnelAddress.heartbeatTimeout)
-            WidgetSync.markStale(after: keptAlive ? WidgetSync.freshFor : TunnelAddress.heartbeatTimeout)
+            if keptAlive {
+                // No new date on every switch to the background: each one would cost a widget reload.
+                liveActivity.keepFresh()
+                WidgetSync.keepFresh()
+            } else {
+                liveActivity.markStale(after: TunnelAddress.heartbeatTimeout)
+                WidgetSync.markStale(after: TunnelAddress.heartbeatTimeout)
+                // The tunnel ends one heartbeat timeout after the last beat; a beat now makes that
+                // the moment the activity turns outdated, not up to a beat interval earlier.
+                tunnel.beat(force: true)
+            }
         }
         guard active == nil, state != .connecting, !busy else { return }
         keepAlive.stop()
@@ -670,14 +802,14 @@ final class SimulationSession: ObservableObject {
         await tunnel.stop()
     }
 
-    private func send(_ c: CLLocationCoordinate2D, reconnect: Bool, started: Int) async throws {
+    private func send(_ c: CLLocationCoordinate2D, started: Int) async throws {
         renewLinkIfStuck()
         if !link.isOpen {
             try await reopen(started)
         }
         do {
             try await link.set(latitude: c.latitude, longitude: c.longitude)
-        } catch let error where reconnect && !(error is CancellationError) {
+        } catch let error where !(error is CancellationError) {
             try ensureCurrent(started)
             write("send failed: \(error.localizedDescription)")
             renewLinkIfStuck()
@@ -729,6 +861,8 @@ final class SimulationSession: ObservableObject {
         }
         let pairing = try PairingStore.load()
         let host = TunnelAddress.peer
+        try await checkVPNNotice()
+        try ensureCurrent(started)
         try await tunnel.start()
         try ensureCurrent(started)
         let hostname = Self.setting(SettingsKey.hostname, default: Defaults.hostname)
@@ -752,6 +886,8 @@ final class SimulationSession: ObservableObject {
             } catch is CancellationError {
                 throw CancellationError()
             } catch {
+                // Failed because a Clear stopped the tunnel: no Bonjour search, the known port stays.
+                try ensureCurrent(started)
                 write(error.localizedDescription)
                 if TunnelFailure.isReset(error.localizedDescription) { resetPorts.insert(candidate) }
                 renewLinkIfStuck()
@@ -848,8 +984,11 @@ final class SimulationSession: ObservableObject {
             throw DeviceError(.ddiConsent, "DDI not mounted and not downloaded")
         }
         write("DDI not mounted, installing (\(method.rawValue))")
+        defer { connectStep = nil }
+        if !DDIStore.isDownloaded(method) { connectStep = String(localized: "Downloading Developer Disk Image") }
         let dir = try await DDIStore.prepare(method) { [weak self] line in self?.write(line) }
         try ensureCurrent(started)
+        connectStep = String(localized: "Installing Developer Disk Image")
         try await link.mountDDI(from: dir, method: method)
         try ensureCurrent(started)
         write("DDI installed")
@@ -890,13 +1029,16 @@ final class SimulationSession: ObservableObject {
         defer { finishWork() }
         let started = generation
         do {
-            try await send(active, reconnect: true, started: started)
+            try await send(active, started: started)
             guard started == generation else { return await discard() }
             tunnel.beat()
             keepActivityFresh()
             if failedResends > 0 { write("reconnected") }
             failedResends = 0
             backgroundFailures = 0
+            // A question the failed attempts asked is answered by now, e.g. LocSim was selected again in Settings.
+            askedCode = nil
+            askedFor = nil
             if state != .active, self.active != nil { state = .active }
         } catch {
             guard started == generation else { return await discard() }
@@ -909,8 +1051,8 @@ final class SimulationSession: ObservableObject {
             if backgroundFailures >= Timing.backgroundRetries {
                 await giveUp(error)
             } else {
-                // The alert shows during reconnecting too; its answer must count.
-                if Self.questionCodes.contains(appError.code) { askedCode = appError.code }
+                // The alert shows during reconnecting too; its answer must count, for the active place.
+                ask(appError.code, about: (coordinate: active, name: activeName))
                 state = .reconnecting(appError)
             }
         }
@@ -918,12 +1060,13 @@ final class SimulationSession: ObservableObject {
 
     private func giveUp(_ error: Error) async {
         let started = generation
+        let place = active.map { (coordinate: $0, name: activeName) }
         stopResending(keepQueued: true)
         active = nil
         if !renewLinkIfStuck() { await link.close() }
         syncLink()
         guard started == generation else { return }
-        fail(error)
+        fail(error, about: place)
         write("stopped reconnecting")
         // In the background iOS may suspend LocSim soon; the activity must be gone by then.
         await liveActivity.waitForEnd()
@@ -976,6 +1119,9 @@ final class SimulationSession: ObservableObject {
             return
         }
         guard active == nil else { return }
+        // A second tap while a check runs would only run the same check again afterwards. A new
+        // file is checked once the old check has stopped.
+        guard runningCheck != generation else { return }
         // Picked up once the current work is done.
         guard !busy else {
             setPairingCheck(.checking)
@@ -983,13 +1129,19 @@ final class SimulationSession: ObservableObject {
             return
         }
         busy = true
-        defer { finishWork() }
-        setPairingCheck(.checking)
         let started = generation
+        runningCheck = started
+        defer {
+            runningCheck = nil
+            finishWork()
+        }
+        setPairingCheck(.checking)
         do {
             renewLinkIfStuck()
             try await openTunnel(started)
             await link.close()
+            // The file was replaced meanwhile; the next check reports on the new one.
+            guard started == generation else { return setPairingCheck(.notChecked) }
             setPairingCheck(.valid)
             write("pairing file valid")
         } catch is CancellationError {
@@ -997,10 +1149,32 @@ final class SimulationSession: ObservableObject {
             await link.close()
             setPairingCheck(.notChecked)
         } catch {
+            guard started == generation else { return setPairingCheck(.notChecked) }
             let appError = AppError(error)
             setPairingCheck(appError.rejectsPairing ? .rejected(appError) : .unreachable(appError))
             write("pairing check: \(appError.code) \(appError.detail)")
         }
+    }
+
+    /// Before LocSim's VPN configuration is added for the first time: iOS turns off another VPN
+    /// that is selected, so the user is told first. Not needed once the configuration exists.
+    func needsVPNNotice() async -> Bool {
+        guard !isSimulated, !UserDefaults.standard.bool(forKey: SettingsKey.vpnNoticeShown) else { return false }
+        if await tunnel.hasConfiguration() {
+            // Added before this notice existed.
+            UserDefaults.standard.set(true, forKey: SettingsKey.vpnNoticeShown)
+            return false
+        }
+        return true
+    }
+
+    func acceptVPNNotice() {
+        UserDefaults.standard.set(true, forKey: SettingsKey.vpnNoticeShown)
+    }
+
+    private func checkVPNNotice() async throws {
+        guard await needsVPNNotice() else { return }
+        throw DeviceError(.vpnNotice, "VPN configuration not added yet")
     }
 
     /// Downloads the DDI ahead of time, e.g. on cellular, so that connecting later only mounts it.
@@ -1008,6 +1182,12 @@ final class SimulationSession: ObservableObject {
         allowDDIDownload()
         _ = try await DDIStore.prepare(DDIMethod.current) { [weak self] line in self?.write(line) }
         write("DDI downloaded")
+        // The question of the last Set is answered; the next Set mounts the image.
+        if state.error?.code == AppError.ddiConsentCode, active == nil {
+            askedCode = nil
+            askedFor = nil
+            state = .idle
+        }
     }
 
     func allowDDIDownload() {
@@ -1043,13 +1223,14 @@ final class SimulationSession: ObservableObject {
         port = Demo.isOn ? PortResolver.fallbackPort : nil
         sentAt = Demo.isOn ? Demo.sentTime : Date()
         setCount += 1
-        if !Demo.isOn { recents.add(coordinate, name: targetName) }
+        // Only Sets on the device count as recent places; the demo has its own list.
+        if !isSimulated { recents.add(coordinate, name: targetName) }
         write("set \(CoordinateParser.format(coordinate)) (demo)")
     }
 
-    private func fail(_ error: Error) {
+    private func fail(_ error: Error, about place: (coordinate: CLLocationCoordinate2D, name: String?)? = nil) {
         let appError = AppError(error)
-        if Self.questionCodes.contains(appError.code) { askedCode = appError.code }
+        ask(appError.code, about: place)
         state = .failed(appError)
         write("\(appError.code) \(appError.detail)")
     }
@@ -1078,6 +1259,24 @@ final class LogStore: ObservableObject {
     }
 
     func clear() { lines.removeAll() }
+}
+
+/// Asks iOS for a little time to finish, e.g. for a Clear tapped right before leaving the app.
+@MainActor
+private final class BackgroundTime {
+    private var id = UIBackgroundTaskIdentifier.invalid
+
+    init(_ name: String) {
+        id = UIApplication.shared.beginBackgroundTask(withName: name) { [weak self] in
+            MainActor.assumeIsolated { self?.end() }
+        }
+    }
+
+    func end() {
+        guard id != .invalid else { return }
+        UIApplication.shared.endBackgroundTask(id)
+        id = .invalid
+    }
 }
 
 @MainActor

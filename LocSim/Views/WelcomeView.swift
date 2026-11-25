@@ -9,12 +9,12 @@ struct WelcomeView: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var importing = false
     // Read in onAppear: an initial value here would touch the disk every time the parent redraws.
-    @State private var hasPairing = false
-    // Copied from PairingStore, which is not observed, so the footer redraws when it changes.
-    @State private var rejectedDrop = false
-    @State private var message: String?
+    @State private var notes = PairingNotes()
+    @State private var appeared = false
     /// Opened from Settings rather than on first launch.
     var fromSettings = false
+
+    private var hasPairing: Bool { notes.hasPairing }
 
     var body: some View {
         NavigationStack {
@@ -55,13 +55,9 @@ struct WelcomeView: View {
                         }
                     }
                     step(5, "Allow the local connection",
-                         "When you first set a location, iOS asks to add a VPN configuration. LocSim only uses it to reach this iPhone; no traffic leaves the device through it.")
+                         "When you first set a location, iOS asks to add a VPN configuration. LocSim only uses it to reach this iPhone; no traffic leaves the device through it. If another VPN is selected, iOS turns it off.")
                 } footer: {
-                    if let message {
-                        ErrorFooter(message)
-                    } else if rejectedDrop {
-                        ErrorFooter(String(localized: "The pairing file was not valid and has been removed. Run the setup script again."))
-                    }
+                    PairingFooter(notes: notes)
                 }
                 if !hasPairing {
                     Section {
@@ -90,12 +86,7 @@ struct WelcomeView: View {
                 .primaryButton()
                 .padding()
             }
-            .fileImporter(isPresented: $importing, allowedContentTypes: [.propertyList, .xml, .data]) { result in
-                message = session.importPairing(result)
-                // Shown below the button, where VoiceOver would not find it on its own.
-                if let message { AccessibilityNotification.Announcement(message).post() }
-                readPairing()
-            }
+            .pairingImporter(isPresented: $importing, notes: $notes)
             // The setup script copies the file in over USB while this screen is open.
             .task(id: hasPairing) {
                 while !hasPairing {
@@ -116,9 +107,16 @@ struct WelcomeView: View {
 
     /// Takes in a file the setup script dropped into Documents and shows the current state.
     private func readPairing() {
-        session.adoptDroppedPairing()
-        hasPairing = PairingStore.exists
-        rejectedDrop = PairingStore.rejectedDrop
+        let adopted = session.adoptDroppedPairing()
+        let had = notes.hasPairing
+        notes.refresh()
+        // A file taken in replaces whatever an earlier import failed with.
+        if adopted { notes.message = nil }
+        // A file the setup script copied in over USB: the checkmark alone is not announced.
+        if appeared, !had, notes.hasPairing {
+            AccessibilityNotification.Announcement(String(localized: "Pairing file imported")).post()
+        }
+        appeared = true
     }
 
     private func step<Action: View>(
@@ -140,8 +138,9 @@ struct WelcomeView: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text(title).font(.headline)
                 Text(detail).font(.subheadline).foregroundStyle(.secondary)
+                // Each step has at most one action, so the whole row can take the tap: the
+                // button alone is less than 44 pt high.
                 action()
-                    .buttonStyle(.borderless)
             }
         }
         .padding(.vertical, 4)
@@ -158,10 +157,14 @@ struct PairingCheckRow<Title: View>: View {
     /// Off while another row for the same check is on screen.
     var announces = true
     @ViewBuilder let title: () -> Title
+    @State private var vpnNotice = false
 
     var body: some View {
         Button {
-            Task { await session.checkPairing() }
+            // The check starts the local connection, which may add the VPN configuration for the first time.
+            Task {
+                if await session.needsVPNNotice() { vpnNotice = true } else { await session.checkPairing() }
+            }
         } label: {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
@@ -175,7 +178,17 @@ struct PairingCheckRow<Title: View>: View {
                     .font(.footnote)
             }
         }
-        .disabled(session.state == .connecting || session.state.isReconnecting)
+        .disabled(session.state == .connecting || session.state.isReconnecting || session.pairingCheck == .checking)
+        .alert(AppError(DeviceError(.vpnNotice, "")).title, isPresented: $vpnNotice) {
+            // Only Continue: a notice before a system prompt must lead to it (guideline 5.1.1).
+            // The prompt itself can be declined.
+            Button("Continue") {
+                session.acceptVPNNotice()
+                Task { await session.checkPairing() }
+            }
+        } message: {
+            Text(AppError(DeviceError(.vpnNotice, "")).message)
+        }
         .onChange(of: session.pairingCheck) { _, check in
             guard announces else { return }
             let text: String
@@ -197,6 +210,10 @@ struct PairingCheckRow<Title: View>: View {
             resultLabel(String(localized: "The pairing file works with this device."), "checkmark.circle.fill", .green)
         case .rejected(let error):
             resultLabel(error.messageWithCode, "xmark.circle.fill", .red)
+        case .unreachable(let error) where [AppError.otherVPNCode, "LS-208", AppError.vpnNoticeCode].contains(error.code):
+            // These have one clear fix, which the general text below would not name. With the
+            // title: "LocSim's local connection replaces it" needs "Another VPN is selected".
+            resultLabel(error.summary, "exclamationmark.triangle.fill", .orange)
         case .unreachable(let error):
             resultLabel(String(localized: "Could not check. Allow the local connection, join a Wi-Fi network and try again. (\(error.code))"),
                    "exclamationmark.triangle.fill", .orange)
@@ -210,5 +227,113 @@ struct PairingCheckRow<Title: View>: View {
         } icon: {
             Image(systemName: symbol).foregroundStyle(color)
         }
+    }
+}
+
+/// The state of the pairing file as both the setup steps and Settings show it.
+/// Copied from PairingStore, which is not observed, so the footer redraws when it changes.
+struct PairingNotes {
+    var hasPairing = false
+    var rejectedDrop = false
+    var lockdownDrop = false
+    var copiesInFiles: [String] = []
+    /// The error of the last import from Files.
+    var message: String?
+    /// A file picked in Files was imported; it stays where it was.
+    var pickedFile = false
+
+    mutating func refresh() {
+        let had = hasPairing
+        hasPairing = PairingStore.exists
+        rejectedDrop = PairingStore.rejectedDrop
+        lockdownDrop = PairingStore.lockdownDrop
+        copiesInFiles = PairingStore.copiesInDocuments
+        // An import error no longer applies once a file arrived or was removed another way.
+        if hasPairing != had { message = nil }
+        if !hasPairing { pickedFile = false }
+    }
+}
+
+/// Hints about the pairing file, the same in the setup steps and in Settings.
+struct PairingFooter: View {
+    let notes: PairingNotes
+    var fallback: LocalizedStringKey?
+
+    var body: some View {
+        if let message = notes.message {
+            ErrorFooter(message)
+        } else if notes.rejectedDrop {
+            ErrorFooter(String(localized: "The pairing file was not valid and has been removed. Run the setup script again."))
+        } else if notes.lockdownDrop, !notes.hasPairing {
+            // Kept: it may be the user's own file for another tool.
+            ErrorFooter(String(localized: "This is a lockdown pairing file. LocSim needs the RPPairing file from the setup script."))
+        } else if !notes.copiesInFiles.isEmpty {
+            // Never deleted by LocSim: they may be the user's own copies. Orange text would be too faint.
+            let names = notes.copiesInFiles.formatted(.list(type: .and))
+            Label {
+                if notes.copiesInFiles.count == 1 {
+                    Text("A pairing file is still in LocSim's folder in Files: \(names). It contains a key for this device and is part of device backups. Delete it there if you no longer need it.")
+                } else {
+                    Text("Pairing files are still in LocSim's folder in Files: \(names). They contain a key for this device and are part of device backups. Delete them there if you no longer need them.")
+                }
+            } icon: {
+                Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
+            }
+        } else if notes.pickedFile {
+            Text("The file you picked stays where it was. It contains a key for this device; delete it if it is in iCloud Drive or another shared place.")
+        } else if let fallback {
+            Text(fallback)
+        }
+    }
+}
+
+extension View {
+    /// Picks a pairing file in Files and imports it. While a location may be simulated, the
+    /// import waits for a confirmation, as removing the file does: it ends the simulation.
+    func pairingImporter(isPresented: Binding<Bool>, notes: Binding<PairingNotes>) -> some View {
+        modifier(PairingImporter(isPresented: isPresented, notes: notes))
+    }
+}
+
+private struct PairingImporter: ViewModifier {
+    @EnvironmentObject private var session: SimulationSession
+    @Binding var isPresented: Bool
+    @Binding var notes: PairingNotes
+    @State private var pending: URL?
+
+    func body(content: Content) -> some View {
+        content
+            .fileImporter(isPresented: $isPresented, allowedContentTypes: [.propertyList, .xml, .data]) { result in
+                if case .success(let url) = result, session.mayStillBeSimulated {
+                    // After the picker has gone: a dialog asked for while it closes may not appear.
+                    Task { @MainActor in
+                        try? await Task.sleep(for: .milliseconds(400))
+                        pending = url
+                    }
+                } else {
+                    finish(result)
+                }
+            }
+            .confirmationDialog(
+                "Replace the pairing file?",
+                isPresented: Binding(get: { pending != nil }, set: { if !$0 { pending = nil } }),
+                titleVisibility: .visible,
+                presenting: pending
+            ) { url in
+                Button("Replace Pairing File", role: .destructive) {
+                    finish(.success(url))
+                }
+            } message: { _ in
+                Text("A running simulation stops.")
+            }
+    }
+
+    private func finish(_ result: Result<URL, Error>) {
+        let error = session.importPairing(result)
+        notes.refresh()
+        notes.message = error
+        notes.pickedFile = error == nil
+        // Shown below the button, where VoiceOver would not find it on its own.
+        AccessibilityNotification.Announcement(error ?? String(localized: "Pairing file imported")).post()
     }
 }

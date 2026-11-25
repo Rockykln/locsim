@@ -24,6 +24,9 @@ final class LiveActivityController {
     /// Long names are cut: the content of an activity is limited to 4 KB.
     private static let nameLimit = 120
     private static let systemEnd: TimeInterval = 8 * 3600 - 15 * 60
+    // Renewed in the foreground before iOS ends it after eight hours; in the background a new
+    // one cannot be started.
+    private static let renewAfter: TimeInterval = 6 * 3600
 
     init(freshFor: TimeInterval) {
         self.freshFor = freshFor
@@ -40,6 +43,8 @@ final class LiveActivityController {
             MainActor.assumeIsolated {
                 WidgetSync.clearActive()
                 FavoriteUsage.end()
+                // Now, not in a task that would never run: the process ends after this handler.
+                QuickActions.refresh(assumingIdle: true)
             }
         }
     }
@@ -104,18 +109,24 @@ final class LiveActivityController {
             name: String(name.prefix(Self.nameLimit)), coordinate: CoordinateParser.format(c),
             reconnecting: reconnecting, startedAt: startedAt, connecting: connecting,
             spokenCoordinate: CoordinateParser.spoken(c))
-        guard state != shown || !isRunning else { return }
+        let renew = isRunning && Date().timeIntervalSince(requestedAt) > Self.renewAfter
+            && UIApplication.shared.applicationState == .active
+        guard state != shown || !isRunning || renew else { return }
         shown = state
         shownSet = set
         if staleDate == nil { staleDate = Date().addingTimeInterval(freshFor) }
         let content = ActivityContent(state: state, staleDate: staleDate)
-        if let activity, isRunning {
+        if let activity, isRunning, !renew {
             Task { await activity.update(content) }
             return
         }
-        // iOS ends an activity after eight hours and keeps it on screen for a while; a later
-        // change replaces it, so only one is ever shown. The old one goes only once the new one
-        // is there: in the background the request fails.
+        request(content)
+    }
+
+    // iOS ends an activity after eight hours and keeps it on screen for a while; a later
+    // change replaces it, so only one is ever shown. The old one goes only once the new one
+    // is there: in the background the request fails.
+    private func request(_ content: ActivityContent<SimulationActivityAttributes.ContentState>) {
         let old = activity
         do {
             let new = try Activity.request(attributes: SimulationActivityAttributes(), content: content, pushType: nil)
@@ -126,6 +137,22 @@ final class LiveActivityController {
             // Starting is only allowed in the foreground; the next change there tries again.
             shown = nil
         }
+    }
+
+    /// Renews an activity close to iOS's eight-hour limit while LocSim is in the foreground,
+    /// also when nothing changed: LocSim may stay in front for longer than that.
+    private func renewIfOld() -> Bool {
+        guard isRunning, let shown, Date().timeIntervalSince(requestedAt) > Self.renewAfter,
+              UIApplication.shared.applicationState == .active else { return false }
+        staleDate = Date().addingTimeInterval(freshFor)
+        request(ActivityContent(state: shown, staleDate: staleDate))
+        return true
+    }
+
+    /// Forgets that the user swiped the activity away, e.g. when the setting is turned on again.
+    func resetDismissal() {
+        noteDismissal()
+        dismissedSet = nil
     }
 
     // Judged by age, not by state events: those may not arrive while LocSim is suspended.
@@ -146,6 +173,7 @@ final class LiveActivityController {
     /// While LocSim keeps running, moves the stale date forward now and then, so the activity
     /// only turns outdated if LocSim stopped without saying so (crash, or iOS ended it).
     func keepFresh() {
+        if renewIfOld() { return }
         guard let staleDate, staleDate.timeIntervalSinceNow < freshFor / 2 else { return }
         markStale(after: freshFor)
     }
