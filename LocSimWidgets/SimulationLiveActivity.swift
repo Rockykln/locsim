@@ -163,9 +163,10 @@ private struct LockScreenView: View {
             VStack(alignment: .leading, spacing: 2) {
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(alignment: .firstTextBaseline) {
+                        // The icon carries the color: orange or blue text is too faint on light glass.
                         Text(status.caption)
                             .font(.caption.weight(.semibold))
-                            .foregroundStyle(dimmed ? AnyShapeStyle(.white) : AnyShapeStyle(status.textColor))
+                            .foregroundStyle(dimmed ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
                             .lineLimit(status.captionLines)
                             .minimumScaleFactor(0.85)
                         Spacer(minLength: 8)

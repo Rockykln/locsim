@@ -135,8 +135,10 @@ final class FavoriteList: ObservableObject {
         didSet {
             guard !Demo.isOn else { return }
             if unreadable {
-                UserDefaults.standard.set(UserDefaults.standard.data(forKey: SettingsKey.favorites),
-                                          forKey: SettingsKey.favorites + ".unreadable")
+                // A copy from an earlier incident is kept; this one goes next to it.
+                var backup = SettingsKey.favorites + ".unreadable"
+                if UserDefaults.standard.object(forKey: backup) != nil { backup += ".\(Int(Date().timeIntervalSince1970))" }
+                UserDefaults.standard.set(UserDefaults.standard.data(forKey: SettingsKey.favorites), forKey: backup)
                 unreadable = false
             }
             StoredList.save(items, SettingsKey.favorites)

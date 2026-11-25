@@ -28,19 +28,18 @@ struct SettingsView: View {
 
     @State private var importing = false
     // Read in onAppear: an initial value here would touch the disk every time the parent redraws.
-    @State private var hasPairing = false
-    @State private var copiesInFiles: [String] = []
-    @State private var pickedFile = false
-    // Copied from PairingStore, which is not observed, so the footer redraws when it changes.
-    @State private var rejectedDrop = false
-    @State private var lockdownDrop = false
+    @State private var notes = PairingNotes()
     @State private var ddiDownloaded = false
+    @State private var ddiFiles = false
     @State private var ddiLoading = false
     @State private var ddiError: String?
-    @State private var pairingMessage: String?
     @State private var showWelcome = false
     @State private var confirmRemove = false
+    @State private var confirmRecentsOff = false
+    @State private var confirmDeleteDDI = false
     @State private var webPage: WebPage?
+
+    private var hasPairing: Bool { notes.hasPairing }
 
     var body: some View {
         NavigationStack {
@@ -69,7 +68,7 @@ struct SettingsView: View {
             }
             .sheet(isPresented: $showWelcome, onDismiss: {
                 refreshPairing()
-                pairingMessage = nil
+                notes.message = nil
             }) {
                 WelcomeView(fromSettings: true).environmentObject(session)
             }
@@ -77,8 +76,7 @@ struct SettingsView: View {
             .confirmationDialog("Remove the pairing file?", isPresented: $confirmRemove, titleVisibility: .visible) {
                 Button("Remove Pairing File", role: .destructive) {
                     PairingStore.remove()
-                    hasPairing = false
-                    rejectedDrop = false
+                    refreshPairing()
                     Task { await session.pairingChanged() }
                 }
             } message: {
@@ -92,11 +90,25 @@ struct SettingsView: View {
                         .fontWeight(.semibold)
                 }
             }
-            .fileImporter(isPresented: $importing, allowedContentTypes: [.propertyList, .xml, .data]) { result in
-                pairingMessage = session.importPairing(result)
-                pickedFile = pairingMessage == nil
-                announce(pairingMessage ?? String(localized: "Pairing file imported"))
-                refreshPairing()
+            .pairingImporter(isPresented: $importing, notes: $notes)
+            // Turning it off deletes the list; turning it on again would not bring it back.
+            .confirmationDialog("Turn off Recent Locations?", isPresented: $confirmRecentsOff, titleVisibility: .visible) {
+                Button("Turn Off and Delete", role: .destructive) {
+                    recentsEnabled = false
+                    recents.clear()
+                }
+            } message: {
+                Text("The recent locations on this iPhone are deleted.")
+            }
+            .confirmationDialog("Delete the DDI files?", isPresented: $confirmDeleteDDI, titleVisibility: .visible) {
+                Button("Delete DDI Files", role: .destructive) {
+                    DDIStore.remove()
+                    // Deleting also takes back the consent: the next download asks again.
+                    UserDefaults.standard.removeObject(forKey: SettingsKey.ddiDownloadAllowed)
+                    readFiles()
+                }
+            } message: {
+                Text("About 16 MB. LocSim asks again before it downloads them.")
             }
         }
     }
@@ -104,10 +116,7 @@ struct SettingsView: View {
     /// Takes in a file the setup script dropped into Documents and shows the current state.
     private func refreshPairing() {
         session.adoptDroppedPairing()
-        hasPairing = PairingStore.exists
-        rejectedDrop = PairingStore.rejectedDrop
-        lockdownDrop = PairingStore.lockdownDrop
-        copiesInFiles = PairingStore.copiesInDocuments
+        notes.refresh()
     }
 
     private var statusSection: some View {
@@ -121,11 +130,12 @@ struct SettingsView: View {
                     Text(session.statusTitle)
                         .font(.headline)
                     if let detail = stateDetail() {
+                        // An error is shown in full: the advice and the code come last.
                         Text(detail)
                             .accessibilityLabel(stateDetail(spoken: true) ?? detail)
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                            .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 3)
+                            .lineLimit(dynamicTypeSize.isAccessibilitySize || session.state.isFailure ? nil : 3)
                     }
                 }
                 .accessibilityElement(children: .combine)
@@ -178,22 +188,7 @@ struct SettingsView: View {
         } header: {
             Text("Pairing")
         } footer: {
-            if let pairingMessage {
-                ErrorFooter(pairingMessage)
-            } else if rejectedDrop {
-                ErrorFooter(String(localized: "The pairing file was not valid and has been removed. Run the setup script again."))
-            } else if lockdownDrop, !hasPairing {
-                // Kept: it may be the user's own file for another tool.
-                ErrorFooter(String(localized: "This is a lockdown pairing file. LocSim needs the RPPairing file from the setup script."))
-            } else if !copiesInFiles.isEmpty {
-                // Never deleted by LocSim: they may be the user's own copies.
-                Text("A pairing file is still in LocSim's folder in Files: \(copiesInFiles.formatted(.list(type: .and))). It contains a key for this device and is part of device backups. Delete it there if you no longer need it.")
-                    .foregroundStyle(.orange)
-            } else if pickedFile {
-                Text("The file you picked stays where it was. It contains a key for this device; delete it if it is in iCloud Drive or another shared place.")
-            } else {
-                Text("Created once with the setup script on a computer.")
-            }
+            PairingFooter(notes: notes, fallback: "Created once with the setup script on a computer.")
         }
     }
 
@@ -227,18 +222,25 @@ struct SettingsView: View {
             Toggle(isOn: $haptics) {
                 item("Haptics", "iphone.radiowaves.left.and.right", .pink)
             }
-            Toggle(isOn: $recentsEnabled) {
+            // Off asks first when there is something to delete.
+            Toggle(isOn: Binding(get: { recentsEnabled }, set: { on in
+                if !on, !recents.items.isEmpty {
+                    confirmRecentsOff = true
+                } else {
+                    recentsEnabled = on
+                    if !on { recents.clear() }
+                }
+            })) {
                 item("Recent Locations", "clock.fill", .gray, value: recentsEnabled ? "\(recents.items.count)" : nil)
             }
-            .onChange(of: recentsEnabled) { _, on in if !on { recents.clear() } }
             Toggle(isOn: $liveActivity) {
                 item("Live Activity", "platter.filled.bottom.iphone", .blue)
             }
-            .onChange(of: liveActivity) { _, _ in session.liveActivityChanged() }
+            .onChange(of: liveActivity) { _, on in session.liveActivityChanged(reshow: on) }
         } header: {
             Text("Map")
         } footer: {
-            Text("Set on Selection sends a choice right away. Recent Locations keeps the last five.")
+            Text("Set on Selection sends a choice right away. Recent Locations keeps the last five; turning it off deletes them. The last location stays for the map and Set Last Location.")
         }
     }
 
@@ -303,15 +305,18 @@ struct SettingsView: View {
             Toggle(isOn: $autoMount) {
                 item("Mount Automatically", "arrow.down.circle.fill", .purple)
             }
-            if ddiDownloaded {
+            // Also images for another iOS version, which the current one does not use.
+            if ddiFiles {
                 Button(role: .destructive) {
-                    DDIStore.remove()
-                    ddiDownloaded = false
+                    confirmDeleteDDI = true
                 } label: {
                     item("Delete DDI Files", "trash.fill", .red)
                 }
                 .foregroundStyle(.red)
-            } else {
+                // A connection may be about to mount them.
+                .disabled(session.state == .connecting || session.state.isReconnecting)
+            }
+            if !ddiDownloaded {
                 Button {
                     downloadDDI()
                 } label: {
@@ -344,7 +349,7 @@ struct SettingsView: View {
                 ddiError = AppError(error).summary
                 announce(ddiError)
             }
-            ddiDownloaded = DDIStore.isDownloaded(DDIMethod.current)
+            readFiles()
         }
     }
 
@@ -358,6 +363,7 @@ struct SettingsView: View {
         Section {
             item("Version", "info.circle.fill", .gray, value: AppLinks.version)
             item("Commit", "number.circle.fill", .gray, value: AppLinks.commit)
+            // iOS shows the language choice there only when more than one language is set up.
             Button {
                 if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
             } label: {
@@ -382,6 +388,8 @@ struct SettingsView: View {
         } header: {
             // The support page and the problem report point here for version and commit.
             Text("About")
+        } footer: {
+            Text("If Settings shows no Language option for LocSim, add another language under General > Language & Region first.")
         }
     }
 
@@ -403,6 +411,9 @@ struct SettingsView: View {
     private func readFiles() {
         refreshPairing()
         ddiDownloaded = DDIStore.isDownloaded(DDIMethod.current)
+        ddiFiles = DDIStore.hasFiles
+        // A download that failed here may have worked since, e.g. while connecting.
+        if ddiDownloaded { ddiError = nil }
     }
 
     private func item(
@@ -467,6 +478,7 @@ struct SettingsView: View {
             if session.isPreview { parts.append(String(localized: "The location of this iPhone does not change.")) }
             return parts.joined(separator: " · ")
         case .reconnecting(let error), .failed(let error): return error.messageWithCode
+        case .connecting: return session.connectStep
         default: return nil
         }
     }

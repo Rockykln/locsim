@@ -1,13 +1,16 @@
+import CryptoKit
 import Foundation
+import IDevice
 import LocSimCore
 
 /// Stores the imported RPPairing file. Files dropped into Documents are imported by `adoptNow()`,
 /// whose caller handles a replaced file, and when a connection starts.
 enum PairingStore {
     private static let fileName = "rppairing.plist"
-    // Names the setup script writes; only these are ever deleted. Other .plist files with "pair"
-    // in the name (e.g. "rppairing (1).plist") are imported but kept.
-    private static let dropNames = ["rppairing.plist", "pairingFile.plist", "pairing.plist"]
+    // The name the setup script writes; only this file is ever deleted. Other .plist files with
+    // "pair" in the name (e.g. "rppairing (1).plist", another tool's "pairingFile.plist") are
+    // imported but kept.
+    private static let dropNames = ["rppairing.plist"]
     /// Set when a setup script file in Documents was not a pairing file and has been removed.
     private(set) static var rejectedDrop = false
     /// A lockdown pairing file (not RPPairing) is in Documents. It is never deleted.
@@ -29,12 +32,17 @@ enum PairingStore {
         droppedFiles().map { $0.0.lastPathComponent }
     }
 
-    /// A file in Documents that may be a pairing file and was not imported yet.
+    /// A file in Documents that may be a pairing file and was not imported yet. Files already
+    /// found to be lockdown or not valid do not count: they would make LocSim look set up.
     static var hasDroppedFile: Bool {
         let seen = UserDefaults.standard.dictionary(forKey: importedKey) as? [String: Double] ?? [:]
+        let lockdown = UserDefaults.standard.dictionary(forKey: lockdownKey) as? [String: Double] ?? [:]
+        let invalid = UserDefaults.standard.dictionary(forKey: invalidKey) as? [String: Double] ?? [:]
         return droppedFiles().contains { url, modified in
-            dropNames.contains(url.lastPathComponent)
-                || seen[url.lastPathComponent] != (modified?.timeIntervalSince1970 ?? 0)
+            let name = url.lastPathComponent
+            let stamp = modified?.timeIntervalSince1970 ?? 0
+            if lockdown[name] == stamp || invalid[name] == stamp { return false }
+            return dropNames.contains(name) || seen[name] != stamp
         }
     }
 
@@ -50,6 +58,8 @@ enum PairingStore {
 
     static func load() throws -> Data {
         guard let data = try? Data(contentsOf: storeURL) else {
+            // Only a lockdown file was copied in: say that, not "no pairing file".
+            if lockdownDrop { throw DeviceError(.pairingLockdown, "Only a lockdown pairing file in Documents") }
             throw DeviceError(.pairingMissing, "No pairing file imported")
         }
         var url = storeURL
@@ -59,13 +69,18 @@ enum PairingStore {
         return data
     }
 
-    static func importFile(at url: URL) throws {
+    /// Returns whether the stored file changed; the same file again keeps the connection.
+    @discardableResult
+    static func importFile(at url: URL) throws -> Bool {
         let scoped = url.startAccessingSecurityScopedResource()
         defer { if scoped { url.stopAccessingSecurityScopedResource() } }
         let data = try read(url)
         try validate(data)
-        try save(data)
         rejectedDrop = false
+        if (try? Data(contentsOf: storeURL)) == data { return false }
+        try save(data)
+        noteImported(data)
+        return true
     }
 
     private static let maxSize = PairingFileCheck.maxSize
@@ -92,11 +107,42 @@ enum PairingStore {
     }
 
     private static func validate(_ data: Data) throws {
-        switch PairingFileCheck.check(data) {
+        switch check(data) {
         case .valid: return
         case .lockdown: throw DeviceError(.pairingLockdown, "Lockdown pairing file instead of RPPairing")
         case .invalid(let reason): throw DeviceError(.pairingInvalid, reason)
         }
+    }
+
+    /// The quick check, then idevice's own parser, the one connecting uses: a file only the quick
+    /// check accepts would replace a working one and fail later.
+    private static func check(_ data: Data) -> PairingFileCheck {
+        let result = PairingFileCheck.check(data)
+        guard case .valid = result else { return result }
+        var handle: OpaquePointer?
+        let err = data.withUnsafeBytes { raw in
+            rp_pairing_file_from_bytes(raw.bindMemory(to: UInt8.self).baseAddress, UInt(raw.count), &handle)
+        }
+        rp_pairing_file_free(handle)
+        guard let err else { return .valid }
+        let message = err.pointee.message.map { String(cString: $0) } ?? "unknown error"
+        idevice_error_free(err)
+        return .invalid("Not readable as RPPairing file: \(message)")
+    }
+
+    /// Hashes of files taken from Documents, so a renamed or moved old copy is not imported again
+    /// over the current file. Only the hash is kept, not the file.
+    private static func noteImported(_ data: Data) {
+        let hash = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+        var hashes = UserDefaults.standard.stringArray(forKey: hashesKey) ?? []
+        hashes.removeAll { $0 == hash }
+        hashes.append(hash)
+        UserDefaults.standard.set(Array(hashes.suffix(20)), forKey: hashesKey)
+    }
+
+    private static func wasImported(_ data: Data) -> Bool {
+        let hash = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+        return (UserDefaults.standard.stringArray(forKey: hashesKey) ?? []).contains(hash)
     }
 
     // Readable after first unlock because resends reconnect while the device is locked.
@@ -111,21 +157,29 @@ enum PairingStore {
             values.isExcludedFromBackup = true
             try url.setResourceValues(values)
         } catch {
-            throw DeviceError(.pairingInvalid, "Cannot store pairing file: \(error.localizedDescription)")
+            let kind: DeviceError.Kind = DeviceError.isOutOfSpace(error) ? .storage : .pairingInvalid
+            throw DeviceError(kind, "Cannot store pairing file: \(error.localizedDescription)")
         }
     }
 
     /// Rule: the newest valid candidate is imported, at most one per pass. Setup script files
     /// (`dropNames`) are deleted once imported, or when they were read and are not a pairing file
     /// at all. Other `*pair*.plist` files may be the user's own copies: they are imported once
-    /// (per modification date) and left in place. Lockdown files and unreadable files are never
-    /// deleted.
+    /// (per content, so renaming an old copy does not bring it back) and left in place. Lockdown
+    /// files and unreadable files are never deleted; once checked, they no longer count as new.
     @discardableResult
     private static func adoptDroppedFile() -> Bool {
         let files = droppedFiles()
-        let stored = UserDefaults.standard.dictionary(forKey: importedKey) as? [String: Double] ?? [:]
         let present = Set(files.map { $0.0.lastPathComponent })
-        var seen = stored.filter { present.contains($0.key) }
+        func current(_ key: String) -> [String: Double] {
+            (UserDefaults.standard.dictionary(forKey: key) as? [String: Double] ?? [:]).filter { present.contains($0.key) }
+        }
+        let stored = UserDefaults.standard.dictionary(forKey: importedKey) as? [String: Double] ?? [:]
+        var seen = current(importedKey)
+        let storedLockdown = UserDefaults.standard.dictionary(forKey: lockdownKey) as? [String: Double] ?? [:]
+        var lockdown = current(lockdownKey)
+        let storedInvalid = UserDefaults.standard.dictionary(forKey: invalidKey) as? [String: Double] ?? [:]
+        var invalid = current(invalidKey)
         var lockdownFound = false
         var adopted = false
         var replaced = false
@@ -134,14 +188,25 @@ enum PairingStore {
             let ours = dropNames.contains(name)
             let stamp = modified?.timeIntervalSince1970 ?? 0
             if !ours, seen[name] == stamp { continue }
+            if lockdown[name] == stamp {
+                lockdownFound = true
+                continue
+            }
+            if invalid[name] == stamp { continue }
             // Unreadable (e.g. data protection before the first unlock): keep it and retry later.
             guard let data = try? read(url) else { continue }
-            switch PairingFileCheck.check(data) {
+            switch check(data) {
             case .valid:
+                // A copy of a file imported before, e.g. renamed in Files, is not the user's new choice.
+                if !ours, wasImported(data), (try? Data(contentsOf: storeURL)) != data {
+                    seen[name] = stamp
+                    continue
+                }
                 if !adopted {
                     if (try? Data(contentsOf: storeURL)) != data {
                         // Kept if it could not be stored, e.g. before the first unlock after a restart.
                         guard (try? save(data)) != nil else { break }
+                        noteImported(data)
                         replaced = true
                     }
                     adopted = true
@@ -156,16 +221,21 @@ enum PairingStore {
                 }
             case .lockdown:
                 lockdownFound = true
+                lockdown[name] = stamp
             case .invalid:
                 // The setup script may still be writing it over USB.
                 if let modified, Date().timeIntervalSince(modified) < 5 { continue }
                 if ours, (try? FileManager.default.removeItem(at: url)) != nil {
                     rejectedDrop = true
+                } else {
+                    invalid[name] = stamp
                 }
             }
         }
         lockdownDrop = lockdownFound
         if seen != stored { UserDefaults.standard.set(seen, forKey: importedKey) }
+        if lockdown != storedLockdown { UserDefaults.standard.set(lockdown, forKey: lockdownKey) }
+        if invalid != storedInvalid { UserDefaults.standard.set(invalid, forKey: invalidKey) }
         return replaced
     }
 
@@ -193,4 +263,8 @@ enum PairingStore {
     // Name to modification date of other-named files already imported, so a later pass does not
     // import them again over the user's later choice.
     private static let importedKey = "pairing.importedDrops"
+    // Name to modification date of files found to be lockdown or not valid.
+    private static let lockdownKey = "pairing.lockdownDrops"
+    private static let invalidKey = "pairing.invalidDrops"
+    private static let hashesKey = "pairing.importedHashes"
 }

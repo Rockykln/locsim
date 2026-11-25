@@ -306,7 +306,9 @@ final class DeviceLink: @unchecked Sendable {
         let code = err.pointee.code
         let subCode = err.pointee.sub_code
         idevice_error_free(err)
-        throw DeviceError(kind, "\(step): \(message) (\(code))", code: code, subCode: subCode)
+        // The sub code tells apart, e.g., which part of remote pairing refused.
+        let codes = subCode != 0 ? "\(code)/\(subCode)" : "\(code)"
+        throw DeviceError(kind, "\(step): \(message) (\(codes))", code: code, subCode: subCode)
     }
 }
 

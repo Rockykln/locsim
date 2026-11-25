@@ -18,6 +18,9 @@ final class TimeZoneWatch: ObservableObject {
     @Published private(set) var dismissed = false
 
     private var real: TimeZone?
+    // The real zone for a few minutes after a simulation ended: the clock may still be in that
+    // place's zone when the next one starts.
+    private var recentReal: (zone: TimeZone, until: Date)?
     private var notified = false
     private var observer: NSObjectProtocol?
     private static let notificationID = "timeZoneChanged"
@@ -28,7 +31,12 @@ final class TimeZoneWatch: ObservableObject {
     func started() {
         guard real == nil else { return }
         NSTimeZone.resetSystemTimeZone()
-        real = TimeZone.current
+        if let recent = recentReal, Date() < recent.until {
+            real = recent.zone
+        } else {
+            real = TimeZone.current
+        }
+        recentReal = nil
         changedTo = nil
         dismissed = false
         notified = false
@@ -37,20 +45,28 @@ final class TimeZoneWatch: ObservableObject {
         ) { [weak self] _ in
             Task { @MainActor in self?.check() }
         }
+        // A notification left from an earlier run is outdated; the zone may still differ, though.
+        Self.removeNotification()
+        check()
         // Quiet notifications need no question; the question comes once the notice is seen.
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .provisional]) { _, _ in }
     }
 
     /// The real location is back, and with it the real time zone.
     func stopped() {
-        guard real != nil else { return }
-        real = nil
+        guard let real else { return }
+        recentReal = (real, Date().addingTimeInterval(10 * 60))
+        self.real = nil
         changedTo = nil
         if let observer { NotificationCenter.default.removeObserver(observer) }
         observer = nil
+        Self.removeNotification()
+    }
+
+    private static func removeNotification() {
         let center = UNUserNotificationCenter.current()
-        center.removePendingNotificationRequests(withIdentifiers: [Self.notificationID])
-        center.removeDeliveredNotifications(withIdentifiers: [Self.notificationID])
+        center.removePendingNotificationRequests(withIdentifiers: [notificationID])
+        center.removeDeliveredNotifications(withIdentifiers: [notificationID])
     }
 
     /// Also run when the app comes to the foreground, in case the change came while suspended.
@@ -60,10 +76,14 @@ final class TimeZoneWatch: ObservableObject {
         let now = TimeZone.current
         guard now.identifier != real.identifier else {
             changedTo = nil
+            // Back to the real zone: the notification no longer applies, and a later change notifies again.
+            if notified { Self.removeNotification() }
+            notified = false
             return
         }
         changedTo = now
-        if UIApplication.shared.applicationState != .active, !notified {
+        // Hidden for this location means no notification either.
+        if UIApplication.shared.applicationState != .active, !notified, !dismissed {
             notified = true
             notify(now)
         }

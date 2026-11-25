@@ -37,7 +37,11 @@ struct SnapshotProvider: AppIntentTimelineProvider {
     }
 
     func timeline(for configuration: ChooseFavoritesIntent, in context: Context) async -> Timeline<SnapshotEntry> {
-        Timeline(entries: entries(WidgetSnapshot.load(), configuration), policy: .never)
+        // Not readable yet, e.g. before the first unlock after a restart: look again later instead
+        // of showing an empty widget until LocSim changes something.
+        let readable = WidgetSnapshot.isReadable
+        return Timeline(entries: entries(WidgetSnapshot.load(), configuration),
+                        policy: readable ? .never : .after(Date().addingTimeInterval(15 * 60)))
     }
 
     private func entries(_ snapshot: WidgetSnapshot, _ configuration: ChooseFavoritesIntent) -> [SnapshotEntry] {
@@ -157,9 +161,10 @@ private struct LocationStatusView: View {
                 .accessibilityHidden(true)
             Spacer(minLength: 4)
             if let active = snapshot.active {
+                // The icon above carries the color; blue text is too faint on a light widget.
                 Text(caption)
                     .font(.caption.weight(.semibold))
-                    .foregroundStyle(stale ? Color.primary : Color.blue)
+                    .foregroundStyle(Color.primary)
                     .lineLimit(stale ? 3 : 1)
                 Text(active.name)
                     .font(.headline)

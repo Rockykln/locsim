@@ -84,7 +84,8 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 
 /// Licenses of the Rust crates compiled into IDevice.xcframework, from THIRD_PARTY_LICENSES.md.
 private struct RustLicensesView: View {
-    private let paragraphs: [String] = {
+    // Read once per launch, not on every redraw of the view: the file is about 70 KB.
+    private static let paragraphs: [String] = {
         guard let url = Bundle.main.url(forResource: "THIRD_PARTY_LICENSES", withExtension: "md"),
               let text = try? String(contentsOf: url, encoding: .utf8) else { return [] }
         return text.components(separatedBy: "\n\n")
@@ -93,7 +94,7 @@ private struct RustLicensesView: View {
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 10) {
-                ForEach(Array(paragraphs.enumerated()), id: \.offset) { _, paragraph in
+                ForEach(Array(Self.paragraphs.enumerated()), id: \.offset) { _, paragraph in
                     Text(verbatim: paragraph)
                         .font(.system(.caption2, design: .monospaced))
                         .foregroundStyle(.secondary)

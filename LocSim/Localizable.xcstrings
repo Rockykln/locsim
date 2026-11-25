@@ -495,6 +495,46 @@
         }
       }
     },
+    "A running simulation stops." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eine laufende Simulation wird beendet."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se detendrá la simulación en curso."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une simulation en cours s’arrête."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una simulazione in corso si interrompe."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Een lopende simulatie stopt."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uma simulação em andamento é interrompida."
+          }
+        }
+      }
+    },
     "A running simulation stops. You need the setup script to create a new one." : {
       "localizations" : {
         "de" : {
@@ -572,6 +612,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sobre"
+          }
+        }
+      }
+    },
+    "About 16 MB. LocSim asks again before it downloads them." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etwa 16 MB. LocSim fragt erneut, bevor es sie lädt."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unos 16 MB. LocSim volverá a preguntar antes de descargarlos."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Environ 16 Mo. LocSim redemandera avant de les télécharger."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Circa 16 MB. LocSim chiede di nuovo prima di scaricarli."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ongeveer 16 MB. LocSim vraagt het opnieuw voordat het ze downloadt."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerca de 16 MB. O LocSim pergunta de novo antes de baixá-los."
           }
         }
       }
@@ -1387,6 +1467,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Limpar locais recentes"
+          }
+        }
+      }
+    },
+    "Clear recent locations?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzte Orte löschen?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Borrar las ubicaciones recientes?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Effacer les lieux récents ?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancellare le posizioni recenti?"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recente locaties wissen?"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limpar os locais recentes?"
           }
         }
       }
@@ -2560,6 +2680,46 @@
         }
       }
     },
+    "Delete the DDI files?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DDI-Dateien löschen?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Eliminar los archivos DDI?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer les fichiers DDI ?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminare i file DDI?"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DDI-bestanden verwijderen?"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar os arquivos DDI?"
+          }
+        }
+      }
+    },
     "Developer Disk Image" : {
       "localizations" : {
         "de" : {
@@ -2882,47 +3042,6 @@
         }
       }
     },
-    "Don’t Show Again" : {
-      "comment" : "Alert button: hide the time zone notice until the next simulation",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nicht mehr anzeigen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No volver a mostrar"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ne plus afficher"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Non mostrare più"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Niet meer tonen"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Não Mostrar Novamente"
-          }
-        }
-      }
-    },
     "Download" : {
       "comment" : "Alert button: download the Developer Disk Image",
       "localizations" : {
@@ -3081,6 +3200,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Baixados"
+          }
+        }
+      }
+    },
+    "Downloading Developer Disk Image" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image wird geladen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descargando Developer Disk Image"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Téléchargement du Developer Disk Image"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download della Developer Disk Image"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image downloaden"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Baixando a Developer Disk Image"
           }
         }
       }
@@ -3530,6 +3689,46 @@
         }
       }
     },
+    "Free up storage on this iPhone, then try again." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gib Speicher auf diesem iPhone frei und versuche es dann erneut."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Libera espacio en este iPhone y vuelve a intentarlo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Libérez de l’espace sur cet iPhone, puis réessayez."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Libera spazio su questo iPhone, poi riprova."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maak opslag vrij op deze iPhone en probeer het dan opnieuw."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Libere espaço neste iPhone e tente novamente."
+          }
+        }
+      }
+    },
     "Get Simulated Location" : {
       "comment" : "Shortcuts action title",
       "localizations" : {
@@ -3692,6 +3891,46 @@
         }
       }
     },
+    "Hide Until Next Location" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bis zum nächsten Ort ausblenden"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultar hasta la próxima ubicación"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Masquer jusqu’à la prochaine position"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nascondi fino alla prossima posizione"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verberg tot de volgende locatie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultar Até a Próxima Localização"
+          }
+        }
+      }
+    },
     "Hostname" : {
       "localizations" : {
         "de" : {
@@ -3814,6 +4053,46 @@
         }
       }
     },
+    "If Settings shows no Language option for LocSim, add another language under General > Language & Region first." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeigt Einstellungen bei LocSim keine Option „Sprache“, füge zuerst unter „Allgemein > Sprache & Region“ eine weitere Sprache hinzu."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si Ajustes no muestra la opción Idioma para LocSim, añade primero otro idioma en General > Idioma y región."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si Réglages n’affiche pas d’option Langue pour LocSim, ajoutez d’abord une autre langue dans Général > Langue et région."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se Impostazioni non mostra l’opzione Lingua per LocSim, aggiungi prima un’altra lingua in Generali > Lingua e zona."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Als Instellingen voor LocSim geen optie Taal toont, voeg dan eerst een andere taal toe via Algemeen > Taal en regio."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se Ajustes não mostrar a opção Idioma para o LocSim, adicione antes outro idioma em Geral > Idioma e Região."
+          }
+        }
+      }
+    },
     "Import Pairing File" : {
       "localizations" : {
         "de" : {
@@ -3931,6 +4210,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Importado"
+          }
+        }
+      }
+    },
+    "Installing Developer Disk Image" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image wird installiert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instalando Developer Disk Image"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Installation du Developer Disk Image"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Installazione della Developer Disk Image"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image installeren"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instalando a Developer Disk Image"
           }
         }
       }
@@ -4696,6 +5015,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Localização definida"
+          }
+        }
+      }
+    },
+    "Location set: %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort gesetzt: %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ubicación establecida: %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Position définie : %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posizione impostata: %@"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Locatie ingesteld: %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Localização definida: %@"
           }
         }
       }
@@ -5706,6 +6065,46 @@
         }
       }
     },
+    "Not enough storage" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht genug Speicher"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay suficiente espacio"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stockage insuffisant"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spazio insufficiente"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niet genoeg opslag"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Armazenamento insuficiente"
+          }
+        }
+      }
+    },
     "OK" : {
       "localizations" : {
         "de" : {
@@ -6351,43 +6750,42 @@
         }
       }
     },
-    "Pin dropped at map center" : {
-      "comment" : "VoiceOver announcement after the Drop Pin at Map Center action",
+    "Pin dropped at map center: %@" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ort in der Kartenmitte markiert"
+            "value" : "Ort in der Kartenmitte markiert: %@"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ubicación marcada en el centro del mapa"
+            "value" : "Ubicación marcada en el centro del mapa: %@"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lieu marqué au centre de la carte"
+            "value" : "Lieu marqué au centre de la carte : %@"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Segnaposto inserito al centro della mappa"
+            "value" : "Segnaposto inserito al centro della mappa: %@"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Locatie in het midden van de kaart gemarkeerd"
+            "value" : "Locatie in het midden van de kaart gemarkeerd: %@"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Local marcado no centro do mapa"
+            "value" : "Local marcado no centro do mapa: %@"
           }
         }
       }
@@ -7290,6 +7688,46 @@
         }
       }
     },
+    "Remove “%@” from favorites?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "„%@“ aus den Favoriten entfernen?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Eliminar “%@” de favoritos?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer « %@ » des favoris ?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rimuovere “%@” dai preferiti?"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "‘%@’ uit favorieten verwijderen?"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remover “%@” dos favoritos?"
+          }
+        }
+      }
+    },
     "Rename" : {
       "localizations" : {
         "de" : {
@@ -7366,6 +7804,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Substituir Arquivo de Emparelhamento"
+          }
+        }
+      }
+    },
+    "Replace the pairing file?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pairing-Datei ersetzen?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Sustituir el archivo de emparejamiento?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remplacer le fichier de jumelage ?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sostituire il file di abbinamento?"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Koppelingsbestand vervangen?"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Substituir o arquivo de emparelhamento?"
           }
         }
       }
@@ -8463,42 +8941,42 @@
         }
       }
     },
-    "Set on Selection sends a choice right away. Recent Locations keeps the last five." : {
+    "Set on Selection sends a choice right away. Recent Locations keeps the last five; turning it off deletes them. The last location stays for the map and Set Last Location." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "„Bei Auswahl setzen“ sendet eine Auswahl sofort. „Letzte Orte“ merkt sich die letzten fünf."
+            "value" : "„Bei Auswahl setzen“ sendet eine Auswahl sofort. „Letzte Orte“ merkt sich die letzten fünf; Ausschalten löscht sie. Der letzte Standort bleibt für die Karte und „Letzten Standort setzen“."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“Establecer al seleccionar” envía la selección al instante. “Ubicaciones recientes” guarda las cinco últimas."
+            "value" : "“Establecer al seleccionar” envía la selección al instante. “Ubicaciones recientes” guarda las cinco últimas; al desactivarlo se borran. La última ubicación se conserva para el mapa y “Establecer la última ubicación”."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "« Définir à la sélection » envoie le choix aussitôt. « Lieux récents » garde les cinq derniers."
+            "value" : "« Définir à la sélection » envoie le choix aussitôt. « Lieux récents » garde les cinq derniers ; le désactiver les efface. La dernière position reste pour la carte et « Définir la dernière position »."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“Imposta alla selezione” invia subito la scelta. “Posizioni recenti” conserva le ultime cinque."
+            "value" : "“Imposta alla selezione” invia subito la scelta. “Posizioni recenti” conserva le ultime cinque; disattivarlo le cancella. L’ultima posizione resta per la mappa e per “Imposta l’ultima posizione”."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "‘Instellen bij selectie’ verstuurt een keuze meteen. ‘Recente locaties’ onthoudt de laatste vijf."
+            "value" : "‘Instellen bij selectie’ verstuurt een keuze meteen. ‘Recente locaties’ onthoudt de laatste vijf; uitschakelen wist ze. De laatste locatie blijft voor de kaart en ‘Stel laatste locatie in’."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“Definir ao Selecionar” envia a escolha imediatamente. “Locais Recentes” guarda os últimos cinco."
+            "value" : "“Definir ao Selecionar” envia a escolha imediatamente. “Locais Recentes” guarda os últimos cinco; desativar apaga todos. A última localização fica para o mapa e para “Definir Última Localização”."
           }
         }
       }
@@ -9266,6 +9744,46 @@
         }
       }
     },
+    "The device did not provide location simulation. Try again; if it keeps failing, restart the device." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Gerät stellt keine Standortsimulation bereit. Versuche es erneut; klappt es weiterhin nicht, starte das Gerät neu."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El dispositivo no ha proporcionado la simulación de ubicación. Vuelve a intentarlo; si sigue fallando, reinicia el dispositivo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’appareil n’a pas fourni la simulation de position. Réessayez ; si l’échec persiste, redémarrez l’appareil."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il dispositivo non ha reso disponibile la simulazione della posizione. Riprova; se continua a non funzionare, riavvia il dispositivo."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het apparaat biedt geen locatiesimulatie. Probeer het opnieuw; blijft het mislukken, herstart dan het apparaat."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O dispositivo não forneceu a simulação de localização. Tente novamente; se continuar falhando, reinicie o dispositivo."
+          }
+        }
+      }
+    },
     "The device did not provide location simulation. Turn on Mount Automatically in LocSim's settings under Developer Disk Image, or restart the device." : {
       "comment" : "Error LS-400: what to do when the location service is missing",
       "localizations" : {
@@ -9629,6 +10147,46 @@
         }
       }
     },
+    "The recent locations on this iPhone are deleted." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die letzten Orte auf diesem iPhone werden gelöscht."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se borrarán las ubicaciones recientes de este iPhone."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les lieux récents de cet iPhone sont effacés."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le posizioni recenti su questo iPhone vengono cancellate."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De recente locaties op deze iPhone worden gewist."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os locais recentes deste iPhone serão apagados."
+          }
+        }
+      }
+    },
     "The setup script copies it into LocSim. Otherwise, copy it with AirDrop or Finder and import it here." : {
       "localizations" : {
         "de" : {
@@ -9909,6 +10467,86 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Experimentar sem Dispositivo"
+          }
+        }
+      }
+    },
+    "Turn Off and Delete" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausschalten und löschen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desactivar y borrar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Désactiver et effacer"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disattiva e cancella"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schakel uit en wis"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desativar e Apagar"
+          }
+        }
+      }
+    },
+    "Turn off Recent Locations?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "„Letzte Orte“ ausschalten?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Desactivar “Ubicaciones recientes”?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Désactiver « Lieux récents » ?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disattivare “Posizioni recenti”?"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "‘Recente locaties’ uitschakelen?"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desativar “Locais Recentes”?"
           }
         }
       }
