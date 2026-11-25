@@ -495,6 +495,46 @@
         }
       }
     },
+    "A running simulation stops." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eine laufende Simulation wird beendet."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se detendrá la simulación en curso."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une simulation en cours s’arrête."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una simulazione in corso si interrompe."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Een lopende simulatie stopt."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uma simulação em andamento é interrompida."
+          }
+        }
+      }
+    },
     "A running simulation stops. You need the setup script to create a new one." : {
       "localizations" : {
         "de" : {
@@ -572,6 +612,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sobre"
+          }
+        }
+      }
+    },
+    "About 16 MB. LocSim asks again before it downloads them." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etwa 16 MB. LocSim fragt erneut, bevor es sie lädt."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unos 16 MB. LocSim volverá a preguntar antes de descargarlos."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Environ 16 Mo. LocSim redemandera avant de les télécharger."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Circa 16 MB. LocSim chiede di nuovo prima di scaricarli."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ongeveer 16 MB. LocSim vraagt het opnieuw voordat het ze downloadt."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerca de 16 MB. O LocSim pergunta de novo antes de baixá-los."
           }
         }
       }
@@ -1387,6 +1467,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Limpar locais recentes"
+          }
+        }
+      }
+    },
+    "Clear recent locations?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzte Orte löschen?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Borrar las ubicaciones recientes?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Effacer les lieux récents ?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancellare le posizioni recenti?"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recente locaties wissen?"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limpar os locais recentes?"
           }
         }
       }
@@ -2560,6 +2680,46 @@
         }
       }
     },
+    "Delete the DDI files?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DDI-Dateien löschen?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Eliminar los archivos DDI?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer les fichiers DDI ?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminare i file DDI?"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DDI-bestanden verwijderen?"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar os arquivos DDI?"
+          }
+        }
+      }
+    },
     "Developer Disk Image" : {
       "localizations" : {
         "de" : {
@@ -2882,47 +3042,6 @@
         }
       }
     },
-    "Don’t Show Again" : {
-      "comment" : "Alert button: hide the time zone notice until the next simulation",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nicht mehr anzeigen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No volver a mostrar"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ne plus afficher"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Non mostrare più"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Niet meer tonen"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Não Mostrar Novamente"
-          }
-        }
-      }
-    },
     "Download" : {
       "comment" : "Alert button: download the Developer Disk Image",
       "localizations" : {
@@ -3081,6 +3200,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Baixados"
+          }
+        }
+      }
+    },
+    "Downloading Developer Disk Image" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image wird geladen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descargando Developer Disk Image"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Téléchargement du Developer Disk Image"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download della Developer Disk Image"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image downloaden"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Baixando a Developer Disk Image"
           }
         }
       }
@@ -3530,6 +3689,46 @@
         }
       }
     },
+    "Free up storage on this iPhone, then try again." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gib Speicher auf diesem iPhone frei und versuche es dann erneut."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Libera espacio en este iPhone y vuelve a intentarlo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Libérez de l’espace sur cet iPhone, puis réessayez."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Libera spazio su questo iPhone, poi riprova."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maak opslag vrij op deze iPhone en probeer het dan opnieuw."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Libere espaço neste iPhone e tente novamente."
+          }
+        }
+      }
+    },
     "Get Simulated Location" : {
       "comment" : "Shortcuts action title",
       "localizations" : {
@@ -3692,6 +3891,46 @@
         }
       }
     },
+    "Hide Until Next Location" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bis zum nächsten Ort ausblenden"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultar hasta la próxima ubicación"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Masquer jusqu’à la prochaine position"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nascondi fino alla prossima posizione"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verberg tot de volgende locatie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultar Até a Próxima Localização"
+          }
+        }
+      }
+    },
     "Hostname" : {
       "localizations" : {
         "de" : {
@@ -3814,6 +4053,46 @@
         }
       }
     },
+    "If Settings shows no Language option for LocSim, add another language under General > Language & Region first." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeigt Einstellungen bei LocSim keine Option „Sprache“, füge zuerst unter „Allgemein > Sprache & Region“ eine weitere Sprache hinzu."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si Ajustes no muestra la opción Idioma para LocSim, añade primero otro idioma en General > Idioma y región."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si Réglages n’affiche pas d’option Langue pour LocSim, ajoutez d’abord une autre langue dans Général > Langue et région."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se Impostazioni non mostra l’opzione Lingua per LocSim, aggiungi prima un’altra lingua in Generali > Lingua e zona."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Als Instellingen voor LocSim geen optie Taal toont, voeg dan eerst een andere taal toe via Algemeen > Taal en regio."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se Ajustes não mostrar a opção Idioma para o LocSim, adicione antes outro idioma em Geral > Idioma e Região."
+          }
+        }
+      }
+    },
     "Import Pairing File" : {
       "localizations" : {
         "de" : {
@@ -3931,6 +4210,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Importado"
+          }
+        }
+      }
+    },
+    "Installing Developer Disk Image" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image wird installiert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instalando Developer Disk Image"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Installation du Developer Disk Image"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Installazione della Developer Disk Image"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer Disk Image installeren"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instalando a Developer Disk Image"
           }
         }
       }
@@ -4338,6 +4657,46 @@
         }
       }
     },
+    "Local connection" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lokale Verbindung"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conexión local"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connexion locale"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connessione locale"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lokale verbinding"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conexão local"
+          }
+        }
+      }
+    },
     "Local connection not started" : {
       "localizations" : {
         "de" : {
@@ -4660,6 +5019,86 @@
         }
       }
     },
+    "Location set: %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort gesetzt: %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ubicación establecida: %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Position définie : %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posizione impostata: %@"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Locatie ingesteld: %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Localização definida: %@"
+          }
+        }
+      }
+    },
+    "LocSim adds a VPN configuration to reach this iPhone, and iOS asks to allow it. If another VPN is selected, iOS turns it off; select it again in Settings afterwards." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim fügt eine VPN-Konfiguration hinzu, um dieses iPhone zu erreichen, und iOS fragt nach deiner Erlaubnis. Ist ein anderes VPN ausgewählt, schaltet iOS es aus. Wähle es danach in den Einstellungen wieder aus."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim añade una configuración VPN para acceder a este iPhone, e iOS te pide permiso. Si hay otra VPN seleccionada, iOS la desactiva; después, vuelve a seleccionarla en Ajustes."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim ajoute une configuration VPN pour joindre cet iPhone, et iOS demande votre autorisation. Si un autre VPN est sélectionné, iOS le désactive ; sélectionnez-le ensuite à nouveau dans Réglages."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim aggiunge una configurazione VPN per raggiungere questo iPhone, e iOS chiede il permesso. Se è selezionata un’altra VPN, iOS la disattiva; poi selezionala di nuovo in Impostazioni."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim voegt een vpn-configuratie toe om deze iPhone te bereiken, en iOS vraagt om toestemming. Als er een andere vpn is geselecteerd, schakelt iOS die uit; selecteer die daarna weer in Instellingen."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O LocSim adiciona uma configuração de VPN para alcançar este iPhone, e o iOS pede permissão. Se outra VPN estiver selecionada, o iOS a desativa; depois, selecione-a de novo em Ajustes."
+          }
+        }
+      }
+    },
     "LocSim could not start its connection to this iPhone. Allow the VPN configuration when iOS asks and try again." : {
       "localizations" : {
         "de" : {
@@ -4817,6 +5256,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "A conexão local do LocSim é baseada no StosVPN."
+          }
+        }
+      }
+    },
+    "LocSim's local connection replaces it while a location is active. Select your VPN again in Settings afterwards." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die lokale Verbindung von LocSim ersetzt es, solange ein Standort aktiv ist. Wähle dein VPN danach in den Einstellungen wieder aus."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La conexión local de LocSim la sustituye mientras haya una ubicación activa. Después, vuelve a seleccionar tu VPN en Ajustes."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La connexion locale de LocSim le remplace tant qu’une position est active. Sélectionnez ensuite à nouveau votre VPN dans Réglages."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La connessione locale di LocSim la sostituisce mentre una posizione è attiva. Poi seleziona di nuovo la tua VPN in Impostazioni."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De lokale verbinding van LocSim vervangt deze zolang een locatie actief is. Selecteer je vpn daarna weer in Instellingen."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A conexão local do LocSim a substitui enquanto uma localização estiver ativa. Depois, selecione a sua VPN de novo em Ajustes."
           }
         }
       }
@@ -5586,6 +6065,46 @@
         }
       }
     },
+    "Not enough storage" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht genug Speicher"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay suficiente espacio"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stockage insuffisant"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spazio insufficiente"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niet genoeg opslag"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Armazenamento insuficiente"
+          }
+        }
+      }
+    },
     "OK" : {
       "localizations" : {
         "de" : {
@@ -6069,6 +6588,46 @@
         }
       }
     },
+    "Pairing files are still in LocSim's folder in Files: %@. They contain a key for this device and are part of device backups. Delete them there if you no longer need them." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Im LocSim-Ordner in „Dateien“ liegen noch Pairing-Dateien: %@. Sie enthalten einen Schlüssel für dieses Gerät und sind Teil der Geräte-Backups. Lösche sie dort, wenn du sie nicht mehr brauchst."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todavía hay archivos de emparejamiento en la carpeta de LocSim en Archivos: %@. Contienen una clave para este dispositivo y se incluyen en sus copias de seguridad. Bórralos allí si ya no los necesitas."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Des fichiers de jumelage se trouvent encore dans le dossier de LocSim dans Fichiers : %@. Ils contiennent une clé pour cet appareil et font partie de ses sauvegardes. Supprimez-les là-bas si vous n’en avez plus besoin."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nella cartella di LocSim in File ci sono ancora file di abbinamento: %@. Contengono una chiave per questo dispositivo e sono inclusi nei backup del dispositivo. Eliminali lì se non ti servono più."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Er staan nog koppelingsbestanden in de map van LocSim in Bestanden: %@. Ze bevatten een sleutel voor dit apparaat en zitten in de reservekopieën van het apparaat. Verwijder ze daar als je ze niet meer nodig hebt."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ainda há arquivos de emparelhamento na pasta do LocSim no app Arquivos: %@. Eles contêm uma chave para este dispositivo e fazem parte dos backups do dispositivo. Apague-os lá se não precisar mais deles."
+          }
+        }
+      }
+    },
     "Pairing rejected" : {
       "localizations" : {
         "de" : {
@@ -6231,43 +6790,42 @@
         }
       }
     },
-    "Pin dropped at map center" : {
-      "comment" : "VoiceOver announcement after the Drop Pin at Map Center action",
+    "Pin dropped at map center: %@" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ort in der Kartenmitte markiert"
+            "value" : "Ort in der Kartenmitte markiert: %@"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ubicación marcada en el centro del mapa"
+            "value" : "Ubicación marcada en el centro del mapa: %@"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lieu marqué au centre de la carte"
+            "value" : "Lieu marqué au centre de la carte : %@"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Segnaposto inserito al centro della mappa"
+            "value" : "Segnaposto inserito al centro della mappa: %@"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Locatie in het midden van de kaart gemarkeerd"
+            "value" : "Locatie in het midden van de kaart gemarkeerd: %@"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Local marcado no centro do mapa"
+            "value" : "Local marcado no centro do mapa: %@"
           }
         }
       }
@@ -7170,6 +7728,46 @@
         }
       }
     },
+    "Remove “%@” from favorites?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "„%@“ aus den Favoriten entfernen?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Eliminar “%@” de favoritos?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer « %@ » des favoris ?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rimuovere “%@” dai preferiti?"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "‘%@’ uit favorieten verwijderen?"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remover “%@” dos favoritos?"
+          }
+        }
+      }
+    },
     "Rename" : {
       "localizations" : {
         "de" : {
@@ -7246,6 +7844,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Substituir Arquivo de Emparelhamento"
+          }
+        }
+      }
+    },
+    "Replace the pairing file?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pairing-Datei ersetzen?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Sustituir el archivo de emparejamiento?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remplacer le fichier de jumelage ?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sostituire il file di abbinamento?"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Koppelingsbestand vervangen?"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Substituir o arquivo de emparelhamento?"
           }
         }
       }
@@ -8343,42 +8981,42 @@
         }
       }
     },
-    "Set on Selection sends a choice right away. Recent Locations keeps the last five." : {
+    "Set on Selection sends a choice right away. Recent Locations keeps the last five; turning it off deletes them. The last location stays for the map and Set Last Location." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "„Bei Auswahl setzen“ sendet eine Auswahl sofort. „Letzte Orte“ merkt sich die letzten fünf."
+            "value" : "„Bei Auswahl setzen“ sendet eine Auswahl sofort. „Letzte Orte“ merkt sich die letzten fünf; Ausschalten löscht sie. Der letzte Standort bleibt für die Karte und „Letzten Standort setzen“."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“Establecer al seleccionar” envía la selección al instante. “Ubicaciones recientes” guarda las cinco últimas."
+            "value" : "“Establecer al seleccionar” envía la selección al instante. “Ubicaciones recientes” guarda las cinco últimas; al desactivarlo se borran. La última ubicación se conserva para el mapa y “Establecer la última ubicación”."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "« Définir à la sélection » envoie le choix aussitôt. « Lieux récents » garde les cinq derniers."
+            "value" : "« Définir à la sélection » envoie le choix aussitôt. « Lieux récents » garde les cinq derniers ; le désactiver les efface. La dernière position reste pour la carte et « Définir la dernière position »."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“Imposta alla selezione” invia subito la scelta. “Posizioni recenti” conserva le ultime cinque."
+            "value" : "“Imposta alla selezione” invia subito la scelta. “Posizioni recenti” conserva le ultime cinque; disattivarlo le cancella. L’ultima posizione resta per la mappa e per “Imposta l’ultima posizione”."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "‘Instellen bij selectie’ verstuurt een keuze meteen. ‘Recente locaties’ onthoudt de laatste vijf."
+            "value" : "‘Instellen bij selectie’ verstuurt een keuze meteen. ‘Recente locaties’ onthoudt de laatste vijf; uitschakelen wist ze. De laatste locatie blijft voor de kaart en ‘Stel laatste locatie in’."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“Definir ao Selecionar” envia a escolha imediatamente. “Locais Recentes” guarda os últimos cinco."
+            "value" : "“Definir ao Selecionar” envia a escolha imediatamente. “Locais Recentes” guarda os últimos cinco; desativar apaga todos. A última localização fica para o mapa e para “Definir Última Localização”."
           }
         }
       }
@@ -8946,6 +9584,46 @@
         }
       }
     },
+    "Tap Set Location to connect again." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tippe auf „Standort setzen“, um erneut zu verbinden."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toca “Establecer ubicación” para volver a conectar."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Touchez « Définir la position » pour vous reconnecter."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tocca “Imposta posizione” per riconnetterti."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tik op ‘Stel locatie in’ om opnieuw te verbinden."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toque em “Definir Localização” para conectar novamente."
+          }
+        }
+      }
+    },
     "The connection to the device broke off. Check Wi-Fi and try again." : {
       "localizations" : {
         "de" : {
@@ -9102,6 +9780,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "O dispositivo não aceitou o arquivo de emparelhamento. Verifique se o nome do host nos ajustes do LocSim corresponde ao usado pelo script de configuração ou crie um novo arquivo, por exemplo após uma atualização do iOS."
+          }
+        }
+      }
+    },
+    "The device did not provide location simulation. Try again; if it keeps failing, restart the device." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Gerät stellt keine Standortsimulation bereit. Versuche es erneut; klappt es weiterhin nicht, starte das Gerät neu."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El dispositivo no ha proporcionado la simulación de ubicación. Vuelve a intentarlo; si sigue fallando, reinicia el dispositivo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’appareil n’a pas fourni la simulation de position. Réessayez ; si l’échec persiste, redémarrez l’appareil."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il dispositivo non ha reso disponibile la simulazione della posizione. Riprova; se continua a non funzionare, riavvia il dispositivo."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het apparaat biedt geen locatiesimulatie. Probeer het opnieuw; blijft het mislukken, herstart dan het apparaat."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O dispositivo não forneceu a simulação de localização. Tente novamente; se continuar falhando, reinicie o dispositivo."
           }
         }
       }
@@ -9469,6 +10187,46 @@
         }
       }
     },
+    "The recent locations on this iPhone are deleted." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die letzten Orte auf diesem iPhone werden gelöscht."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se borrarán las ubicaciones recientes de este iPhone."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les lieux récents de cet iPhone sont effacés."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le posizioni recenti su questo iPhone vengono cancellate."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De recente locaties op deze iPhone worden gewist."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os locais recentes deste iPhone serão apagados."
+          }
+        }
+      }
+    },
     "The setup script copies it into LocSim. Otherwise, copy it with AirDrop or Finder and import it here." : {
       "localizations" : {
         "de" : {
@@ -9753,6 +10511,86 @@
         }
       }
     },
+    "Turn Off and Delete" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausschalten und löschen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desactivar y borrar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Désactiver et effacer"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disattiva e cancella"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schakel uit en wis"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desativar e Apagar"
+          }
+        }
+      }
+    },
+    "Turn off Recent Locations?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "„Letzte Orte“ ausschalten?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Desactivar “Ubicaciones recientes”?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Désactiver « Lieux récents » ?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disattivare “Posizioni recenti”?"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "‘Recente locaties’ uitschakelen?"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desativar “Locais Recentes”?"
+          }
+        }
+      }
+    },
     "Unexpected error" : {
       "localizations" : {
         "de" : {
@@ -9954,42 +10792,42 @@
         }
       }
     },
-    "When you first set a location, iOS asks to add a VPN configuration. LocSim only uses it to reach this iPhone; no traffic leaves the device through it." : {
+    "When you first set a location, iOS asks to add a VPN configuration. LocSim only uses it to reach this iPhone; no traffic leaves the device through it. If another VPN is selected, iOS turns it off." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Beim ersten Setzen eines Standorts fragt iOS, ob eine VPN-Konfiguration hinzugefügt werden darf. LocSim nutzt sie nur, um dieses iPhone zu erreichen. Darüber verlässt kein Datenverkehr das Gerät."
+            "value" : "Beim ersten Setzen eines Standorts fragt iOS, ob eine VPN-Konfiguration hinzugefügt werden darf. LocSim nutzt sie nur, um dieses iPhone zu erreichen. Darüber verlässt kein Datenverkehr das Gerät. Ist ein anderes VPN ausgewählt, schaltet iOS es aus."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La primera vez que estableces una ubicación, iOS pide añadir una configuración VPN. LocSim solo la usa para acceder a este iPhone. Ningún tráfico sale del dispositivo a través de ella."
+            "value" : "La primera vez que estableces una ubicación, iOS pide añadir una configuración VPN. LocSim solo la usa para acceder a este iPhone. Ningún tráfico sale del dispositivo a través de ella. Si hay otra VPN seleccionada, iOS la desactiva."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La première fois que vous définissez une position, iOS demande d’ajouter une configuration VPN. LocSim l’utilise uniquement pour joindre cet iPhone. Aucun trafic ne quitte l’appareil par ce biais."
+            "value" : "La première fois que vous définissez une position, iOS demande d’ajouter une configuration VPN. LocSim l’utilise uniquement pour joindre cet iPhone. Aucun trafic ne quitte l’appareil par ce biais. Si un autre VPN est sélectionné, iOS le désactive."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La prima volta che imposti una posizione, iOS chiede di aggiungere una configurazione VPN. LocSim la usa solo per raggiungere questo iPhone. Nessun traffico esce dal dispositivo attraverso di essa."
+            "value" : "La prima volta che imposti una posizione, iOS chiede di aggiungere una configurazione VPN. LocSim la usa solo per raggiungere questo iPhone. Nessun traffico esce dal dispositivo attraverso di essa. Se è selezionata un’altra VPN, iOS la disattiva."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wanneer je voor het eerst een locatie instelt, vraagt iOS om een vpn-configuratie toe te voegen. LocSim gebruikt deze alleen om deze iPhone te bereiken. Er verlaat geen verkeer het apparaat via deze configuratie."
+            "value" : "Wanneer je voor het eerst een locatie instelt, vraagt iOS om een vpn-configuratie toe te voegen. LocSim gebruikt deze alleen om deze iPhone te bereiken. Er verlaat geen verkeer het apparaat via deze configuratie. Als er een andere vpn is geselecteerd, schakelt iOS die uit."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Na primeira vez que você define uma localização, o iOS pede para adicionar uma configuração de VPN. O LocSim a usa apenas para alcançar este iPhone. Nenhum tráfego sai do dispositivo por ela."
+            "value" : "Na primeira vez que você define uma localização, o iOS pede para adicionar uma configuração de VPN. O LocSim a usa apenas para alcançar este iPhone. Nenhum tráfego sai do dispositivo por ela. Se outra VPN estiver selecionada, o iOS a desativa."
           }
         }
       }
@@ -10070,6 +10908,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Arquivo de emparelhamento incorreto"
+          }
+        }
+      }
+    },
+    "You can also tap Clear to try again." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kannst es auch mit „Zurücksetzen“ noch einmal versuchen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "También puedes tocar “Restablecer” para volver a intentarlo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous pouvez aussi toucher « Réinitialiser » pour réessayer."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puoi anche toccare “Ripristina” per riprovare."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je kunt ook op ‘Herstel’ tikken om het opnieuw te proberen."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você também pode tocar em “Redefinir” para tentar novamente."
           }
         }
       }

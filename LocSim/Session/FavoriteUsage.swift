@@ -14,7 +14,9 @@ enum FavoriteUsage {
     /// A short look at a place is no real use.
     static let minimum: TimeInterval = 30 * 60
     private static let key = "favoriteUsage"
-    private static var running: (id: UUID, since: Date)?
+    // A monotonic clock: changing the device's time, or iOS changing the time zone, does not
+    // change a duration. It keeps counting while the device sleeps.
+    private static var running: (id: UUID, since: ContinuousClock.Instant)?
 
     private static var stored: [UUID: Usage] {
         get {
@@ -30,14 +32,15 @@ enum FavoriteUsage {
         end()
         guard let coordinate, let favorite = FavoriteList.shared.items.first(where: { same($0.coordinate, coordinate) })
         else { return }
-        running = (favorite.id, Date())
+        running = (favorite.id, ContinuousClock.now)
     }
 
     /// The simulation ended, also when LocSim quits.
     static func end() {
         guard let run = running else { return }
         running = nil
-        let duration = Date().timeIntervalSince(run.since)
+        let elapsed = ContinuousClock.now - run.since
+        let duration = max(0, Double(elapsed.components.seconds) + Double(elapsed.components.attoseconds) / 1e18)
         var map = stored
         var usage = map[run.id] ?? Usage()
         usage.seconds += duration

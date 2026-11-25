@@ -28,6 +28,11 @@ struct WidgetSnapshot: Codable, Equatable {
     static let kind = "LocSimStatus"
     private static let key = "widgetSnapshot"
 
+    /// The app has written a snapshot and it can be read now.
+    static var isReadable: Bool {
+        UserDefaults(suiteName: group)?.data(forKey: key) != nil
+    }
+
     static func load() -> WidgetSnapshot {
         guard let data = UserDefaults(suiteName: group)?.data(forKey: key),
               let snapshot = try? JSONDecoder().decode(WidgetSnapshot.self, from: data) else { return .empty }

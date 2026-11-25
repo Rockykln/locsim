@@ -108,10 +108,11 @@ final class LoopbackTunnel {
     }
 
     /// Tells the extension LocSim still needs it. Called with every resend, so one wakeup does both.
-    func beat() {
+    /// `force`: also right after another beat, so the extension's timeout starts now.
+    func beat(force: Bool = false) {
         // A recent beat is enough. The pending timer is anchored to that beat, so the gap the
         // extension sees stays at most heartbeatInterval + tolerance (90 s of the 120 s timeout).
-        if let lastBeat, heartbeat != nil, ContinuousClock.now - lastBeat < Self.beatSkipWindow { return }
+        if !force, let lastBeat, heartbeat != nil, ContinuousClock.now - lastBeat < Self.beatSkipWindow { return }
         sendBeat()
     }
 

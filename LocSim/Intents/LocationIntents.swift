@@ -83,8 +83,11 @@ struct ClearLocationIntent: AppIntent {
         guard session.canClear || unfinished else {
             return .result(dialog: "No location is simulated.")
         }
+        // The preview only moved the pin; the device never had a location to give back.
+        let wasPreview = session.isPreview
         // Also waits for the Live Activity to end: iOS may suspend LocSim as soon as this returns.
         await session.clear()
+        if wasPreview { return .result(dialog: "No location is simulated.") }
         if let error = session.state.error { throw LocationIntentError(error.summary) }
         return .result(dialog: "The real location is back.")
     }

@@ -49,6 +49,8 @@ final class PortResolver: NSObject, NetServiceBrowserDelegate, NetServiceDelegat
             port: UInt16(sender.port),
             addresses: addresses,
             isLocal: addresses.contains { local.contains($0) }))
+        // This device's own service is the one that counts; no need to wait for the rest.
+        if found.last?.isLocal == true { finish() }
     }
 
     private func finish() {
