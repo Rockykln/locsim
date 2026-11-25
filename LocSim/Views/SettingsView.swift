@@ -73,12 +73,13 @@ struct SettingsView: View {
                 WelcomeView(fromSettings: true).environmentObject(session)
             }
             .webPageSheet($webPage)
-            .confirmationDialog("Remove the pairing file?", isPresented: $confirmRemove, titleVisibility: .visible) {
+            .alert("Remove the pairing file?", isPresented: $confirmRemove) {
                 Button("Remove Pairing File", role: .destructive) {
                     PairingStore.remove()
                     refreshPairing()
                     Task { await session.pairingChanged() }
                 }
+                Button("Cancel", role: .cancel) {}
             } message: {
                 Text("A running simulation stops. You need the setup script to create a new one.")
             }
@@ -92,21 +93,23 @@ struct SettingsView: View {
             }
             .pairingImporter(isPresented: $importing, notes: $notes)
             // Turning it off deletes the list; turning it on again would not bring it back.
-            .confirmationDialog("Turn off Recent Locations?", isPresented: $confirmRecentsOff, titleVisibility: .visible) {
+            .alert("Turn off Recent Locations?", isPresented: $confirmRecentsOff) {
                 Button("Turn Off and Delete", role: .destructive) {
                     recentsEnabled = false
                     recents.clear()
                 }
+                Button("Cancel", role: .cancel) {}
             } message: {
                 Text("The recent locations on this iPhone are deleted.")
             }
-            .confirmationDialog("Delete the DDI files?", isPresented: $confirmDeleteDDI, titleVisibility: .visible) {
+            .alert("Delete the DDI files?", isPresented: $confirmDeleteDDI) {
                 Button("Delete DDI Files", role: .destructive) {
                     DDIStore.remove()
                     // Deleting also takes back the consent: the next download asks again.
                     UserDefaults.standard.removeObject(forKey: SettingsKey.ddiDownloadAllowed)
                     readFiles()
                 }
+                Button("Cancel", role: .cancel) {}
             } message: {
                 Text("About 16 MB. LocSim asks again before it downloads them.")
             }

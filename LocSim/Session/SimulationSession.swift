@@ -155,7 +155,13 @@ final class SimulationSession: ObservableObject {
     // the device's port is not the default one. A wrong one costs one quick failed attempt.
     private var lastPort: UInt16? {
         get { (UserDefaults.standard.object(forKey: Self.lastPortKey) as? Int).flatMap { UInt16(exactly: $0) } }
-        set { UserDefaults.standard.set(newValue.map(Int.init), forKey: Self.lastPortKey) }
+        set {
+            if let newValue {
+                UserDefaults.standard.set(Int(newValue), forKey: Self.lastPortKey)
+            } else {
+                UserDefaults.standard.removeObject(forKey: Self.lastPortKey)
+            }
+        }
     }
     private static let lastPortKey = "lastTunnelPort"
     private var failedResends = 0

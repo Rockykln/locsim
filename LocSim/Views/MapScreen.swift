@@ -474,10 +474,9 @@ struct MapScreen: View {
             Button("Cancel", role: .cancel) {}
         }
         // Favorites may be synced to other devices; one tap on the star should not remove one.
-        .confirmationDialog(
+        .alert(
             removingFavorite.map { String(localized: "Remove “\($0.name)” from favorites?") } ?? "",
             isPresented: Binding(get: { removingFavorite != nil }, set: { if !$0 { removingFavorite = nil } }),
-            titleVisibility: .visible,
             presenting: removingFavorite
         ) { favorite in
             Button("Remove", role: .destructive) {
@@ -485,14 +484,16 @@ struct MapScreen: View {
                 feedback += 1
                 AccessibilityNotification.Announcement(String(localized: "Favorite removed")).post()
             }
+            Button("Cancel", role: .cancel) {}
         }
-        // Here, not on the button: the list it is in closes with the keyboard when the dialog opens.
-        .confirmationDialog("Clear recent locations?", isPresented: $confirmClearRecents, titleVisibility: .visible) {
+        // Here, not on the button: the list it is in closes with the keyboard when the alert opens.
+        .alert("Clear recent locations?", isPresented: $confirmClearRecents) {
             Button("Clear List", role: .destructive) {
                 recents.clear()
                 feedback += 1
                 AccessibilityNotification.Announcement(String(localized: "Recent locations cleared")).post()
             }
+            Button("Cancel", role: .cancel) {}
         }
     }
 
