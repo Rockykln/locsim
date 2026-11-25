@@ -7,7 +7,7 @@
 <meta name="description" content="Configurez LocSim une fois : mode développeur, connexions Wi-Fi et fichier de jumelage, avec un ordinateur Mac, Windows ou Linux.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#fbfafd" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0e0d17" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#fbfafd" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="https://locsim.rockykln.com/fr/setup/">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
@@ -63,34 +63,35 @@
 <h2>2. Autoriser les connexions en Wi-Fi</h2>
 <p>Sans ce réglage, l’appareil ne propose pas le jumelage sur le réseau.</p>
 <ul>
-<li><strong>Mac :</strong> sélectionnez l’appareil dans le Finder et activez <em>Afficher cet iPhone en Wi-Fi</em>.</li>
+<li><strong>Mac :</strong> sélectionnez l’appareil dans le Finder et activez <em>Afficher cet iPhone lorsqu’il est en Wi-Fi</em>.</li>
 <li><strong>Windows :</strong> la même option dans l’app Appareils Apple.</li>
 <li><strong>Linux :</strong> <code>pymobiledevice3 lockdown wifi-connections on</code></li>
 </ul>
 <h2>3. Créer le fichier de jumelage</h2>
 <p>Le script télécharge <code>idevice-tools</code>, vérifie sa somme de contrôle et écrit <code>rppairing.plist</code>. Vous pouvez d’abord <a href="https://github.com/Rockykln/locsim/tree/73c5e3aca8ce8ad5805fcc8de70ef7e42824e422/tools">lire les scripts</a>.</p>
 <h3>Mac et Linux</h3>
-<pre><code>curl -fLO https://raw.githubusercontent.com/Rockykln/locsim/73c5e3aca8ce8ad5805fcc8de70ef7e42824e422/tools/make-pairing.sh
-bash make-pairing.sh</code></pre>
+<pre><code>curl -fLO https://raw.githubusercontent.com/Rockykln/locsim/73c5e3aca8ce8ad5805fcc8de70ef7e42824e422/tools/make-pairing.sh</code></pre>
 <p class="checksum">Facultatif, avant de l’exécuter&nbsp;: <code>shasum -a 256 make-pairing.sh</code> (Linux&nbsp;: <code>sha256sum make-pairing.sh</code>) doit afficher&nbsp;: <code data-sha="make-pairing.sh">86c4121244775fca63fffe5308634806b6f85c483e6c945a71bb47ef5f0811af</code></p>
-<p>Sous Linux, <code>usbmuxd</code> et glibc 2.38 ou plus récent sont également nécessaires : Debian 13, Ubuntu 24.04, Fedora 39 ou ultérieur.</p>
+<pre><code>bash make-pairing.sh</code></pre>
+<p>Sous Linux (x86_64 uniquement), <code>usbmuxd</code> et glibc 2.38 ou plus récent sont également nécessaires : Debian 13, Ubuntu 24.04, Fedora 39 ou ultérieur.</p>
 <h3>Windows</h3>
-<p>Nécessite l’app Appareils Apple ou iTunes. Dans PowerShell :</p>
-<pre><code>curl.exe -fLO https://raw.githubusercontent.com/Rockykln/locsim/73c5e3aca8ce8ad5805fcc8de70ef7e42824e422/tools/make-pairing.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File make-pairing.ps1</code></pre>
+<p>Nécessite Windows 64 bits (sur ARM, Windows 11) et l’app Appareils Apple ou iTunes. Dans PowerShell :</p>
+<pre><code>curl.exe -fLO https://raw.githubusercontent.com/Rockykln/locsim/73c5e3aca8ce8ad5805fcc8de70ef7e42824e422/tools/make-pairing.ps1</code></pre>
 <p class="checksum">Vérification facultative&nbsp;: <code>Get-FileHash make-pairing.ps1</code> doit afficher&nbsp;: <code data-sha="make-pairing.ps1">51A4365E596C21425292D80442C3355DA7936C7EA59DB35051A4058F92D830F5</code></p>
+<pre><code>powershell -NoProfile -ExecutionPolicy Bypass -File make-pairing.ps1</code></pre>
 <h2>4. Importer le fichier dans LocSim</h2>
 <ol>
-<li>Si LocSim est installé, le script copie le fichier dans l’app et le supprime de l’ordinateur. Ouvrez LocSim : l’écran de configuration indique que le fichier est importé.</li>
-<li>Sinon, copiez <code>rppairing.plist</code> sur l’appareil avec AirDrop, ou dans le dossier LocSim de l’onglet Fichiers du Finder ou de l’app Appareils Apple. Évitez le stockage dans le cloud. Importez-le ensuite dans LocSim &gt; Réglages &gt; Jumelage et supprimez-le de l’ordinateur, car il donne accès à l’appareil.</li>
+<li>Si LocSim est installé, le script copie le fichier dans l’app et le supprime de l’ordinateur. Ouvrez LocSim : Réglages &gt; Jumelage indique que le fichier est importé.</li>
+<li>Sinon, copiez <code>rppairing.plist</code> dans le dossier LocSim de l’onglet Fichiers du Finder ou de l’app Appareils Apple ; LocSim le reprend de lui-même à l’ouverture. Ou envoyez-le sur l’appareil avec AirDrop et importez-le dans LocSim &gt; Réglages &gt; Jumelage. Évitez le stockage dans le cloud et supprimez ensuite le fichier de l’ordinateur, car il donne accès à l’appareil.</li>
 </ol>
 <h2>5. Définir votre première position</h2>
 <ol>
 <li>Rejoignez n’importe quel réseau Wi-Fi et ouvrez LocSim.</li>
-<li>Autorisez la configuration VPN et l’accès au réseau local lorsqu’iOS le demande. LocSim utilise la configuration VPN uniquement pour joindre cet iPhone.</li>
-<li>Faites un appui prolongé sur la carte, recherchez un lieu ou saisissez des coordonnées, puis touchez « Définir la position ».</li>
+<li>Faites un appui prolongé sur la carte, recherchez un lieu ou saisissez des coordonnées, puis touchez « Définir la position ».</li>
+<li>Autorisez la configuration VPN, l’accès au réseau local et l’accès à la position lorsqu’iOS le demande. LocSim utilise la configuration VPN uniquement pour joindre cet iPhone ; si un autre VPN est sélectionné, iOS le désactive.</li>
+<li>Si iOS n’a pas fourni le Developer Disk Image, LocSim demande une fois s’il peut le télécharger depuis GitHub, environ 16 Mo.</li>
 </ol>
-<p>« Réinitialiser » rétablit la position réelle.</p>
+<p>Laissez LocSim tourner en arrière-plan : le fermer rétablit la position réelle, comme « Réinitialiser ».</p>
 <h2>Ce qu’il faut refaire</h2>
 <ul>
 <li><strong>Après un redémarrage :</strong> rien à faire, LocSim établit sa connexion au besoin.</li>

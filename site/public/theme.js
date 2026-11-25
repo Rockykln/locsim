@@ -69,6 +69,17 @@
     });
   });
 
+  // Back to a page from the browser cache: the theme may have changed on another page since,
+  // and an open language menu would still be open.
+  window.addEventListener("pageshow", function (event) {
+    if (!event.persisted) return;
+    current = read();
+    apply(current);
+    document.querySelectorAll(".lang-menu[open]").forEach(function (menu) { menu.removeAttribute("open"); });
+    var button = document.querySelector(".theme-toggle");
+    if (button && button.render) button.render();
+  });
+
   document.addEventListener("DOMContentLoaded", function () {
     apply(current);
     var button = document.querySelector(".theme-toggle");
@@ -84,6 +95,7 @@
 
     button.hidden = false;
     render();
+    button.render = render;
     button.addEventListener("click", function () {
       current = order[(order.indexOf(current) + 1) % order.length];
       try { localStorage.setItem(key, current); } catch (e) {}

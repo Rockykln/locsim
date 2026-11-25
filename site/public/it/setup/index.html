@@ -7,7 +7,7 @@
 <meta name="description" content="Configura LocSim una volta: Modalità sviluppatore, connessioni Wi-Fi e file di abbinamento, con un computer Mac, Windows o Linux.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#fbfafd" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0e0d17" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#fbfafd" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="https://locsim.rockykln.com/it/setup/">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
@@ -70,27 +70,28 @@
 <h2>3. Crea il file di abbinamento</h2>
 <p>Lo script scarica <code>idevice-tools</code>, ne verifica il checksum e scrive <code>rppairing.plist</code>. Puoi prima <a href="https://github.com/Rockykln/locsim/tree/73c5e3aca8ce8ad5805fcc8de70ef7e42824e422/tools">leggere gli script</a>.</p>
 <h3>Mac e Linux</h3>
-<pre><code>curl -fLO https://raw.githubusercontent.com/Rockykln/locsim/73c5e3aca8ce8ad5805fcc8de70ef7e42824e422/tools/make-pairing.sh
-bash make-pairing.sh</code></pre>
+<pre><code>curl -fLO https://raw.githubusercontent.com/Rockykln/locsim/73c5e3aca8ce8ad5805fcc8de70ef7e42824e422/tools/make-pairing.sh</code></pre>
 <p class="checksum">Facoltativo, prima di eseguirlo: <code>shasum -a 256 make-pairing.sh</code> (Linux: <code>sha256sum make-pairing.sh</code>) deve mostrare: <code data-sha="make-pairing.sh">86c4121244775fca63fffe5308634806b6f85c483e6c945a71bb47ef5f0811af</code></p>
-<p>Su Linux servono anche <code>usbmuxd</code> e glibc 2.38 o successiva: Debian 13, Ubuntu 24.04, Fedora 39 o successive.</p>
+<pre><code>bash make-pairing.sh</code></pre>
+<p>Su Linux (solo x86_64) servono anche <code>usbmuxd</code> e glibc 2.38 o successiva: Debian 13, Ubuntu 24.04, Fedora 39 o successive.</p>
 <h3>Windows</h3>
-<p>Richiede l’app Dispositivi Apple o iTunes. In PowerShell:</p>
-<pre><code>curl.exe -fLO https://raw.githubusercontent.com/Rockykln/locsim/73c5e3aca8ce8ad5805fcc8de70ef7e42824e422/tools/make-pairing.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File make-pairing.ps1</code></pre>
+<p>Richiede Windows a 64 bit (su ARM, Windows 11) e l’app Dispositivi Apple o iTunes. In PowerShell:</p>
+<pre><code>curl.exe -fLO https://raw.githubusercontent.com/Rockykln/locsim/73c5e3aca8ce8ad5805fcc8de70ef7e42824e422/tools/make-pairing.ps1</code></pre>
 <p class="checksum">Verifica facoltativa: <code>Get-FileHash make-pairing.ps1</code> deve mostrare: <code data-sha="make-pairing.ps1">51A4365E596C21425292D80442C3355DA7936C7EA59DB35051A4058F92D830F5</code></p>
+<pre><code>powershell -NoProfile -ExecutionPolicy Bypass -File make-pairing.ps1</code></pre>
 <h2>4. Importa il file in LocSim</h2>
 <ol>
-<li>Se LocSim è installato, lo script copia il file nell’app e lo elimina dal computer. Apri LocSim: la schermata di configurazione mostra il file come importato.</li>
-<li>Altrimenti copia <code>rppairing.plist</code> sul dispositivo con AirDrop, oppure nella cartella di LocSim nel pannello File del Finder o dell’app Dispositivi Apple. Evita i servizi cloud. Poi importalo da LocSim &gt; Impostazioni &gt; Abbinamento ed eliminalo dal computer, perché consente l’accesso al dispositivo.</li>
+<li>Se LocSim è installato, lo script copia il file nell’app e lo elimina dal computer. Apri LocSim: in Impostazioni &gt; Abbinamento il file risulta importato.</li>
+<li>Altrimenti copia <code>rppairing.plist</code> nella cartella di LocSim nel pannello File del Finder o dell’app Dispositivi Apple; LocSim lo acquisisce da solo all’apertura. Oppure invialo al dispositivo con AirDrop e importalo da LocSim &gt; Impostazioni &gt; Abbinamento. Evita i servizi cloud e poi elimina il file dal computer, perché consente l’accesso al dispositivo.</li>
 </ol>
 <h2>5. Imposta la tua prima posizione</h2>
 <ol>
 <li>Connettiti a una rete Wi-Fi qualsiasi e apri LocSim.</li>
-<li>Consenti la configurazione VPN e l’accesso alla rete locale quando iOS lo chiede. LocSim usa la configurazione VPN solo per raggiungere questo iPhone.</li>
 <li>Tieni premuto sulla mappa, cerca un luogo o inserisci le coordinate, poi tocca “Imposta posizione”.</li>
+<li>Consenti la configurazione VPN, l’accesso alla rete locale e l’accesso alla posizione quando iOS lo chiede. LocSim usa la configurazione VPN solo per raggiungere questo iPhone; se è selezionata un’altra VPN, iOS la disattiva.</li>
+<li>Se iOS non ha fornito la Developer Disk Image, LocSim chiede una volta di scaricarla da GitHub, circa 16 MB.</li>
 </ol>
-<p>“Ripristina” riporta la posizione reale.</p>
+<p>Lascia LocSim attivo in background: chiuderlo riporta la posizione reale, come “Ripristina”.</p>
 <h2>Cosa devi ripetere</h2>
 <ul>
 <li><strong>Dopo un riavvio:</strong> niente, LocSim avvia la connessione quando serve.</li>

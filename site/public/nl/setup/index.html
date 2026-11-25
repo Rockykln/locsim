@@ -7,7 +7,7 @@
 <meta name="description" content="Stel LocSim eenmalig in: ontwikkelaarsmodus, wifiverbindingen en het koppelingsbestand, met een Mac-, Windows- of Linux-computer.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#fbfafd" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0e0d17" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#fbfafd" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="https://locsim.rockykln.com/nl/setup/">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
@@ -70,27 +70,28 @@
 <h2>3. Maak het koppelingsbestand</h2>
 <p>Het script downloadt <code>idevice-tools</code>, controleert de checksum en schrijft <code>rppairing.plist</code>. Je kunt <a href="https://github.com/Rockykln/locsim/tree/73c5e3aca8ce8ad5805fcc8de70ef7e42824e422/tools">de scripts</a> eerst lezen.</p>
 <h3>Mac en Linux</h3>
-<pre><code>curl -fLO https://raw.githubusercontent.com/Rockykln/locsim/73c5e3aca8ce8ad5805fcc8de70ef7e42824e422/tools/make-pairing.sh
-bash make-pairing.sh</code></pre>
+<pre><code>curl -fLO https://raw.githubusercontent.com/Rockykln/locsim/73c5e3aca8ce8ad5805fcc8de70ef7e42824e422/tools/make-pairing.sh</code></pre>
 <p class="checksum">Optioneel, vóór het uitvoeren: <code>shasum -a 256 make-pairing.sh</code> (Linux: <code>sha256sum make-pairing.sh</code>) moet tonen: <code data-sha="make-pairing.sh">86c4121244775fca63fffe5308634806b6f85c483e6c945a71bb47ef5f0811af</code></p>
-<p>Linux heeft ook <code>usbmuxd</code> en glibc 2.38 of nieuwer nodig: Debian 13, Ubuntu 24.04, Fedora 39 of nieuwer.</p>
+<pre><code>bash make-pairing.sh</code></pre>
+<p>Linux (alleen x86_64) heeft ook <code>usbmuxd</code> en glibc 2.38 of nieuwer nodig: Debian 13, Ubuntu 24.04, Fedora 39 of nieuwer.</p>
 <h3>Windows</h3>
-<p>Vereist de Apple Apparaten-app of iTunes. In PowerShell:</p>
-<pre><code>curl.exe -fLO https://raw.githubusercontent.com/Rockykln/locsim/73c5e3aca8ce8ad5805fcc8de70ef7e42824e422/tools/make-pairing.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File make-pairing.ps1</code></pre>
+<p>Vereist 64-bits Windows (op ARM Windows 11) en de Apple Apparaten-app of iTunes. In PowerShell:</p>
+<pre><code>curl.exe -fLO https://raw.githubusercontent.com/Rockykln/locsim/73c5e3aca8ce8ad5805fcc8de70ef7e42824e422/tools/make-pairing.ps1</code></pre>
 <p class="checksum">Optionele controle: <code>Get-FileHash make-pairing.ps1</code> moet tonen: <code data-sha="make-pairing.ps1">51A4365E596C21425292D80442C3355DA7936C7EA59DB35051A4058F92D830F5</code></p>
+<pre><code>powershell -NoProfile -ExecutionPolicy Bypass -File make-pairing.ps1</code></pre>
 <h2>4. Importeer het bestand in LocSim</h2>
 <ol>
-<li>Als LocSim is geïnstalleerd, kopieert het script het bestand naar de app en verwijdert het van de computer. Open LocSim; het installatiescherm toont het bestand als geïmporteerd.</li>
-<li>Kopieer anders <code>rppairing.plist</code> met AirDrop naar het apparaat, of naar de LocSim-map in het tabblad Bestanden van de Finder of de Apple Apparaten-app. Gebruik geen cloudopslag. Importeer het daarna bij LocSim &gt; Instellingen &gt; Koppeling en verwijder het van de computer, want het geeft toegang tot het apparaat.</li>
+<li>Als LocSim is geïnstalleerd, kopieert het script het bestand naar de app en verwijdert het van de computer. Open LocSim; bij Instellingen &gt; Koppeling staat het bestand als geïmporteerd.</li>
+<li>Kopieer anders <code>rppairing.plist</code> naar de LocSim-map in het tabblad Bestanden van de Finder of de Apple Apparaten-app; LocSim neemt het bij het openen vanzelf over. Of stuur het met AirDrop naar het apparaat en importeer het bij LocSim &gt; Instellingen &gt; Koppeling. Gebruik geen cloudopslag en verwijder het bestand daarna van de computer, want het geeft toegang tot het apparaat.</li>
 </ol>
 <h2>5. Stel je eerste locatie in</h2>
 <ol>
 <li>Maak verbinding met een wifinetwerk en open LocSim.</li>
-<li>Sta de VPN-configuratie en toegang tot het lokale netwerk toe als iOS erom vraagt. LocSim gebruikt de VPN-configuratie alleen om deze iPhone te bereiken.</li>
 <li>Houd de kaart ingedrukt, zoek een plaats of voer coördinaten in en tik op ‘Stel locatie in’.</li>
+<li>Sta de VPN-configuratie, toegang tot het lokale netwerk en toegang tot je locatie toe als iOS erom vraagt. LocSim gebruikt de VPN-configuratie alleen om deze iPhone te bereiken; als er een andere VPN is geselecteerd, schakelt iOS die uit.</li>
+<li>Heeft iOS de Developer Disk Image niet geleverd, dan vraagt LocSim één keer of het die van GitHub mag downloaden, ongeveer 16 MB.</li>
 </ol>
-<p>‘Herstel’ zet de echte locatie terug.</p>
+<p>Laat LocSim op de achtergrond draaien: sluiten zet de echte locatie terug, net als ‘Herstel’.</p>
 <h2>Wat je moet herhalen</h2>
 <ul>
 <li><strong>Na een herstart:</strong> niets, LocSim start zijn verbinding wanneer dat nodig is.</li>
