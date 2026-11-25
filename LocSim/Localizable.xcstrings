@@ -408,7 +408,7 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ainda há um arquivo de emparelhamento na pasta do LocSim no app Arquivos: %@. Ele contém uma chave para este aparelho e faz parte dos backups do aparelho. Apague-o lá se não precisar mais dele."
+            "value" : "Ainda há um arquivo de emparelhamento na pasta do LocSim no app Arquivos: %@. Ele contém uma chave para este dispositivo e faz parte dos backups do dispositivo. Apague-o lá se não precisar mais dele."
           }
         }
       }
@@ -611,7 +611,7 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Licenças de código aberto"
+            "value" : "Licenças de Código Aberto"
           }
         }
       }
@@ -726,7 +726,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verbindingen via wifi toestaan"
+            "value" : "Sta verbindingen via wifi toe"
           }
         },
         "pt-BR" : {
@@ -846,7 +846,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lokale verbinding toestaan"
+            "value" : "Sta de lokale verbinding toe"
           }
         },
         "pt-BR" : {
@@ -1461,7 +1461,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Herstel de gesimuleerde locatie"
+            "value" : "Beëindig de gesimuleerde locatie"
           }
         },
         "pt-BR" : {
@@ -1479,6 +1479,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wird zurückgesetzt …"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clearing…"
           }
         },
         "es" : {
@@ -1525,31 +1531,31 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se terminó de borrar la ubicación. Es posible que el dispositivo aún simule %@."
+            "value" : "No se terminó de restablecer la ubicación. Es posible que el dispositivo aún simule %@."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L’effacement de la position ne s’est pas terminé. L’appareil simule peut-être encore %@."
+            "value" : "La réinitialisation de la position ne s’est pas terminée. L’appareil simule peut-être encore %@."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La cancellazione della posizione non è terminata. Il dispositivo potrebbe ancora simulare %@."
+            "value" : "Il ripristino della posizione non è terminato. Il dispositivo potrebbe ancora simulare %@."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Het wissen van de locatie is niet voltooid. Het apparaat simuleert mogelijk nog %@."
+            "value" : "Het terugzetten van de locatie is niet voltooid. Het apparaat simuleert mogelijk nog %@."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A limpeza da localização não terminou. O aparelho talvez ainda simule %@."
+            "value" : "A redefinição da localização não terminou. O dispositivo talvez ainda simule %@."
           }
         }
       }
@@ -1566,31 +1572,31 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se terminó de borrar la ubicación. Es posible que el dispositivo aún la simule."
+            "value" : "No se terminó de restablecer la ubicación. Es posible que el dispositivo aún la simule."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L’effacement de la position ne s’est pas terminé. L’appareil la simule peut-être encore."
+            "value" : "La réinitialisation de la position ne s’est pas terminée. L’appareil la simule peut-être encore."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La cancellazione della posizione non è terminata. Il dispositivo potrebbe ancora simularla."
+            "value" : "Il ripristino della posizione non è terminato. Il dispositivo potrebbe ancora simularla."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Het wissen van de locatie is niet voltooid. Het apparaat simuleert hem mogelijk nog."
+            "value" : "Het terugzetten van de locatie is niet voltooid. Het apparaat simuleert hem mogelijk nog."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A limpeza da localização não terminou. O aparelho talvez ainda a simule."
+            "value" : "A redefinição da localização não terminou. O dispositivo talvez ainda a simule."
           }
         }
       }
@@ -1643,6 +1649,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Verbindet …"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connecting…"
           }
         },
         "es" : {
@@ -1706,7 +1718,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Voor het verbinden is wifi nodig, daarna werkt ook mobiel netwerk. ‘Locatie op achtergrond behouden’ houdt de gesimuleerde locatie vast terwijl LocSim op de achtergrond is en stelt hem opnieuw in als iOS hem herstelt."
+            "value" : "Voor het verbinden is wifi nodig, daarna werkt ook mobiel netwerk. ‘Locatie op achtergrond behouden’ houdt de gesimuleerde locatie vast terwijl LocSim op de achtergrond is en stelt hem opnieuw in als iOS de echte locatie terugzet."
           }
         },
         "pt-BR" : {
@@ -2051,31 +2063,31 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coordenadas o enlace de Mapas"
+            "value" : "Coordenadas o enlace de mapa"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coordonnées ou lien Plans"
+            "value" : "Coordonnées ou lien de carte"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coordinate o link di Mappe"
+            "value" : "Coordinate o link di una mappa"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coördinaten of een Kaarten-link"
+            "value" : "Coördinaten of een kaartlink"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coordenadas ou um link do Mapas"
+            "value" : "Coordenadas ou um link de mapa"
           }
         }
       }
@@ -3687,7 +3699,7 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Retorno tátil"
+            "value" : "Retorno Tátil"
           }
         }
       }
@@ -3727,7 +3739,7 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nome do host"
+            "value" : "Nome do Host"
           }
         }
       }
@@ -4033,7 +4045,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Position simulée ?"
+            "value" : "Position simulée ?"
           }
         },
         "it" : {
@@ -4113,7 +4125,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Connectez-vous à un réseau Wi-Fi. Si l’échec persiste, activez « Afficher cet iPhone en Wi-Fi » dans le Finder. Autorisez aussi le réseau local pour LocSim dans Réglages > Confidentialité et sécurité > Réseau local."
+            "value" : "Connectez-vous à un réseau Wi-Fi. Si l’échec persiste, activez « Afficher cet iPhone lorsqu’il est en Wi-Fi » dans le Finder, sous Général. Autorisez aussi le réseau local pour LocSim dans Réglages > Confidentialité et sécurité > Réseau local."
           }
         },
         "it" : {
@@ -4182,7 +4194,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hält deine Favoriten auf allen Geräten mit deinem Apple Account gleich, über dein iCloud. Wie oft du einen Favoriten nutzt, bleibt auf diesem Gerät."
+            "value" : "Hält deine Favoriten über iCloud auf allen Geräten mit deinem Apple Account gleich. Wie oft du einen Favoriten nutzt, bleibt auf diesem Gerät."
           }
         },
         "es" : {
@@ -5643,7 +5655,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sur l’ordinateur, activez « Afficher cet iPhone en Wi-Fi » dans le Finder ou l’app Appareils Apple."
+            "value" : "Sur l’ordinateur, activez « Afficher cet iPhone lorsqu’il est en Wi-Fi » dans le Finder ou l’app Appareils Apple."
           }
         },
         "it" : {
@@ -6889,6 +6901,12 @@
             "value" : "Verbindet erneut …"
           }
         },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconnecting…"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7360,7 +7378,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verwijderde favorieten herstellen"
+            "value" : "Herstel verwijderde favorieten"
           }
         },
         "pt-BR" : {
@@ -9263,7 +9281,7 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O arquivo escolhido continua onde estava. Ele contém uma chave para este aparelho; apague-o se estiver no iCloud Drive ou em outro local compartilhado."
+            "value" : "O arquivo escolhido continua onde estava. Ele contém uma chave para este dispositivo; apague-o se estiver no iCloud Drive ou em outro local compartilhado."
           }
         }
       }
@@ -9515,7 +9533,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die Zeitzone hat mit dem simulierten Ort zu %@ gewechselt. Für Details tippen."
+            "value" : "Neue Zeitzone mit dem simulierten Ort: %@. Für Details tippen."
           }
         },
         "es" : {
@@ -9527,7 +9545,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le fuseau horaire est passé à %@ avec le lieu simulé. Touchez pour en savoir plus."
+            "value" : "Nouveau fuseau horaire avec le lieu simulé : %@. Touchez pour en savoir plus."
           }
         },
         "it" : {
@@ -9568,7 +9586,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le fuseau horaire suit le lieu simulé et est désormais %@. Pour garder le vrai fuseau horaire, désactivez Réglages > Confidentialité et sécurité > Service de localisation > Services système > Réglage du fuseau horaire."
+            "value" : "Le fuseau horaire suit le lieu simulé : %@. Pour garder le vrai fuseau horaire, désactivez Réglages > Confidentialité et sécurité > Service de localisation > Services système > Réglage du fuseau horaire."
           }
         },
         "it" : {

@@ -154,7 +154,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Herstel de gesimuleerde locatie"
+            "value" : "Beëindig de gesimuleerde locatie"
           }
         },
         "pt-BR" : {
@@ -849,7 +849,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gesimuleerde locatie · Opnieuw verbinden"
+            "value" : "Gesimuleerd · Opnieuw verbinden"
           }
         },
         "pt-BR" : {
@@ -913,7 +913,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desde %@"
+            "value" : "Inicio: %@"
           }
         },
         "fr" : {
