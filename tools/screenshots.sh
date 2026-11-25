@@ -3,7 +3,9 @@
 # Usage: tools/screenshots.sh [lang ...]                all languages by default
 #        SCREENS="live" tools/screenshots.sh           only the Lock Screen shots
 #        DEVICE="iPhone 17" or UDID=<id>               which simulator (default: a booted
-#                                                      "iPhone 17", else the first one listed)
+#                                                      "iPhone 17", else the first one listed);
+#                                                      the Lock Screen check and the grabber
+#                                                      removal expect an iPhone 17
 # Output: design/screenshots/<lang>/<theme>/<name>.png, then run design/mockups/render.py.
 #
 # Each language gets one Simulator restart and all its screens, light and dark, plus one light

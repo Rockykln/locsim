@@ -113,7 +113,7 @@ Network Extensions.
 Follow the [setup guide](https://locsim.rockykln.com/setup/): enable Developer Mode,
 allow connections over Wi-Fi, create a pairing file and import it into LocSim. From a
 clone of this repository, create the file with `tools/make-pairing.sh` or, on Windows,
-`tools\make-pairing.ps1`. If LocSim is installed, the script copies the file into the
+`powershell -NoProfile -ExecutionPolicy Bypass -File tools\make-pairing.ps1`. If LocSim is installed, the script copies the file into the
 app over USB and deletes it from the computer.
 
 ## Usage
