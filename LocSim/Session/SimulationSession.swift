@@ -662,7 +662,19 @@ final class SimulationSession: ObservableObject {
                 reconnecting: false,
                 set: next.set,
                 startedAt: next.since)
-        } else if !mayStillShow {
+        } else if clearing {
+            // Left as it is until the device answers.
+        } else if let uncleared = unclearedPlace {
+            // A Clear that did not finish: the place may still be simulated, also after a new
+            // Set failed, which showed itself as connecting meanwhile.
+            liveActivity.show(
+                name: uncleared.name ?? String(localized: "Dropped pin"),
+                at: uncleared.coordinate,
+                connecting: false,
+                reconnecting: false,
+                set: activeSet,
+                startedAt: setAt)
+        } else {
             liveActivity.end()
         }
     }
