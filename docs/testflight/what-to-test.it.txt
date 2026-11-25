@@ -1,12 +1,15 @@
-La build 8 sostituisce le build precedenti, terminate da Apple. Ha le funzioni della build 6 e molte correzioni. Preferiti e impostazioni restano.
+La build 9 corregge ciò che è emerso con la build 8. Preferiti e impostazioni restano.
 
 Da provare:
-- Connessione: imposta, cambia e ripristina una posizione come al solito, anche dopo un riavvio e con la rete cellulare. La connessione locale di LocSim ora inoltra solo ciò che le serve. Se LocSim non si connette più, segnalalo con i dettagli.
-- Ripristino: se il ripristino richiede tempo, per esempio con un Wi-Fi debole, LocSim ora avvisa che la posizione potrebbe essere ancora simulata. “Ripristina” resta disponibile per riprovare, e anche i comandi rapidi “Posizione simulata?” e “Ottieni posizione simulata” lo segnalano.
-- Preferiti iCloud: la sincronizzazione è più prudente. Un dispositivo nuovo o ripristinato aspetta prima l’elenco da iCloud e vi aggiunge soltanto. Con due dispositivi prova: attivarla, aggiungere un secondo dispositivo, modificare i preferiti mentre uno è offline, eliminare preferiti. Non deve perdersi nulla; Impostazioni > Preferiti > Ripristina i preferiti rimossi recupera ciò che una sincronizzazione ha tolto.
-- Incollare coordinate: i link di Google Maps ora usano il luogo e non la vista della mappa. Prova anche “Latitude: 48.8566, Longitude: 2.3522”, un blocco di coordinate copiato da Wikipedia, link di Waze e OpenStreetMap e “48° 51.397 N 2° 21.132 E”.
-- Widget e azioni rapide: tocca un preferito nel widget, o tieni premuta l’icona di LocSim, mentre in LocSim sono aperti Impostazioni, Preferiti o una pagina web. La finestra si chiude e la posizione viene impostata.
-- Impostazioni: “Mantieni attivo in background” ora si chiama “Mantieni la posizione in background”. In Abbinamento, LocSim avvisa se nella sua cartella in File c’è ancora una copia del file di abbinamento.
-- Script di configurazione, solo se configuri di nuovo LocSim: la pagina di configurazione mostra un checksum per ogni script, e gli script controllano il download a ogni esecuzione.
+- Prima connessione: prima di aggiungere la sua configurazione VPN per la prima volta, LocSim la spiega e ti chiede di continuare (LS-209). Lo vedi solo se la configurazione VPN di LocSim non esiste ancora, per esempio dopo averla eliminata nelle impostazioni di iOS, alla voce VPN.
+- Eliminare chiede prima conferma: rimuovere un preferito con la stella, svuotare le posizioni recenti, disattivare “Posizioni recenti”, eliminare i file DDI e rimuovere o sostituire il file di abbinamento.
+- File di abbinamento: “Verifica file di abbinamento” controlla il file più a fondo. Un vecchio file di abbinamento lockdown viene segnalato come file errato (LS-102), e un iPhone pieno come “Spazio insufficiente” (LS-901).
+- Ripristino: se un ripristino non si conclude, l’attività in tempo reale, il widget e le azioni rapide continuano a mostrare il luogo, e “Ripristina” si può toccare di nuovo.
+- Domande: quando LocSim chiede di un’altra VPN o del download del DDI, “Continua” e “Scarica” impostano il luogo che ha chiesto. Toccando la riga di stato la domanda ricompare.
+- Connessione: la riga di stato indica quando il DDI viene scaricato o installato, e un passaggio bloccato segnala il proprio codice invece di LS-204.
+- Incollare: più formati, per esempio “Lng / Lat: 2.35, 48.85”, link di percorso di OpenStreetMap e link di ul.waze.com.
+- Comandi rapidi: una posizione impostata da un comando rapido continua a connettersi anche se Comandi non aspetta più.
+- Attività in tempo reale: con LocSim aperto, un’attività in tempo reale più vecchia di sei ore viene sostituita da una nuova prima che iOS la termini.
+- VoiceOver: gli annunci nominano il luogo, e alcuni pulsanti hanno un’area di tocco più grande.
 
 Se qualcosa non va, tocca la riga di stato, scegli “Copia dettagli” e inviali con il tuo feedback.

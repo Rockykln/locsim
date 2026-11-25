@@ -1,12 +1,15 @@
-Build 8 ersetzt die bisherigen Builds, die Apple beendet hat. Er hat die Funktionen von Build 6 und viele Korrekturen. Deine Favoriten und Einstellungen bleiben erhalten.
+Build 9 behebt, was bei Build 8 aufgefallen ist. Deine Favoriten und Einstellungen bleiben erhalten.
 
 Bitte teste:
-- Verbinden: Setze, ändere und entferne einen Standort wie gewohnt, auch nach einem Neustart und im Mobilfunknetz. Die lokale Verbindung von LocSim gibt jetzt nur noch weiter, was sie braucht. Verbindet LocSim nicht mehr, melde es bitte mit den Details.
-- Zurücksetzen: Dauert das Zurücksetzen lange, etwa bei schwachem WLAN, sagt LocSim jetzt, dass der Standort eventuell noch simuliert wird. „Zurücksetzen“ bleibt für einen neuen Versuch verfügbar, und die Kurzbefehle „Wird Standort simuliert“ und „Simulierten Standort abrufen“ melden es auch.
-- iCloud-Favoriten: Die Synchronisierung ist jetzt vorsichtiger. Ein neues oder wiederhergestelltes Gerät wartet erst auf die Liste aus iCloud und ergänzt sie nur. Probiere mit zwei Geräten: einschalten, ein zweites Gerät dazunehmen, Favoriten ändern, während eines offline ist, Favoriten löschen. Es sollte nichts verloren gehen; Einstellungen > Favoriten > Entfernte Favoriten wiederherstellen holt zurück, was eine Synchronisierung entfernt hat.
-- Koordinaten einfügen: Google-Maps-Links nutzen jetzt den Ort statt des Kartenausschnitts. Probiere auch „Breite: 48,8566 Länge: 2,3522“, einen aus Wikipedia kopierten Koordinatenblock, Links von Waze und OpenStreetMap sowie „48° 51.397 N 2° 21.132 E“.
-- Widgets und Schnellaktionen: Tippe auf einen Favoriten im Widget oder halte das LocSim-Symbol gedrückt, während in LocSim Einstellungen, Favoriten oder eine Webseite offen sind. Das Fenster schließt sich und der Standort wird gesetzt.
-- Einstellungen: „Im Hintergrund aktiv halten“ heißt jetzt „Standort im Hintergrund halten“. Unter Pairing warnt LocSim, wenn noch eine Kopie der Pairing-Datei in seinem Ordner in „Dateien“ liegt.
-- Einrichtungsskripte, nur falls du LocSim neu einrichtest: Die Setup-Seite zeigt jetzt für jedes Skript eine Prüfsumme, und die Skripte prüfen ihren Download bei jedem Lauf.
+- Erste Verbindung: Bevor LocSim seine VPN-Konfiguration zum ersten Mal anlegt, erklärt es sie und fragt, ob du fortfahren willst (LS-209). Das siehst du nur, wenn es die VPN-Konfiguration von LocSim noch nicht gibt, etwa nachdem du sie in den iOS-Einstellungen unter VPN gelöscht hast.
+- Löschen fragt vorher nach: Favorit mit dem Stern entfernen, letzte Orte leeren, „Letzte Orte“ ausschalten, DDI-Dateien löschen sowie die Pairing-Datei entfernen oder ersetzen.
+- Pairing-Datei: „Pairing-Datei prüfen“ prüft die Datei gründlicher. Eine alte Lockdown-Pairing-Datei wird als falsche Datei gemeldet (LS-102), ein volles iPhone als „Nicht genug Speicher“ (LS-901).
+- Zurücksetzen: Wird ein Zurücksetzen nicht fertig, zeigen Live-Aktivität, Widget und Schnellaktionen weiter den Ort, und „Zurücksetzen“ lässt sich erneut tippen.
+- Rückfragen: Fragt LocSim nach einem anderen VPN oder dem DDI-Download, setzen „Fortfahren“ und „Herunterladen“ den Ort, der gefragt hat. Ein Tipp auf die Statuszeile zeigt die Frage erneut.
+- Verbinden: Die Statuszeile sagt, wann das DDI geladen oder installiert wird, und ein hängender Schritt meldet seinen eigenen Code statt LS-204.
+- Einfügen: mehr Formate, zum Beispiel „Lng / Lat: 2.35, 48.85“, Routenlinks von OpenStreetMap und Links von ul.waze.com.
+- Kurzbefehle: Ein Setzen aus einem Kurzbefehl verbindet weiter, auch wenn Kurzbefehle nicht mehr wartet.
+- Live-Aktivität: Ist LocSim geöffnet, wird eine Live-Aktivität, die älter als sechs Stunden ist, durch eine neue ersetzt, bevor iOS sie beendet.
+- VoiceOver: Ansagen nennen den Ort, und einige Tasten haben größere Tippflächen.
 
 Wenn etwas nicht klappt, tippe auf die Statuszeile, wähle „Details kopieren“ und schick sie mit deinem Feedback.

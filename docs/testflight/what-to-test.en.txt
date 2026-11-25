@@ -1,12 +1,15 @@
-Build 8 replaces the earlier builds, which Apple has ended. It has the features of build 6 plus many fixes. Your favorites and settings are kept.
+Build 9 fixes what came up with build 8. Your favorites and settings are kept.
 
 Please test:
-- Connecting: set, change and clear a location as usual, also after a restart and on cellular. LocSim's local connection now only passes on what it needs. If LocSim no longer connects, please report it with the details.
-- Clear: if clearing takes long, for example on weak Wi-Fi, LocSim now says that the location may still be simulated. Clear stays available to try again, and the Shortcuts Is Location Simulated and Get Simulated Location say so too.
-- iCloud favorites: syncing is more careful now. A new or restored device first waits for the list from iCloud and only adds to it. With two devices, try: turning it on, adding a second device, changing favorites while one is offline, deleting favorites. Nothing should get lost; Settings > Favorites > Restore Removed Favorites brings back what a sync removed.
-- Pasting coordinates: Google Maps links now use the place, not the map view. Also try "Latitude: 48.8566, Longitude: 2.3522", a coordinate block copied from Wikipedia, Waze and OpenStreetMap links, and "48° 51.397 N 2° 21.132 E".
-- Widgets and quick actions: tap a widget favorite, or hold the LocSim icon, while Settings, Favorites or a web page is open in LocSim. The sheet closes and the location is set.
-- Settings: Keep Alive in Background is now called Keep Location in Background. Under Pairing, LocSim warns when a copy of the pairing file is still in its folder in Files.
-- Setup scripts, only if you set up LocSim again: the setup page now shows a checksum for each script, and the scripts check their download on every run.
+- First connection: before LocSim adds its VPN configuration for the first time, it explains it and asks you to continue (LS-209). You only see this if LocSim's VPN configuration does not exist yet, for example after deleting it in the iOS settings under VPN.
+- Deleting asks first: removing a favorite with the star, clearing the recent places, turning off Recent Locations, deleting the DDI files, and removing or replacing the pairing file.
+- Pairing file: Check Pairing File checks the file more thoroughly. An old lockdown pairing file is reported as the wrong file (LS-102), and a full iPhone as Not enough storage (LS-901).
+- Clear: if a Clear does not finish, the Live Activity, the widget and the quick actions keep showing the place, and Clear can be tapped again.
+- Questions: when LocSim asks about another VPN or the DDI download, Continue or Download sets the place that asked. Tapping the status line shows the question again.
+- Connecting: the status line says when the DDI is being downloaded or installed, and a step that hangs reports its own code instead of LS-204.
+- Pasting: more formats, for example "Lng / Lat: 2.35, 48.85", OpenStreetMap directions links and ul.waze.com links.
+- Shortcuts: a Set from a Shortcut keeps connecting even if Shortcuts stops waiting.
+- Live Activity: while LocSim is open, a Live Activity older than six hours is replaced by a new one before iOS ends it.
+- VoiceOver: announcements name the place, and some buttons have larger tap targets.
 
 If something fails, tap the status line, choose Copy Details and send it with your feedback.

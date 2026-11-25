@@ -1,12 +1,15 @@
-Le build 8 remplace les builds précédents, auxquels Apple a mis fin. Il reprend les fonctions du build 6 avec de nombreuses corrections. Vos favoris et réglages sont conservés.
+Le build 9 corrige ce qui est apparu avec le build 8. Vos favoris et réglages sont conservés.
 
 À tester :
-- Connexion : définissez, changez et réinitialisez une position comme d’habitude, aussi après un redémarrage et en réseau cellulaire. La connexion locale de LocSim ne transmet plus que ce dont elle a besoin. Si LocSim ne se connecte plus, signalez-le avec les détails.
-- Réinitialiser : si la réinitialisation dure longtemps, par exemple avec un Wi-Fi faible, LocSim indique désormais que la position est peut-être encore simulée. « Réinitialiser » reste disponible pour réessayer, et les raccourcis « Position simulée ? » et « Obtenir la position simulée » le signalent aussi.
-- Favoris iCloud : la synchronisation est plus prudente. Un appareil nouveau ou restauré attend d’abord la liste d’iCloud et ne fait qu’y ajouter. Avec deux appareils, essayez : l’activer, ajouter un second appareil, modifier des favoris pendant que l’un est hors ligne, supprimer des favoris. Rien ne doit se perdre ; Réglages > Favoris > Restaurer les favoris supprimés récupère ce qu’une synchronisation a retiré.
-- Coller des coordonnées : les liens Google Maps utilisent maintenant le lieu et non la vue de la carte. Essayez aussi « Latitude : 48.8566, Longitude : 2.3522 », un bloc de coordonnées copié depuis Wikipédia, des liens Waze et OpenStreetMap, et « 48° 51.397 N 2° 21.132 E ».
-- Widgets et actions rapides : touchez un favori du widget, ou maintenez l’icône de LocSim, pendant que Réglages, Favoris ou une page web sont ouverts dans LocSim. La fenêtre se ferme et la position est définie.
-- Réglages : « Maintenir actif en arrière-plan » s’appelle désormais « Garder la position en arrière-plan ». Sous Jumelage, LocSim avertit lorsqu’une copie du fichier de jumelage se trouve encore dans son dossier dans Fichiers.
-- Scripts de configuration, seulement si vous reconfigurez LocSim : la page de configuration affiche une somme de contrôle pour chaque script, et les scripts vérifient leur téléchargement à chaque exécution.
+- Première connexion : avant d’ajouter sa configuration VPN pour la première fois, LocSim l’explique et vous demande de continuer (LS-209). Vous ne le voyez que si la configuration VPN de LocSim n’existe pas encore, par exemple après l’avoir supprimée dans les réglages d’iOS, sous VPN.
+- Supprimer demande d’abord confirmation : retirer un favori avec l’étoile, effacer les lieux récents, désactiver « Lieux récents », supprimer les fichiers DDI, et supprimer ou remplacer le fichier de jumelage.
+- Fichier de jumelage : « Vérifier le fichier de jumelage » contrôle le fichier plus en détail. Un ancien fichier de jumelage lockdown est signalé comme mauvais fichier (LS-102), et un iPhone plein comme « Stockage insuffisant » (LS-901).
+- Réinitialiser : si une réinitialisation n’aboutit pas, l’activité en direct, le widget et les actions rapides continuent d’afficher le lieu, et « Réinitialiser » peut être touché de nouveau.
+- Questions : quand LocSim pose une question sur un autre VPN ou le téléchargement du DDI, « Continuer » et « Télécharger » définissent le lieu qui l’a posée. Toucher la ligne d’état affiche de nouveau la question.
+- Connexion : la ligne d’état indique quand le DDI est téléchargé ou installé, et une étape bloquée signale son propre code au lieu de LS-204.
+- Coller : plus de formats, par exemple « Lng / Lat: 2.35, 48.85 », les liens d’itinéraire OpenStreetMap et les liens ul.waze.com.
+- Raccourcis : une position définie depuis un raccourci continue de se connecter même si Raccourcis n’attend plus.
+- Activité en direct : quand LocSim est ouvert, une activité en direct de plus de six heures est remplacée par une nouvelle avant qu’iOS n’y mette fin.
+- VoiceOver : les annonces nomment le lieu, et certains boutons ont une zone de toucher plus grande.
 
 En cas de problème, touchez la ligne d’état, choisissez « Copier les détails » et envoyez-les avec votre retour.
