@@ -17,9 +17,15 @@ extension CoordinateFormat {
 
 /// The app's view of `CoordinateText`, with CoreLocation types and the user's format settings.
 enum CoordinateParser {
-    static func parse(_ text: String) -> CLLocationCoordinate2D? {
-        CoordinateText.parse(text, language: CoordinateText.currentLanguage)
+    /// `allowWholeNumbers`: "52, 13" counts, for input that is meant as coordinates (Shortcuts).
+    static func parse(_ text: String, allowWholeNumbers: Bool = false) -> CLLocationCoordinate2D? {
+        CoordinateText.parse(text, language: CoordinateText.currentLanguage, allowWholeNumbers: allowWholeNumbers)
             .map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
+    }
+
+    /// The place name a Maps link in the text carries, to label the pin.
+    static func linkName(in text: String) -> String? {
+        MapLink.url(in: text).flatMap(MapLink.placeName)
     }
 
     /// Decimal places from the settings, 3...7.
