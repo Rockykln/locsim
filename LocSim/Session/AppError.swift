@@ -16,6 +16,10 @@ struct AppError: Error, Equatable {
     static let pairingServiceCode = "LS-202"
     static let rejectedCode = "LS-203"
     static let connectionFailedCode = "LS-206"
+    static let vpnNoticeCode = "LS-209"
+    static let notConnectedCode = "LS-204"
+    /// Errors that ask the user something; the answer (Continue, Download) sets the location.
+    static let questionCodes = [otherVPNCode, ddiConsentCode, vpnNoticeCode]
 
     /// The device or the file itself refuses the pairing, as opposed to not being reachable.
     var rejectsPairing: Bool { ["LS-100", "LS-101", "LS-102", Self.rejectedCode].contains(code) }
@@ -70,10 +74,13 @@ struct AppError: Error, Equatable {
         case .localNetwork:
             return ("LS-208", String(localized: "Local Network access off"),
                     String(localized: "Allow Local Network for LocSim under Settings > Privacy & Security > Local Network, then try again."))
+        case .vpnNotice:
+            return (vpnNoticeCode, String(localized: "Local connection"),
+                    String(localized: "LocSim adds a VPN configuration to reach this iPhone, and iOS asks to allow it. If another VPN is selected, iOS turns it off; select it again in Settings afterwards."))
         case .tunnel:
             return tunnelEntry(error, detail: detail)
         case .notConnected:
-            return ("LS-204", String(localized: "Connection lost"),
+            return (notConnectedCode, String(localized: "Connection lost"),
                     String(localized: "The connection to the device closed. Check Wi-Fi. LocSim reconnects on its own while a location is active."))
         case .ddiQuery:
             return ("LS-300", String(localized: "Developer Disk Image not available"),

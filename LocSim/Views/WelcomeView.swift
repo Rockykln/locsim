@@ -55,7 +55,7 @@ struct WelcomeView: View {
                         }
                     }
                     step(5, "Allow the local connection",
-                         "When you first set a location, iOS asks to add a VPN configuration. LocSim only uses it to reach this iPhone; no traffic leaves the device through it.")
+                         "When you first set a location, iOS asks to add a VPN configuration. LocSim only uses it to reach this iPhone; no traffic leaves the device through it. If another VPN is selected, iOS turns it off.")
                 } footer: {
                     if let message {
                         ErrorFooter(message)
@@ -158,10 +158,14 @@ struct PairingCheckRow<Title: View>: View {
     /// Off while another row for the same check is on screen.
     var announces = true
     @ViewBuilder let title: () -> Title
+    @State private var vpnNotice = false
 
     var body: some View {
         Button {
-            Task { await session.checkPairing() }
+            // The check starts the local connection, which may add the VPN configuration for the first time.
+            Task {
+                if await session.needsVPNNotice() { vpnNotice = true } else { await session.checkPairing() }
+            }
         } label: {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
@@ -175,7 +179,16 @@ struct PairingCheckRow<Title: View>: View {
                     .font(.footnote)
             }
         }
-        .disabled(session.state == .connecting || session.state.isReconnecting)
+        .disabled(session.state == .connecting || session.state.isReconnecting || session.pairingCheck == .checking)
+        .alert(AppError(DeviceError(.vpnNotice, "")).title, isPresented: $vpnNotice) {
+            Button("Continue") {
+                session.acceptVPNNotice()
+                Task { await session.checkPairing() }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text(AppError(DeviceError(.vpnNotice, "")).message)
+        }
         .onChange(of: session.pairingCheck) { _, check in
             guard announces else { return }
             let text: String
@@ -197,6 +210,9 @@ struct PairingCheckRow<Title: View>: View {
             resultLabel(String(localized: "The pairing file works with this device."), "checkmark.circle.fill", .green)
         case .rejected(let error):
             resultLabel(error.messageWithCode, "xmark.circle.fill", .red)
+        case .unreachable(let error) where [AppError.otherVPNCode, "LS-208", AppError.vpnNoticeCode].contains(error.code):
+            // These have one clear fix, which the general text below would not name.
+            resultLabel(error.messageWithCode, "exclamationmark.triangle.fill", .orange)
         case .unreachable(let error):
             resultLabel(String(localized: "Could not check. Allow the local connection, join a Wi-Fi network and try again. (\(error.code))"),
                    "exclamationmark.triangle.fill", .orange)

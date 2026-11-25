@@ -11,6 +11,8 @@ struct DeviceError: LocalizedError {
         case pairingRefused
         case localTunnel
         case otherVPN
+        /// LocSim's VPN configuration does not exist yet; the user is told before iOS asks.
+        case vpnNotice
         case localNetwork
         case tunnel
         case notConnected

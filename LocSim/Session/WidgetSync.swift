@@ -58,6 +58,12 @@ enum WidgetSync {
         publish()
     }
 
+    /// Asks the widget to read the snapshot again, also when nothing changed: a reload asked for
+    /// in the background may never have happened. Free while LocSim is in the foreground.
+    static func reload() {
+        WidgetCenter.shared.reloadTimelines(ofKind: WidgetSnapshot.kind)
+    }
+
     private static func publish() {
         shown.save()
         WidgetCenter.shared.reloadTimelines(ofKind: WidgetSnapshot.kind)

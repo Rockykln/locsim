@@ -4338,6 +4338,46 @@
         }
       }
     },
+    "Local connection" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lokale Verbindung"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conexión local"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connexion locale"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connessione locale"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lokale verbinding"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conexão local"
+          }
+        }
+      }
+    },
     "Local connection not started" : {
       "localizations" : {
         "de" : {
@@ -4660,6 +4700,46 @@
         }
       }
     },
+    "LocSim adds a VPN configuration to reach this iPhone, and iOS asks to allow it. If another VPN is selected, iOS turns it off; select it again in Settings afterwards." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim fügt eine VPN-Konfiguration hinzu, um dieses iPhone zu erreichen, und iOS fragt nach deiner Erlaubnis. Ist ein anderes VPN ausgewählt, schaltet iOS es aus. Wähle es danach in den Einstellungen wieder aus."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim añade una configuración VPN para acceder a este iPhone, e iOS te pide permiso. Si hay otra VPN seleccionada, iOS la desactiva; después, vuelve a seleccionarla en Ajustes."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim ajoute une configuration VPN pour joindre cet iPhone, et iOS demande votre autorisation. Si un autre VPN est sélectionné, iOS le désactive ; sélectionnez-le ensuite à nouveau dans Réglages."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim aggiunge una configurazione VPN per raggiungere questo iPhone, e iOS chiede il permesso. Se è selezionata un’altra VPN, iOS la disattiva; poi selezionala di nuovo in Impostazioni."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim voegt een vpn-configuratie toe om deze iPhone te bereiken, en iOS vraagt om toestemming. Als er een andere vpn is geselecteerd, schakelt iOS die uit; selecteer die daarna weer in Instellingen."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O LocSim adiciona uma configuração de VPN para alcançar este iPhone, e o iOS pede permissão. Se outra VPN estiver selecionada, o iOS a desativa; depois, selecione-a de novo em Ajustes."
+          }
+        }
+      }
+    },
     "LocSim could not start its connection to this iPhone. Allow the VPN configuration when iOS asks and try again." : {
       "localizations" : {
         "de" : {
@@ -4817,6 +4897,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "A conexão local do LocSim é baseada no StosVPN."
+          }
+        }
+      }
+    },
+    "LocSim's local connection replaces it while a location is active. Select your VPN again in Settings afterwards." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die lokale Verbindung von LocSim ersetzt es, solange ein Standort aktiv ist. Wähle dein VPN danach in den Einstellungen wieder aus."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La conexión local de LocSim la sustituye mientras haya una ubicación activa. Después, vuelve a seleccionar tu VPN en Ajustes."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La connexion locale de LocSim le remplace tant qu’une position est active. Sélectionnez ensuite à nouveau votre VPN dans Réglages."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La connessione locale di LocSim la sostituisce mentre una posizione è attiva. Poi seleziona di nuovo la tua VPN in Impostazioni."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De lokale verbinding van LocSim vervangt deze zolang een locatie actief is. Selecteer je vpn daarna weer in Instellingen."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A conexão local do LocSim a substitui enquanto uma localização estiver ativa. Depois, selecione a sua VPN de novo em Ajustes."
           }
         }
       }
@@ -8946,6 +9066,46 @@
         }
       }
     },
+    "Tap Set Location to connect again." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tippe auf „Standort setzen“, um erneut zu verbinden."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toca “Establecer ubicación” para volver a conectar."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Touchez « Définir la position » pour vous reconnecter."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tocca “Imposta posizione” per riconnetterti."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tik op ‘Stel locatie in’ om opnieuw te verbinden."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toque em “Definir Localização” para conectar novamente."
+          }
+        }
+      }
+    },
     "The connection to the device broke off. Check Wi-Fi and try again." : {
       "localizations" : {
         "de" : {
@@ -9954,42 +10114,42 @@
         }
       }
     },
-    "When you first set a location, iOS asks to add a VPN configuration. LocSim only uses it to reach this iPhone; no traffic leaves the device through it." : {
+    "When you first set a location, iOS asks to add a VPN configuration. LocSim only uses it to reach this iPhone; no traffic leaves the device through it. If another VPN is selected, iOS turns it off." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Beim ersten Setzen eines Standorts fragt iOS, ob eine VPN-Konfiguration hinzugefügt werden darf. LocSim nutzt sie nur, um dieses iPhone zu erreichen. Darüber verlässt kein Datenverkehr das Gerät."
+            "value" : "Beim ersten Setzen eines Standorts fragt iOS, ob eine VPN-Konfiguration hinzugefügt werden darf. LocSim nutzt sie nur, um dieses iPhone zu erreichen. Darüber verlässt kein Datenverkehr das Gerät. Ist ein anderes VPN ausgewählt, schaltet iOS es aus."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La primera vez que estableces una ubicación, iOS pide añadir una configuración VPN. LocSim solo la usa para acceder a este iPhone. Ningún tráfico sale del dispositivo a través de ella."
+            "value" : "La primera vez que estableces una ubicación, iOS pide añadir una configuración VPN. LocSim solo la usa para acceder a este iPhone. Ningún tráfico sale del dispositivo a través de ella. Si hay otra VPN seleccionada, iOS la desactiva."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La première fois que vous définissez une position, iOS demande d’ajouter une configuration VPN. LocSim l’utilise uniquement pour joindre cet iPhone. Aucun trafic ne quitte l’appareil par ce biais."
+            "value" : "La première fois que vous définissez une position, iOS demande d’ajouter une configuration VPN. LocSim l’utilise uniquement pour joindre cet iPhone. Aucun trafic ne quitte l’appareil par ce biais. Si un autre VPN est sélectionné, iOS le désactive."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La prima volta che imposti una posizione, iOS chiede di aggiungere una configurazione VPN. LocSim la usa solo per raggiungere questo iPhone. Nessun traffico esce dal dispositivo attraverso di essa."
+            "value" : "La prima volta che imposti una posizione, iOS chiede di aggiungere una configurazione VPN. LocSim la usa solo per raggiungere questo iPhone. Nessun traffico esce dal dispositivo attraverso di essa. Se è selezionata un’altra VPN, iOS la disattiva."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wanneer je voor het eerst een locatie instelt, vraagt iOS om een vpn-configuratie toe te voegen. LocSim gebruikt deze alleen om deze iPhone te bereiken. Er verlaat geen verkeer het apparaat via deze configuratie."
+            "value" : "Wanneer je voor het eerst een locatie instelt, vraagt iOS om een vpn-configuratie toe te voegen. LocSim gebruikt deze alleen om deze iPhone te bereiken. Er verlaat geen verkeer het apparaat via deze configuratie. Als er een andere vpn is geselecteerd, schakelt iOS die uit."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Na primeira vez que você define uma localização, o iOS pede para adicionar uma configuração de VPN. O LocSim a usa apenas para alcançar este iPhone. Nenhum tráfego sai do dispositivo por ela."
+            "value" : "Na primeira vez que você define uma localização, o iOS pede para adicionar uma configuração de VPN. O LocSim a usa apenas para alcançar este iPhone. Nenhum tráfego sai do dispositivo por ela. Se outra VPN estiver selecionada, o iOS a desativa."
           }
         }
       }
@@ -10070,6 +10230,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Arquivo de emparelhamento incorreto"
+          }
+        }
+      }
+    },
+    "You can also tap Clear to try again." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kannst es auch mit „Zurücksetzen“ noch einmal versuchen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "También puedes tocar “Restablecer” para volver a intentarlo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous pouvez aussi toucher « Réinitialiser » pour réessayer."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puoi anche toccare “Ripristina” per riprovare."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je kunt ook op ‘Herstel’ tikken om het opnieuw te proberen."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você também pode tocar em “Redefinir” para tentar novamente."
           }
         }
       }

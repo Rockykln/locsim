@@ -11,10 +11,13 @@ enum QuickActions {
         case clear, last, favorite, search
     }
 
-    static func refresh() {
+    /// `assumingIdle`: LocSim is about to quit, which ends any simulation.
+    static func refresh(assumingIdle: Bool = false) {
         let session = SimulationSession.shared
         var items: [UIApplicationShortcutItem] = []
-        if session.active != nil || session.unclearedPlace != nil {
+        // Not in the preview, which changes nothing on the device.
+        let simulating = !session.isPreview && (session.mayStillBeSimulated || session.isClearing)
+        if simulating && !assumingIdle {
             items.append(item(.clear, String(localized: "Clear Location"), symbol: "arrow.uturn.backward"))
         } else if LastCoordinate.isSaved {
             items.append(item(.last, String(localized: "Set Last Location"), subtitle: LastCoordinate.loadName(),

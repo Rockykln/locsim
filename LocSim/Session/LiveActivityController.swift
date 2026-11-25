@@ -40,6 +40,8 @@ final class LiveActivityController {
             MainActor.assumeIsolated {
                 WidgetSync.clearActive()
                 FavoriteUsage.end()
+                // Now, not in a task that would never run: the process ends after this handler.
+                QuickActions.refresh(assumingIdle: true)
             }
         }
     }
