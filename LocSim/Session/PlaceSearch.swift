@@ -71,10 +71,16 @@ final class PlaceSearch: NSObject, ObservableObject, MKLocalSearchCompleterDeleg
         if MapLink.isGoogleShortLink(url) { throw UnsupportedMapLink() }
         var link = url
         if MapLink.isAppleShortLink(url) {
+            // "http://maps.apple/p/…" typed by hand: ATS would refuse it, Apple serves the same over https.
+            var secure = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            secure?.scheme = "https"
             let steps = RedirectSteps()
             do {
-                let (_, response) = try await Self.linkSession.data(from: url, delegate: steps)
+                let (_, response) = try await Self.linkSession.data(from: secure?.url ?? url, delegate: steps)
                 link = MapLink.bestStep(steps.urls + [response.url].compactMap { $0 }) ?? url
+            } catch let error as URLError where error.code == .cancelled {
+                // URLSession reports a cancelled task this way, not as CancellationError.
+                throw CancellationError()
             } catch is CancellationError {
                 throw CancellationError()
             } catch {
@@ -82,6 +88,8 @@ final class PlaceSearch: NSObject, ObservableObject, MKLocalSearchCompleterDeleg
                 link = step
             }
         }
+        // Pasting again or typing cancels this; no search for a link that is no longer wanted.
+        try Task.checkCancellation()
         let name = MapLink.placeName(link)
         if let c = CoordinateText.coordinate(inLink: link) {
             return Place(name: name ?? CoordinateParser.format(.init(latitude: c.latitude, longitude: c.longitude)),
@@ -94,14 +102,15 @@ final class PlaceSearch: NSObject, ObservableObject, MKLocalSearchCompleterDeleg
         return try await run(request, fallbackName: name)
     }
 
-    // Follows the redirect only; nothing is stored.
+    // Follows the redirect only; nothing is stored. A slow answer does not hold a Shortcut for long.
     private static let linkSession: URLSession = {
         let config = URLSessionConfiguration.ephemeral
         config.timeoutIntervalForRequest = 15
+        config.timeoutIntervalForResource = 30
         return URLSession(configuration: config)
     }()
 
-    /// Notes each redirect and stops at the first one with coordinates.
+    /// Notes each redirect and stops at the first one with coordinates, or before one that leaves Apple.
     private final class RedirectSteps: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
         private let lock = NSLock()
         private var visited: [URL] = []
@@ -112,7 +121,7 @@ final class PlaceSearch: NSObject, ObservableObject, MKLocalSearchCompleterDeleg
             _ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse,
             newRequest request: URLRequest
         ) async -> URLRequest? {
-            guard let url = request.url else { return request }
+            guard let url = request.url, MapLink.isAppleRedirect(url) else { return nil }
             lock.withLock { visited.append(url) }
             return MapLink.hasCoordinates(url) ? nil : request
         }

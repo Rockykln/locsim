@@ -94,6 +94,16 @@ final class SimulationSession: ObservableObject {
     @Published private(set) var setCount = 0
     let recents = RecentList()
 
+    /// A typed or pasted coordinate that is a favorite or a named recent place gets that name, in the
+    /// app and in Shortcuts. Matched to about a meter, so a pin dropped next to it does not count.
+    func knownName(for c: CLLocationCoordinate2D) -> String? {
+        func same(_ other: CLLocationCoordinate2D) -> Bool {
+            abs(other.latitude - c.latitude) < 1e-5 && abs(other.longitude - c.longitude) < 1e-5
+        }
+        if let favorite = FavoriteList.shared.items.first(where: { same($0.coordinate) }) { return favorite.name }
+        return recents.items.first { $0.name != nil && same($0.coordinate) }?.name
+    }
+
     private var link = DeviceLink()
     private let tunnel = LoopbackTunnel()
     private let keepAlive = KeepAlive()

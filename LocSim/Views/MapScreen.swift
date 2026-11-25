@@ -719,7 +719,7 @@ struct MapScreen: View {
                     subtitle: String(localized: "Coordinates"),
                     spokenTitle: CoordinateParser.spoken(coordinate)
                 ) {
-                    select(coordinate, name: nil, apply: autoApply)
+                    select(coordinate, name: CoordinateParser.linkName(in: search.query), apply: autoApply)
                 }
             }
             if let demo = Demo.suggestions {
@@ -834,8 +834,7 @@ struct MapScreen: View {
 
     private func paste(_ text: String) {
         if let coordinate = CoordinateParser.parse(text) {
-            let name = MapLink.url(in: text).flatMap(MapLink.placeName)
-            select(coordinate, name: name, apply: autoApply)
+            select(coordinate, name: CoordinateParser.linkName(in: text), apply: autoApply)
         } else if MapLink.url(in: text).map(MapLink.isPlaceLink) == true {
             searchTask?.cancel()
             resolving = text
@@ -1346,7 +1345,7 @@ struct MapScreen: View {
 
     private func submitSearch() {
         if let coordinate = search.coordinate {
-            select(coordinate, name: MapLink.url(in: search.query).flatMap(MapLink.placeName), apply: autoApply)
+            select(coordinate, name: CoordinateParser.linkName(in: search.query), apply: autoApply)
             return
         }
         if MapLink.url(in: search.query).map(MapLink.isPlaceLink) == true {
@@ -1382,7 +1381,7 @@ struct MapScreen: View {
         searchTask?.cancel()
         locateTask?.cancel()
         session.target = coordinate
-        session.targetName = name ?? knownName(for: coordinate)
+        session.targetName = name ?? session.knownName(for: coordinate)
         searchFocused = false
         search.reset()
         fly(to: coordinate, duration: 1.2)
@@ -1395,16 +1394,6 @@ struct MapScreen: View {
     private func same(_ a: CLLocationCoordinate2D, _ b: CLLocationCoordinate2D?) -> Bool {
         guard let b else { return false }
         return abs(a.latitude - b.latitude) < 1e-7 && abs(a.longitude - b.longitude) < 1e-7
-    }
-
-    /// A typed or pasted coordinate that is a favorite or a recent place gets that name.
-    /// Matched to about a meter, so only the same spot counts, not a pin dropped next to it.
-    private func knownName(for c: CLLocationCoordinate2D) -> String? {
-        func same(_ other: CLLocationCoordinate2D) -> Bool {
-            abs(other.latitude - c.latitude) < 1e-5 && abs(other.longitude - c.longitude) < 1e-5
-        }
-        if let favorite = favorites.items.first(where: { same($0.coordinate) }) { return favorite.name }
-        return recents.items.first { $0.name != nil && same($0.coordinate) }?.name
     }
 
     private func handle(_ kind: ExternalRequests.Kind) {
