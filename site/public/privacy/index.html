@@ -7,7 +7,7 @@
 <meta name="description" content="How LocSim, this website, email and TestFlight handle personal data.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#fbfafd" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0e0d17" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#fbfafd" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="https://locsim.rockykln.com/privacy/">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
@@ -48,7 +48,7 @@
 </header>
 <main id="main">
 <div class="doc wrap"><article><h1>Privacy Policy</h1>
-<p class="lead">Effective 17 November 2026</p>
+<p class="lead">Effective 25 November 2026</p>
 <p>The LocSim app collects no personal data and sends nothing to us. We only process data that you send us by email or that Apple provides to us through TestFlight. LocSim has no accounts, analytics, advertising or tracking.</p>
 <nav class="toc" aria-label="Contents"><p>Contents</p><ol><li><a href="#controller">Controller</a></li><li><a href="#the-app-on-your-device">The app on your device</a></li><li><a href="#connections-the-app-makes">Connections the app makes</a></li><li><a href="#testflight">TestFlight</a></li><li><a href="#email">Email</a></li><li><a href="#this-website">This website</a></li><li><a href="#recipients-and-transfers">Recipients and transfers</a></li><li><a href="#your-rights">Your rights</a></li><li><a href="#changes">Changes</a></li></ol></nav>
 <h2 id="controller">Controller</h2>
@@ -59,7 +59,7 @@
 <li><strong>Live Activity:</strong> shows the simulated place on the Lock Screen and in the Dynamic Island. It is created on the device; nothing is sent for it.</li>
 <li><strong>Widgets:</strong> the simulated place (name, coordinate and start time) and your favorites (name and coordinate), to list the most used ones or the ones you chose for a widget, are written to a container on the device that LocSim shares with its widgets (App Group), so the widgets can show them, also on the Lock Screen. Nothing leaves the device for it.</li>
 <li><strong>Favorites, recent locations, last location and settings:</strong> stored on the device and included in its backups. This includes the last location with its name for Set Last Location, and how often and how long each favorite was simulated, which is used to list the most used ones first. Recent locations can be turned off and cleared in the app.</li>
-<li><strong>iCloud Sync (off unless you turn it on):</strong> the favorites (name and coordinate) are also kept in your iCloud, so your other devices with the same Apple Account show them. Apple stores them under your account; LocSim runs no server and we cannot see them. How often a favorite is used is not shared.</li>
+<li><strong>iCloud Sync (off unless you turn it on):</strong> the favorites (name and coordinate) are also kept in your iCloud, so your other devices with the same Apple Account show them. Apple stores them under your account; LocSim runs no server and we cannot see them. How often a favorite is used is not shared. Turning iCloud Sync off or deleting LocSim leaves this copy in your iCloud; to remove it, delete the favorites in LocSim while iCloud Sync is on. Favorites that another device removed are kept on this device until you restore them, so a sync never loses them.</li>
 <li><strong>Notifications:</strong> if the time zone of the device follows the simulated place, LocSim shows a notice and can send a notification. Both are made on the device; nothing is sent for them.</li>
 <li><strong>Log:</strong> kept in memory only and cleared when the app quits. It leaves the device only if you copy it yourself.</li>
 <li><strong>Location:</strong> your real location is used on the device to show it on the map, once you allow location access. While a location is simulated, location fixes are compared on the device with the simulated location, also in the background, to notice when iOS resets it and set it again. Fixes are not stored, and LocSim does not send your location anywhere.</li>
@@ -68,15 +68,16 @@
 <p>These connections go directly from your device to the respective provider. We have no access to them. The providers process the data as separate controllers under their own privacy policies.</p>
 <ul>
 <li><strong>Your device itself,</strong> through LocSim's local tunnel, to simulate the location. This traffic stays on the device. We do not collect, sell, use or disclose it.</li>
+<li><strong>Devices in your local network,</strong> only if the pairing service of this iPhone does not answer on its usual port: LocSim then looks for it with Bonjour. Other devices that offer the same service may answer; their answers are kept in memory only and are neither stored nor sent.</li>
 <li><strong>Apple Maps</strong> for map tiles and place search. Apple receives search terms, the visible map area and your IP address, and, when you paste a short Apple Maps link, that link. See <a href="https://www.apple.com/legal/privacy/">Apple's privacy policy</a>.</li>
 <li><strong>GitHub</strong> (<code>raw.githubusercontent.com</code>), only if the Developer Disk Image has to be downloaded. GitHub receives your IP address.</li>
-<li><strong>Apple's signing server,</strong> only when the Developer Disk Image is installed because iOS does not provide it. Apple receives the device identifiers needed to personalize it (chip ID, ECID and a one-time number). The idevice library used by LocSim sends this request unencrypted over HTTP.</li>
+<li><strong>Apple's signing server,</strong> only when the Developer Disk Image is installed because iOS does not provide it. Apple receives the device identifiers needed to personalize it (chip ID, board ID, ECID and a one-time number). The idevice library used by LocSim sends this request unencrypted over HTTP.</li>
 </ul>
 <h2 id="testflight">TestFlight</h2>
 <p>To invite you to Early Access or development builds, your email address and name are entered in Apple's App Store Connect. If you join the public beta through the link, Apple handles your participation; we do not get your email address for it. During the beta, Apple collects crash reports, feedback, device information and usage data and makes them available to us, as described in Apple's TestFlight terms. Legal basis: Art. 6(1)(b) GDPR (your participation in the beta). The data is kept until you leave the beta or it ends.</p>
 <h2 id="email">Email</h2>
 <p>Emails to <a href="mailto:locsim@rockykln.com">locsim@rockykln.com</a> are received through Cloudflare Email Routing and forwarded to an iCloud Mail mailbox (Apple). Your address and message are used only to answer you. Legal basis: Art. 6(1)(b) GDPR for beta requests, otherwise Art. 6(1)(f) GDPR (our interest in answering enquiries). Emails are deleted once the matter is closed, unless statutory retention applies.</p>
-<p>The forms on this website (beta request and problem report) send nothing. They only prepare an email, which opens in your own mail app; nothing is sent until you send it there. The forms store nothing. A log you attach to a report may contain the coordinates you simulated.</p>
+<p>The forms on this website (beta request and problem report) send nothing. They only prepare an email, which opens in your own mail app; nothing is sent until you send it there. The forms store nothing. A log you paste into a report may contain the coordinates you simulated.</p>
 <h2 id="this-website">This website</h2>
 <p>The site is hosted on Cloudflare. To deliver it and protect it from abuse, Cloudflare processes your IP address and request data on our behalf. Legal basis: Art. 6(1)(f) GDPR (secure and reliable delivery). The data is kept according to Cloudflare's retention periods. The site sets no cookies and loads no analytics or external resources.</p>
 <p>If you change the theme, your choice is stored in your browser under the key <code>locsim-theme</code> (auto, light or dark). It is never transmitted and stays until you clear it. This is strictly necessary for the function you requested (§ 25(2) No. 2 TDDDG), so no consent is required.</p>
