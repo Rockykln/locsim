@@ -6588,6 +6588,46 @@
         }
       }
     },
+    "Pairing files are still in LocSim's folder in Files: %@. They contain a key for this device and are part of device backups. Delete them there if you no longer need them." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Im LocSim-Ordner in „Dateien“ liegen noch Pairing-Dateien: %@. Sie enthalten einen Schlüssel für dieses Gerät und sind Teil der Geräte-Backups. Lösche sie dort, wenn du sie nicht mehr brauchst."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todavía hay archivos de emparejamiento en la carpeta de LocSim en Archivos: %@. Contienen una clave para este dispositivo y se incluyen en sus copias de seguridad. Bórralos allí si ya no los necesitas."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Des fichiers de jumelage se trouvent encore dans le dossier de LocSim dans Fichiers : %@. Ils contiennent une clé pour cet appareil et font partie de ses sauvegardes. Supprimez-les là-bas si vous n’en avez plus besoin."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nella cartella di LocSim in File ci sono ancora file di abbinamento: %@. Contengono una chiave per questo dispositivo e sono inclusi nei backup del dispositivo. Eliminali lì se non ti servono più."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Er staan nog koppelingsbestanden in de map van LocSim in Bestanden: %@. Ze bevatten een sleutel voor dit apparaat en zitten in de reservekopieën van het apparaat. Verwijder ze daar als je ze niet meer nodig hebt."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ainda há arquivos de emparelhamento na pasta do LocSim no app Arquivos: %@. Eles contêm uma chave para este dispositivo e fazem parte dos backups do dispositivo. Apague-os lá se não precisar mais deles."
+          }
+        }
+      }
+    },
     "Pairing rejected" : {
       "localizations" : {
         "de" : {

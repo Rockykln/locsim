@@ -265,8 +265,13 @@ struct PairingFooter: View {
             ErrorFooter(String(localized: "This is a lockdown pairing file. LocSim needs the RPPairing file from the setup script."))
         } else if !notes.copiesInFiles.isEmpty {
             // Never deleted by LocSim: they may be the user's own copies. Orange text would be too faint.
+            let names = notes.copiesInFiles.formatted(.list(type: .and))
             Label {
-                Text("A pairing file is still in LocSim's folder in Files: \(notes.copiesInFiles.formatted(.list(type: .and))). It contains a key for this device and is part of device backups. Delete it there if you no longer need it.")
+                if notes.copiesInFiles.count == 1 {
+                    Text("A pairing file is still in LocSim's folder in Files: \(names). It contains a key for this device and is part of device backups. Delete it there if you no longer need it.")
+                } else {
+                    Text("Pairing files are still in LocSim's folder in Files: \(names). They contain a key for this device and are part of device backups. Delete them there if you no longer need them.")
+                }
             } icon: {
                 Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
             }
