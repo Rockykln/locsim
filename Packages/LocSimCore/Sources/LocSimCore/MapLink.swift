@@ -139,11 +139,24 @@ public enum MapLink {
             if !name.hasPrefix("@"), CoordinateText.parse(name) == nil { return name }
         }
         // Directions, /maps/dir/<start>/<destination>/@…: the last stop, as for coordinates.
-        if let maps = parts.firstIndex(of: "maps"), parts.indices.contains(maps + 1), parts[maps + 1] == "dir",
-           let stop = parts.dropFirst(maps + 2).filter({ !$0.hasPrefix("@") && !$0.contains("=") }).last {
+        if let stop = routeDestination(url) {
             let name = stop.replacingOccurrences(of: "+", with: " ")
             if CoordinateText.parse(name) == nil { return name }
         }
         return nil
+    }
+
+    /// The destination of a Google Maps route, /maps/dir/<start>/<destination>/@…, without the map
+    /// view (@…) and options such as data=… and am=t. nil when there is no route or no destination:
+    /// Google writes a missing stop as an empty segment, /maps/dir/Louvre//@…, and the start alone
+    /// is no destination.
+    static func routeDestination(_ url: URL) -> String? {
+        // Split by hand: pathComponents drops empty segments, which would make the start the last stop.
+        var parts = url.path.split(separator: "/", omittingEmptySubsequences: false).map(String.init)
+        if parts.last == "" { parts.removeLast() }
+        guard let maps = parts.firstIndex(of: "maps"), parts.indices.contains(maps + 1), parts[maps + 1] == "dir",
+              let stop = parts.dropFirst(maps + 2).filter({ !$0.hasPrefix("@") && !$0.contains("=") }).last,
+              !stop.isEmpty else { return nil }
+        return stop
     }
 }

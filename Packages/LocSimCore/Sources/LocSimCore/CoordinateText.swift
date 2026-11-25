@@ -52,13 +52,17 @@ public enum CoordinateText {
         var rest = text
         for link in links.reversed() { rest.replaceSubrange(link.range, with: " ") }
         rest = rest.replacingOccurrences(of: #"\(\s*\)|\[\s*\]|<\s*>"#, with: " ", options: .regularExpression)
+        // Labels in front decide the order for every part, also "Lng / Lat: 2.35, 48.85".
+        let swap = isLongitudeFirst(rest)
         // Wikipedia writes the same place several ways: "48°51′24″N 2°21′08″E / 48.85667°N … / 48.85667; 2.35222".
         if rest.contains(" / ") {
             for part in rest.components(separatedBy: " / ") {
-                if let c = parseText(part, oIsWest: oIsWest, allowWholeNumbers: allowWholeNumbers) { return c }
+                if let c = parseText(part, oIsWest: oIsWest, allowWholeNumbers: allowWholeNumbers, longitudeFirst: swap) {
+                    return c
+                }
             }
         }
-        return parseText(rest, oIsWest: oIsWest, allowWholeNumbers: allowWholeNumbers)
+        return parseText(rest, oIsWest: oIsWest, allowWholeNumbers: allowWholeNumbers, longitudeFirst: swap)
     }
 
     static func isWestO(_ language: String?) -> Bool {
@@ -90,7 +94,10 @@ public enum CoordinateText {
     // A lowercase "e" between two numbers is "and" in Italian and Portuguese, "41.90 e 12.49", not east.
     private static let andE = try! NSRegularExpression(pattern: #"\d\s+e\s+[-+]?\d"#)
 
-    private static func parseText(_ text: String, oIsWest: Bool, allowWholeNumbers: Bool = false) -> Coordinate? {
+    /// `longitudeFirst`: from the labels of the whole text; nil reads them from this text.
+    private static func parseText(
+        _ text: String, oIsWest: Bool, allowWholeNumbers: Bool = false, longitudeFirst: Bool? = nil
+    ) -> Coordinate? {
         let range = NSRange(text.startIndex..., in: text)
         let unlabeled = labels.stringByReplacingMatches(in: text, range: range, withTemplate: " ")
         let input = unwrap(normalize(unlabeled, oIsWest: oIsWest))
@@ -100,7 +107,7 @@ public enum CoordinateText {
            hemisphereRegex.numberOfMatches(in: input, range: NSRange(input.startIndex..., in: input)) == 1 {
             return nil
         }
-        let swap = isLongitudeFirst(text)
+        let swap = longitudeFirst ?? isLongitudeFirst(text)
         // "48.85, W 2.35": each half has its own letter, wherever it stands.
         if let c = parseHalves(input, longitudeFirst: swap) { return c }
         if isDMS(input) { return parseDMS(input, longitudeFirst: swap) }
@@ -244,7 +251,11 @@ public enum CoordinateText {
         // The map view in the fragment can be anywhere between the stops.
         let osmHost = url.host?.lowercased() ?? ""
         if ["openstreetmap.org", "www.openstreetmap.org", "osm.org"].contains(osmHost), url.path.hasPrefix("/directions") {
-            return MapLink.value("route", in: url)?.split(separator: ";").last.flatMap { pair(String($0)) }
+            if let route = MapLink.value("route", in: url) {
+                return route.split(separator: ";").last.flatMap { pair(String($0)) }
+            }
+            // A form filled in but not yet routed: to=48.85,2.35.
+            return MapLink.value("to", in: url).flatMap { pair($0) }
         }
         // Not "sll": in Apple's links that is only the center of the search area. In Google's,
         // "ll" is only the map view too, so the place in q or the destination comes first.
@@ -290,9 +301,7 @@ public enum CoordinateText {
         let kind = maps.flatMap { parts.indices.contains($0 + 1) ? parts[$0 + 1] : nil }
         // Directions: only the destination counts, the last stop. A named one is searched instead.
         if kind == "dir" {
-            // Not the map view (@…) or options such as data=… and am=t.
-            let stops = parts.dropFirst((maps ?? 0) + 2).filter { !$0.hasPrefix("@") && !$0.contains("=") }
-            return stops.last.flatMap { pair($0.replacingOccurrences(of: "+", with: " "), decimalRequired: true) }
+            return MapLink.routeDestination(url).flatMap { pair($0.replacingOccurrences(of: "+", with: " "), decimalRequired: true) }
         }
         // /maps/search/48.85,+2.35/… and /maps/place/48.85,+2.35/…: the term itself is the place.
         if kind == "search" || kind == "place", let maps, parts.indices.contains(maps + 2) {
