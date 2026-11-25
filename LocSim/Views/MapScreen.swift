@@ -1401,8 +1401,14 @@ struct MapScreen: View {
         switch session.state {
         case .idle: parts.append(session.statusTitle)
         case .connecting:
-            parts.append(session.statusTitle)
-            if let step = session.connectStep { parts.append(step) }
+            if let step = session.connectStep {
+                // Without the ellipsis of the status title, which would stand right before the dot.
+                parts.append(String(localized: "Connecting (status)", defaultValue: "Connecting",
+                                    comment: "Status line while connecting, followed by the current step"))
+                parts.append(step)
+            } else {
+                parts.append(session.statusTitle)
+            }
         case .active:
             parts.append(session.statusTitle)
             // The pin shows the active location unless it was moved since.
