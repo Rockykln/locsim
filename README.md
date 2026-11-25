@@ -27,11 +27,8 @@ A developer tool for testing location-based apps.
 
 ## Status
 
-**November 2026:** LocSim is back on TestFlight with build 8. Apple had ended all earlier
-builds because an automated check flagged the local packet tunnel as a VPN. LocSim
-collects no data; the tunnel routes only 10.7.0.1 back to the device itself (see
-[How it works](#how-it-works)). Install build 8 in TestFlight, as older builds no longer
-open. What changed is in the [changelog](CHANGELOG.md).
+**November 2026:** LocSim is in beta on TestFlight. What changed in each build is in the
+[changelog](CHANGELOG.md).
 
 LocSim uses the same location simulation service as Xcode. It reaches the iPhone's own
 developer services through a small local tunnel, after a one-time pairing with a
