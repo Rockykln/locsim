@@ -66,6 +66,7 @@ final class PastedFormatsTests: XCTestCase {
         // Letters already give the order; the labels must not swap a second time.
         XCTAssertEqual(parse("Longitude: 2.3522 E, Latitude: 48.8566 N"), paris)
         XCTAssertEqual(parse("Lat/Long: 48.8566, 2.3522"), paris)
+        XCTAssertEqual(parse("Lng / Lat: 2.3522, 48.8566"), paris)
         XCTAssertNil(parse("Long Beach 12"))
     }
 
@@ -108,6 +109,13 @@ final class PastedFormatsTests: XCTestCase {
             + "&route=52.52%2C13.405%3B48.8566%2C2.3522#map=6/50.68/7.88"
         XCTAssertEqual(parse(osm), paris)
         XCTAssertNil(parse("https://www.openstreetmap.org/directions#map=6/50.68/7.88"))
+        XCTAssertEqual(parse("https://www.openstreetmap.org/directions?from=&to=48.8566%2C2.3522#map=6/50.68/7.88"), paris)
+        // A route without a destination names no place to go to.
+        let startOnly = try XCTUnwrap(URL(string: "https://www.google.com/maps/dir/Louvre//@48.86,2.33,14z"))
+        XCTAssertNil(MapLink.placeName(startOnly))
+        XCTAssertNil(parse("https://www.google.com/maps/dir/48.8606,2.3376//@48.86,2.33,14z"))
+        let trailing = try XCTUnwrap(URL(string: "https://www.google.com/maps/dir/Louvre/Eiffel+Tower/"))
+        XCTAssertEqual(MapLink.placeName(trailing), "Eiffel Tower")
         let named = [
             "https://www.google.com/maps/dir/?api=1&destination=Eiffel+Tower",
             "https://maps.apple.com/?daddr=Eiffel+Tower",
