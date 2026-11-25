@@ -68,6 +68,10 @@ case "$(uname -s)-$(uname -m)" in
     echo "Linux on ARM is not supported: idevice-tools $VERSION has no build for it." >&2
     echo "Use a computer with x86_64 Linux, macOS or Windows." >&2
     exit 1 ;;
+  MINGW*|MSYS*|CYGWIN*)
+    echo "This is Git Bash or a similar shell on Windows." >&2
+    echo "Run make-pairing.ps1 in Windows PowerShell instead (see the setup guide)." >&2
+    exit 1 ;;
   *) echo "unsupported platform: $(uname -s)-$(uname -m)" >&2; exit 1 ;;
 esac
 
