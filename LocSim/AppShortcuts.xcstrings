@@ -127,6 +127,7 @@
             "state" : "translated",
             "values" : [
               "Stel ${applicationName} in op ${favorite}",
+              "Zet ${applicationName} op ${favorite}",
               "Simuleer ${favorite} met ${applicationName}",
               "Stel een favoriet in met ${applicationName}"
             ]
