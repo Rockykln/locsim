@@ -428,7 +428,11 @@ struct MapScreen: View {
                 setFromApp = session.questionPlace ?? session.target
                 Task { await session.apply(consent: true) }
             }
-            Button("Cancel", role: .cancel) {}
+            // The notice before the first VPN configuration leads to the system prompt, which can
+            // be declined; a way around it is not offered (guideline 5.1.1).
+            if error.code != AppError.vpnNoticeCode {
+                Button("Cancel", role: .cancel) {}
+            }
         } message: { error in
             // The general LS-207 text says to tap Set Location again; here the button is Continue.
             Text(error.code == AppError.otherVPNCode
@@ -437,11 +441,11 @@ struct MapScreen: View {
         }
         // Before the very first Set: iOS turns off another selected VPN when LocSim's configuration is added.
         .alert(AppError(DeviceError(.vpnNotice, "")).title, isPresented: $vpnNotice) {
+            // Only Continue: a notice before a system prompt must lead to it (guideline 5.1.1).
             Button("Continue") {
                 session.acceptVPNNotice()
                 setLocation()
             }
-            Button("Cancel", role: .cancel) {}
         } message: {
             Text(AppError(DeviceError(.vpnNotice, "")).message)
         }
@@ -1285,7 +1289,7 @@ struct MapScreen: View {
             } label: {
                 HStack(spacing: 8) {
                     // A Set made while reconnecting waits for it; without this it looked ignored.
-                    if session.state == .connecting || session.hasQueuedSet {
+                    if session.state == .connecting || session.setInProgress {
                         ProgressView().controlSize(.small)
                     } else if icons {
                         Image(systemName: "location.fill")
@@ -1400,8 +1404,14 @@ struct MapScreen: View {
         switch session.state {
         case .idle: parts.append(session.statusTitle)
         case .connecting:
-            parts.append(session.statusTitle)
-            if let step = session.connectStep { parts.append(step) }
+            if let step = session.connectStep {
+                // Without the ellipsis of the status title, which would stand right before the dot.
+                parts.append(String(localized: "Connecting (status)", defaultValue: "Connecting",
+                                    comment: "Status line while connecting, followed by the current step"))
+                parts.append(step)
+            } else {
+                parts.append(session.statusTitle)
+            }
         case .active:
             parts.append(session.statusTitle)
             // The pin shows the active location unless it was moved since.

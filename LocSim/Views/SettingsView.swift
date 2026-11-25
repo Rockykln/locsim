@@ -115,8 +115,10 @@ struct SettingsView: View {
 
     /// Takes in a file the setup script dropped into Documents and shows the current state.
     private func refreshPairing() {
-        session.adoptDroppedPairing()
+        let adopted = session.adoptDroppedPairing()
         notes.refresh()
+        // A file taken in replaces whatever an earlier import failed with.
+        if adopted { notes.message = nil }
     }
 
     private var statusSection: some View {
@@ -313,8 +315,8 @@ struct SettingsView: View {
                     item("Delete DDI Files", "trash.fill", .red)
                 }
                 .foregroundStyle(.red)
-                // A connection may be about to mount them.
-                .disabled(session.state == .connecting || session.state.isReconnecting)
+                // A connection may be about to mount them, or the button below is downloading.
+                .disabled(ddiLoading || session.state == .connecting || session.state.isReconnecting)
             }
             if !ddiDownloaded {
                 Button {

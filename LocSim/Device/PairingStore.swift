@@ -197,8 +197,9 @@ enum PairingStore {
             guard let data = try? read(url) else { continue }
             switch check(data) {
             case .valid:
-                // A copy of a file imported before, e.g. renamed in Files, is not the user's new choice.
-                if !ours, wasImported(data), (try? Data(contentsOf: storeURL)) != data {
+                // A copy of a file imported before, e.g. renamed in Files, is not the user's new choice
+                // over the current file. Without a stored file, e.g. after Remove, it is taken in.
+                if !ours, wasImported(data), let current = try? Data(contentsOf: storeURL), current != data {
                     seen[name] = stamp
                     continue
                 }

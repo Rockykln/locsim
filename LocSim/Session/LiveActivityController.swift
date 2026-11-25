@@ -120,9 +120,13 @@ final class LiveActivityController {
             Task { await activity.update(content) }
             return
         }
-        // iOS ends an activity after eight hours and keeps it on screen for a while; a later
-        // change replaces it, so only one is ever shown. The old one goes only once the new one
-        // is there: in the background the request fails.
+        request(content)
+    }
+
+    // iOS ends an activity after eight hours and keeps it on screen for a while; a later
+    // change replaces it, so only one is ever shown. The old one goes only once the new one
+    // is there: in the background the request fails.
+    private func request(_ content: ActivityContent<SimulationActivityAttributes.ContentState>) {
         let old = activity
         do {
             let new = try Activity.request(attributes: SimulationActivityAttributes(), content: content, pushType: nil)
@@ -133,6 +137,16 @@ final class LiveActivityController {
             // Starting is only allowed in the foreground; the next change there tries again.
             shown = nil
         }
+    }
+
+    /// Renews an activity close to iOS's eight-hour limit while LocSim is in the foreground,
+    /// also when nothing changed: LocSim may stay in front for longer than that.
+    private func renewIfOld() -> Bool {
+        guard isRunning, let shown, Date().timeIntervalSince(requestedAt) > Self.renewAfter,
+              UIApplication.shared.applicationState == .active else { return false }
+        staleDate = Date().addingTimeInterval(freshFor)
+        request(ActivityContent(state: shown, staleDate: staleDate))
+        return true
     }
 
     /// Forgets that the user swiped the activity away, e.g. when the setting is turned on again.
@@ -159,6 +173,7 @@ final class LiveActivityController {
     /// While LocSim keeps running, moves the stale date forward now and then, so the activity
     /// only turns outdated if LocSim stopped without saying so (crash, or iOS ended it).
     func keepFresh() {
+        if renewIfOld() { return }
         guard let staleDate, staleDate.timeIntervalSinceNow < freshFor / 2 else { return }
         markStale(after: freshFor)
     }

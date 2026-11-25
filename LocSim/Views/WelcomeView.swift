@@ -107,9 +107,11 @@ struct WelcomeView: View {
 
     /// Takes in a file the setup script dropped into Documents and shows the current state.
     private func readPairing() {
-        session.adoptDroppedPairing()
+        let adopted = session.adoptDroppedPairing()
         let had = notes.hasPairing
         notes.refresh()
+        // A file taken in replaces whatever an earlier import failed with.
+        if adopted { notes.message = nil }
         // A file the setup script copied in over USB: the checkmark alone is not announced.
         if appeared, !had, notes.hasPairing {
             AccessibilityNotification.Announcement(String(localized: "Pairing file imported")).post()
@@ -178,11 +180,12 @@ struct PairingCheckRow<Title: View>: View {
         }
         .disabled(session.state == .connecting || session.state.isReconnecting || session.pairingCheck == .checking)
         .alert(AppError(DeviceError(.vpnNotice, "")).title, isPresented: $vpnNotice) {
+            // Only Continue: a notice before a system prompt must lead to it (guideline 5.1.1).
+            // The prompt itself can be declined.
             Button("Continue") {
                 session.acceptVPNNotice()
                 Task { await session.checkPairing() }
             }
-            Button("Cancel", role: .cancel) {}
         } message: {
             Text(AppError(DeviceError(.vpnNotice, "")).message)
         }
@@ -208,8 +211,9 @@ struct PairingCheckRow<Title: View>: View {
         case .rejected(let error):
             resultLabel(error.messageWithCode, "xmark.circle.fill", .red)
         case .unreachable(let error) where [AppError.otherVPNCode, "LS-208", AppError.vpnNoticeCode].contains(error.code):
-            // These have one clear fix, which the general text below would not name.
-            resultLabel(error.messageWithCode, "exclamationmark.triangle.fill", .orange)
+            // These have one clear fix, which the general text below would not name. With the
+            // title: "LocSim's local connection replaces it" needs "Another VPN is selected".
+            resultLabel(error.summary, "exclamationmark.triangle.fill", .orange)
         case .unreachable(let error):
             resultLabel(String(localized: "Could not check. Allow the local connection, join a Wi-Fi network and try again. (\(error.code))"),
                    "exclamationmark.triangle.fill", .orange)
@@ -301,7 +305,11 @@ private struct PairingImporter: ViewModifier {
         content
             .fileImporter(isPresented: $isPresented, allowedContentTypes: [.propertyList, .xml, .data]) { result in
                 if case .success(let url) = result, session.mayStillBeSimulated {
-                    pending = url
+                    // After the picker has gone: a dialog asked for while it closes may not appear.
+                    Task { @MainActor in
+                        try? await Task.sleep(for: .milliseconds(400))
+                        pending = url
+                    }
                 } else {
                     finish(result)
                 }
@@ -309,13 +317,13 @@ private struct PairingImporter: ViewModifier {
             .confirmationDialog(
                 "Replace the pairing file?",
                 isPresented: Binding(get: { pending != nil }, set: { if !$0 { pending = nil } }),
-                titleVisibility: .visible
-            ) {
+                titleVisibility: .visible,
+                presenting: pending
+            ) { url in
                 Button("Replace Pairing File", role: .destructive) {
-                    if let pending { finish(.success(pending)) }
-                    pending = nil
+                    finish(.success(url))
                 }
-            } message: {
+            } message: { _ in
                 Text("A running simulation stops.")
             }
     }
