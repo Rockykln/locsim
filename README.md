@@ -43,7 +43,8 @@ computer.
 
 - Long-press the map, search for a place or enter coordinates
   (`48.8566, 2.3522`, `48,8566 2,3522`, `48°51'23.8"N 2°21'07.9"E`)
-- Paste coordinates, Apple Maps or Google Maps links
+- Paste coordinates, or links from Apple Maps, Google Maps, Waze and OpenStreetMap and
+  `geo:` URIs; Google's short links (`maps.app.goo.gl`) have to be opened in a browser first
 - Favorites and the last five locations; with iCloud Sync turned on (off by default), the
   same favorites on every device of the Apple Account
 - From outside the app: the Home Screen widget (medium size: three favorites, the most
@@ -120,7 +121,7 @@ app over USB and deletes it from the computer.
 1. Join any Wi-Fi network.
 2. Open LocSim, allow the VPN configuration when iOS asks (once) and allow Local
    Network access, which is needed to find the pairing port. Location access is
-   optional and only used for the background keep-alive, for noticing when iOS resets
+   optional and only used for *Keep Location in Background*, for noticing when iOS resets
    the simulated location and for showing your real position.
 3. Long-press the map, search for a place or enter coordinates, then
    *Set Location*.
@@ -149,7 +150,8 @@ LocSim ──TCP──▶ 10.7.0.1:<port> ──LocSimTunnel──▶ remotepair
 1. LocSim starts its packet tunnel extension, which only routes the host
    `10.7.0.1`. It swaps the source and destination of each TCP packet, so the traffic
    reaches this iPhone's own services; anything else is dropped. It has no server and no settings, and stops
-   with LocSim, or by itself about two minutes after LocSim was closed.
+   with LocSim, or by itself a few minutes after LocSim was closed (its two-minute
+   timeout only counts while the iPhone is awake).
 2. The tunnel is opened on the default RPPairing port 49152. If that fails, the
    port is discovered via Bonjour (`_remotepairing._tcp`), as it can differ on
    some devices.
@@ -158,8 +160,8 @@ LocSim ──TCP──▶ 10.7.0.1:<port> ──LocSimTunnel──▶ remotepair
 4. If the Developer Disk Image is missing it is installed (cryptex on iOS 26.4+,
    personalized image before).
 5. The location is sent over DVT and resent periodically. iOS resets it as soon
-   as the connection closes. While LocSim runs, the coarse location updates of the
-   background keep-alive are compared with the simulated location; a fix clearly more
+   as the connection closes. While LocSim runs, the coarse location updates of
+   *Keep Location in Background* are compared with the simulated location; a fix clearly more
    than 200 m away means iOS reset it, and LocSim sends it again.
 
 </details>
@@ -202,10 +204,22 @@ The team ID is the 10-character value after `OU=` in
 `security find-certificate -c "Apple Development" -p | openssl x509 -noout -subject`.
 `Config/Local.xcconfig` is ignored by git. Run `xcodegen generate` again after
 pulling changes. The build commit is stamped into the app by a scheme pre-action
-and shown under *Settings > About*.
+and shown under *Settings > About*. Signing needs a paid Apple Developer Program
+membership: the packet tunnel extension requires the Network Extensions capability.
 
-GitHub Actions builds every push to `main` and every pull request. The TestFlight
-workflow only runs when started by hand; see [docs/RELEASING.md](docs/RELEASING.md).
+The identifiers belong to the official build. To build with your own team, change them
+in these places, and keep them unchanged for the official one:
+
+- the bundle ID prefix and the three bundle IDs in `project.yml`
+  (`com.rockykln.locsim`, `.tunnel`, `.widgets`),
+- the App Group `group.com.rockykln.locsim` in `LocSim/LocSim.entitlements`,
+  `LocSimWidgets/LocSimWidgets.entitlements` and `LiveActivity/WidgetSnapshot.swift`,
+- the bundle ID the setup scripts copy the pairing file to
+  (`afc --documents com.rockykln.locsim` in `tools/make-pairing.sh` and `.ps1`).
+
+GitHub Actions builds every push to `main` and `preview` that touches the app, and every
+pull request. The TestFlight workflow has no upload key and is not used; builds are
+uploaded from Xcode, see [docs/RELEASING.md](docs/RELEASING.md).
 
 ## Tests
 
@@ -263,4 +277,4 @@ idevice, [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE), except the Inter font in `design/mockups/fonts/` (SIL Open Font License 1.1).

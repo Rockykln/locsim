@@ -1,0 +1,38 @@
+name: Bug report
+description: Something in LocSim does not work as described.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Never attach a pairing file: it grants access to your device. Check a log before
+        pasting it; it contains the coordinates you simulated.
+  - type: input
+    id: version
+    attributes:
+      label: LocSim version and commit
+      description: Settings › About
+    validations:
+      required: true
+  - type: input
+    id: ios
+    attributes:
+      label: iOS version and device
+    validations:
+      required: true
+  - type: input
+    id: code
+    attributes:
+      label: Error code
+      description: Shown in the status line, for example LS-206.
+  - type: textarea
+    id: steps
+    attributes:
+      label: What did you do, and what happened?
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Copied details
+      description: Tap the status line in LocSim, choose Copy Details and paste them here.
+      render: text

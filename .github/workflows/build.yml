@@ -2,7 +2,16 @@ name: build
 
 on:
   push:
-    branches: [main]
+    # preview is what the Mac archives builds from: a red check there comes before the upload.
+    branches: [main, preview]
+    # Website and documentation alone need no app build. THIRD_PARTY_LICENSES.md is bundled
+    # into the app, so it still counts.
+    paths:
+      - '**'
+      - '!site/**'
+      - '!docs/**'
+      - '!*.md'
+      - 'THIRD_PARTY_LICENSES.md'
   pull_request:
   workflow_dispatch:
 

@@ -13,10 +13,6 @@ Effort: S = up to a day, M = a few days, L = a week or more.
 | 15 | More languages | S each | Approved |
 | 18 | iPhone Duo screenshots | S | Approved |
 | 23 | Siri AI tools | M | On branch, waiting for the SDK |
-| 24 | Favorites synced through iCloud | M | Approved |
-| 25 | Widget with chosen favorites | S | Approved |
-| 26 | Shortcuts actions to read the state | S | Approved |
-| 27 | Warning when the time zone follows the simulated place | M | Approved |
 
 ## Features
 
@@ -46,9 +42,10 @@ of the sidebar layout the iPhone Duo already has.
 
 ### 18. iPhone Duo screenshots
 
-The Duo layout is done. Missing are a Duo size in `tools/screenshots.sh` and in the
-mockups: 1398 x 2034 for the cover screen and 2853 x 2007 for the inner screen in
-landscape. App Store submissions built with the iOS 27.1 SDK need them from April 2027.
+The Duo layout is done, and the mockups already have the Duo sizes. Missing is a Duo size
+in `tools/screenshots.sh`; check the orientation of the inner screen in the Duo simulator
+before the first upload. App Store submissions built with the iOS 27.1 SDK need them from
+April 2027.
 
 ## Distribution
 
