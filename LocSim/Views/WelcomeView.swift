@@ -178,11 +178,12 @@ struct PairingCheckRow<Title: View>: View {
         }
         .disabled(session.state == .connecting || session.state.isReconnecting || session.pairingCheck == .checking)
         .alert(AppError(DeviceError(.vpnNotice, "")).title, isPresented: $vpnNotice) {
+            // Only Continue: a notice before a system prompt must lead to it (guideline 5.1.1).
+            // The prompt itself can be declined.
             Button("Continue") {
                 session.acceptVPNNotice()
                 Task { await session.checkPairing() }
             }
-            Button("Cancel", role: .cancel) {}
         } message: {
             Text(AppError(DeviceError(.vpnNotice, "")).message)
         }
@@ -208,8 +209,9 @@ struct PairingCheckRow<Title: View>: View {
         case .rejected(let error):
             resultLabel(error.messageWithCode, "xmark.circle.fill", .red)
         case .unreachable(let error) where [AppError.otherVPNCode, "LS-208", AppError.vpnNoticeCode].contains(error.code):
-            // These have one clear fix, which the general text below would not name.
-            resultLabel(error.messageWithCode, "exclamationmark.triangle.fill", .orange)
+            // These have one clear fix, which the general text below would not name. With the
+            // title: "LocSim's local connection replaces it" needs "Another VPN is selected".
+            resultLabel(error.summary, "exclamationmark.triangle.fill", .orange)
         case .unreachable(let error):
             resultLabel(String(localized: "Could not check. Allow the local connection, join a Wi-Fi network and try again. (\(error.code))"),
                    "exclamationmark.triangle.fill", .orange)

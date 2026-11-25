@@ -428,7 +428,11 @@ struct MapScreen: View {
                 setFromApp = session.questionPlace ?? session.target
                 Task { await session.apply(consent: true) }
             }
-            Button("Cancel", role: .cancel) {}
+            // The notice before the first VPN configuration leads to the system prompt, which can
+            // be declined; a way around it is not offered (guideline 5.1.1).
+            if error.code != AppError.vpnNoticeCode {
+                Button("Cancel", role: .cancel) {}
+            }
         } message: { error in
             // The general LS-207 text says to tap Set Location again; here the button is Continue.
             Text(error.code == AppError.otherVPNCode
@@ -437,11 +441,11 @@ struct MapScreen: View {
         }
         // Before the very first Set: iOS turns off another selected VPN when LocSim's configuration is added.
         .alert(AppError(DeviceError(.vpnNotice, "")).title, isPresented: $vpnNotice) {
+            // Only Continue: a notice before a system prompt must lead to it (guideline 5.1.1).
             Button("Continue") {
                 session.acceptVPNNotice()
                 setLocation()
             }
-            Button("Cancel", role: .cancel) {}
         } message: {
             Text(AppError(DeviceError(.vpnNotice, "")).message)
         }
