@@ -314,15 +314,15 @@ private struct PairingImporter: ViewModifier {
                     finish(result)
                 }
             }
-            .confirmationDialog(
+            .alert(
                 "Replace the pairing file?",
                 isPresented: Binding(get: { pending != nil }, set: { if !$0 { pending = nil } }),
-                titleVisibility: .visible,
                 presenting: pending
             ) { url in
                 Button("Replace Pairing File", role: .destructive) {
                     finish(.success(url))
                 }
+                Button("Cancel", role: .cancel) {}
             } message: { _ in
                 Text("A running simulation stops.")
             }
