@@ -255,6 +255,8 @@ final class SimulationSession: ObservableObject {
     }
     /// A location is simulated, or a Clear did not finish and the device may still keep it.
     var mayStillBeSimulated: Bool { simulatedPlace != nil || unclearedPlace != nil }
+    /// A connection uses the pairing file, so replacing it stops that connection.
+    var pairingInUse: Bool { !isSimulated && (active != nil || linkOpen || state == .connecting) }
     /// A file the setup script copied in counts: connecting takes it in.
     var hasPairing: Bool { isSimulated || PairingStore.exists || PairingStore.hasDroppedFile }
 
@@ -295,6 +297,14 @@ final class SimulationSession: ObservableObject {
     func renameActive(at c: CLLocationCoordinate2D, to name: String) {
         guard let active, !Demo.isOn, active.distance(to: c) < 1, activeName != name else { return }
         activeName = name
+        syncActivity()
+    }
+
+    /// A favorite on the simulated place was renamed while the pin is elsewhere, or through iCloud:
+    /// the Live Activity, the widget and Shortcuts follow, unless the place got its name elsewhere.
+    func favoriteRenamed(at c: CLLocationCoordinate2D, from old: String, to new: String) {
+        guard let active, !Demo.isOn, active.distance(to: c) < 1, activeName == old, old != new else { return }
+        activeName = new
         syncActivity()
     }
 
@@ -402,6 +412,8 @@ final class SimulationSession: ObservableObject {
         LastCoordinate.save(coordinate, name: name)
         // Shown as connecting while LocSim is still in the foreground: iOS refuses new activities later.
         connectingTo = (coordinate, name, set, Date())
+        // An activity marked outdated after a Clear that did not finish is current again.
+        liveActivity.keepFresh()
         // Each Set decides on its own; a queued Set never inherits the answer.
         tunnel.allowTakeover = takeover
         let started = generation
@@ -417,9 +429,10 @@ final class SimulationSession: ObservableObject {
             activeName = name
             askedCode = nil
             askedFor = nil
-            unclearedPlace = nil
             active = coordinate
             state = .active
+            // After the state: earlier, the widget would be published once more for the place before.
+            unclearedPlace = nil
             outcome = .set
             keepActivityFresh()
             failedResends = 0
@@ -505,6 +518,7 @@ final class SimulationSession: ObservableObject {
         } else {
             // The device did not confirm; stopping the tunnel is what is left, so it is awaited.
             await releaseTunnelIfIdle()
+            markUnclearedStale()
         }
         runPending()
         // iOS may suspend LocSim right after a Clear from a Shortcut.
@@ -579,8 +593,9 @@ final class SimulationSession: ObservableObject {
         lastPort = nil
         setPairingCheck(.notChecked)
         PairingStore.clearRejection()
-        if case .failed = state { state = .idle }
-        guard !isSimulated, active != nil || linkOpen || state == .connecting else { return }
+        // LS-402 stays: the place may still be simulated, and a new file does not change that.
+        if case .failed(let error) = state, error.code != AppError.clearFailedCode { state = .idle }
+        guard pairingInUse else { return }
         await disconnect()
         write("pairing file changed, connection closed")
     }
@@ -743,6 +758,14 @@ final class SimulationSession: ObservableObject {
         }
     }
 
+    /// After a Clear that did not finish nothing keeps the place fresh any more: the Live Activity
+    /// and the widget turn outdated when the tunnel would have ended. Not while a Set is queued.
+    private func markUnclearedStale() {
+        guard unclearedPlace != nil, active == nil, pending == nil else { return }
+        liveActivity.markStale(after: TunnelAddress.heartbeatTimeout)
+        WidgetSync.markStale(after: TunnelAddress.heartbeatTimeout)
+    }
+
     // Without Keep Alive iOS suspends LocSim soon in the background; the activity must turn outdated then.
     private func keepActivityFresh() {
         let background = UIApplication.shared.applicationState == .background
@@ -782,6 +805,8 @@ final class SimulationSession: ObservableObject {
                 // the moment the activity turns outdated, not up to a beat interval earlier.
                 tunnel.beat(force: true)
             }
+        } else {
+            markUnclearedStale()
         }
         guard active == nil, state != .connecting, !busy else { return }
         keepAlive.stop()
@@ -1038,7 +1063,6 @@ final class SimulationSession: ObservableObject {
             try await send(active, started: started)
             guard started == generation else { return await discard() }
             tunnel.beat()
-            keepActivityFresh()
             if failedResends > 0 { write("reconnected") }
             failedResends = 0
             backgroundFailures = 0
@@ -1046,6 +1070,9 @@ final class SimulationSession: ObservableObject {
             askedCode = nil
             askedFor = nil
             if state != .active, self.active != nil { state = .active }
+            // After the state: the Live Activity gets "active" from the state change; an update sent
+            // before it could arrive after it and leave "Reconnecting" on screen.
+            keepActivityFresh()
         } catch {
             guard started == generation else { return await discard() }
             failedResends += 1
