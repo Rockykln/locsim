@@ -108,6 +108,10 @@ enum LocationIntentRunner {
         switch await session.setAndWait(c, name: name) {
         case .set:
             return
+        case .failed(let error) where AppError.questionCodes.contains(error.code):
+            // The question waits in LocSim, and the answer there sets this place. Running the
+            // Shortcut again would only ask again.
+            throw LocationIntentError(String(localized: "LocSim needs an answer first. Open LocSim and answer the question there; then it sets the location. (\(error.code))"))
         case .failed(let error):
             throw LocationIntentError(error.summary)
         case .notSet:

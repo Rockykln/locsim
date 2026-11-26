@@ -344,7 +344,7 @@ final class SimulationSession: ObservableObject {
         switch askedCode {
         case AppError.otherVPNCode: return true
         case AppError.ddiConsentCode: allowDDIDownload()
-        case AppError.vpnNoticeCode: UserDefaults.standard.set(true, forKey: SettingsKey.vpnNoticeShown)
+        case AppError.vpnNoticeCode: tunnel.allowCreate = true
         default: break
         }
         return false
@@ -391,6 +391,7 @@ final class SimulationSession: ObservableObject {
             applying = false
             // Consent that this Set did not use (the link was still open) must not carry over.
             tunnel.allowTakeover = false
+            tunnel.allowCreate = false
             resolve(request, outcome)
             finishWork()
             releaseIfIdleInBackground()
@@ -469,6 +470,9 @@ final class SimulationSession: ObservableObject {
         defer { backgroundTime.end() }
         generation += 1
         stopResending()
+        // An open question is about a Set that Clear ends; answering it later would set that place again.
+        askedCode = nil
+        askedFor = nil
         // Nothing was set yet, so there is nothing to clear on the device. After a Clear that did
         // not finish there is: the normal path below stops the tunnel and settles that place.
         if active == nil, state == .connecting, unclearedPlace == nil {
@@ -1139,6 +1143,7 @@ final class SimulationSession: ObservableObject {
         runningCheck = started
         defer {
             runningCheck = nil
+            tunnel.allowCreate = false
             finishWork()
         }
         setPairingCheck(.checking)
@@ -1162,20 +1167,23 @@ final class SimulationSession: ObservableObject {
         }
     }
 
-    /// Before LocSim's VPN configuration is added for the first time: iOS turns off another VPN
-    /// that is selected, so the user is told first. Not needed once the configuration exists.
+    /// Before LocSim adds its VPN configuration: iOS turns off another VPN that is selected, so the
+    /// user is told first, also when the configuration was deleted later. Not needed while it exists.
     func needsVPNNotice() async -> Bool {
-        guard !isSimulated, !UserDefaults.standard.bool(forKey: SettingsKey.vpnNoticeShown) else { return false }
-        if await tunnel.hasConfiguration() {
-            // Added before this notice existed.
-            UserDefaults.standard.set(true, forKey: SettingsKey.vpnNoticeShown)
-            return false
-        }
-        return true
+        guard !isSimulated, !tunnel.allowCreate else { return false }
+        let exists = await tunnel.hasConfiguration()
+        return !exists
     }
 
+    /// Continue in the notice: the next tunnel start may add the configuration. A notice that a
+    /// Shortcut or a reconnect left open is answered with it.
     func acceptVPNNotice() {
-        UserDefaults.standard.set(true, forKey: SettingsKey.vpnNoticeShown)
+        tunnel.allowCreate = true
+        if state.error?.code == AppError.vpnNoticeCode, active == nil {
+            askedCode = nil
+            askedFor = nil
+            state = .idle
+        }
     }
 
     private func checkVPNNotice() async throws {

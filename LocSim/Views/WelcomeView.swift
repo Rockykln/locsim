@@ -55,7 +55,7 @@ struct WelcomeView: View {
                         }
                     }
                     step(5, "Allow the local connection",
-                         "When you first set a location, iOS asks to add a VPN configuration. LocSim only uses it to reach this iPhone; no traffic leaves the device through it. If another VPN is selected, iOS turns it off.")
+                         "When you first set a location, iOS asks to add a VPN configuration. LocSim only uses it to reach this iPhone; no traffic leaves the device through it. If another VPN is selected, iOS turns it off. iOS may also ask for location access, so the simulated location holds while LocSim is in the background.")
                 } footer: {
                     PairingFooter(notes: notes)
                 }

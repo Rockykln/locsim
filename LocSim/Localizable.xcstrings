@@ -5118,42 +5118,42 @@
         }
       }
     },
-    "LocSim adds a VPN configuration to reach this iPhone, and iOS asks to allow it. If another VPN is selected, iOS turns it off; select it again in Settings afterwards." : {
+    "LocSim adds a VPN configuration to reach this iPhone, and iOS asks to allow it. iOS may also ask for location access, so the simulated location holds while LocSim is in the background. If another VPN is selected, iOS turns it off; select it again in Settings afterwards." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "LocSim fügt eine VPN-Konfiguration hinzu, um dieses iPhone zu erreichen, und iOS fragt nach deiner Erlaubnis. Ist ein anderes VPN ausgewählt, schaltet iOS es aus. Wähle es danach in den Einstellungen wieder aus."
+            "value" : "LocSim fügt eine VPN-Konfiguration hinzu, um dieses iPhone zu erreichen, und iOS fragt nach deiner Erlaubnis. iOS fragt eventuell auch nach dem Zugriff auf deinen Standort, damit der simulierte Standort bestehen bleibt, während LocSim im Hintergrund läuft. Ist ein anderes VPN ausgewählt, schaltet iOS es aus. Wähle es danach in den Einstellungen wieder aus."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "LocSim añade una configuración VPN para acceder a este iPhone, e iOS te pide permiso. Si hay otra VPN seleccionada, iOS la desactiva; después, vuelve a seleccionarla en Ajustes."
+            "value" : "LocSim añade una configuración VPN para acceder a este iPhone, e iOS te pide permiso. Puede que iOS también pida acceso a tu ubicación, para que la ubicación simulada se mantenga mientras LocSim está en segundo plano. Si hay otra VPN seleccionada, iOS la desactiva; después, vuelve a seleccionarla en Ajustes."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "LocSim ajoute une configuration VPN pour joindre cet iPhone, et iOS demande votre autorisation. Si un autre VPN est sélectionné, iOS le désactive ; sélectionnez-le ensuite à nouveau dans Réglages."
+            "value" : "LocSim ajoute une configuration VPN pour joindre cet iPhone, et iOS demande votre autorisation. iOS peut aussi demander l’accès à votre position, pour que la position simulée soit conservée pendant que LocSim est en arrière-plan. Si un autre VPN est sélectionné, iOS le désactive ; sélectionnez-le ensuite à nouveau dans Réglages."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "LocSim aggiunge una configurazione VPN per raggiungere questo iPhone, e iOS chiede il permesso. Se è selezionata un’altra VPN, iOS la disattiva; poi selezionala di nuovo in Impostazioni."
+            "value" : "LocSim aggiunge una configurazione VPN per raggiungere questo iPhone, e iOS chiede il permesso. iOS potrebbe chiedere anche l’accesso alla posizione, così la posizione simulata resta attiva mentre LocSim è in background. Se è selezionata un’altra VPN, iOS la disattiva; poi selezionala di nuovo in Impostazioni."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "LocSim voegt een vpn-configuratie toe om deze iPhone te bereiken, en iOS vraagt om toestemming. Als er een andere vpn is geselecteerd, schakelt iOS die uit; selecteer die daarna weer in Instellingen."
+            "value" : "LocSim voegt een vpn-configuratie toe om deze iPhone te bereiken, en iOS vraagt om toestemming. iOS kan ook om toegang tot je locatie vragen, zodat de gesimuleerde locatie behouden blijft terwijl LocSim op de achtergrond is. Als er een andere vpn is geselecteerd, schakelt iOS die uit; selecteer die daarna weer in Instellingen."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O LocSim adiciona uma configuração de VPN para alcançar este iPhone, e o iOS pede permissão. Se outra VPN estiver selecionada, o iOS a desativa; depois, selecione-a de novo em Ajustes."
+            "value" : "O LocSim adiciona uma configuração de VPN para alcançar este iPhone, e o iOS pede permissão. O iOS também pode pedir acesso à sua localização, para que a localização simulada se mantenha enquanto o LocSim está em segundo plano. Se outra VPN estiver selecionada, o iOS a desativa; depois, selecione-a de novo em Ajustes."
           }
         }
       }
@@ -5234,6 +5234,47 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "O LocSim ainda não está configurado. Abra o LocSim e siga as etapas de configuração."
+          }
+        }
+      }
+    },
+    "LocSim needs an answer first. Open LocSim and answer the question there; then it sets the location. (%@)" : {
+      "comment" : "Shortcuts error when the Set waits for an answer in LocSim; %@ is the error code, e.g. LS-207",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim braucht zuerst eine Antwort. Öffne LocSim und beantworte dort die Frage, dann setzt LocSim den Standort. (%@)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim necesita antes una respuesta. Abre LocSim y responde allí a la pregunta; después establecerá la ubicación. (%@)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim a d’abord besoin d’une réponse. Ouvrez LocSim et répondez à la question ; LocSim définira ensuite la position. (%@)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim ha bisogno prima di una risposta. Apri LocSim e rispondi alla domanda; poi imposterà la posizione. (%@)"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LocSim heeft eerst een antwoord nodig. Open LocSim en beantwoord daar de vraag; daarna stelt LocSim de locatie in. (%@)"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O LocSim precisa de uma resposta primeiro. Abra o LocSim e responda à pergunta lá; depois ele define a localização. (%@)"
           }
         }
       }
@@ -9447,6 +9488,47 @@
         }
       }
     },
+    "Shows the question again." : {
+      "comment" : "VoiceOver hint of the status line when it shows an open question",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeigt die Frage erneut."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vuelve a mostrar la pregunta."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Affiche de nouveau la question."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra di nuovo la domanda."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toont de vraag opnieuw."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra a pergunta de novo."
+          }
+        }
+      }
+    },
     "Standard" : {
       "comment" : "Map style",
       "localizations" : {
@@ -10857,42 +10939,42 @@
         }
       }
     },
-    "When you first set a location, iOS asks to add a VPN configuration. LocSim only uses it to reach this iPhone; no traffic leaves the device through it. If another VPN is selected, iOS turns it off." : {
+    "When you first set a location, iOS asks to add a VPN configuration. LocSim only uses it to reach this iPhone; no traffic leaves the device through it. If another VPN is selected, iOS turns it off. iOS may also ask for location access, so the simulated location holds while LocSim is in the background." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Beim ersten Setzen eines Standorts fragt iOS, ob eine VPN-Konfiguration hinzugefügt werden darf. LocSim nutzt sie nur, um dieses iPhone zu erreichen. Darüber verlässt kein Datenverkehr das Gerät. Ist ein anderes VPN ausgewählt, schaltet iOS es aus."
+            "value" : "Beim ersten Setzen eines Standorts fragt iOS, ob eine VPN-Konfiguration hinzugefügt werden darf. LocSim nutzt sie nur, um dieses iPhone zu erreichen. Darüber verlässt kein Datenverkehr das Gerät. Ist ein anderes VPN ausgewählt, schaltet iOS es aus. iOS fragt eventuell auch nach dem Zugriff auf deinen Standort, damit der simulierte Standort bestehen bleibt, während LocSim im Hintergrund läuft."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La primera vez que estableces una ubicación, iOS pide añadir una configuración VPN. LocSim solo la usa para acceder a este iPhone. Ningún tráfico sale del dispositivo a través de ella. Si hay otra VPN seleccionada, iOS la desactiva."
+            "value" : "La primera vez que estableces una ubicación, iOS pide añadir una configuración VPN. LocSim solo la usa para acceder a este iPhone. Ningún tráfico sale del dispositivo a través de ella. Si hay otra VPN seleccionada, iOS la desactiva. Puede que iOS también pida acceso a tu ubicación, para que la ubicación simulada se mantenga mientras LocSim está en segundo plano."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La première fois que vous définissez une position, iOS demande d’ajouter une configuration VPN. LocSim l’utilise uniquement pour joindre cet iPhone. Aucun trafic ne quitte l’appareil par ce biais. Si un autre VPN est sélectionné, iOS le désactive."
+            "value" : "La première fois que vous définissez une position, iOS demande d’ajouter une configuration VPN. LocSim l’utilise uniquement pour joindre cet iPhone. Aucun trafic ne quitte l’appareil par ce biais. Si un autre VPN est sélectionné, iOS le désactive. iOS peut aussi demander l’accès à votre position, pour que la position simulée soit conservée pendant que LocSim est en arrière-plan."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La prima volta che imposti una posizione, iOS chiede di aggiungere una configurazione VPN. LocSim la usa solo per raggiungere questo iPhone. Nessun traffico esce dal dispositivo attraverso di essa. Se è selezionata un’altra VPN, iOS la disattiva."
+            "value" : "La prima volta che imposti una posizione, iOS chiede di aggiungere una configurazione VPN. LocSim la usa solo per raggiungere questo iPhone. Nessun traffico esce dal dispositivo attraverso di essa. Se è selezionata un’altra VPN, iOS la disattiva. iOS potrebbe chiedere anche l’accesso alla posizione, così la posizione simulata resta attiva mentre LocSim è in background."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wanneer je voor het eerst een locatie instelt, vraagt iOS om een vpn-configuratie toe te voegen. LocSim gebruikt deze alleen om deze iPhone te bereiken. Er verlaat geen verkeer het apparaat via deze configuratie. Als er een andere vpn is geselecteerd, schakelt iOS die uit."
+            "value" : "Wanneer je voor het eerst een locatie instelt, vraagt iOS om een vpn-configuratie toe te voegen. LocSim gebruikt deze alleen om deze iPhone te bereiken. Er verlaat geen verkeer het apparaat via deze configuratie. Als er een andere vpn is geselecteerd, schakelt iOS die uit. iOS kan ook om toegang tot je locatie vragen, zodat de gesimuleerde locatie behouden blijft terwijl LocSim op de achtergrond is."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Na primeira vez que você define uma localização, o iOS pede para adicionar uma configuração de VPN. O LocSim a usa apenas para alcançar este iPhone. Nenhum tráfego sai do dispositivo por ela. Se outra VPN estiver selecionada, o iOS a desativa."
+            "value" : "Na primeira vez que você define uma localização, o iOS pede para adicionar uma configuração de VPN. O LocSim a usa apenas para alcançar este iPhone. Nenhum tráfego sai do dispositivo por ela. Se outra VPN estiver selecionada, o iOS a desativa. O iOS também pode pedir acesso à sua localização, para que a localização simulada se mantenha enquanto o LocSim está em segundo plano."
           }
         }
       }

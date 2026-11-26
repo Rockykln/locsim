@@ -90,7 +90,7 @@ struct AppError: Error, Equatable {
                     String(localized: "Allow Local Network for LocSim under Settings > Privacy & Security > Local Network, then try again."))
         case .vpnNotice:
             return (vpnNoticeCode, String(localized: "Local connection"),
-                    String(localized: "LocSim adds a VPN configuration to reach this iPhone, and iOS asks to allow it. If another VPN is selected, iOS turns it off; select it again in Settings afterwards."))
+                    String(localized: "LocSim adds a VPN configuration to reach this iPhone, and iOS asks to allow it. iOS may also ask for location access, so the simulated location holds while LocSim is in the background. If another VPN is selected, iOS turns it off; select it again in Settings afterwards."))
         case .tunnel:
             return tunnelEntry(error, detail: detail)
         case .notConnected:

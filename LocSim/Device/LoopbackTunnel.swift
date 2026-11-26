@@ -15,6 +15,9 @@ final class LoopbackTunnel {
     private var loading: Task<NETunnelProviderManager, Error>?
     /// Set once the user agreed to replace another selected VPN; cleared after the next start.
     var allowTakeover = false
+    /// Set once the user saw the notice before the VPN configuration is added (LS-209); cleared
+    /// after the next start, so declining the iOS prompt brings the notice back.
+    var allowCreate = false
     /// Called when the tunnel stops while it is still wanted, e.g. another VPN took over.
     var onDrop: (() -> Void)?
 
@@ -30,8 +33,11 @@ final class LoopbackTunnel {
         stopWatching()
         let connection: NEVPNConnection
         do {
-            // Agreement to replace another VPN is for this attempt only.
-            defer { allowTakeover = false }
+            // Agreement to replace another VPN or to add the configuration is for this attempt only.
+            defer {
+                allowTakeover = false
+                allowCreate = false
+            }
             do {
                 connection = try await enabledManager().connection
             } catch {
@@ -180,6 +186,10 @@ final class LoopbackTunnel {
         for extra in own.dropFirst() { try? await extra.removeFromPreferences() }
         let existing = own.first
         if let existing, existing.isEnabled { return existing }
+        // Adding the configuration turns off another selected VPN; the user is told first.
+        if existing == nil, !allowCreate {
+            throw DeviceError(.vpnNotice, "VPN configuration not added yet")
+        }
         // iOS disables LocSim's configuration when the user selects another VPN. Enabling it
         // again would switch that VPN off, so only do it once the user agreed.
         if existing != nil, !allowTakeover {

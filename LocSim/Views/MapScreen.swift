@@ -424,8 +424,8 @@ struct MapScreen: View {
         ) { error in
             // Only this button gives consent; a Set that was waiting in the queue never does.
             Button(error.code == AppError.ddiConsentCode ? String(localized: "Download") : String(localized: "Continue")) {
-                // The answer sets the place that asked, which this screen set itself.
-                setFromApp = session.questionPlace ?? session.target
+                // No setFromApp here: the question may come from a Shortcut or a reconnect, and the
+                // map then follows the place once it is set (it stays put when the place is in view).
                 Task { await session.apply(consent: true) }
             }
             // The notice before the first VPN configuration leads to the system prompt, which can
@@ -1199,14 +1199,17 @@ struct MapScreen: View {
             }
 
             if let error = session.state.error {
+                // A question cancelled earlier can still be answered here while it is open. Once it
+                // is answered or a Clear ends it, the details (with Copy Details) are shown instead.
+                let asks = AppError.questionCodes.contains(error.code) && session.questionPlace != nil
+                    && !session.isClearing
                 Button {
-                    // A question cancelled earlier can still be answered here.
-                    if AppError.questionCodes.contains(error.code) { question = error } else { shownError = error }
+                    if asks { question = error } else { shownError = error }
                 } label: {
                     status
                 }
                 .buttonStyle(.plain)
-                .accessibilityHint("Shows error details")
+                .accessibilityHint(asks ? Text("Shows the question again.") : Text("Shows error details"))
             } else {
                 status
                     .accessibilityElement(children: .combine)
