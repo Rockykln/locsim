@@ -21,7 +21,8 @@ shift $((OPTIND - 1))
 cd "$(git rev-parse --show-toplevel)"
 
 # Every page that links the scripts, so a new language is not missed.
-pages="$(git grep -l 'raw.githubusercontent.com/Rockykln/locsim/' -- 'site/public/*.html' | tr '\n' ' ')"
+# git grep exits with 1 when nothing matches; with pipefail that would end the script silently.
+pages="$( (git grep -l 'raw.githubusercontent.com/Rockykln/locsim/' -- 'site/public/*.html' || true) | tr '\n' ' ')"
 [ -n "$pages" ] || die "no page in site/public links the setup scripts"
 scripts="tools/make-pairing.sh tools/make-pairing.ps1"
 raw_re='raw\.githubusercontent\.com/Rockykln/locsim/[^/"<[:space:]]+/tools/make-pairing\.(sh|ps1)'

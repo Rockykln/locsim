@@ -87,8 +87,9 @@ computer.
 
 - iPhone on iOS 17.4 or later with Developer Mode on
 - iPad: runs as an iPhone app; not tested extensively
-- Wi-Fi only while the connection is established (any network, no internet
-  required). Once connected, locations can be changed on cellular.
+- Wi-Fi only while the connection is established (any network; internet only when
+  the Developer Disk Image has to be installed). Once connected, locations can be changed
+  on cellular.
 - A Mac, Windows or Linux computer once, for Developer Mode and the pairing file
 
 ## TestFlight

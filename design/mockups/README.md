@@ -10,7 +10,8 @@ slides and joins up in the App Store. Title font: Inter (`fonts/`, SIL OFL 1.1).
 
 1. On the Mac, run `tools/screenshots.sh` (or `tools/screenshots.sh de fr` for some
    languages). It builds a Debug build for the iOS Simulator, sets the status bar to 9:41
-   and saves five screens per language and theme to `design/screenshots/<lang>/<theme>/`
+   and saves four screens per language and theme to `design/screenshots/<lang>/<theme>/`,
+   plus a light `<lang>/4-live.png` with the Lock Screen
    (not committed). The app runs in demo mode (`-demo map|search|recents|live|favorites`):
    sample places in the app's language, an active location, no device connection,
    nothing saved. Release builds ignore the argument.
@@ -23,7 +24,9 @@ slides and joins up in the App Store. Title font: Inter (`fonts/`, SIL OFL 1.1).
    Live Activities: allow it once and run that language again.
 2. Run `design/mockups/render.py` (needs Firefox, ImageMagick 7 and oxipng or optipng;
    set `FIREFOX` if Firefox is not on the PATH or in `/Applications`).
-   `--lang de,fr` renders only some languages, `--jobs N` sets how many images are rendered
+   `--lang de,fr` renders only some languages, `--slide 1-map,2-search` and `--theme light`
+   only some screens or one theme, `--size duo-inner,duo-outer` the iPhone Duo sizes
+   (default: 6.9", which also writes `out/6.3/`; Duo sizes need Duo screenshots), `--jobs N` sets how many images are rendered
    at once (default: half the CPU cores, at most 4). Titles are measured and get one size
    per language. A render that fails stops the run with an error instead of keeping an old
    image; images that have not started yet are skipped.
