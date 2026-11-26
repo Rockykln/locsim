@@ -109,7 +109,7 @@ enum LocationIntentRunner {
         case .set:
             return
         case .failed(let error):
-            throw LocationIntentError(error.summary)
+            throw LocationIntentError(session.summary(for: error))
         case .notSet:
             throw LocationIntentError(String(localized: "The location was not set."))
         }

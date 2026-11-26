@@ -15,8 +15,11 @@ final class LoopbackTunnel {
     private var loading: Task<NETunnelProviderManager, Error>?
     /// Set once the user agreed to replace another selected VPN; cleared after the next start.
     var allowTakeover = false
-    /// Called when the tunnel stops while it is still wanted, e.g. another VPN took over.
-    var onDrop: (() -> Void)?
+    /// Called when the tunnel stops while it is still wanted, e.g. another VPN took over. `removed`:
+    /// the configuration is gone (deleted in Settings, or the network settings were reset).
+    var onDrop: ((_ removed: Bool) -> Void)?
+    /// Lines for LocSim's log; never addresses.
+    var log: ((String) -> Void)?
 
     /// Counts starts, so a stop requested before one of them can step aside.
     private(set) var startCount = 0
@@ -102,7 +105,7 @@ final class LoopbackTunnel {
             MainActor.assumeIsolated {
                 guard let self, self.wanted, let status, [.disconnected, .invalid].contains(status) else { return }
                 self.stopWatching()
-                self.onDrop?()
+                self.onDrop?(status == .invalid)
             }
         }
     }
@@ -198,6 +201,7 @@ final class LoopbackTunnel {
         manager.isOnDemandEnabled = false
         manager.isEnabled = true
         try await manager.saveToPreferences()
+        log?(existing == nil ? "VPN configuration added" : "VPN configuration selected again")
         // A manager cannot start until it has been reloaded after saving.
         try await manager.loadFromPreferences()
         return manager

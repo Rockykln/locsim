@@ -482,7 +482,11 @@ struct SettingsView: View {
             if let port = session.port { parts.append(String(localized: "Port \(Int(port))")) }
             if session.isPreview { parts.append(String(localized: "The location of this iPhone does not change.")) }
             return parts.joined(separator: " · ")
-        case .reconnecting(let error), .failed(let error): return error.messageWithCode
+        // Reconnecting shows no title elsewhere in this row; the question texts need it.
+        case .reconnecting(let error): return error.summary
+        case .failed(let error):
+            let message = session.message(for: error).replacingOccurrences(of: "\n\n", with: " ")
+            return String(localized: "\(message) (\(error.code))")
         case .connecting: return session.connectStep
         default: return nil
         }

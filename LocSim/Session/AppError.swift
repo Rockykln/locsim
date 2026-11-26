@@ -47,12 +47,25 @@ struct AppError: Error, Equatable {
         let hostname = UserDefaults.standard.string(forKey: SettingsKey.hostname)?.trimmingCharacters(in: .whitespaces) ?? ""
         let port = UserDefaults.standard.string(forKey: SettingsKey.port)?.trimmingCharacters(in: .whitespaces) ?? ""
         let hostnameNote = hostname.isEmpty || hostname == Defaults.hostname ? "default" : "custom"
+        // An invalid value is ignored when connecting, so it is no manual port.
+        let portNote = port.isEmpty ? "auto" : PairingPorts.manual(port) == nil ? "invalid, auto" : "manual"
+        let mount = UserDefaults.standard.bool(forKey: SettingsKey.autoMount) ? "on" : "off"
+        let build = Self.osBuild.map { " (\($0))" } ?? ""
         return """
             \(code) \(title)
             \(detail)
-            LocSim \(AppLinks.version) \(AppLinks.commit), iOS \(v.majorVersion).\(v.minorVersion).\(v.patchVersion), \(Self.model)
-            hostname \(hostnameNote), port \(port.isEmpty ? "auto" : "manual")
+            LocSim \(AppLinks.version) \(AppLinks.commit), iOS \(v.majorVersion).\(v.minorVersion).\(v.patchVersion)\(build), \(Self.model)
+            hostname \(hostnameNote), port \(portNote), auto mount \(mount)
             """
+    }
+
+    /// The iOS build, e.g. 23C5027a, which tells a beta apart from a release.
+    private static var osBuild: String? {
+        var size = 0
+        guard sysctlbyname("kern.osversion", nil, &size, nil, 0) == 0, size > 0 else { return nil }
+        var buffer = [CChar](repeating: 0, count: size)
+        guard sysctlbyname("kern.osversion", &buffer, &size, nil, 0) == 0 else { return nil }
+        return String(cString: buffer)
     }
 
     /// The model identifier, e.g. iPhone18,3.
@@ -138,7 +151,7 @@ struct AppError: Error, Equatable {
                     String(localized: "Join a Wi-Fi network and try again."))
         case .unavailable:
             return (pairingServiceCode, String(localized: "Pairing service unavailable"),
-                    String(localized: "Join a Wi-Fi network. If it keeps failing, enable Show this iPhone when on Wi-Fi in Finder. Also allow Local Network for LocSim under Settings > Privacy & Security > Local Network."))
+                    String(localized: "Join a Wi-Fi network. If it keeps failing, enable Show this iPhone when on Wi-Fi in Finder, or in the Apple Devices app on Windows. Also allow Local Network for LocSim under Settings > Privacy & Security > Local Network."))
         case .other:
             return (connectionFailedCode, String(localized: "Connection failed"),
                     String(localized: "The connection to the device broke off. Check Wi-Fi and try again."))

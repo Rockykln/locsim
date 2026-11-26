@@ -1527,17 +1527,7 @@ struct MapScreen: View {
     /// Adds the way the app itself offers, which the general texts (also used on the website and
     /// in Shortcuts) leave out.
     private func errorMessage(_ error: AppError) -> String {
-        guard case .failed(let current) = session.state, current == error else { return error.message }
-        switch error.code {
-        // After all attempts failed nothing reconnects by itself; the general text says it does
-        // while a location is active.
-        case AppError.notConnectedCode:
-            return error.message + "\n\n" + String(localized: "Tap Set Location to connect again.")
-        case AppError.clearFailedCode where session.canClear:
-            return error.message + "\n\n" + String(localized: "You can also tap Clear to try again.")
-        default:
-            return error.message
-        }
+        session.message(for: error)
     }
 
     /// Every Set goes through here; without a pairing file it opens the setup steps instead.
