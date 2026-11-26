@@ -390,7 +390,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un fichier de jumelage se trouve encore dans le dossier de LocSim dans Fichiers : %@. Il contient une clé pour cet appareil et fait partie de ses sauvegardes. Supprimez-le là-bas si vous n’en avez plus besoin."
+            "value" : "Un fichier de jumelage se trouve encore dans le dossier de LocSim dans Fichiers : %@. Il contient une clé pour cet appareil et fait partie de ses sauvegardes. Supprimez-le dans Fichiers si vous n’en avez plus besoin."
           }
         },
         "it" : {
@@ -512,13 +512,13 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Une simulation en cours s’arrête."
+            "value" : "Toute simulation en cours sera arrêtée."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Una simulazione in corso si interrompe."
+            "value" : "L’eventuale simulazione in corso verrà interrotta."
           }
         },
         "nl" : {
@@ -552,13 +552,13 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Une simulation en cours s’arrête. Le script de configuration est nécessaire pour en créer un nouveau."
+            "value" : "Toute simulation en cours sera arrêtée. Le script de configuration est nécessaire pour en créer un nouveau."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Una simulazione in corso si interrompe. Per crearne uno nuovo serve lo script di configurazione."
+            "value" : "L’eventuale simulazione in corso verrà interrotta. Per crearne uno nuovo serve lo script di configurazione."
           }
         },
         "nl" : {
@@ -639,7 +639,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Circa 16 MB. LocSim chiede di nuovo prima di scaricarli."
+            "value" : "Circa 16 MB. LocSim chiederà di nuovo prima di scaricarli."
           }
         },
         "nl" : {
@@ -966,7 +966,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ander vpn geselecteerd"
+            "value" : "Ander VPN geselecteerd"
           }
         },
         "pt-BR" : {
@@ -2225,6 +2225,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Koordinaten oder ein Karten-Link"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coordinates or a map link"
           }
         },
         "es" : {
@@ -3985,7 +3991,7 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ocultar Até a Próxima Localização"
+            "value" : "Ocultar até a Próxima Localização"
           }
         }
       }
@@ -4117,7 +4123,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zeigt Einstellungen bei LocSim keine Option „Sprache“, füge zuerst unter „Allgemein > Sprache & Region“ eine weitere Sprache hinzu."
+            "value" : "Fehlt in den Einstellungen bei LocSim die Option „Sprache“, füge zuerst unter Einstellungen > Allgemein > Sprache & Region eine weitere Sprache hinzu."
           }
         },
         "es" : {
@@ -4566,7 +4572,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mantiene tus favoritos iguales en todos los dispositivos con tu cuenta de Apple, a través de tu iCloud. La frecuencia de uso de cada favorito se queda en este dispositivo."
+            "value" : "Sincroniza tus favoritos con iCloud en todos los dispositivos con tu cuenta de Apple. La frecuencia de uso de cada favorito se queda en este dispositivo."
           }
         },
         "fr" : {
@@ -4578,7 +4584,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mantiene uguali i tuoi preferiti su tutti i dispositivi con il tuo Account Apple, tramite il tuo iCloud. La frequenza d’uso di ogni preferito resta su questo dispositivo."
+            "value" : "Mantiene sincronizzati i tuoi preferiti tramite iCloud su tutti i dispositivi con il tuo Account Apple. La frequenza d’uso di ogni preferito resta su questo dispositivo."
           }
         },
         "nl" : {
@@ -5147,7 +5153,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "LocSim voegt een vpn-configuratie toe om deze iPhone te bereiken, en iOS vraagt om toestemming. iOS kan ook om toegang tot je locatie vragen, zodat de gesimuleerde locatie behouden blijft terwijl LocSim op de achtergrond is. Als er een andere vpn is geselecteerd, schakelt iOS die uit; selecteer die daarna weer in Instellingen."
+            "value" : "LocSim voegt een VPN-configuratie toe om deze iPhone te bereiken, en iOS vraagt om toestemming. iOS kan ook om toegang tot je locatie vragen, zodat de gesimuleerde locatie behouden blijft terwijl LocSim op de achtergrond is. Als er een ander VPN is geselecteerd, schakelt iOS dat uit; selecteer het daarna weer in Instellingen."
           }
         },
         "pt-BR" : {
@@ -5187,7 +5193,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "LocSim kon de verbinding met deze iPhone niet starten. Sta de vpn-configuratie toe wanneer iOS erom vraagt en probeer het opnieuw."
+            "value" : "LocSim kon de verbinding met deze iPhone niet starten. Sta de VPN-configuratie toe wanneer iOS erom vraagt en probeer het opnieuw."
           }
         },
         "pt-BR" : {
@@ -5389,7 +5395,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "De lokale verbinding van LocSim vervangt deze zolang een locatie actief is. Selecteer je vpn daarna weer in Instellingen."
+            "value" : "De lokale verbinding van LocSim vervangt deze zolang een locatie actief is. Selecteer je VPN daarna weer in Instellingen."
           }
         },
         "pt-BR" : {
@@ -5429,7 +5435,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "De lokale verbinding van LocSim vervangt deze zolang een locatie actief is. Tik opnieuw op ‘Stel locatie in’ om door te gaan en selecteer je vpn daarna weer in Instellingen."
+            "value" : "De lokale verbinding van LocSim vervangt deze zolang een locatie actief is. Tik opnieuw op ‘Stel locatie in’ om door te gaan en selecteer je VPN daarna weer in Instellingen."
           }
         },
         "pt-BR" : {
@@ -6705,7 +6711,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Des fichiers de jumelage se trouvent encore dans le dossier de LocSim dans Fichiers : %@. Ils contiennent une clé pour cet appareil et font partie de ses sauvegardes. Supprimez-les là-bas si vous n’en avez plus besoin."
+            "value" : "Des fichiers de jumelage se trouvent encore dans le dossier de LocSim dans Fichiers : %@. Ils contiennent une clé pour cet appareil et font partie de ses sauvegardes. Supprimez-les dans Fichiers si vous n’en avez plus besoin."
           }
         },
         "it" : {
@@ -9116,13 +9122,13 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "‘Instellen bij selectie’ verstuurt een keuze meteen. ‘Recente locaties’ onthoudt de laatste vijf; uitschakelen wist ze. De laatste locatie blijft voor de kaart en ‘Stel laatste locatie in’."
+            "value" : "‘Instellen bij selectie’ verstuurt een keuze meteen. ‘Recente locaties’ onthoudt de laatste vijf; uitschakelen wist ze. De laatste locatie blijft bewaard voor de kaart en voor ‘Stel laatste locatie in’."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“Definir ao Selecionar” envia a escolha imediatamente. “Locais Recentes” guarda os últimos cinco; desativar apaga todos. A última localização fica para o mapa e para “Definir Última Localização”."
+            "value" : "“Definir ao Selecionar” envia a escolha imediatamente. “Locais Recentes” guarda os últimos cinco; desativar apaga todos. A última localização continua disponível para o mapa e para “Definir Última Localização”."
           }
         }
       }
@@ -10351,13 +10357,13 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les lieux récents de cet iPhone sont effacés."
+            "value" : "Les lieux récents de cet iPhone seront effacés."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le posizioni recenti su questo iPhone vengono cancellate."
+            "value" : "Le posizioni recenti su questo iPhone verranno cancellate."
           }
         },
         "nl" : {
@@ -10426,7 +10432,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La zona horaria ha cambiado a %@ con el lugar simulado. Toca para ver detalles."
+            "value" : "Nueva zona horaria con el lugar simulado: %@. Toca para ver detalles."
           }
         },
         "fr" : {
@@ -10438,7 +10444,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il fuso orario è passato a %@ con il luogo simulato. Tocca per i dettagli."
+            "value" : "Nuovo fuso orario con il luogo simulato: %@. Tocca per i dettagli."
           }
         },
         "nl" : {
@@ -10467,31 +10473,31 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La zona horaria sigue al lugar simulado y ahora es %@. Para mantener la zona horaria real, desactiva Ajustes > Privacidad y seguridad > Localización > Servicios del sistema > Ajuste de zona horaria."
+            "value" : "La zona horaria sigue al lugar simulado: %@. Para mantener la zona horaria real, desactiva Ajustes > Privacidad y seguridad > Localización > Servicios del sistema > Ajuste de zona horaria."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le fuseau horaire suit le lieu simulé : %@. Pour garder le vrai fuseau horaire, désactivez Réglages > Confidentialité et sécurité > Service de localisation > Services système > Réglage du fuseau horaire."
+            "value" : "Le fuseau horaire suit le lieu simulé : %@. Pour garder le vrai fuseau horaire, désactivez Réglages > Confidentialité et sécurité > Service de localisation > Services système > Définition du fuseau horaire."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il fuso orario segue il luogo simulato ed è ora %@. Per mantenere il fuso orario reale, disattiva Impostazioni > Privacy e sicurezza > Localizzazione > Servizi di sistema > Impostazione fuso orario."
+            "value" : "Il fuso orario segue il luogo simulato: %@. Per mantenere il fuso orario reale, disattiva Impostazioni > Privacy e sicurezza > Localizzazione > Servizi di sistema > Impostazione fuso orario."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "De tijdzone volgt de gesimuleerde plaats en is nu %@. Om de echte tijdzone te houden, zet je Instellingen > Privacy en beveiliging > Locatievoorzieningen > Systeemvoorzieningen > Stel tijdzone in uit."
+            "value" : "De tijdzone volgt de gesimuleerde plaats en is nu %@. Om de echte tijdzone te houden, zet je Instellingen > Privacy en beveiliging > Locatievoorzieningen > Systeemvoorzieningen > Tijdzone instellen uit."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O fuso horário segue o local simulado e agora é %@. Para manter o fuso horário real, desative Ajustes > Privacidade e Segurança > Serviços de Localização > Serviços do Sistema > Ajuste do Fuso Horário."
+            "value" : "O fuso horário segue o local simulado e agora é %@. Para manter o fuso horário real, desative Ajustes > Privacidade e Segurança > Serviços de Localização > Serviços do Sistema > Ajuste de Fuso Horário."
           }
         }
       }
@@ -10968,7 +10974,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wanneer je voor het eerst een locatie instelt, vraagt iOS om een vpn-configuratie toe te voegen. LocSim gebruikt deze alleen om deze iPhone te bereiken. Er verlaat geen verkeer het apparaat via deze configuratie. Als er een andere vpn is geselecteerd, schakelt iOS die uit. iOS kan ook om toegang tot je locatie vragen, zodat de gesimuleerde locatie behouden blijft terwijl LocSim op de achtergrond is."
+            "value" : "Wanneer je voor het eerst een locatie instelt, vraagt iOS om een VPN-configuratie toe te voegen. LocSim gebruikt deze alleen om deze iPhone te bereiken. Er verlaat geen verkeer het apparaat via deze configuratie. Als er een ander VPN is geselecteerd, schakelt iOS dat uit. iOS kan ook om toegang tot je locatie vragen, zodat de gesimuleerde locatie behouden blijft terwijl LocSim op de achtergrond is."
           }
         },
         "pt-BR" : {
