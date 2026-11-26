@@ -22,8 +22,16 @@ final class TimeZoneWatch: ObservableObject {
     // place's zone when the next one starts.
     private var recentReal: (zone: TimeZone, until: Date)?
     private var notified = false
+    // The zone the notice was hidden or notified for: another zone, from the next place, shows
+    // and notifies again, also when that place was set without a Clear in between.
+    private var handledZone: String?
     private var observer: NSObjectProtocol?
     private static let notificationID = "timeZoneChanged"
+
+    private init() {
+        // Left from an earlier run that iOS ended: nothing is simulated after a launch.
+        Self.removeNotification()
+    }
 
     var showsNotice: Bool { changedTo != nil && !dismissed }
 
@@ -40,6 +48,7 @@ final class TimeZoneWatch: ObservableObject {
         changedTo = nil
         dismissed = false
         notified = false
+        handledZone = nil
         observer = NotificationCenter.default.addObserver(
             forName: .NSSystemTimeZoneDidChange, object: nil, queue: .main
         ) { [weak self] _ in
@@ -58,6 +67,7 @@ final class TimeZoneWatch: ObservableObject {
         recentReal = (real, Date().addingTimeInterval(10 * 60))
         self.real = nil
         changedTo = nil
+        handledZone = nil
         if let observer { NotificationCenter.default.removeObserver(observer) }
         observer = nil
         Self.removeNotification()
@@ -82,6 +92,12 @@ final class TimeZoneWatch: ObservableObject {
             return
         }
         changedTo = now
+        if let handledZone, handledZone != now.identifier {
+            dismissed = false
+            if notified { Self.removeNotification() }
+            notified = false
+        }
+        handledZone = now.identifier
         // Hidden for this location means no notification either.
         if UIApplication.shared.applicationState != .active, !notified, !dismissed {
             notified = true

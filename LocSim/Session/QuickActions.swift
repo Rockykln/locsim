@@ -20,7 +20,9 @@ enum QuickActions {
         if simulating && !assumingIdle {
             items.append(item(.clear, String(localized: "Clear Location"), symbol: "arrow.uturn.backward"))
         } else if LastCoordinate.isSaved {
-            items.append(item(.last, String(localized: "Set Last Location"), subtitle: LastCoordinate.loadName(),
+            // An unnamed place shows its coordinates, so it is clear where this goes.
+            items.append(item(.last, String(localized: "Set Last Location"),
+                              subtitle: LastCoordinate.loadName() ?? CoordinateParser.format(LastCoordinate.load()),
                               symbol: "location.fill"))
         }
         for favorite in FavoriteUsage.ranked(FavoriteList.shared.items).prefix(2) {

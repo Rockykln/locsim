@@ -245,6 +245,11 @@ final class SimulationSession: ObservableObject {
         guard !isSimulated, !clearing, let active, state == .active || state.isReconnecting else { return nil }
         return (active, activeName)
     }
+    /// The place to announce after a Set, also in the preview, which `simulatedPlace` leaves out.
+    var announcedPlace: (coordinate: CLLocationCoordinate2D, name: String?)? {
+        guard !clearing, let active, state == .active || state.isReconnecting else { return nil }
+        return (active, activeName)
+    }
     /// The place of a Clear that did not finish: the device may still simulate it.
     private(set) var unclearedPlace: (coordinate: CLLocationCoordinate2D, name: String?)? {
         didSet {
