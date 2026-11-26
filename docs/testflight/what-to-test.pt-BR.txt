@@ -1,7 +1,7 @@
-A build 9 corrige o que apareceu na build 8. Seus favoritos e ajustes são mantidos.
+A build 10 substitui as builds anteriores. Ela corrige o que apareceu na build 8; para quem testa no Early Access, é igual à build 9. Seus favoritos e ajustes são mantidos.
 
 Teste:
-- Primeira conexão: antes de adicionar a configuração de VPN pela primeira vez, o LocSim a explica e pede para você continuar (LS-209). Você só vê isso se a configuração de VPN do LocSim ainda não existir, por exemplo depois de apagá-la nos ajustes do iOS, em VPN.
+- Primeira conexão: antes de adicionar a configuração de VPN pela primeira vez, o LocSim a explica e pede para você continuar (LS-209). Você só vê isso se a configuração de VPN do LocSim ainda não existir. Para ver, apague a configuração nos ajustes do iOS, em VPN, antes de definir uma localização pela primeira vez com a build 10.
 - Apagar pergunta antes: remover um favorito com a estrela, limpar os locais recentes, desativar “Locais Recentes”, apagar os arquivos DDI e remover ou substituir o arquivo de emparelhamento.
 - Arquivo de emparelhamento: “Verificar Arquivo de Emparelhamento” confere o arquivo com mais cuidado. Um arquivo de emparelhamento lockdown antigo é informado como arquivo incorreto (LS-102), e um iPhone cheio como “Armazenamento insuficiente” (LS-901).
 - Redefinir: se uma redefinição não terminar, a Atividade ao Vivo, o widget e as ações rápidas continuam mostrando o lugar, e dá para tocar em “Redefinir” de novo.

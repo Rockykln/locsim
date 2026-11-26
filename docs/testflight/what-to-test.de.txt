@@ -1,7 +1,7 @@
-Build 9 behebt, was bei Build 8 aufgefallen ist. Deine Favoriten und Einstellungen bleiben erhalten.
+Build 10 ersetzt die bisherigen Builds. Er behebt, was bei Build 8 aufgefallen ist; für Early-Access-Tester ist er derselbe wie Build 9. Deine Favoriten und Einstellungen bleiben erhalten.
 
 Bitte teste:
-- Erste Verbindung: Bevor LocSim seine VPN-Konfiguration zum ersten Mal anlegt, erklärt es sie und fragt, ob du fortfahren willst (LS-209). Das siehst du nur, wenn es die VPN-Konfiguration von LocSim noch nicht gibt, etwa nachdem du sie in den iOS-Einstellungen unter VPN gelöscht hast.
+- Erste Verbindung: Bevor LocSim seine VPN-Konfiguration zum ersten Mal anlegt, erklärt es sie und fragt, ob du fortfahren willst (LS-209). Das siehst du nur, wenn es die VPN-Konfiguration von LocSim noch nicht gibt. Um den Hinweis zu sehen, lösche die Konfiguration in den iOS-Einstellungen unter VPN, bevor du mit Build 10 zum ersten Mal einen Standort setzt.
 - Löschen fragt vorher nach: Favorit mit dem Stern entfernen, letzte Orte leeren, „Letzte Orte“ ausschalten, DDI-Dateien löschen sowie die Pairing-Datei entfernen oder ersetzen.
 - Pairing-Datei: „Pairing-Datei prüfen“ prüft die Datei gründlicher. Eine alte Lockdown-Pairing-Datei wird als falsche Datei gemeldet (LS-102), ein volles iPhone als „Nicht genug Speicher“ (LS-901).
 - Zurücksetzen: Wird ein Zurücksetzen nicht fertig, zeigen Live-Aktivität, Widget und Schnellaktionen weiter den Ort, und „Zurücksetzen“ lässt sich erneut tippen.

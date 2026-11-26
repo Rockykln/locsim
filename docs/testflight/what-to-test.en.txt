@@ -1,7 +1,7 @@
-Build 9 fixes what came up with build 8. Your favorites and settings are kept.
+Build 10 replaces the earlier builds. It fixes what came up with build 8; for Early Access testers it is the same as build 9. Your favorites and settings are kept.
 
 Please test:
-- First connection: before LocSim adds its VPN configuration for the first time, it explains it and asks you to continue (LS-209). You only see this if LocSim's VPN configuration does not exist yet, for example after deleting it in the iOS settings under VPN.
+- First connection: before LocSim adds its VPN configuration for the first time, it explains it and asks you to continue (LS-209). You only see this if LocSim's VPN configuration does not exist yet. To see it, delete the configuration in the iOS settings under VPN before you set a location with build 10 for the first time.
 - Deleting asks first: removing a favorite with the star, clearing the recent places, turning off Recent Locations, deleting the DDI files, and removing or replacing the pairing file.
 - Pairing file: Check Pairing File checks the file more thoroughly. An old lockdown pairing file is reported as the wrong file (LS-102), and a full iPhone as Not enough storage (LS-901).
 - Clear: if a Clear does not finish, the Live Activity, the widget and the quick actions keep showing the place, and Clear can be tapped again.

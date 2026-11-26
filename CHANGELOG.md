@@ -2,6 +2,10 @@
 
 What changed in each version that testers received through TestFlight.
 
+## 1.0 (10), 26 November 2026
+
+Same as build 9, for all testers. Build 9 went to Early Access only.
+
 ## 1.0 (9), 25 November 2026
 
 Fixes for what came up with build 8:

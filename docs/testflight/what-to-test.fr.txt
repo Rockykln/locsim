@@ -1,7 +1,7 @@
-Le build 9 corrige ce qui est apparu avec le build 8. Vos favoris et réglages sont conservés.
+Le build 10 remplace les builds précédents. Il corrige ce qui est apparu avec le build 8 ; pour les testeurs Early Access, il est identique au build 9. Vos favoris et réglages sont conservés.
 
 À tester :
-- Première connexion : avant d’ajouter sa configuration VPN pour la première fois, LocSim l’explique et vous demande de continuer (LS-209). Vous ne le voyez que si la configuration VPN de LocSim n’existe pas encore, par exemple après l’avoir supprimée dans les réglages d’iOS, sous VPN.
+- Première connexion : avant d’ajouter sa configuration VPN pour la première fois, LocSim l’explique et vous demande de continuer (LS-209). Vous ne le voyez que si la configuration VPN de LocSim n’existe pas encore. Pour le voir, supprimez la configuration dans les réglages d’iOS, sous VPN, avant de définir une position pour la première fois avec le build 10.
 - Supprimer demande d’abord confirmation : retirer un favori avec l’étoile, effacer les lieux récents, désactiver « Lieux récents », supprimer les fichiers DDI, et supprimer ou remplacer le fichier de jumelage.
 - Fichier de jumelage : « Vérifier le fichier de jumelage » contrôle le fichier plus en détail. Un ancien fichier de jumelage lockdown est signalé comme mauvais fichier (LS-102), et un iPhone plein comme « Stockage insuffisant » (LS-901).
 - Réinitialiser : si une réinitialisation n’aboutit pas, l’activité en direct, le widget et les actions rapides continuent d’afficher le lieu, et « Réinitialiser » peut être touché de nouveau.
