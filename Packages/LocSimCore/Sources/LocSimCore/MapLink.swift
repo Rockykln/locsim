@@ -41,7 +41,8 @@ public enum MapLink {
         var count: [Character: Int] = [:]
         for c in link where "()[]{}".contains(c) { count[c, default: 0] += 1 }
         while let last = link.last {
-            if ".,;:!?'\"".contains(last) {
+            // Typographic quotes and CJK punctuation too: „https://…“, «https://…», 「https://…」.
+            if ".,;:!?'\"”“’‘»«›‹」』。，、".contains(last) {
                 link.removeLast()
             } else if let open = opening[last], count[last, default: 0] > count[open, default: 0] {
                 link.removeLast()
@@ -108,10 +109,24 @@ public enum MapLink {
         return host == "maps.app.goo.gl" || (host == "goo.gl" && url.path.hasPrefix("/maps"))
     }
 
-    /// Query values with "+" for spaces, as Google writes them.
+    /// Query values with "+" for spaces, as Google writes them. Read encoded, so an encoded plus
+    /// ("A%2BB") stays a plus.
     static func value(_ name: String, in url: URL) -> String? {
-        let items = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems ?? []
-        return items.first(where: { $0.name.lowercased() == name })?.value?.replacingOccurrences(of: "+", with: " ")
+        let items = URLComponents(url: url, resolvingAgainstBaseURL: false)?.percentEncodedQueryItems ?? []
+        guard let raw = items.first(where: { ($0.name.removingPercentEncoding ?? $0.name).lowercased() == name })?.value
+        else { return nil }
+        return decoded(raw)
+    }
+
+    private static func decoded(_ raw: String) -> String {
+        let spaced = raw.replacingOccurrences(of: "+", with: " ")
+        return spaced.removingPercentEncoding ?? spaced
+    }
+
+    /// The path split before decoding, so "Karlova 186/25" in one segment stays one part.
+    /// Empty segments are kept.
+    static func pathParts(_ url: URL) -> [String] {
+        url.path(percentEncoded: true).split(separator: "/", omittingEmptySubsequences: false).map { decoded(String($0)) }
     }
 
     /// The place name in a link, to label the pin or to search for when there are no coordinates.
@@ -127,23 +142,33 @@ public enum MapLink {
                 let label = String(value[value.index(after: open)..<value.index(before: value.endIndex)])
                 let base = String(value[..<open]).trimmingCharacters(in: .whitespaces)
                 value = CoordinateText.parse(base) != nil || base.isEmpty ? label : base
+                value = value.trimmingCharacters(in: .whitespaces)
             }
-            if CoordinateText.parse(value) != nil { continue }
+            // An empty label, "geo:48.85,2.35?q=48.85,2.35()", names nothing.
+            if value.isEmpty || CoordinateText.parse(value) != nil { continue }
             return value
         }
         // Google Maps: /maps/place/<name>/… and /maps/search/<name>/…
-        let parts = url.pathComponents
+        let parts = pathParts(url).filter { !$0.isEmpty }
         if let maps = parts.firstIndex(of: "maps"), parts.indices.contains(maps + 2),
            ["place", "search"].contains(parts[maps + 1]) {
-            let name = parts[maps + 2].replacingOccurrences(of: "+", with: " ")
+            let name = parts[maps + 2]
             if !name.hasPrefix("@"), CoordinateText.parse(name) == nil { return name }
         }
         // Directions, /maps/dir/<start>/<destination>/@…: the last stop, as for coordinates.
-        if let stop = routeDestination(url) {
-            let name = stop.replacingOccurrences(of: "+", with: " ")
-            if CoordinateText.parse(name) == nil { return name }
-        }
+        if let stop = routeDestination(url), CoordinateText.parse(stop) == nil { return stop }
         return nil
+    }
+
+    /// What to search for when a link has no coordinates: the name with the address when the link
+    /// has both, so a place of the same name near the current map view is not taken instead.
+    /// The name alone stays the label of the pin.
+    public static func searchTerm(_ url: URL) -> String? {
+        guard let name = placeName(url) else { return nil }
+        guard let address = value("address", in: url)?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !address.isEmpty, CoordinateText.parse(address) == nil, !name.contains(address)
+        else { return name }
+        return "\(name), \(address)"
     }
 
     /// The destination of a Google Maps route, /maps/dir/<start>/<destination>/@…, without the map
@@ -152,7 +177,7 @@ public enum MapLink {
     /// is no destination.
     static func routeDestination(_ url: URL) -> String? {
         // Split by hand: pathComponents drops empty segments, which would make the start the last stop.
-        var parts = url.path.split(separator: "/", omittingEmptySubsequences: false).map(String.init)
+        var parts = pathParts(url)
         if parts.last == "" { parts.removeLast() }
         guard let maps = parts.firstIndex(of: "maps"), parts.indices.contains(maps + 1), parts[maps + 1] == "dir",
               let stop = parts.dropFirst(maps + 2).filter({ !$0.hasPrefix("@") && !$0.contains("=") }).last,

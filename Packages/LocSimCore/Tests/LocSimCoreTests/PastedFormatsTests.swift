@@ -72,7 +72,10 @@ final class PastedFormatsTests: XCTestCase {
 
     func testAndIsNoHemisphere() {
         XCTAssertNil(parse("41.9028 e 12.4964", "it"))
-        XCTAssertNil(parse("Lat: 38.7223 e Long: -9.1393", "pt"))
+        // With axis labels the "e" is "and", and the labels give the order.
+        XCTAssertEqual(parse("Lat: 38.7223 e Long: -9.1393", "pt"), Coordinate(latitude: 38.7223, longitude: -9.1393))
+        XCTAssertEqual(parse("Latitudine: 41.9028 e Longitudine: 12.4964", "it"),
+                       Coordinate(latitude: 41.9028, longitude: 12.4964))
         // An uppercase E stays east.
         XCTAssertEqual(parse("2.3522 E 48.8566"), paris)
         XCTAssertEqual(parse("48.85 N 2.35"), Coordinate(latitude: 48.85, longitude: 2.35))
@@ -162,6 +165,55 @@ final class PastedFormatsTests: XCTestCase {
             _ = MapLink.url(in: text)
             XCTAssertLessThan(Date().timeIntervalSince(start), 0.5, String(text.prefix(30)))
         }
+    }
+
+    func testLabelsAsWrittenInTheAppLanguages() {
+        let munich = Coordinate(latitude: 48.137154, longitude: 11.576124)
+        XCTAssertEqual(parse("GPS-Koordinaten: 48.137154, 11.576124", "de"), munich)
+        XCTAssertEqual(parse("Lat. 48.8566, Long. 2.3522"), paris)
+        // "GPS" before a label must not hide the axis.
+        XCTAssertEqual(parse("GPS Lon: 2.3522, GPS Lat: 48.8566"), paris)
+        XCTAssertEqual(parse("48.137154 / 11.576124"), munich)
+        // A slash between whole numbers is still a name where whole numbers are refused.
+        XCTAssertNil(parse("7 / 11"))
+        XCTAssertEqual(CoordinateText.parse("7 / 11", language: "en", allowWholeNumbers: true),
+                       Coordinate(latitude: 7, longitude: 11))
+    }
+
+    func testOldGoogleRouteLinkSearchesTheNamedDestination() throws {
+        // ll is only the map view; the named destination is searched instead of the view.
+        let link = "https://maps.google.com/maps?daddr=Eiffel+Tower&ll=48.87,2.33&z=12"
+        XCTAssertNil(parse(link))
+        XCTAssertEqual(MapLink.placeName(try XCTUnwrap(URL(string: link))), "Eiffel Tower")
+        // Apple links keep reading ll.
+        XCTAssertEqual(parse("https://maps.apple.com/?daddr=Eiffel+Tower&ll=48.8566,2.3522"), paris)
+    }
+
+    func testSlashAndPlusInLinkNames() throws {
+        let route = try XCTUnwrap(URL(string: "https://www.google.com/maps/dir/Prague+Castle/Karlova+186%2F25,+Praha/@50.08,14.41,15z"))
+        XCTAssertEqual(MapLink.placeName(route), "Karlova 186/25, Praha")
+        XCTAssertNil(parse(route.absoluteString))
+        let place = try XCTUnwrap(URL(string: "https://www.google.com/maps/place/Mariahilfer+Stra%C3%9Fe+12%2F3/@48.19,16.35,17z"))
+        XCTAssertEqual(MapLink.placeName(place), "Mariahilfer Straße 12/3")
+        XCTAssertEqual(MapLink.placeName(try XCTUnwrap(URL(string: "https://maps.google.com/?q=A%2BB+Cafe"))), "A+B Cafe")
+        // An empty geo: label names nothing.
+        XCTAssertNil(MapLink.placeName(try XCTUnwrap(URL(string: "geo:48.8566,2.3522?q=48.8566,2.3522()"))))
+    }
+
+    func testLinksInTypographicQuotes() {
+        for text in ["„https://maps.apple.com/?ll=48.8566,2.3522“", "«https://maps.apple.com/?ll=48.8566,2.3522»",
+                     "“https://maps.apple.com/?ll=48.8566,2.3522”", "「https://maps.apple.com/?ll=48.8566,2.3522」"] {
+            XCTAssertEqual(parse(text), paris, text)
+            XCTAssertEqual(MapLink.url(in: text)?.absoluteString, "https://maps.apple.com/?ll=48.8566,2.3522", text)
+        }
+    }
+
+    func testSearchTermAddsTheAddress() throws {
+        let link = try XCTUnwrap(URL(string: "https://maps.apple.com/?name=Cafe+Central&address=Herrengasse+14,+Wien"))
+        XCTAssertEqual(MapLink.placeName(link), "Cafe Central")
+        XCTAssertEqual(MapLink.searchTerm(link), "Cafe Central, Herrengasse 14, Wien")
+        let addressOnly = try XCTUnwrap(URL(string: "https://maps.apple.com/?address=Herrengasse+14,+Wien"))
+        XCTAssertEqual(MapLink.searchTerm(addressOnly), "Herrengasse 14, Wien")
     }
 
     func testResendNeverShorterAfterFailure() {

@@ -97,7 +97,8 @@ final class PlaceSearch: NSObject, ObservableObject, MKLocalSearchCompleterDeleg
         }
         guard let name else { throw SearchError(query: url.absoluteString) }
         let request = MKLocalSearch.Request()
-        request.naturalLanguageQuery = name
+        // With the address when the link has one, so a place of the same name nearby is not taken.
+        request.naturalLanguageQuery = MapLink.searchTerm(link) ?? name
         request.region = completer.region
         return try await run(request, fallbackName: name)
     }
