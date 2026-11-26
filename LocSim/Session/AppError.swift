@@ -97,7 +97,7 @@ struct AppError: Error, Equatable {
                     String(localized: "LocSim could not start its connection to this iPhone. Allow the VPN configuration when iOS asks and try again."))
         case .otherVPN:
             return (otherVPNCode, String(localized: "Another VPN is selected"),
-                    String(localized: "LocSim's local connection replaces it while a location is active. Tap Set Location again to continue, and select your VPN again in Settings afterwards."))
+                    String(localized: "LocSim's local connection replaces it while a location is active. Tap Set Location on the map, then Continue, and select your VPN again in Settings afterwards."))
         case .localNetwork:
             return ("LS-208", String(localized: "Local Network access off"),
                     String(localized: "Allow Local Network for LocSim under Settings > Privacy & Security > Local Network, then try again."))

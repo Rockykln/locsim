@@ -5406,42 +5406,42 @@
         }
       }
     },
-    "LocSim's local connection replaces it while a location is active. Tap Set Location again to continue, and select your VPN again in Settings afterwards." : {
+    "LocSim's local connection replaces it while a location is active. Tap Set Location on the map, then Continue, and select your VPN again in Settings afterwards." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die lokale Verbindung von LocSim ersetzt es, solange ein Standort aktiv ist. Tippe erneut auf „Standort setzen“, um fortzufahren, und wähle dein VPN danach in den Einstellungen wieder aus."
+            "value" : "Die lokale Verbindung von LocSim ersetzt es, solange ein Standort aktiv ist. Tippe auf der Karte auf „Standort setzen“, dann auf „Fortfahren“, und wähle dein VPN danach in den Einstellungen wieder aus."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La conexión local de LocSim la sustituye mientras haya una ubicación activa. Toca de nuevo “Establecer ubicación” para continuar y, después, vuelve a seleccionar tu VPN en Ajustes."
+            "value" : "La conexión local de LocSim la sustituye mientras haya una ubicación activa. Toca “Establecer ubicación” en el mapa y luego “Continuar”; después, vuelve a seleccionar tu VPN en Ajustes."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La connexion locale de LocSim le remplace tant qu’une position est active. Touchez de nouveau « Définir la position » pour continuer, puis sélectionnez à nouveau votre VPN dans Réglages."
+            "value" : "La connexion locale de LocSim le remplace tant qu’une position est active. Touchez « Définir la position » sur la carte, puis « Continuer », et sélectionnez ensuite à nouveau votre VPN dans Réglages."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La connessione locale di LocSim la sostituisce mentre una posizione è attiva. Tocca di nuovo “Imposta posizione” per continuare, poi seleziona di nuovo la tua VPN in Impostazioni."
+            "value" : "La connessione locale di LocSim la sostituisce mentre una posizione è attiva. Tocca “Imposta posizione” sulla mappa, poi “Continua”, e in seguito seleziona di nuovo la tua VPN in Impostazioni."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "De lokale verbinding van LocSim vervangt deze zolang een locatie actief is. Tik opnieuw op ‘Stel locatie in’ om door te gaan en selecteer je VPN daarna weer in Instellingen."
+            "value" : "De lokale verbinding van LocSim vervangt het zolang een locatie actief is. Tik op de kaart op ‘Stel locatie in’ en vervolgens op ‘Ga door’, en selecteer je VPN daarna weer in Instellingen."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A conexão local do LocSim a substitui enquanto uma localização estiver ativa. Toque em “Definir Localização” novamente para continuar e, depois, selecione a sua VPN de novo em Ajustes."
+            "value" : "A conexão local do LocSim a substitui enquanto uma localização estiver ativa. Toque em “Definir Localização” no mapa e depois em “Continuar”; em seguida, selecione a sua VPN de novo em Ajustes."
           }
         }
       }
