@@ -29,7 +29,16 @@ enum PairingStore {
     /// Pairing files left in LocSim's folder in Files: the user's own copies and lockdown files.
     /// They are part of device backups and hold a key for this device, so the user is told.
     static var copiesInDocuments: [String] {
-        droppedFiles().map { $0.0.lastPathComponent }
+        let lockdown = UserDefaults.standard.dictionary(forKey: lockdownKey) as? [String: Double] ?? [:]
+        let invalid = UserDefaults.standard.dictionary(forKey: invalidKey) as? [String: Double] ?? [:]
+        return droppedFiles().compactMap { url, modified in
+            let name = url.lastPathComponent
+            let stamp = modified?.timeIntervalSince1970 ?? 0
+            // The setup script's file is taken in and deleted on the next pass; deleting it by hand
+            // first would lose the new pairing. Only a lockdown or broken one stays and is listed.
+            if dropNames.contains(name), lockdown[name] != stamp, invalid[name] != stamp { return nil }
+            return name
+        }
     }
 
     /// A file in Documents that may be a pairing file and was not imported yet. Files already
@@ -137,7 +146,7 @@ enum PairingStore {
         var hashes = UserDefaults.standard.stringArray(forKey: hashesKey) ?? []
         hashes.removeAll { $0 == hash }
         hashes.append(hash)
-        UserDefaults.standard.set(Array(hashes.suffix(20)), forKey: hashesKey)
+        UserDefaults.standard.set(Array(hashes.suffix(50)), forKey: hashesKey)
     }
 
     private static func wasImported(_ data: Data) -> Bool {
@@ -149,6 +158,8 @@ enum PairingStore {
     // Excluded from backups so the key never leaves the device.
     private static func save(_ data: Data) throws {
         var url = storeURL
+        // The file being replaced counts as imported too: a copy of it in Files must not come back.
+        if let previous = try? Data(contentsOf: url), previous != data { noteImported(previous) }
         do {
             try FileManager.default.createDirectory(
                 at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
@@ -187,7 +198,13 @@ enum PairingStore {
             let name = url.lastPathComponent
             let ours = dropNames.contains(name)
             let stamp = modified?.timeIntervalSince1970 ?? 0
-            if !ours, seen[name] == stamp { continue }
+            if !ours, seen[name] == stamp {
+                // Seen before hashes were kept: remember its content, so renaming it does not bring it back.
+                if let data = try? read(url), case .valid = PairingFileCheck.check(data), !wasImported(data) {
+                    noteImported(data)
+                }
+                continue
+            }
             if lockdown[name] == stamp {
                 lockdownFound = true
                 continue
@@ -219,6 +236,7 @@ enum PairingStore {
                     try? FileManager.default.removeItem(at: url)
                 } else {
                     seen[name] = stamp
+                    if !wasImported(data) { noteImported(data) }
                 }
             case .lockdown:
                 lockdownFound = true

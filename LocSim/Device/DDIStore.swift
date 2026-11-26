@@ -56,6 +56,10 @@ enum DDIStore {
                               "Cannot create DDI folder: \(error.localizedDescription)")
         }
 
+        // Images for another method (an iOS update switched it) or an older commit are not used
+        // again. Removed first, so a download that fails for lack of space does not keep them too.
+        removeOthers(than: dir)
+
         for file in method.files {
             let target = dir.appendingPathComponent(file.name)
             if await verify(target, file.sha256) { continue }
@@ -85,13 +89,16 @@ enum DDIStore {
                                   "Cannot store \(file.name): \(error.localizedDescription)")
             }
         }
-        // Images for another method (an iOS update switched it) or an older commit are not used again.
+        return dir
+    }
+
+    private static func removeOthers(than dir: URL) {
+        let fm = FileManager.default
         let root = dir.deletingLastPathComponent()
         for other in (try? fm.contentsOfDirectory(at: root, includingPropertiesForKeys: nil)) ?? []
         where other.lastPathComponent != dir.lastPathComponent {
             try? fm.removeItem(at: other)
         }
-        return dir
     }
 
     private static let session: URLSession = {
@@ -104,7 +111,13 @@ enum DDIStore {
     /// Any images on the device, also for another method than the current one.
     static var hasFiles: Bool {
         let root = directory(for: .cryptex).deletingLastPathComponent()
-        return !((try? FileManager.default.contentsOfDirectory(atPath: root.path)) ?? []).isEmpty
+        // An empty folder left by a failed first download does not count.
+        guard let items = FileManager.default.enumerator(at: root, includingPropertiesForKeys: [.isRegularFileKey]) else {
+            return false
+        }
+        return items.contains { item in
+            ((item as? URL).flatMap { try? $0.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile }) == true
+        }
     }
 
     static func remove() {
