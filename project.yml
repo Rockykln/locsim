@@ -30,8 +30,9 @@ targets:
       - LiveActivity
       - path: THIRD_PARTY_LICENSES.md
         buildPhase: resources
-      # Icon Composer file: iOS 26 draws it with Liquid Glass. Older iOS versions use the
-      # PNGs of the same name in the asset catalog.
+      # Icon Composer file: Xcode builds the app icon for every supported iOS version from it
+      # (iOS 26 draws it with Liquid Glass). The PNGs of the same name in the asset catalog
+      # are not used for the app icon; make.py still writes them.
       - path: design/icon/AppIcon.icon
         buildPhase: resources
     dependencies:

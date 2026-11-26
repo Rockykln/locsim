@@ -1,8 +1,8 @@
 # Releasing to TestFlight
 
 Builds are uploaded from Xcode on the Mac. The `testflight` workflow is kept for later
-but not used: its environment has no secrets (steps 2 to 4 below were never done), so it
-cannot upload. It would archive with automatic, cloud-managed signing through the App
+but not used: its environment exists but has no secrets (steps 2 and 4 below were never
+done), so it cannot upload. It would archive with automatic, cloud-managed signing through the App
 Store Connect API, so no certificates or provisioning profiles would be stored in the
 repository or in secrets.
 
@@ -71,14 +71,17 @@ generate`). `main` is the published state: a push to `main` puts the website liv
    release) on `preview` and commit.
 2. Push `preview` and wait until the `build` workflow is green for that commit.
 3. On the Mac: `git pull && xcodegen generate`, then *Product > Archive* and *Distribute
-   App > App Store Connect*.
+   App > App Store Connect*. The Mac links its local `Frameworks/IDevice.xcframework`: after
+   the idevice pin in `.github/actions/prepare-ios/action.yml` was raised, replace that copy
+   first, or the build ships the old library while CI is green.
 4. Tag the commit with `v`, `MARKETING_VERSION`, a dash and `CURRENT_PROJECT_VERSION`,
    e.g. for version 1.0 build 5: `git tag -a v1.0-5 -m "Build 5" && git push origin v1.0-5`.
    Every build gets its tag, so patches can branch off the shipped state. Pushing a tag
    starts nothing (on commits before build 5 the old workflow still reacts to a tag; do
    not approve such a run).
-5. When the build is released to testers: merge `preview` into `main` (website live),
-   then point the setup guide at the build (see *Setup guide* below).
+5. When the build is released to all testers (not for a build that only goes to Early
+   Access): merge the build's tag into `main`, e.g. `git merge v1.0-5` (website live), then
+   point the setup guide at that commit (see *Setup guide* below).
 
 Processing in App Store Connect takes a few minutes after the upload. The build
 then appears for the internal group.
@@ -124,15 +127,17 @@ Access requests for Early Access and development builds arrive at locsim@rockykl
 - The packet tunnel makes App Review treat LocSim as a possible VPN app (guideline 5.4,
   organization accounts only). The review notes must explain that it only reaches the
   device itself, and China should stay excluded from availability.
-- Background location: the review notes should say that LocSim uses it only to keep
-  running while a location is simulated and to notice when iOS resets that location.
-  Fixes are compared with the simulated location and not stored.
+- Background location: say it as the review notes do: LocSim uses it only while a location
+  is simulated, to notice when iOS resets the simulation and to set it again. Fixes are
+  compared with the simulated location and not stored, and it can be turned off (Keep
+  Location in Background). Avoid "to keep running": that is the pattern guideline 2.5.4
+  rejects.
 
 ## Setup guide
 
 The setup guide links the scripts at a fixed commit, not at `main`, so a later change
-cannot reach users before it is part of a build. After uploading a build, point the
-links at the commit the build was made from. That commit must be on `origin/main`
+cannot reach users before it is part of a build. After merging a build into `main`,
+point the links at the commit the build was made from. That commit must be on `origin/main`
 (other branches may be deleted, which would break the links); the script refuses
 anything else. Check the diff first, then write, commit and push:
 

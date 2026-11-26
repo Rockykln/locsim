@@ -14,7 +14,9 @@ replaced only when all of them rendered:
 - `layers/`: map and pin as separate layers for Icon Composer (the backgrounds are only
   for the flat PNGs; in Icon Composer the sky is the icon's fill).
 - `AppIcon.icon`: the Icon Composer file built from those layers, with the glass settings.
-  iOS 26 uses it; older versions fall back to the PNGs in the asset catalog. Changes to
+  Xcode builds the app icon for every supported iOS version from it; the PNGs in the asset
+  catalog are not used for the app icon (check in a simulator with iOS 18 before removing
+  them, since `make.py` writes there). Changes to
   the motif have to be made in both: here in `make.py`, and in Icon Composer by importing
   the new layers. Mind the pin's lift: `layers/pin.svg` is already lifted by 15 px, while
   the pin inside `AppIcon.icon` is not and gets its lift from a -15 pt offset set in Icon
