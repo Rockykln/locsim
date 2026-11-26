@@ -11,6 +11,8 @@ struct WelcomeView: View {
     // Read in onAppear: an initial value here would touch the disk every time the parent redraws.
     @State private var notes = PairingNotes()
     @State private var appeared = false
+    // Grows with the text size, so the step number is not cut off at the largest sizes.
+    @ScaledMetric(relativeTo: .headline) private var numberWidth: CGFloat = 22
     /// Opened from Settings rather than on first launch.
     var fromSettings = false
 
@@ -59,7 +61,8 @@ struct WelcomeView: View {
                 } footer: {
                     PairingFooter(notes: notes)
                 }
-                if !hasPairing {
+                // Not from Settings: the preview would start behind the Settings sheet that stays open.
+                if !hasPairing, !fromSettings {
                     Section {
                         Button {
                             session.startPreview()
@@ -109,12 +112,21 @@ struct WelcomeView: View {
     private func readPairing() {
         let adopted = session.adoptDroppedPairing()
         let had = notes.hasPairing
+        let wasRejected = notes.rejectedDrop
+        let wasLockdown = notes.lockdownDrop
         notes.refresh()
         // A file taken in replaces whatever an earlier import failed with.
         if adopted { notes.message = nil }
-        // A file the setup script copied in over USB: the checkmark alone is not announced.
+        // A file the setup script copied in over USB: the checkmark alone is not announced, and
+        // neither is the footer for a file that could not be used.
         if appeared, !had, notes.hasPairing {
             AccessibilityNotification.Announcement(String(localized: "Pairing file imported")).post()
+        } else if appeared, !wasRejected, notes.rejectedDrop {
+            AccessibilityNotification.Announcement(
+                String(localized: "The pairing file was not valid and has been removed. Run the setup script again.")).post()
+        } else if appeared, !wasLockdown, notes.lockdownDrop, !notes.hasPairing {
+            AccessibilityNotification.Announcement(
+                String(localized: "This is a lockdown pairing file. LocSim needs the RPPairing file from the setup script.")).post()
         }
         appeared = true
     }
@@ -134,7 +146,7 @@ struct WelcomeView: View {
                 }
             }
             .font(.headline)
-            .frame(width: 22)
+            .frame(width: numberWidth)
             VStack(alignment: .leading, spacing: 6) {
                 Text(title).font(.headline)
                 Text(detail).font(.subheadline).foregroundStyle(.secondary)

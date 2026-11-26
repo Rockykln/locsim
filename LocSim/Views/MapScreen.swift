@@ -316,7 +316,7 @@ struct MapScreen: View {
         .sensoryFeedback(trigger: session.setCount) { _, _ in haptics ? .success : nil }
         .onChange(of: session.setCount) { _, _ in
             // With the place: another announcement right after would otherwise cut it short.
-            let place = session.simulatedPlace
+            let place = session.announcedPlace
             let spokenPlace = place.map { $0.name ?? CoordinateParser.spoken($0.coordinate) }
             AccessibilityNotification.Announcement(
                 spokenPlace.map { String(localized: "Location set: \($0)") } ?? String(localized: "Location set")).post()
@@ -585,7 +585,7 @@ struct MapScreen: View {
 
     private func dropPinAtCenter() {
         guard let center = mapCenter else { return }
-        searchTask?.cancel()
+        cancelSearch()
         locateTask?.cancel()
         session.target = center
         session.targetName = nil
@@ -601,7 +601,7 @@ struct MapScreen: View {
               let back = proxy.convert(coordinate, to: .global),
               hypot(back.x - point.x, back.y - point.y) < 24 else { return }
         searchFocused = false
-        searchTask?.cancel()
+        cancelSearch()
         locateTask?.cancel()
         session.target = coordinate
         session.targetName = nil
@@ -689,7 +689,8 @@ struct MapScreen: View {
             .task(id: searchError) {
                 AccessibilityNotification.Announcement(searchError).post()
                 // VoiceOver users need longer: the message is read out, then found again by swiping.
-                let seconds: UInt64 = UIAccessibility.isVoiceOverRunning ? 12 : max(8, UInt64(searchError.count / 10))
+                let base = max(8, UInt64(searchError.count / 10))
+                let seconds: UInt64 = UIAccessibility.isVoiceOverRunning ? max(12, base) : base
                 // Cancelled by a newer error, which must stay for its own time.
                 guard (try? await Task.sleep(nanoseconds: seconds * 1_000_000_000)) != nil else { return }
                 self.searchError = nil
@@ -732,7 +733,7 @@ struct MapScreen: View {
                 .onChange(of: search.query) { _, _ in
                     searchError = nil
                     // A result for what was there before must not land on what is typed now.
-                    searchTask?.cancel()
+                    cancelSearch()
                     resolving = nil
                 }
                 .onChange(of: searchFocused) { _, focused in if !focused { searchError = nil } }
@@ -817,7 +818,7 @@ struct MapScreen: View {
                     }
                     suggestionRow(icon: "mappin", title: completion.title, subtitle: completion.subtitle,
                                   loading: resolving == completion.id) {
-                        searchTask?.cancel()
+                        cancelSearch()
                         resolving = completion.id
                         searchTask = Task {
                             await pick(completion)
@@ -882,6 +883,11 @@ struct MapScreen: View {
                         .contentShape(Rectangle())
                 }
                 .accessibilityLabel("Clear recent locations")
+                // Voice Control: the visible word first, so "Tap Clear" works in every language.
+                .accessibilityInputLabels([
+                    Text(String(localized: "Clear List", defaultValue: "Clear", comment: "Removes all recent locations")),
+                    Text("Clear recent locations"),
+                ])
                 // Lines up with the label inside the paste button above, not with its edge.
                 .padding(.trailing, 12)
             }
@@ -918,7 +924,7 @@ struct MapScreen: View {
         if let coordinate = CoordinateParser.parse(text) {
             select(coordinate, name: CoordinateParser.linkName(in: text), apply: autoApply)
         } else if MapLink.url(in: text).map(MapLink.isPlaceLink) == true {
-            searchTask?.cancel()
+            cancelSearch()
             resolving = text
             searchTask = Task { await openLink(text) }
         } else {
@@ -1484,8 +1490,15 @@ struct MapScreen: View {
         }
     }
 
-    private func select(_ coordinate: CLLocationCoordinate2D, name: String?, apply: Bool = false) {
+    /// Stops a search or link lookup in progress, and the progress shown for a keyboard search.
+    private func cancelSearch() {
         searchTask?.cancel()
+        searches += 1
+        searching = false
+    }
+
+    private func select(_ coordinate: CLLocationCoordinate2D, name: String?, apply: Bool = false) {
+        cancelSearch()
         locateTask?.cancel()
         session.target = coordinate
         session.targetName = name ?? session.knownName(for: coordinate)

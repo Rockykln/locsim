@@ -8,6 +8,8 @@ struct FavoritesView: View, Equatable {
     @State private var renaming: Favorite?
     @State private var newName = ""
     @State private var copied = 0
+    // Held here, so the button that closes the sheet can step aside while the list is edited.
+    @State private var editMode: EditMode = .inactive
     @AppStorage(SettingsKey.haptics) private var haptics = true
     let onSelect: (Favorite) -> Void
 
@@ -31,10 +33,16 @@ struct FavoritesView: View, Equatable {
                 if !favorites.items.isEmpty {
                     ToolbarItem(placement: .topBarLeading) { EditButton() }
                 }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") { dismiss() }
-                        .fontWeight(.semibold)
+                // EditButton shows "Done" while editing; a second "Done" would close the sheet.
+                if !editMode.isEditing {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Done") { dismiss() }
+                            .fontWeight(.semibold)
+                    }
                 }
+            }
+            .onChange(of: favorites.items.isEmpty) { _, empty in
+                if empty { editMode = .inactive }
             }
             .alert("Rename", isPresented: Binding(get: { renaming != nil }, set: { if !$0 { renaming = nil } })) {
                 TextField("Name", text: $newName)
@@ -42,6 +50,7 @@ struct FavoritesView: View, Equatable {
                 Button("Cancel", role: .cancel) { renaming = nil }
             }
         }
+        .environment(\.editMode, $editMode)
         // Scene changes report keyboard frames without a keyboard, which would shift the rows.
         .ignoresSafeArea(.keyboard)
         .presentationDetents([.medium, .large])
@@ -58,11 +67,13 @@ struct FavoritesView: View, Equatable {
                 }
                 .buttonStyle(.plain)
                 .listRowBackground(Color(.secondarySystemGroupedBackground))
-                .swipeActions(edge: .trailing) {
+                // No full swipe: a long swipe would remove the favorite without asking, also on the
+                // other devices through iCloud, while the star asks first.
+                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                     Button(role: .destructive) {
                         favorites.items.removeAll { $0.id == favorite.id }
                     } label: {
-                        Label("Delete", systemImage: "trash")
+                        Label("Remove", systemImage: "trash")
                     }
                     Button {
                         newName = favorite.name
@@ -87,7 +98,7 @@ struct FavoritesView: View, Equatable {
                     Button(role: .destructive) {
                         favorites.items.removeAll { $0.id == favorite.id }
                     } label: {
-                        Label("Delete", systemImage: "trash")
+                        Label("Remove", systemImage: "trash")
                     }
                 }
                 // Rename and Delete come with the swipe actions; copying is only in the menu.
