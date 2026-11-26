@@ -443,7 +443,7 @@ struct MapScreen: View {
                 Button("Cancel", role: .cancel) {}
             }
         } message: { error in
-            // The general LS-207 text says to tap Set Location again; here the button is Continue.
+            // The general LS-207 text names Set Location and Continue; in this alert Continue is all that is left.
             Text(error.code == AppError.otherVPNCode
                  ? String(localized: "LocSim's local connection replaces it while a location is active. Select your VPN again in Settings afterwards.")
                  : error.message)
