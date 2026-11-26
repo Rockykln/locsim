@@ -1,7 +1,7 @@
-Build 9 verhelpt wat bij build 8 naar voren kwam. Je favorieten en instellingen blijven bewaard.
+Build 10 vervangt de vorige builds. Hij verhelpt wat bij build 8 naar voren kwam; voor Early Access-testers is hij gelijk aan build 9. Je favorieten en instellingen blijven bewaard.
 
 Test graag:
-- Eerste verbinding: voordat LocSim zijn vpn-configuratie voor het eerst toevoegt, legt het die uit en vraagt het of je doorgaat (LS-209). Je ziet dit alleen als de vpn-configuratie van LocSim nog niet bestaat, bijvoorbeeld nadat je die in de iOS-instellingen onder VPN hebt verwijderd.
+- Eerste verbinding: voordat LocSim zijn vpn-configuratie voor het eerst toevoegt, legt het die uit en vraagt het of je doorgaat (LS-209). Je ziet dit alleen als de vpn-configuratie van LocSim nog niet bestaat. Wil je het zien, verwijder dan de configuratie in de iOS-instellingen onder VPN voordat je met build 10 voor het eerst een locatie instelt.
 - Verwijderen vraagt eerst: een favoriet met de ster verwijderen, de recente locaties wissen, ‘Recente locaties’ uitzetten, de DDI-bestanden verwijderen en het koppelingsbestand verwijderen of vervangen.
 - Koppelingsbestand: ‘Controleer koppelingsbestand’ controleert het bestand grondiger. Een oud lockdown-koppelingsbestand wordt gemeld als verkeerd bestand (LS-102), en een volle iPhone als ‘Niet genoeg opslag’ (LS-901).
 - Herstellen: wordt een herstel niet afgerond, dan tonen de live-activiteit, de widget en de snelle acties de plaats nog, en kun je opnieuw op ‘Herstel’ tikken.
