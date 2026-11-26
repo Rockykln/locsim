@@ -304,7 +304,7 @@ private struct PairingImporter: ViewModifier {
     func body(content: Content) -> some View {
         content
             .fileImporter(isPresented: $isPresented, allowedContentTypes: [.propertyList, .xml, .data]) { result in
-                if case .success(let url) = result, session.mayStillBeSimulated {
+                if case .success(let url) = result, session.pairingInUse {
                     // After the picker has gone: a dialog asked for while it closes may not appear.
                     Task { @MainActor in
                         try? await Task.sleep(for: .milliseconds(400))

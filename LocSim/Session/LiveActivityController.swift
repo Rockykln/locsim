@@ -134,8 +134,14 @@ final class LiveActivityController {
             requestedAt = Date()
             if let old { Task { await old.end(nil, dismissalPolicy: .immediate) } }
         } catch {
-            // Starting is only allowed in the foreground; the next change there tries again.
-            shown = nil
+            // Starting is only allowed in the foreground; the next change there tries again. An
+            // activity that still runs stays managed and gets the new content meanwhile, so it
+            // neither keeps an old place nor turns outdated while the simulation goes on.
+            if let old, old.activityState == .active || old.activityState == .stale {
+                Task { await old.update(content) }
+            } else {
+                shown = nil
+            }
         }
     }
 

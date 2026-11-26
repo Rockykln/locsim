@@ -360,16 +360,25 @@ struct MapScreen: View {
             if phase == .active { showRealPositionIfAllowed() }
         }
         .onChange(of: session.state) { _, _ in showRealPositionIfAllowed() }
-        // A renamed favorite renames the pin on it, unless the pin got its name elsewhere.
+        // A renamed favorite renames the pin on it, unless the pin got its name elsewhere. The
+        // simulated place follows too when the pin is elsewhere or iCloud renamed it.
         .onChange(of: favorites.items) { old, new in
-            guard let before = old.first(where: { $0.coordinate.distance(to: session.target) < 1 }),
-                  let after = new.first(where: { $0.id == before.id }),
-                  after.name != before.name, session.targetName == before.name else { return }
-            session.targetName = after.name
-            if LastCoordinate.isSaved, same(LastCoordinate.load(), session.target) {
-                LastCoordinate.save(session.target, name: after.name)
+            for after in new {
+                guard let before = old.first(where: { $0.id == after.id }), after.name != before.name else { continue }
+                if before.coordinate.distance(to: session.target) < 1, session.targetName == before.name {
+                    session.targetName = after.name
+                    if LastCoordinate.isSaved, same(LastCoordinate.load(), session.target) {
+                        LastCoordinate.save(session.target, name: after.name)
+                    }
+                    session.renameActive(at: session.target, to: after.name)
+                } else {
+                    session.favoriteRenamed(at: before.coordinate, from: before.name, to: after.name)
+                    if LastCoordinate.isSaved, same(LastCoordinate.load(), before.coordinate),
+                       LastCoordinate.loadName() == before.name {
+                        LastCoordinate.save(before.coordinate, name: after.name)
+                    }
+                }
             }
-            session.renameActive(at: session.target, to: after.name)
         }
         .onChange(of: session.active == nil) { _, idle in
             if idle {
