@@ -227,9 +227,11 @@ final class RecentList: ObservableObject {
 
     func add(_ c: CLLocationCoordinate2D, name: String?) {
         guard UserDefaults.standard.bool(forKey: SettingsKey.recentsEnabled) else { return }
-        // The same spot moves to the top instead of appearing twice.
+        // The same spot moves to the top instead of appearing twice. Coordinates a few meters off a
+        // named entry keep its name: "Eiffel Tower" is not replaced by an unnamed point next to it.
+        let replacedName = items.first { $0.coordinate.distance(to: c) < 10 && $0.name != nil }?.name
         var list = items.filter { $0.coordinate.distance(to: c) >= 10 }
-        list.insert(RecentLocation(name: name, latitude: c.latitude, longitude: c.longitude), at: 0)
+        list.insert(RecentLocation(name: name ?? replacedName, latitude: c.latitude, longitude: c.longitude), at: 0)
         items = Array(list.prefix(Self.limit))
     }
 
