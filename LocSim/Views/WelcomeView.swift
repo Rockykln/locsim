@@ -210,7 +210,8 @@ struct PairingCheckRow<Title: View>: View {
             resultLabel(String(localized: "The pairing file works with this device."), "checkmark.circle.fill", .green)
         case .rejected(let error):
             resultLabel(error.messageWithCode, "xmark.circle.fill", .red)
-        case .unreachable(let error) where [AppError.otherVPNCode, "LS-208", AppError.vpnNoticeCode].contains(error.code):
+        case .unreachable(let error) where [AppError.otherVPNCode, "LS-202", "LS-205", "LS-208", AppError.vpnNoticeCode]
+            .contains(error.code):
             // These have one clear fix, which the general text below would not name. With the
             // title: "LocSim's local connection replaces it" needs "Another VPN is selected".
             resultLabel(error.summary, "exclamationmark.triangle.fill", .orange)

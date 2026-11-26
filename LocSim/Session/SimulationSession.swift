@@ -156,6 +156,7 @@ final class SimulationSession: ObservableObject {
     private var generation = 0
     // The port the tunnel last came up on, kept across launches: it saves a Bonjour search when
     // the device's port is not the default one. A wrong one costs one quick failed attempt.
+    private var checkToken = 0
     private var lastPort: UInt16? {
         get { (UserDefaults.standard.object(forKey: Self.lastPortKey) as? Int).flatMap { UInt16(exactly: $0) } }
         set {
@@ -232,9 +233,10 @@ final class SimulationSession: ObservableObject {
             #endif
             return
         }
-        tunnel.onDrop = { [weak self] in
-            Task { await self?.tunnelDropped() }
+        tunnel.onDrop = { [weak self] removed in
+            Task { await self?.tunnelDropped(removed: removed) }
         }
+        tunnel.log = { [weak self] line in self?.write(line) }
         // iOS can keep the tunnel running after the app was closed. A Shortcut that launched the
         // app may already be starting it; that start wins.
         let token = tunnel.startCount
@@ -278,12 +280,40 @@ final class SimulationSession: ObservableObject {
     func importPairing(_ result: Result<URL, Error>) -> String? {
         do {
             // The same file again changes nothing, so a running simulation stays.
-            if try PairingStore.importFile(at: result.get()) { Task { await pairingFileReplaced() } }
+            if try PairingStore.importFile(at: result.get()) {
+                write("pairing file imported from Files")
+                Task { await pairingFileReplaced() }
+            } else {
+                write("pairing file from Files is the one already imported")
+            }
             return nil
         } catch {
             let deviceError = error as? DeviceError ?? DeviceError(.pairingInvalid, error.localizedDescription)
-            return AppError(deviceError).summary
+            let appError = AppError(deviceError)
+            write("import from Files: \(appError.code) \(appError.detail)")
+            return appError.summary
         }
+    }
+
+    /// The message of a failure with the hint that depends on the state, the same in the app, in
+    /// Settings and for Shortcuts: after all reconnects failed nothing reconnects by itself, and a
+    /// Clear that did not finish can be tried again.
+    func message(for error: AppError) -> String {
+        guard case .failed(let current) = state, current == error else { return error.message }
+        switch error.code {
+        case AppError.notConnectedCode:
+            return error.message + "\n\n" + String(localized: "Tap Set Location to connect again.")
+        case AppError.clearFailedCode where canClear:
+            return error.message + "\n\n" + String(localized: "You can also tap Clear to try again.")
+        default:
+            return error.message
+        }
+    }
+
+    /// `message(for:)` on one line with title and code, for Shortcuts.
+    func summary(for error: AppError) -> String {
+        let message = message(for: error).replacingOccurrences(of: "\n\n", with: " ")
+        return String(localized: "\(error.title): \(message) (\(error.code))")
     }
 
     /// A new pairing file was imported: the old connection goes, the new file is checked.
@@ -651,8 +681,8 @@ final class SimulationSession: ObservableObject {
     }
 
     /// The tunnel extension stopped, e.g. another VPN was turned on or iOS ended it.
-    private func tunnelDropped() async {
-        write("local tunnel stopped")
+    private func tunnelDropped(removed: Bool) async {
+        write(removed ? "local tunnel stopped, VPN configuration removed" : "local tunnel stopped")
         guard !clearing else { return }
         // Work in progress may just have rebuilt the link; resend once it is done.
         // The first Set may be about to succeed, so this does not depend on `active`.
@@ -896,6 +926,8 @@ final class SimulationSession: ObservableObject {
         if PairingStore.adoptNow() {
             PairingStore.clearRejection()
             setPairingCheck(.notChecked)
+            // Possibly another device, as in pairingChanged().
+            lastPort = nil
             write("pairing file taken from Documents")
         }
         let pairing = try PairingStore.load()
@@ -942,7 +974,8 @@ final class SimulationSession: ObservableObject {
                 write("tunnel up on port \(first)")
                 return
             }
-            lastPort = nil
+            // Kept: only a port that worked replaces it. One failed attempt, e.g. on weak Wi-Fi,
+            // must not make the next connection start from the default again.
             tried = first
         }
 
@@ -1172,8 +1205,10 @@ final class SimulationSession: ObservableObject {
         busy = true
         let started = generation
         runningCheck = started
+        // Hostname or port changed meanwhile: this check is for the old values and reports nothing.
+        let token = checkToken
         defer {
-            runningCheck = nil
+            if checkToken == token { runningCheck = nil }
             tunnel.allowCreate = false
             finishWork()
         }
@@ -1182,15 +1217,18 @@ final class SimulationSession: ObservableObject {
             renewLinkIfStuck()
             try await openTunnel(started)
             await link.close()
+            guard checkToken == token else { return }
             // The file was replaced meanwhile; the next check reports on the new one.
             guard started == generation else { return setPairingCheck(.notChecked) }
             setPairingCheck(.valid)
             write("pairing file valid")
         } catch is CancellationError {
-            // A Clear stopped the check; the device side must not stay open.
-            await link.close()
-            setPairingCheck(.notChecked)
+            // A Clear stopped the check; the device side must not stay open. A link stuck in a call
+            // that never returns is replaced; closing it would wait for that call.
+            if !renewLinkIfStuck() { await link.close() }
+            if checkToken == token { setPairingCheck(.notChecked) }
         } catch {
+            guard checkToken == token else { return }
             guard started == generation else { return setPairingCheck(.notChecked) }
             let appError = AppError(error)
             setPairingCheck(appError.rejectsPairing ? .rejected(appError) : .unreachable(appError))
@@ -1255,7 +1293,13 @@ final class SimulationSession: ObservableObject {
         UserDefaults.standard.set(true, forKey: SettingsKey.ddiDownloadAllowed)
     }
 
-    func resetPairingCheck() { setPairingCheck(.notChecked) }
+    /// Hostname or port changed: a check still running is for the old values. It is dropped, and a
+    /// new tap checks again right away.
+    func resetPairingCheck() {
+        checkToken += 1
+        runningCheck = nil
+        setPairingCheck(.notChecked)
+    }
 
     func startPreview() {
         guard active == nil else { return }

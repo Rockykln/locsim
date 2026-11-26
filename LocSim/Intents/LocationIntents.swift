@@ -113,7 +113,7 @@ enum LocationIntentRunner {
             // Shortcut again would only ask again.
             throw LocationIntentError(String(localized: "LocSim needs an answer first. Open LocSim and answer the question there; then it sets the location. (\(error.code))"))
         case .failed(let error):
-            throw LocationIntentError(error.summary)
+            throw LocationIntentError(session.summary(for: error))
         case .notSet:
             throw LocationIntentError(String(localized: "The location was not set."))
         }

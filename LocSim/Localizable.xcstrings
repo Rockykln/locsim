@@ -4474,42 +4474,42 @@
         }
       }
     },
-    "Join a Wi-Fi network. If it keeps failing, enable Show this iPhone when on Wi-Fi in Finder. Also allow Local Network for LocSim under Settings > Privacy & Security > Local Network." : {
+    "Join a Wi-Fi network. If it keeps failing, enable Show this iPhone when on Wi-Fi in Finder, or in the Apple Devices app on Windows. Also allow Local Network for LocSim under Settings > Privacy & Security > Local Network." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verbinde dich mit einem WLAN. Falls es weiter fehlschlägt, aktiviere im Finder unter „Allgemein“ die Option „Bei verfügbarem WLAN dieses iPhone anzeigen“. Erlaube LocSim außerdem das lokale Netzwerk unter Einstellungen > Datenschutz & Sicherheit > Lokales Netzwerk."
+            "value" : "Verbinde dich mit einem WLAN. Falls es weiter fehlschlägt, aktiviere im Finder unter „Allgemein“ (unter Windows in der App „Apple-Geräte“) die Option „Bei verfügbarem WLAN dieses iPhone anzeigen“. Erlaube LocSim außerdem das lokale Netzwerk unter Einstellungen > Datenschutz & Sicherheit > Lokales Netzwerk."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Conéctate a una red Wi-Fi. Si sigue fallando, activa “Mostrar este iPhone cuando esté conectado a una red Wi-Fi” en el Finder. Permite también la red local para LocSim en Ajustes > Privacidad y seguridad > Red local."
+            "value" : "Conéctate a una red Wi-Fi. Si sigue fallando, activa “Mostrar este iPhone cuando esté conectado a una red Wi-Fi” en el Finder o, en Windows, en la app Dispositivos Apple. Permite también la red local para LocSim en Ajustes > Privacidad y seguridad > Red local."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Connectez-vous à un réseau Wi-Fi. Si l’échec persiste, activez « Afficher cet iPhone lorsqu’il est en Wi-Fi » dans le Finder, sous Général. Autorisez aussi le réseau local pour LocSim dans Réglages > Confidentialité et sécurité > Réseau local."
+            "value" : "Connectez-vous à un réseau Wi-Fi. Si l’échec persiste, activez « Afficher cet iPhone lorsqu’il est en Wi-Fi » dans le Finder, sous Général, ou sous Windows dans l’app Appareils Apple. Autorisez aussi le réseau local pour LocSim dans Réglages > Confidentialité et sécurité > Réseau local."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Connettiti a una rete Wi-Fi. Se continua a non funzionare, attiva “Mostra questo iPhone quando connesso alla rete Wi-Fi” nel Finder. Consenti anche a LocSim l’accesso alla rete locale in Impostazioni > Privacy e sicurezza > Rete locale."
+            "value" : "Connettiti a una rete Wi-Fi. Se continua a non funzionare, attiva “Mostra questo iPhone quando connesso alla rete Wi-Fi” nel Finder o, su Windows, nell’app Dispositivi Apple. Consenti anche a LocSim l’accesso alla rete locale in Impostazioni > Privacy e sicurezza > Rete locale."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maak verbinding met een wifinetwerk. Als het blijft mislukken, schakel dan ‘Toon deze iPhone als er wifi beschikbaar is’ in de Finder in. Sta ook het lokale netwerk toe voor LocSim via Instellingen > Privacy en beveiliging > Lokaal netwerk."
+            "value" : "Maak verbinding met een wifinetwerk. Als het blijft mislukken, schakel dan ‘Toon deze iPhone als er wifi beschikbaar is’ in de Finder in, of op Windows in de Apple Apparaten-app. Sta ook het lokale netwerk toe voor LocSim via Instellingen > Privacy en beveiliging > Lokaal netwerk."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Conecte-se a uma rede Wi-Fi. Se continuar falhando, ative “Mostrar este iPhone quando houver conexão Wi-Fi” no Finder. Permita também a Rede Local para o LocSim em Ajustes > Privacidade e Segurança > Rede Local."
+            "value" : "Conecte-se a uma rede Wi-Fi. Se continuar falhando, ative “Mostrar este iPhone quando houver conexão Wi-Fi” no Finder ou, no Windows, no app Dispositivos Apple. Permita também a Rede Local para o LocSim em Ajustes > Privacidade e Segurança > Rede Local."
           }
         }
       }
