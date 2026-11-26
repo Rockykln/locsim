@@ -108,7 +108,8 @@ public enum CoordinateText {
     }
 
     // A lowercase "e" between two numbers is "and" in Italian and Portuguese, "41.90 e 12.49", not east.
-    private static let andE = try! NSRegularExpression(pattern: #"\d\s+e\s+[-+]?\d"#)
+    // Also after a degree or minute mark: "41.90° e 12.49°".
+    private static let andE = try! NSRegularExpression(pattern: #"\d[°º˚′″'"]?\s+e\s+[-+]?\d"#)
 
     /// `longitudeFirst`: from the labels of the whole text; nil reads them from this text.
     private static func parseText(
@@ -119,7 +120,7 @@ public enum CoordinateText {
         // "Latitudine: 41.90 e Longitudine: 12.49": with axis labels the "e" between the values is
         // "and"; the labels give the order. Without labels it stays ambiguous and is refused below.
         if axisLabels(text).contains(false) {
-            unlabeled = unlabeled.replacingOccurrences(of: #"(?<=\d)\s+e\s+(?=[-+]?\d)"#, with: " ",
+            unlabeled = unlabeled.replacingOccurrences(of: #"(?<=[\d°º˚′″'"])\s+e\s+(?=[-+]?\d)"#, with: " ",
                                                        options: .regularExpression)
         }
         let input = unwrap(normalize(unlabeled, oIsWest: oIsWest))

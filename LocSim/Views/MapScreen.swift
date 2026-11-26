@@ -360,6 +360,8 @@ struct MapScreen: View {
             if phase == .active { showRealPositionIfAllowed() }
         }
         .onChange(of: session.state) { _, _ in showRealPositionIfAllowed() }
+        // A Clear from Control Center or a Shortcut ends an open question; its alert goes with it.
+        .onChange(of: session.isClearing) { _, clearing in if clearing { question = nil } }
         // A renamed favorite renames the pin on it, unless the pin got its name elsewhere. The
         // simulated place follows too when the pin is elsewhere or iCloud renamed it.
         .onChange(of: favorites.items) { old, new in

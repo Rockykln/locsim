@@ -152,11 +152,12 @@ final class SimulationSession: ObservableObject {
     // The generation the running pairing check started in, so a second tap can be told apart
     // from a check for a new file.
     private var runningCheck: Int?
+    // Hostname or port changed while a pairing check ran: its result is for the old values.
+    private var checkToken = 0
     // Incremented by clear/disconnect so that work started earlier is discarded.
     private var generation = 0
     // The port the tunnel last came up on, kept across launches: it saves a Bonjour search when
     // the device's port is not the default one. A wrong one costs one quick failed attempt.
-    private var checkToken = 0
     private var lastPort: UInt16? {
         get { (UserDefaults.standard.object(forKey: Self.lastPortKey) as? Int).flatMap { UInt16(exactly: $0) } }
         set {
@@ -259,6 +260,7 @@ final class SimulationSession: ObservableObject {
     private(set) var unclearedPlace: (coordinate: CLLocationCoordinate2D, name: String?)? {
         didSet {
             guard (unclearedPlace == nil) != (oldValue == nil) else { return }
+            if unclearedPlace == nil { unclearedStaleAt = nil }
             syncActivity()
             QuickActions.refresh()
         }
@@ -353,6 +355,9 @@ final class SimulationSession: ObservableObject {
     /// reconnect (replace the other VPN, download the DDI, add the VPN configuration) with
     /// Continue or Download. The answer sets the place that asked.
     func apply(consent: Bool = false) async {
+        // The question was ended meanwhile, e.g. by a Clear from Control Center while its alert was
+        // open: there is nothing to agree to, and the pin must not be set in its place.
+        if consent, askedFor == nil { return }
         let place = consent ? askedFor : nil
         let takeover = consent && answerQuestion()
         if let place {
@@ -494,6 +499,8 @@ final class SimulationSession: ObservableObject {
             guard started == generation else { return }
             fail(error, about: (coordinate: coordinate, name: name))
             outcome = .failed(AppError(error))
+            // The Set start made the activity current again; the place of the unfinished Clear is not.
+            markUnclearedStale()
         }
     }
 
@@ -805,9 +812,15 @@ final class SimulationSession: ObservableObject {
     /// and the widget turn outdated when the tunnel would have ended. Not while a Set is queued.
     private func markUnclearedStale() {
         guard unclearedPlace != nil, active == nil, pending == nil else { return }
-        liveActivity.markStale(after: TunnelAddress.heartbeatTimeout)
-        WidgetSync.markStale(after: TunnelAddress.heartbeatTimeout)
+        // One moment, set once: later calls (each switch to the background, a failed Set) must not
+        // move it on, or the display would count as current again although the tunnel is long gone.
+        let at = unclearedStaleAt ?? Date().addingTimeInterval(TunnelAddress.heartbeatTimeout)
+        unclearedStaleAt = at
+        let seconds = max(0, at.timeIntervalSinceNow)
+        liveActivity.markStale(after: seconds)
+        WidgetSync.markStale(after: seconds)
     }
+    private var unclearedStaleAt: Date?
 
     // Without Keep Alive iOS suspends LocSim soon in the background; the activity must turn outdated then.
     private func keepActivityFresh() {

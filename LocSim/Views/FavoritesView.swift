@@ -44,13 +44,14 @@ struct FavoritesView: View, Equatable {
             .onChange(of: favorites.items.isEmpty) { _, empty in
                 if empty { editMode = .inactive }
             }
+            // Inside the stack: a value set outside it does not reach the list and the edit button.
+            .environment(\.editMode, $editMode)
             .alert("Rename", isPresented: Binding(get: { renaming != nil }, set: { if !$0 { renaming = nil } })) {
                 TextField("Name", text: $newName)
                 Button("Save") { rename() }
                 Button("Cancel", role: .cancel) { renaming = nil }
             }
         }
-        .environment(\.editMode, $editMode)
         // Scene changes report keyboard frames without a keyboard, which would shift the rows.
         .ignoresSafeArea(.keyboard)
         .presentationDetents([.medium, .large])
@@ -101,7 +102,7 @@ struct FavoritesView: View, Equatable {
                         Label("Remove", systemImage: "trash")
                     }
                 }
-                // Rename and Delete come with the swipe actions; copying is only in the menu.
+                // Rename and Remove come with the swipe actions; copying is only in the menu.
                 .accessibilityAction(named: "Copy Coordinates") {
                     copy(favorite)
                 }

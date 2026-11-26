@@ -76,6 +76,10 @@ final class PastedFormatsTests: XCTestCase {
         XCTAssertEqual(parse("Lat: 38.7223 e Long: -9.1393", "pt"), Coordinate(latitude: 38.7223, longitude: -9.1393))
         XCTAssertEqual(parse("Latitudine: 41.9028 e Longitudine: 12.4964", "it"),
                        Coordinate(latitude: 41.9028, longitude: 12.4964))
+        // Also after a degree mark; without labels it stays ambiguous.
+        XCTAssertEqual(parse("Latitudine: 41.9028° e Longitudine: 12.4964°", "it"),
+                       Coordinate(latitude: 41.9028, longitude: 12.4964))
+        XCTAssertNil(parse("41.9028° e 12.4964°", "it"))
         // An uppercase E stays east.
         XCTAssertEqual(parse("2.3522 E 48.8566"), paris)
         XCTAssertEqual(parse("48.85 N 2.35"), Coordinate(latitude: 48.85, longitude: 2.35))

@@ -86,6 +86,9 @@ final class TimeZoneWatch: ObservableObject {
         let now = TimeZone.current
         guard now.identifier != real.identifier else {
             changedTo = nil
+            // A place in the real zone was the next location: hiding ends, and a later zone shows again.
+            dismissed = false
+            handledZone = nil
             // Back to the real zone: the notification no longer applies, and a later change notifies again.
             if notified { Self.removeNotification() }
             notified = false

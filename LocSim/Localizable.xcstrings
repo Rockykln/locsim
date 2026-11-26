@@ -530,7 +530,7 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Uma simulação em andamento é interrompida."
+            "value" : "A simulação em andamento será interrompida."
           }
         }
       }
@@ -570,7 +570,7 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Uma simulação em andamento é interrompida. Para criar um novo arquivo, é preciso o script de configuração."
+            "value" : "A simulação em andamento será interrompida. Para criar um novo arquivo, é preciso o script de configuração."
           }
         }
       }
@@ -2665,46 +2665,6 @@
         }
       }
     },
-    "Delete" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Löschen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eliminar"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Supprimer"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Elimina"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verwijder"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apagar"
-          }
-        }
-      }
-    },
     "Delete DDI Files" : {
       "localizations" : {
         "de" : {
@@ -4485,7 +4445,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verbinde dich mit einem WLAN. Falls es weiter fehlschlägt, aktiviere im Finder unter „Allgemein“ (unter Windows in der App „Apple-Geräte“) die Option „Bei verfügbarem WLAN dieses iPhone anzeigen“. Erlaube LocSim außerdem das lokale Netzwerk unter Einstellungen > Datenschutz & Sicherheit > Lokales Netzwerk."
+            "value" : "Verbinde dich mit einem WLAN. Falls es weiter fehlschlägt, aktiviere im Finder unter „Allgemein“ (unter Windows in der App „Apple Geräte“) die Option „Bei verfügbarem WLAN dieses iPhone anzeigen“. Erlaube LocSim außerdem das lokale Netzwerk unter Einstellungen > Datenschutz & Sicherheit > Lokales Netzwerk."
           }
         },
         "es" : {
@@ -5395,7 +5355,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "De lokale verbinding van LocSim vervangt deze zolang een locatie actief is. Selecteer je VPN daarna weer in Instellingen."
+            "value" : "De lokale verbinding van LocSim vervangt het zolang een locatie actief is. Selecteer je VPN daarna weer in Instellingen."
           }
         },
         "pt-BR" : {
@@ -7680,7 +7640,7 @@
       }
     },
     "Remove" : {
-      "comment" : "Removes one recent location",
+      "comment" : "Removes a recent location or a favorite",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -10456,7 +10416,7 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O fuso horário mudou para %@ com o local simulado. Toque para ver detalhes."
+            "value" : "Novo fuso horário com o local simulado: %@. Toque para ver detalhes."
           }
         }
       }
@@ -10497,7 +10457,7 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O fuso horário segue o local simulado e agora é %@. Para manter o fuso horário real, desative Ajustes > Privacidade e Segurança > Serviços de Localização > Serviços do Sistema > Ajuste de Fuso Horário."
+            "value" : "O fuso horário segue o local simulado: %@. Para manter o fuso horário real, desative Ajustes > Privacidade e Segurança > Serviços de Localização > Serviços do Sistema > Ajuste de Fuso Horário."
           }
         }
       }
