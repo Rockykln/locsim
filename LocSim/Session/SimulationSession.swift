@@ -128,6 +128,9 @@ final class SimulationSession: ObservableObject {
     }
     /// The long step of connecting, if one runs: a download or install can take minutes.
     @Published private(set) var connectStep: String?
+    /// A DDI download runs, from a connection or from Settings, in any Settings window.
+    @Published private(set) var ddiDownloading = false
+    private var ddiDownloads = 0
     private struct Pending {
         let coordinate: CLLocationCoordinate2D
         let name: String?
@@ -474,7 +477,8 @@ final class SimulationSession: ObservableObject {
         if active == nil, state == .connecting, unclearedPlace == nil {
             // The attempt still running sees the new generation and closes the link itself.
             state = .idle
-            write("connection cancelled")
+            // The download is shared and not stopped; the next Set uses the files.
+            write(ddiDownloading ? "connection cancelled, DDI download continues" : "connection cancelled")
             await releaseTunnelIfIdle()
             await liveActivity.waitForEnd()
             return
@@ -992,7 +996,7 @@ final class SimulationSession: ObservableObject {
         write("DDI not mounted, installing (\(method.rawValue))")
         defer { connectStep = nil }
         if !DDIStore.isDownloaded(method) { connectStep = String(localized: "Downloading Developer Disk Image") }
-        let dir = try await DDIStore.prepare(method) { [weak self] line in self?.write(line) }
+        let dir = try await prepareDDI(method)
         try ensureCurrent(started)
         connectStep = String(localized: "Installing Developer Disk Image")
         try await link.mountDDI(from: dir, method: method)
@@ -1186,7 +1190,7 @@ final class SimulationSession: ObservableObject {
     /// Downloads the DDI ahead of time, e.g. on cellular, so that connecting later only mounts it.
     func downloadDDI() async throws {
         allowDDIDownload()
-        _ = try await DDIStore.prepare(DDIMethod.current) { [weak self] line in self?.write(line) }
+        _ = try await prepareDDI(DDIMethod.current)
         write("DDI downloaded")
         // The question of the last Set is answered; the next Set mounts the image.
         if state.error?.code == AppError.ddiConsentCode, active == nil {
@@ -1194,6 +1198,16 @@ final class SimulationSession: ObservableObject {
             askedFor = nil
             state = .idle
         }
+    }
+
+    private func prepareDDI(_ method: DDIMethod) async throws -> URL {
+        ddiDownloads += 1
+        ddiDownloading = true
+        defer {
+            ddiDownloads -= 1
+            ddiDownloading = ddiDownloads > 0
+        }
+        return try await DDIStore.prepare(method) { [weak self] line in self?.write(line) }
     }
 
     func allowDDIDownload() {

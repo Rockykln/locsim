@@ -319,7 +319,8 @@ struct SettingsView: View {
                 }
                 .foregroundStyle(.red)
                 // A connection may be about to mount them, or the button below is downloading.
-                .disabled(ddiLoading || session.state == .connecting || session.state.isReconnecting)
+                .disabled(ddiLoading || session.ddiDownloading || session.state == .connecting
+                          || session.state.isReconnecting)
             }
             if !ddiDownloaded {
                 Button {
@@ -327,10 +328,10 @@ struct SettingsView: View {
                 } label: {
                     HStack {
                         item("Download DDI Files", "arrow.down.to.line", .purple)
-                        if ddiLoading { ProgressView() }
+                        if ddiLoading || session.ddiDownloading { ProgressView() }
                     }
                 }
-                .disabled(ddiLoading)
+                .disabled(ddiLoading || session.ddiDownloading)
             }
         } header: {
             Text("Developer Disk Image")
