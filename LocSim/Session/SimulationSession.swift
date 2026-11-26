@@ -1190,7 +1190,13 @@ final class SimulationSession: ObservableObject {
     /// Downloads the DDI ahead of time, e.g. on cellular, so that connecting later only mounts it.
     func downloadDDI() async throws {
         allowDDIDownload()
-        _ = try await prepareDDI(DDIMethod.current)
+        do {
+            _ = try await prepareDDI(DDIMethod.current)
+        } catch {
+            let appError = AppError(error)
+            write("DDI download: \(appError.code) \(appError.detail)")
+            throw error
+        }
         write("DDI downloaded")
         // The question of the last Set is answered; the next Set mounts the image.
         if state.error?.code == AppError.ddiConsentCode, active == nil {
